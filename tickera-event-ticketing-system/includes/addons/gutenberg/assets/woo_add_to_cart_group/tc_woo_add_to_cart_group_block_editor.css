@@ -1,0 +1,55 @@
+div.components-tab-panel__tabs {
+    margin-bottom: 24px;
+}
+
+.wp-block-tc-woo-add-to-cart-group .wp-block {
+    display: inline-block;
+}
+
+.wp-block[data-type="tickera/woo-add-to-cart"] {
+    margin: initial !important;
+    padding: initial !important;
+}
+
+.wp-block[data-type="tickera/woo-ticket-price"] {
+    margin: initial !important;
+    padding: initial !important;
+}
+
+input[type="number"].tc-wb-quantity-selector {
+    min-width: 5em;
+    max-width: 5em;
+}
+
+.product.woocommerce.add_to_cart_inline.tc-amount-hidden,
+.product.woocommerce.add_to_cart_inline.tc-amount-hidden ~ .tc-wb-event-dropdown-wrap .amount {
+    display: none;
+}
+
+.tc-woo-add-to-cart-wrap {
+    pointer-events: none;
+}
+
+.tc-wb-event-dropdown-wrap .inner-wrap {
+    display: inline-flex;
+}
+
+.tc-wb-event-dropdown-wrap .tc-wb-add-to-cart {
+    margin: 0;
+}
+
+.tc-wb-event-dropdown-wrap .amount {
+    align-self: center;
+}
+
+.tc-wb-event-dropdown-wrap input[type="number"].tc-wb-quantity-selector {
+    height: 100%;
+    text-align: center;
+}
+
+.tc-wb-event-dropdown-wrap .tc-wb-add-to-cart > a,
+.tc-wb-event-dropdown-wrap input[type="number"].tc-wb-quantity-selector {
+    display: block;
+    margin-left: 10px;
+    box-sizing: border-box;
+}

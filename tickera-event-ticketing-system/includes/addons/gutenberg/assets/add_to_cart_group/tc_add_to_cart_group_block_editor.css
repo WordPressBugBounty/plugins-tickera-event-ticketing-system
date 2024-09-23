@@ -1,0 +1,25 @@
+div.components-tab-panel__tabs {
+    margin-bottom: 24px;
+}
+
+.tc-add-to-cart-wrap {
+    pointer-events: none;
+}
+
+.wp-block-tc-add-to-cart-group .wp-block {
+    display: inline-block;
+}
+
+.wp-block[data-type="tickera/add-to-cart"] {
+    margin: initial !important;
+    padding: initial !important;
+}
+
+.wp-block[data-type="tickera/ticket-price"] {
+    margin: initial !important;
+    padding: initial !important;
+}
+
+.tc-add-to-cart-wrap .tc_quantity_selector {
+    line-height: normal;
+}

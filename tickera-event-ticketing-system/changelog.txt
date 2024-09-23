@@ -1,0 +1,93 @@
+Plugin Name: Tickera
+Author: Tickera.com=====
+
+= 3.5.4.1 16/09/2024 =
+* Unable to complete checkout with Braintree payment method. [Fixed]
+* Tickera > Events "Active" toggle not working. [Fixed]
+* Custom Form Fields placeholder not properly rendered in cart/checkout pages.
+* Tickera - Add to cart gutenberg block rendering issue. [Fixed]
+
+= 3.5.4.0 13/09/2024 =
+* Custom Form Fields placeholder not properly rendered in cart/checkout pages.
+
+= 3.5.3.9 04/09/2024 =
+* Critical error in the event page. [Fixed]
+
+= 3.5.3.8 03/09/2024 =
+* Implemented namespace across plugin classes.
+* Additional sanitization and escaping across the plugin files.
+* Wordpress version 6.5+ compliance.
+
+= 3.5.3.7 29/08/2024 =
+* Fatal error on an incomplete object __PHP_Incomplete_Class. [Fixed]
+
+= 3.5.3.6 27/08/2024 =
+* Translation for cart field's error messages
+* Unable to send offline payment instruction email. [Fixed]
+* Remove legacy functions.
+* Wordpress version 6.5+ compliance.
+
+= 3.5.3.5 15/08/2024 =
+* Fatal error occurs whenever the "Enable Webhook" option is enabled in Stripe Elements 3D Secure
+* Applied TC prefix across all constant variables.
+
+= 3.5.3.4 14/08/2024 =
+* Enforce ticket download without hash via "tickera_bypass_ticket_download_hash" filter hook
+* Replaced tc.pot with tickera-event-ticketing-system.pot file.
+* Set an earlier load priority for ticket template elements classes. These classes serves as a dependency of any sort of custom ticket template element add-ons.
+* Additional "Disable Ticket Download Hash" option at Tickera > Settings > Miscellaneous.
+* Wordpress version 6.5+ compliance.
+
+
+= 3.5.3.3 01/08/2024 =
+* Ticket template duplication: Unable to clone existing elements. The issue occurs only on cached websites. [Fixed]
+* New "First name field require" and "Last name field required" options in Tickera > Settings > General.
+* Apply background image across Ticket's PDF pages.
+* New 'Enable Webhook' option in Standard Stripe Payment Gateway.
+* Unable to limit check-ins on time basis whenever the date format is set with m/d/y. [Fixed]
+* Styles adjustment in cart page.
+* Divi > Theme Builder > Template and Tickera Shortcode Builder compatibility.
+* Adjustment on search queries to address intermittent empty results.
+* More string translation across the plugin files. Applied translator to those variable strings.
+* Update Freemius SDK to 2.7.3
+* Updated static functions with "tickera_" prefix. Applied legacy system to those deprecated functions.
+* Wordpress version 6.5+ compliance. In progress...
+
+= 3.5.3.1 24/07/2024 =
+*WordPress 6.6.1 compatibility 
+
+= 3.5.3.0 13/07/2024 =
+*Bug fixes
+
+= 3.5.2.9 12/06/2024 =
+* Additional admin side security measures on bulk delete tickets. Only admin accounts can execute the function.
+
+= 3.5.2.8 12/06/2024 =
+* Set namespace for TCPDF library. Addresses plugins/themes conflict.
+* Allow radio button to be assigned with empty default value in cart/checkout pages.
+* Ability to require radio button in cart/checkout pages.
+* Staff account is unable to view/download tickets. [Fixed]
+* Number field handler in cart page.
+
+= 3.5.2.7 27/05/2024 =
+* Unable to search order number in Attendees & Tickets. [Fixed]
+* Ability to disable extensive search functionality in Attendees & Tickets via "tc_tickets_instances_extensive_search" filter hook. Default: true
+* Ability to override Ticket Checkin API via "tc_results_before_ticket_checkin" filter hook.
+* Additional "Calendar day/24hrs basis" option for "Limit Check-ins on time basis". Tickera > Ticket Types
+* Disable alphanumeric filtering in the client side cart page fields.
+* Update Tickera Shortcode Builder and Beaver builder integration.
+* "Attendee Order Completed Email" Notification: New DOWNLOAD_LINK that will render clickable "Download" link to download ticket.
+* "Attendee Order Completed Email" Notification: Updated DOWNLOAD_URL to render raw url. It can be used as an href of an anchor tag. E.g <a href="DOWNLOAD_URL">Click here to download your ticket</a>
+* Renamed "Terms & Conditions" ticket template element to "Event Terms & Conditions".
+* Ability to insert static content onto the ticket template html via "tc_ticket_template_html" filter hook.
+* Ticket Templates: Broken color picker styles. [Fixed]
+* Additional "tc_additional_buyer_fields" and "tc_additional_owner_fields" shortcodes.
+* Braintree 3D Secure 2 overflowed height. [Fixed]
+* Stripe payment method compliance for the latest Stripe API Version.
+* Additional security for Broken Access Control Vulnerability in Attendees & Tickets.
+* Attendee & Tickets search functionality conflict with Elementor. [Fixed]
+* Additional 'tc_attendee_order_completed_email_subject' filter hook. Default arguments: $subject, $ticket_id
+
+
+----------------------------------------------------------------------
+ - Plugin built from the ground up

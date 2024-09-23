@@ -1,0 +1,8 @@
+div.components-tab-panel__tabs {
+    margin-bottom: 24px;
+}
+
+.wp-block[data-type="tickera/tickets-sold"] {
+    margin: initial !important;
+    padding: initial !important;
+}

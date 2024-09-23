@@ -1,0 +1,29 @@
+.post-type-tc_orders h1 .page-title-action,
+.post-type-tc_orders #post-body-content,
+.post-type-tc_orders .subsubsub .mine,
+.post-type-tc_orders #postbox-container-1,
+.post-type-tc_orders .page-title-action,
+.post-type-tc_orders #tc_custom_forms_save_changes,
+.post-type-tc_orders .ui-sortable-handle,
+.post-type-tc_orders #order-details-tc-metabox-wrapper .handle-actions .handlediv,
+.post-type-tc_orders #commentsdiv,
+.post-type-tc_orders .mine {
+    display: none;
+}
+
+.post-type-tc_orders #order-details-tc-metabox-wrapper .ui-sortable-handle {
+    display: block;
+}
+
+.post-type-tc_orders .handle-actions {
+    padding: 0 12px;
+}
+
+.post-type-tc_orders #poststuff #post-body.columns-2{
+    margin-right: 0px;
+}
+
+.post-type-tc_orders .order-details.shadow-table{
+    margin-left: 1px;
+    margin-top: 5px;
+}

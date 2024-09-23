@@ -1,0 +1,51 @@
+div.components-tab-panel__tabs {
+    margin-bottom: 24px;
+}
+
+.tc-event-add-to-cart-group-wrap {
+    pointer-events: none;
+}
+
+.wp-block[data-type="tickera/event-add-to-cart-columns"],
+.wp-block[data-type="tickera/event-add-to-cart-rows"] {
+    margin: initial !important;
+    padding: initial !important;
+}
+
+.tc-event-dropdown-wrap .inner-wrap,
+.tc-event-dropdown-wrap .cart_form {
+    display: inline-flex;
+    align-items: center;
+}
+
+.tc-event-dropdown-wrap .tc_in_cart,
+.tc-event-dropdown-wrap .tc_tickets_sold,
+.tc-event-dropdown-wrap .tc_quantity_selector,
+.tc-event-dropdown-wrap .add_to_cart {
+    margin-left: 10px;
+}
+
+.tc-event-dropdown-wrap .actions .add-to-cart {
+    display: none;
+}
+
+.tc-event-dropdown-wrap .actions .add-to-cart:first-child {
+    display: inline-block;
+}
+
+/* Hide Table Controls */
+.tc-gb-component.show-in-table.dropdown,
+.tc-gb-component.show-in-table.dropdown.true,
+.tc-gb-component.show-in-dropdown.table,
+.tc-gb-component.show-quantity {
+    display: none;
+}
+
+.tc-gb-component.show-quantity.true {
+    display: block;
+}
+
+.tc-gb-component.current-event > div,
+.tc-gb-component.current-event > div > span {
+    margin-bottom: 0;
+}

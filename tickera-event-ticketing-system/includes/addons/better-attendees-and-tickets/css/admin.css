@@ -1,0 +1,34 @@
+.post-type-tc_tickets_instances h1 .page-title-action,
+.post-type-tc_tickets_instances #post-body-content,
+.post-type-tc_tickets_instances .subsubsub .mine,
+.post-type-tc_tickets_instances .subsubsub .all,
+.post-type-tc_tickets_instances .subsubsub .publish,
+.post-type-tc_tickets_instances #postbox-container-1,
+.post-type-tc_tickets_instances .page-title-action,
+.post-type-tc_tickets_instances .handle-actions {
+    display: none;
+}
+
+.post-type-tc_tickets_instances .postbox {
+    border-radius: 7px 7px 0 0;
+    overflow: hidden;
+}
+
+.post-type-tc_tickets_instances #poststuff #post-body.columns-2{
+    margin-right: 0px;
+}
+
+.post-type-tc_tickets_instances .handle-actions {
+    padding: 0 12px;
+}
+
+.post-type-tc_tickets_instances #poststuff h2 {
+    background-color: #FFFFFF;
+    padding: 15px 20px 15px 30px;
+    font-family: 'Open Sans', Arial, serif;
+    font-weight: 500;
+    font-size: 1.3em;
+    letter-spacing: 0.05em;
+    color: #5d5d5d;
+}
+
