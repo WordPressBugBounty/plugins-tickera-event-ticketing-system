@@ -18,11 +18,13 @@ if ( ! class_exists( 'Tickera\Ticket\Element\tc_event_location_element' ) ) {
         }
 
         function advanced_admin_element_settings() {
-            echo wp_kses_post( $this->get_att_fonts() );
-            echo wp_kses_post( $this->get_font_colors() );
-            echo wp_kses_post( $this->get_font_sizes() );
-            echo wp_kses_post( $this->get_font_style() );
-            echo wp_kses_post( $this->get_default_text_value( __( 'Grosvenor Square, Mayfair, London', 'tickera-event-ticketing-system' ) ) );
+            ob_start();
+            $this->get_att_fonts();
+            $this->get_font_colors();
+            $this->get_font_sizes();
+            $this->get_font_style();
+            $this->get_default_text_value( __( 'Grosvenor Square, Mayfair, London', 'tickera-event-ticketing-system' ) );
+            return ob_get_clean();
         }
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {

@@ -1906,9 +1906,10 @@ if ( ! class_exists( 'Tickera\Addons\TC_tc_gutentick' ) ) {
                                             <td data-column="<?php esc_attr_e( 'Price', 'tickera-event-ticketing-system' ); ?>"
                                                 style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses_post( apply_filters( 'wc_product_tickets_table_price', $product->get_price_html(), $ticket_type->ID ) ); ?></td>
                                             <?php if ( $quantity ) {
+
                                                 if ( ! $product->is_type( 'variable' ) ) {
                                                     do_action( 'tc_wb_event_col_value_before_quantity', (int) $ticket_type->ID );
-                                                    $quantiy_selector_field = woocommerce_quantity_input(
+                                                    $quantity_selector_field = woocommerce_quantity_input(
                                                         array(
                                                             'min_value' => $product->get_min_purchase_quantity(),
                                                             'max_value' => $product->get_max_purchase_quantity(),
@@ -1919,7 +1920,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_tc_gutentick' ) ) {
                                                         false
                                                     );
 
-                                                    echo wp_kses( '<td data-column="' . esc_attr__( 'Quantity', 'tickera-event-ticketing-system' ) . '">' . wp_kses_post( $quantiy_selector_field ) . '</td>', wp_kses_allowed_html( 'tickera' ) );
+                                                    echo wp_kses( '<td data-column="' . esc_attr__( 'Quantity', 'tickera-event-ticketing-system' ) . '">' . $quantity_selector_field . '</td>', wp_kses_allowed_html( 'tickera_quantity_selector' ) );
 
                                                 } else {
                                                     echo wp_kses( '<td data-column="' . esc_attr__( 'Quantity', 'tickera-event-ticketing-system' ) . '"></td>', wp_kses_allowed_html( 'tickera' ) );

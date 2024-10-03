@@ -121,6 +121,24 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
 
                 case 'quantity_selector':
                     $allowed_tags = [
+                        'td'    => [ 'data-column' => [] ],
+                        'div'   => [ 'class' => [] ],
+                        'label' => [ 'class' => [], 'for' => [] ],
+                        'input' => [
+                            'type'          => [],
+                            'id'            => [],
+                            'class'         => [],
+                            'name'          => [],
+                            'value'         => [],
+                            'aria-label'    => [],
+                            'size'          => [],
+                            'min'           => [],
+                            'max'           => [],
+                            'step'          => [],
+                            'placeholder'   => [],
+                            'inputmode'     => [],
+                            'autocomplete'  => []
+                        ],
                         'select' => [ 'class' => [] ],
                         'option' => [ 'value' => [], 'selected' => [] ]
                     ];
@@ -165,7 +183,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                     break;
 
                 case 'toggle':
-                    $default_tags[ 'div' ] = array_merge( $default_tags[ 'div' ], [ 'event_id' => [] ] );
+                    $default_tags[ 'div' ] = array_merge( $default_tags[ 'div' ], [ 'event_id' => [], 'ticket_id' => [] ] );
                     $allowed_tags = $default_tags;
                     break;
 

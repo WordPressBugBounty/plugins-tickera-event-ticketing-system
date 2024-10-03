@@ -29,12 +29,14 @@ if ( ! class_exists( 'Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) )
         }
 
         function admin_content_v2( $element_default_values = false ) {
+            ob_start();
             $this->get_1d_barcode_types( $element_default_values[ $this->element_name . '_barcode_type' ] );
             $this->get_1d_barcode_text_visibility( $element_default_values[ $this->element_name . '_barcode_text_visibility' ] );
             $this->get_1d_barcode_size( $element_default_values[ $this->element_name . '_1d_barcode_size' ] );
             parent::get_font_sizes( 'Barcode Text Font Size (if visible)', 8 );
             parent::get_cell_alignment( $element_default_values[ $this->element_name . '_cell_alignment' ] );
             parent::get_element_margins( $element_default_values[ $this->element_name . '_top_padding' ], $element_default_values[ $this->element_name . '_bottom_padding' ] );
+            return ob_get_clean();
         }
 
         function get_1d_barcode_size( $barcode_size = '50' ) {

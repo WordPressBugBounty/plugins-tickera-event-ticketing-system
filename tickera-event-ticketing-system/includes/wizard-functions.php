@@ -76,7 +76,7 @@ if ( ! function_exists( 'tickera_setup_wizard_content' ) ) {
             $mode_checked = get_option( 'tickera_wizard_mode', 'sa' );
             $last_step = add_query_arg( array(
                 'page' => 'tc-installation-wizard',
-                'step' => tc_wizard_get_start_screen_next_step(),
+                'step' => tickera_wizard_get_start_screen_next_step(),
                 'mode' => $mode_checked
             ), admin_url( 'index.php' ) );
             tickera_redirect( $last_step );

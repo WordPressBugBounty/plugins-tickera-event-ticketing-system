@@ -26,10 +26,12 @@ if ( ! class_exists( 'Tickera\Ticket\Element\tc_ticket_qr_code_element' ) ) {
         }
 
         function admin_content_v2($element_default_values = false) {
+            ob_start();
             $this->get_qr_code_size_new($element_default_values[$this->element_name.'_qr_code_size']);
             $this->get_qr_code_padding_code($element_default_values[$this->element_name.'_qr_code_padding_code']);
             parent::get_cell_alignment($element_default_values[$this->element_name.'_cell_alignment']);
             parent::get_element_margins($element_default_values[$this->element_name.'_top_padding'], $element_default_values[$this->element_name.'_bottom_padding']);
+            return ob_get_clean();
         }
 
         /**

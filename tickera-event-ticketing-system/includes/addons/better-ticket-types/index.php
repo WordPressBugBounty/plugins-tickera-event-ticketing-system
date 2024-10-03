@@ -32,15 +32,15 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
             }
 
-            add_filter( 'tc_ticket_type_post_type_args', array( &$this, 'tc_ticket_type_post_type_args' ) );
-            add_filter( 'manage_tc_tickets_posts_columns', array( &$this, 'manage_tc_tickets_columns' ) );
-            add_action( 'manage_tc_tickets_posts_custom_column', array( &$this, 'manage_tc_tickets_posts_custom_column' ) );
-            add_filter( "manage_edit-tc_tickets_sortable_columns", array( &$this, 'manage_edit_tc_tickets_sortable_columns' ) );
-            add_action( 'add_meta_boxes', array( &$this, 'add_ticket_types_metaboxes' ) );
-            add_action( 'admin_enqueue_scripts', array( &$this, 'admin_enqueue_scripts_and_styles' ) );
+            add_filter( 'tc_ticket_type_post_type_args', array( $this, 'tc_ticket_type_post_type_args' ) );
+            add_filter( 'manage_tc_tickets_posts_columns', array( $this, 'manage_tc_tickets_columns' ) );
+            add_action( 'manage_tc_tickets_posts_custom_column', array( $this, 'manage_tc_tickets_posts_custom_column' ) );
+            add_filter( "manage_edit-tc_tickets_sortable_columns", array( $this, 'manage_edit_tc_tickets_sortable_columns' ) );
+            add_action( 'add_meta_boxes', array( $this, 'add_ticket_types_metaboxes' ) );
+            add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts_and_styles' ) );
 
             if ( $post_type == 'tc_tickets' ) {
-                add_action( 'post_submitbox_misc_actions', array( &$this, 'post_submitbox_misc_actions' ) );
+                add_action( 'post_submitbox_misc_actions', array( $this, 'post_submitbox_misc_actions' ) );
                 add_filter( 'page_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
                 add_filter( 'wp_editor_settings', array( $this, 'wp_editor_settings' ), 10, 2 );
                 add_action( 'edit_form_after_editor', array( $this, 'edit_form_after_editor' ), 10, 1 );
@@ -409,7 +409,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                         } elseif ( 'ticket_active' == $ticket_types_column[ 'field_name' ] ) {
                             $ticket_type_status = get_post_status( $post->ID );
                             $on = $ticket_type_status == 'publish' ? 'tc-on' : '';
-                            echo wp_kses_post( '<div class="tc-control ' . esc_attr( $on ) . '" ticket_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>' );
+                            echo wp_kses( '<div class="tc-control ' . esc_attr( $on ) . '" ticket_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>', wp_kses_allowed_html( 'tickera_toggle' ) );
 
                         } elseif ( 'ticket_shortcode' == $ticket_types_column[ 'field_name' ] ) {
                             echo wp_kses( '[tc_ticket id="' . esc_attr( $post->ID ) . '"]', wp_kses_allowed_html( 'tickera_add_to_cart' ) );
@@ -448,7 +448,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             ?>
             <div class="misc-pub-section misc-pub-visibility-activity" id="visibility">
                 <?php if ( current_user_can( apply_filters( 'tc_ticket_type_activation_capability', 'edit_others_ticket_types' ) ) || current_user_can( 'manage_options' ) ) { ?>
-                    <span id="post-visibility-display"><?php echo wp_kses_post( '<div class="tc-control ' . esc_attr( $on ) . '" ticket_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>' ); ?></span>
+                    <span id="post-visibility-display"><?php echo wp_kses( '<div class="tc-control ' . esc_attr( $on ) . '" ticket_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>', wp_kses_allowed_html( 'tickera_toggle' ) ); ?></span>
                 <?php }
                 if ( isset( $_GET[ 'post' ] ) ) {
                     $ticket = new \Tickera\TC_Ticket( (int) $_GET[ 'post' ] );

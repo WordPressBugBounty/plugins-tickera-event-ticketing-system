@@ -18,9 +18,11 @@ if ( ! class_exists( 'Tickera\Ticket\Element\tc_custom_image_element' ) ) {
         }
 
         function admin_content_v2($element_default_values = false) {
+            ob_start();
             parent::get_cell_alignment($element_default_values[$this->element_name.'_cell_alignment']);
             parent::get_element_margins($element_default_values[$this->element_name.'_top_padding'], $element_default_values[$this->element_name.'_bottom_padding']);
             $this->get_custom_image_file_name($element_default_values[$this->element_name.'_custom_image_url']);
+            return ob_get_clean();
         }
 
         function get_custom_image_file_name($custom_image_url = '') { ?>

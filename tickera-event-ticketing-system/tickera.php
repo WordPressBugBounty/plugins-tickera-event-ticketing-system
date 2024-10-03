@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.1
+ * Version: 3.5.4.3
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.1';
+        var $version = '3.5.4.3';
 
         var $title = 'Tickera';
 
@@ -5079,7 +5079,7 @@ if ( !function_exists( 'Tickera\\tets_fs' ) ) {
                     // If the add-on is not network active, don't do anything.
                     return;
                 }
-                $menu_manager = FS_Admin_Menu_Manager::instance( 3102, 'plugin', \Tickera\tets_fs()->get_unique_affix() );
+                $menu_manager = \FS_Admin_Menu_Manager::instance( 3102, 'plugin', \Tickera\tets_fs()->get_unique_affix() );
                 $tc_fs_show = ( false == tickera_iw_is_wl() ? true : false );
                 $menu_manager->init( array(
                     'slug'    => 'dummy',
