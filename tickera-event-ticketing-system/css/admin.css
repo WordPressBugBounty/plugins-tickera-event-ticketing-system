@@ -1552,6 +1552,17 @@ select[name="tc_event_filter"] ~ .chosen-container .tc-loader {
     height: 16px;
 }
 
+.themetick-adv {
+    opacity: 0;
+    visibility: hidden;
+    transition: 1s linear;
+}
+
+.themetick-adv.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
 @media only screen and (min-width: 1120px)  and (max-width: 1350px) {
   .theme .valid-remove {
     display: none;

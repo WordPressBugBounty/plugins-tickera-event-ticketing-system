@@ -30,7 +30,7 @@ if ( is_admin() || isset( $_POST[ 'action' ] ) && $_POST[ 'action' ] == 'heartbe
         $cart_info_cookie = $tc->get_cart_info_cookie();
         $order_cookie = $tc->get_order_cookie();
 
-        $payment_class_name = "\\Tickera\\Gateway\\" . $gateway_class;
+        $payment_class_name = class_exists( $gateway_class ) ? $gateway_class : "\\Tickera\\Gateway\\" . $gateway_class;
         $payment_gateway = new $payment_class_name;
 
         $order_id = isset( $tc_order_return ) ? $tc_order_return : ( !is_null( $session_order ) ? sanitize_text_field( $session_order ) : ( isset( $order_cookie ) && ! empty( $order_cookie ) ? $order_cookie : '' ) );

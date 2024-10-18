@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.3
+ * Version: 3.5.4.4
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.3';
+        var $version = '3.5.4.4';
 
         var $title = 'Tickera';
 
@@ -244,8 +244,10 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             add_action( 'admin_notices', array($this, 'bridge_admin_notice') );
             add_action( 'wp_ajax_tc_remove_notification', array($this, 'tc_remove_notification') );
             add_action( 'wp_ajax_nopriv_tc_remove_notification', array($this, 'tc_remove_notification') );
-            add_action( 'wp_ajax_tc_remove_notification_theme', array($this, 'tc_remove_notification_theme') );
-            add_action( 'wp_ajax_nopriv_tc_remove_notification_theme', array($this, 'tc_remove_notification_theme') );
+            // Remove theme notification in Themes page
+            add_action( 'wp_ajax_tc_remove_notification_theme', array($this, 'tc_remove_notification_theme_ajax') );
+            add_action( 'wp_ajax_nopriv_tc_remove_notification_theme', array($this, 'tc_remove_notification_theme_ajax') );
+            add_action( 'admin_init', array($this, 'tc_remove_notification_theme') );
             // Manage Tickera and add-ons dependency structure.
             if ( version_compare( get_bloginfo( 'version' ), '6.5', '>=' ) ) {
                 add_filter( 'wp_plugin_dependencies_slug', array($this, 'set_dependencies_slug') );
@@ -317,7 +319,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             exit;
         }
 
-        function tc_remove_notification_theme() {
+        function tc_remove_notification_theme_ajax() {
             setcookie(
                 'tc_themes_notifications',
                 'true',
@@ -328,9 +330,37 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         }
 
         /**
-         * Delete directories and files
          *
+         * @since 3.5.4.4
+         */
+        function tc_remove_notification_theme() {
+            global $pagenow;
+            if ( $pagenow && 'themes.php' == $pagenow ) {
+                $theme = wp_get_theme();
+                $author = $theme->get( 'Author' );
+                $authorUri = $theme->get( 'AuthorURI' );
+                if ( 'Themetick' == $author || 'https://themetick.com' == $authorUri ) {
+                    setcookie(
+                        'tc_themes_notifications',
+                        'true',
+                        time() + 86400 * 30,
+                        "/"
+                    );
+                } else {
+                    setcookie(
+                        'tc_themes_notifications',
+                        '',
+                        time() + 86400 * 30,
+                        "/"
+                    );
+                }
+            }
+        }
+
+        /**
+         * Delete directories and files
          * @param $dir
+         * @throws \Exception
          */
         public static function rrmdir( $dir ) {
             if ( is_dir( $dir ) ) {
@@ -3745,7 +3775,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             }
             // Send order status email to the customer
             $payment_class_name = sanitize_text_field( $session['cart_info']['gateway_class'] );
-            $payment_class_name = "\\Tickera\\Gateway\\" . $payment_class_name;
+            $payment_class_name = ( class_exists( $payment_class_name ) ? $payment_class_name : "\\Tickera\\Gateway\\" . $payment_class_name );
             $payment_gateway = new $payment_class_name();
             do_action(
                 'tc_order_created',
@@ -5097,7 +5127,28 @@ if ( !function_exists( 'Tickera\\tets_fs' ) ) {
             if ( class_exists( 'TC_WooCommerce_Bridge' ) ) {
                 tickera_bridge_for_woocommerce_fs_dynamically_create_network_menu();
             } else {
-                add_action( 'woo_bridge_fs_loaded', 'tickera_bridge_for_woocommerce_fs_dynamically_create_network_menu' );
+                /**
+                 * Function: tickera_bridge_for_woocommerce_fs_dynamically_create_network_menu
+                 * Issue: Callback error in Network activated.
+                 * @since 3.5.4.4
+                 */
+                add_action( 'woo_bridge_fs_loaded', function () {
+                    if ( !woo_bridge_fs()->is_network_active() ) {
+                        // If the add-on is not network active, don't do anything.
+                        return;
+                    }
+                    $menu_manager = \FS_Admin_Menu_Manager::instance( 3102, 'plugin', \Tickera\tets_fs()->get_unique_affix() );
+                    $tc_fs_show = ( false == tickera_iw_is_wl() ? true : false );
+                    $menu_manager->init( array(
+                        'slug'    => 'dummy',
+                        'contact' => false,
+                        'support' => false,
+                        'pricing' => false,
+                        'account' => $tc_fs_show,
+                        'addons'  => $tc_fs_show,
+                        'network' => false,
+                    ), false );
+                } );
             }
         }
     }

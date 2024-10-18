@@ -1185,6 +1185,10 @@
         +"</div>"
         +"</div>");
 
+        setTimeout( function() {
+            $( '.themetick-adv' ).addClass( 'visible' );
+        }, 300 );
+
         jQuery('.themetick-adv .notice-dismiss').click(function(){
           jQuery('.themetick-adv').remove();
           jQuery.ajax({
@@ -1196,13 +1200,7 @@
              }
           });
         });
-
-
       }
-
     },500);
-
-
-
 
 } )( jQuery );

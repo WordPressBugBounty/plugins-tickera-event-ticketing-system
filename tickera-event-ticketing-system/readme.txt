@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, , e-commerce,
 Requires at least: 4.1
 Tested up to: 6.6.2
-Stable tag: 3.5.4.3
+Stable tag: 3.5.4.4
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,13 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.4.4 18/10/2024 =
+* Stripe connect add-on compatibility.
+* Remove promotional notification once an affiliated theme is already active. Page: Themes page
+* Ability to use other payment methods (e.g Klarna) within Stripe Checkout Session Form.
+* Bridge for Woocommerce: Callback error on Network activated. [Fixed]
+* Remove "Tickera" Shortcode Builder Button in Tickera > Event > "Event terms and conditions" metabox.
 
 = 3.5.4.3 03/10/2024 =
 * Uncaught Error: Class "Tickera\FS_Admin_Menu_Manager" not found. [Fixed]

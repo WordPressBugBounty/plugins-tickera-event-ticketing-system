@@ -510,9 +510,17 @@ if ( ! class_exists( 'Tickera\TC_Shortcode_Builder' ) ) {
             }
         }
 
-        public function media_buttons() {
-            global $tc; ?>
-        <a href="javascript:;" class="button tc-shortcode-builder-button" title="<?php echo esc_attr( $tc->title . ' ' . __( 'Shortcodes', 'tickera-event-ticketing-system' ) ); ?>"><span class="wp-media-buttons-icon dashicons dashicons-tickets-alt"></span> <?php echo esc_html( $tc->title ); ?></a><?php
+        /**
+         * Exclude "Tickera" Shortcode Builder Button in Tickera > Events > "Event terms and conditions" metabox
+         * @param $editor_id
+         *
+         * @since 3.5.4.4
+         */
+        public function media_buttons( $editor_id ) {
+            global $tc;
+            if ( 'event_terms' != $editor_id ) : ?>
+                <a href="javascript:;" class="button tc-shortcode-builder-button" title="<?php echo esc_attr( $tc->title . ' ' . __( 'Shortcodes', 'tickera-event-ticketing-system' ) ); ?>"><span class="wp-media-buttons-icon dashicons dashicons-tickets-alt"></span> <?php echo esc_html( $tc->title ); ?></a>
+            <?php endif;
         }
     }
 

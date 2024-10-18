@@ -1,6 +1,13 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.4.4 18/10/2024 =
+* Stripe connect add-on compatibility.
+* Remove promotional notification once an affiliated theme is already active. Page: Themes page
+* Ability to use other payment methods (e.g Klarna) within Stripe Checkout Session Form.
+* Bridge for Woocommerce: Callback error on Network activated. [Fixed]
+* Remove "Tickera" Shortcode Builder Button in Tickera > Event > "Event terms and conditions" metabox.
+
 = 3.5.4.3 03/10/2024 =
 * Uncaught Error: Class "Tickera\FS_Admin_Menu_Manager" not found. [Fixed]
 
