@@ -28,8 +28,8 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
              */
             $hide_checkin_ineligible = ( isset( $general_settings[ 'hide_checkin_ineligible_tickets' ] ) && $general_settings[ 'hide_checkin_ineligible_tickets' ] ) ? $general_settings[ 'hide_checkin_ineligible_tickets' ] : 'no';
             $this->checkin_eligible_order_statuses = ( 'no' == $hide_checkin_ineligible )
-                ? apply_filters( 'tc_checkin_eligible_order_statuses', [ 'order_paid', 'order_received', 'order_cancelled', 'order_refunded', 'order_fraud' ] )
-                : apply_filters( 'tc_checkin_eligible_order_statuses', [ 'order_paid' ] );
+                ? apply_filters( 'tc_checkin_eligible_order_statuses', tickera_get_order_statuses() )
+                : apply_filters( 'tc_checkin_eligible_order_statuses', [ 'order_paid' => ( tickera_get_order_statuses() )[ 'order_paid' ] ] );
 
             add_filter( 'tc_tickets_instances_post_type_args', array( $this, 'tc_tickets_instances_post_type_args' ) );
             add_filter( 'manage_tc_tickets_instances_posts_columns', array( $this, 'manage_tc_tickets_instances_columns' ) );
@@ -195,7 +195,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          */
         function init_table_by_order_status_where_clause( $where, $query ) {
             global $wpdb;
-            $order_statuses = apply_filters( 'tc_tickets_instances_init_table_by_order_statuses', $this->checkin_eligible_order_statuses );
+            $order_statuses = apply_filters( 'tc_tickets_instances_init_table_by_order_statuses', array_keys( $this->checkin_eligible_order_statuses ) );
             $order_statuses = implode( '\',\'', $order_statuses );
             $where .= " AND " . $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ('trash','" . $order_statuses . "'))";
             return $where;
@@ -263,14 +263,8 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 $currently_selected = isset( $_REQUEST[ 'tc_order_status_filter' ] ) ? sanitize_text_field( $_REQUEST[ 'tc_order_status_filter' ] ) : ''; ?>
                 <select name="tc_order_status_filter">
                     <option value="0"><?php esc_html_e( 'All Order Statuses', 'tickera-event-ticketing-system' ); ?></option>
-                    <?php
-                    $payment_statuses = [];
-                    foreach ( $this->checkin_eligible_order_statuses as $order_status ) {
-                        $payment_statuses[ $order_status ] = ucfirst( str_replace( [ 'order_', 'wc-', '-' ], [ '', '', ' ' ], $order_status ) );
-                    }
-
-                    foreach ( $payment_statuses as $payment_status_key => $payment_status_value ) { ?>
-                        <option value="<?php echo esc_attr( sanitize_key( $payment_status_key ) ); ?>" <?php selected( $currently_selected, $payment_status_key, true ); ?>><?php echo esc_html( sanitize_text_field( $payment_status_value ) ); ?></option>
+                    <?php foreach ( $this->checkin_eligible_order_statuses as $order_status => $order_status_label ) { ?>
+                        <option value="<?php echo esc_attr( $order_status ); ?>" <?php selected( $currently_selected, $order_status, true ); ?>><?php echo esc_html( $order_status_label ); ?></option>
                     <?php } ?>
                 </select>
                 <?php

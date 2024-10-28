@@ -385,8 +385,17 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
             $valid_time_base_checkins = 0;
             $checkins_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_field_name', 'checkins_time_basis', $ticket_id ), true );
             $checkins_time_basis = ( $checkins_time_basis ) ? $checkins_time_basis : 'no';
-            $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id ), true );
-            $allowed_checkins_per_time_basis = ( is_numeric( $allowed_checkins_per_time_basis ) ) ? (int) $allowed_checkins_per_time_basis : 99999; // 99999 means unlimited check-ins but it's set for easier comparison
+
+            if ( 'no' == $checkins_time_basis ) {
+
+                // Unlimited as default.
+                $allowed_checkins_per_time_basis = 99999;
+
+            } else {
+                $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id ), true );
+                $allowed_checkins_per_time_basis = ( is_numeric( $allowed_checkins_per_time_basis ) ) ? (int) $allowed_checkins_per_time_basis : 99999; // 99999 means unlimited check-ins but it's set for easier comparison
+            }
+
             $basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id ), true );
             $date_checked = isset( $_GET[ 'timestamp' ] ) ? intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) : date_i18n( 'U' );
 

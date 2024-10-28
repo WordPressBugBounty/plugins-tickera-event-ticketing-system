@@ -191,22 +191,12 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
                 <select name="tc_order_status_filter">
                     <option value="0"><?php esc_html_e( 'All Order Statuses', 'tickera-event-ticketing-system' ); ?></option>
                     <?php
-                    $payment_statuses = apply_filters( 'tc_csv_payment_statuses', array(
-                        'any' => __( 'Any', 'tickera-event-ticketing-system' ),
-                        'order_paid' => __( 'Paid', 'tickera-event-ticketing-system' ),
-                        'order_received' => __( 'Pending / Received', 'tickera-event-ticketing-system' ),
-                        'order_cancelled' => __( 'Cancelled', 'tickera-event-ticketing-system' ),
-                        'order_refunded' => __( 'Refunded', 'tickera-event-ticketing-system' )
-                    ) );
+                    $payment_statuses = apply_filters( 'tc_csv_payment_statuses', tickera_get_order_statuses() );
+                    $payment_statuses[ 'order_received' ] = __( 'Order Pending / Received', 'tickera-event-ticketing-system' );
 
-                    unset( $payment_statuses[ 'any' ] ); // We need "All Order Statuses" which has a value of 0 so we'll unset this one (and from the Bridge for WooCommerce too)
-
-                    foreach ( $payment_statuses as $payment_status_key => $payment_status_value ) {
-                        ?>
+                    foreach ( $payment_statuses as $payment_status_key => $payment_status_value ) { ?>
                         <option value="<?php echo esc_attr( $payment_status_key ); ?>" <?php selected( $currently_selected, $payment_status_key, true ); ?>><?php echo esc_attr( $payment_status_value ); ?></option>
-                        <?php
-                    }
-                    ?>
+                    <?php } ?>
                 </select>
                 <?php
             }
@@ -216,6 +206,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
          * Save Order Meta
          *
          * @param $post_id
+         * @throws \Exception
          */
         function save_orders_meta( $post_id ) {
             global $wpdb;

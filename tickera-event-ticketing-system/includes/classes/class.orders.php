@@ -387,7 +387,7 @@ if ( ! class_exists( 'Tickera\TC_Orders' ) ) {
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'post_type' => 'tc_orders',
-                'post_status' => array( 'order_paid', 'order_received', 'order_fraud', 'order_cancelled', 'order_refunded' )
+                'post_status' => array_keys( tickera_get_order_statuses() )
             );
             return get_posts( $args );
         }

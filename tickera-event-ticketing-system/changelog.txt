@@ -1,6 +1,14 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.4.5 28/10/2024=
+* New "tickera_track_added_to_cart" hook. Arguments: $ticket_id, $quantity, $cart_content.
+* Ticket type's "Limit check-ins on time basis" executes regardless the status of the option. The issue occurs when the option's limit field is set with a value (any value from 0). [Fixed]
+* Ability to override order details page. Override the includes/templates/page-order.php onto the theme root directory.
+* Updated Freemius to the latest SDK v2.9.0.
+* Freemius SDK patched with PR:730. Patched Freemius SDK v2.9.0.1. Reference PR: https://github.com/Freemius/wordpress-sdk/pull/730/files
+* Ability to insert custom order statuses via "tickera_order_statuses" filter hook. Argument: $order_statuses
+
 = 3.5.4.4 18/10/2024 =
 * Stripe connect add-on compatibility.
 * Remove promotional notification once an affiliated theme is already active. Page: Themes page

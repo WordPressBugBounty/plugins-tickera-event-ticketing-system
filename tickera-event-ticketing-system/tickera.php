@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.4
+ * Version: 3.5.4.5
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.4';
+        var $version = '3.5.4.5';
 
         var $title = 'Tickera';
 
@@ -2522,15 +2522,21 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 $title = ( isset( $_POST['tc_title'] ) ? sanitize_text_field( $_POST['tc_title'] ) : __( 'Add to Cart', 'tickera-event-ticketing-system' ) );
                 $soldout_message = ( isset( $_POST['tc_soldout_message'] ) ? sanitize_text_field( $_POST['tc_soldout_message'] ) : __( 'Tickets are sold out.', 'tickera-event-ticketing-system' ) );
                 $skip_add_to_cart = ( isset( $_POST['tc_skip_add_to_cart'] ) ? (bool) $_POST['tc_skip_add_to_cart'] : false );
+                $cart = [];
                 if ( !$skip_add_to_cart ) {
                     $prev_cart = $this->get_cart_cookie( true );
-                    $cart = [];
                     foreach ( $prev_cart as $id => $qty ) {
                         $cart[$id] = (int) $qty;
                     }
                     $cart[$ticket_id] = ( isset( $cart[$ticket_id] ) ? (int) $cart[$ticket_id] + $quantity : $quantity );
                     $this->set_cart_cookie( $cart );
                 }
+                do_action(
+                    'tickera_track_added_to_cart',
+                    $ticket_id,
+                    $quantity,
+                    $cart
+                );
                 if ( ob_get_length() > 0 ) {
                     ob_end_clean();
                 }

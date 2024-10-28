@@ -2806,15 +2806,11 @@ if ( ! function_exists( 'tickera_get_order_front_link' ) ) {
 if ( ! function_exists( 'tickera_get_order_status_select' ) ) {
 
     function tickera_get_order_status_select( $field_name = '', $post_id = '' ) {
-        $value = get_post_status( $post_id );
-        $new_value = str_replace( '_', ' ', $value );
-        ?>
+        $value = get_post_status( $post_id ); ?>
         <select class="order_status_change" name="order_status_change">
-            <option value='order_received' <?php selected( $value, 'order_received', true ); ?>><?php esc_html_e( 'Order Received', 'tickera-event-ticketing-system' ); ?></option>
-            <option value='order_paid' <?php selected( $value, 'order_paid', true ); ?>><?php esc_html_e( 'Order Paid', 'tickera-event-ticketing-system' ); ?></option>
-            <option value='order_cancelled' <?php selected( $value, 'order_cancelled', true ); ?>><?php esc_html_e( 'Order Cancelled', 'tickera-event-ticketing-system' ); ?></option>
-            <option value='order_fraud' <?php selected( $value, 'order_fraud', true ); ?>><?php esc_html_e( 'Order Fraud', 'tickera-event-ticketing-system' ); ?></option>
-            <option value='order_refunded' <?php selected( $value, 'order_refunded', true ); ?>><?php esc_html_e( 'Order Refunded', 'tickera-event-ticketing-system' ); ?></option>
+            <?php foreach ( tickera_get_order_statuses() as $order_status => $order_status_label ) : ?>
+                <option value="<?php echo esc_attr( $order_status ); ?>" <?php selected( $value, $order_status, true ); ?>><?php echo esc_html( $order_status_label ); ?></option>
+            <?php endforeach; ?>
             <?php if ( $value == 'trash' ) { ?>
                 <option value='trash' <?php selected( $value, 'trash', true ); ?>><?php esc_html_e( 'Trash', 'tickera-event-ticketing-system' ); ?></option>
             <?php } ?>
@@ -4804,6 +4800,26 @@ if ( ! function_exists( 'tickera_iw_is_wl' ) ) {
         } else {
             return true;
         }
+    }
+}
+
+/**
+ * Collection of Order Statuses
+ * @since 3.5.4.5
+ */
+if ( ! function_exists( 'tickera_get_order_statuses' ) ) {
+
+    function tickera_get_order_statuses() {
+
+        $order_statuses = [
+            'order_received'    => _x( 'Order Received', 'Order status', 'tickera-event-ticketing-system' ),
+            'order_paid' => _x( 'Order Paid', 'Order status', 'tickera-event-ticketing-system' ),
+            'order_cancelled'    => _x( 'Order Cancelled', 'Order status', 'tickera-event-ticketing-system' ),
+            'order_fraud'  => _x( 'Order Fraud', 'Order status', 'tickera-event-ticketing-system' ),
+            'order_refunded'  => _x( 'Order Refunded', 'Order status', 'tickera-event-ticketing-system' ),
+        ];
+
+        return apply_filters( 'tickera_order_statuses', $order_statuses );
     }
 }
 

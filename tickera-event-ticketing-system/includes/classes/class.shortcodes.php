@@ -580,7 +580,14 @@ if ( ! class_exists( 'Tickera\TC_Shortcodes' ) ) {
             ob_start();
             $tc->session->start();
 
-            include( $tc->plugin_dir . 'includes/templates/page-order.php' );
+            $theme_file = locate_template( [ 'page-order.php' ] );
+
+            if ( '' != $theme_file ) {
+                include $theme_file;
+
+            } else {
+                include( $tc->plugin_dir . 'includes/templates/page-order.php' );
+            }
 
             $tc->session->close();
             return wpautop( ob_get_clean(), true );
