@@ -1,6 +1,11 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.4.6 31/10/2024 =
+* Wordfence security patch
+* Additional error handler for Stripe payment method.
+* Selecting "Courier" font in Ticket Template is being overridden by "Al Arabiya". [Fixed]
+
 = 3.5.4.5 28/10/2024=
 * New "tickera_track_added_to_cart" hook. Arguments: $ticket_id, $quantity, $cart_content.
 * Ticket type's "Limit check-ins on time basis" executes regardless the status of the option. The issue occurs when the option's limit field is set with a value (any value from 0). [Fixed]

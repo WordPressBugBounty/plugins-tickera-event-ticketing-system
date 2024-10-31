@@ -181,40 +181,45 @@ if ( ! class_exists( 'Tickera\TC_Shortcodes' ) ) {
         /**
          * Render a link that will allow the customer to add ticket and its availability
          *
-         * @param $atts
+         * @param $attributes
          * @return string|void
          */
-        function ticket_cart_button( $atts ) {
+        function ticket_cart_button( $attributes ) {
+            return TC_Shortcodes::render_ticket_cart_button( $attributes );
+        }
 
-        global $tc;
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
+        /**
+         * Render the ticket_cart_button shortcode and attributes.
+         *
+         * @param $attributes
+         * @return string|void
+         *
+         * @since 3.5.4.6
+         */
+        public static function render_ticket_cart_button( $attributes ) {
 
-            extract( shortcode_atts(
-                    array(
-                        'id' => false,
-                        'title' => __( 'Add to Cart', 'tickera-event-ticketing-system' ),
-                        'show_price' => false,
-                        'price_position' => 'after',
-                        'price_wrapper' => 'span',
-                        'price_wrapper_class' => 'price',
-                        'soldout_message' => __( 'Tickets are sold out.', 'tickera-event-ticketing-system' ),
-                        'type' => 'cart',
-                        'open_method' => 'regular',
-                        'quantity' => false,
-                        'wrapper' => ''
-                    ), $atts
-                )
-            );
+            global $tc;
+            $tc_general_settings = get_option( 'tickera_general_setting', false );
 
-            $id = (int) $id;
-            $show_price = (bool) $show_price;
-            $quantity = (bool) $quantity;
+            $id = isset( $attributes[ 'id' ] ) ? (int) $attributes[ 'id' ] : false;
+            $title = isset( $attributes[ 'title' ] ) ? sanitize_text_field( $attributes[ 'title' ] ) : __( 'Add to Cart', 'tickera-event-ticketing-system' );
+            $show_price = isset( $attributes[ 'show_price' ] ) ? (bool) $attributes[ 'show_price' ] : false;
+            $price_position = isset( $attributes[ 'price_position' ] ) ? sanitize_text_field( $attributes[ 'price_position' ] ) : 'after';
+            $price_wrapper = isset( $attributes[ 'price_wrapper' ] ) ? sanitize_text_field( $attributes[ 'price_wrapper' ] ) : 'span';
+            $price_wrapper_class = isset( $attributes[ 'price_wrapper_class' ] ) ? sanitize_text_field( $attributes[ 'price_wrapper_class' ] ) : 'price';
+            $soldout_message = isset( $attributes[ 'soldout_message' ] ) ? sanitize_text_field( $attributes[ 'soldout_message' ] ) : __( 'Tickets are sold out.', 'tickera-event-ticketing-system' );
+            $type = isset( $attributes[ 'type' ] ) ? sanitize_text_field( $attributes[ 'type' ] ) : 'cart';
+            $open_method = isset( $attributes[ 'open_method' ] ) ? sanitize_text_field( $attributes[ 'open_method' ] ) : 'regular';
+            $quantity = isset( $attributes[ 'quantity' ] ) ? (bool) $attributes[ 'quantity' ] : false;
+            $wrapper = isset( $attributes[ 'wrapper' ] ) ? sanitize_text_field( $attributes[ 'wrapper' ] ) : '';
 
             $ticket_type = new \Tickera\TC_Ticket( $id, 'publish' );
             $event_id = get_post_meta( $id, 'event_name', true );
 
             if ( $id && \Tickera\TC_Ticket::is_sales_available( $id )
                 && isset( $ticket_type->details->ID ) && 'publish' == get_post_status( $event_id ) ) {
+
+                $nonce = wp_nonce_field( 'tickera_add_to_cart_ajax', 'nonce', true, false );
 
                 // Check if ticket still exists
                 $with_price_content = ( $show_price ) ? ' <span class="' . esc_attr( $price_wrapper_class ) . '">' . esc_html( do_shortcode( '[ticket_price id="' . (int) $id . '"]' ) ) . '</span> ' : '';
@@ -227,11 +232,11 @@ if ( ! class_exists( 'Tickera\TC_Shortcodes' ) ) {
                     if ( $ticket_type->is_sold_ticket_exceeded_limit_level() === false ) {
 
                         if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_settings[ 'force_login' ] && ! is_user_logged_in() ) {
-                            $button = '<form class="cart_form">' . ( 'before' == $price_position ? $with_price_content : '' ) . '<a href="' . esc_url( apply_filters( 'tc_force_login_url', wp_login_url( get_permalink() ), get_permalink() ) ) . '" class="add_to_cart_force_login" id="ticket_' . (int) $id . '"><span class="title">' . esc_html( $title ) . '</span></a>' . wp_kses_post( 'after' == $price_position ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
+                            $button = '<form class="cart_form">' . $nonce . ( 'before' == $price_position ? $with_price_content : '' ) . '<a href="' . esc_url( apply_filters( 'tc_force_login_url', wp_login_url( get_permalink() ), get_permalink() ) ) . '" class="add_to_cart_force_login" id="ticket_' . (int) $id . '"><span class="title">' . esc_html( $title ) . '</span></a>' . wp_kses_post( 'after' == $price_position ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
 
                         } else {
 
-                            $button = '<form class="cart_form">' . wp_kses(( true == $quantity ? tickera_quantity_selector( $id, true, false ) : '' ), wp_kses_allowed_html( 'tickera_quantity_selector' ) ) . ( ( 'before' == $price_position ) ? $with_price_content : '' ) . '<a href="#" class="add_to_cart" data-button-type="' . esc_attr( $type ) . '" data-open-method="' . esc_attr( $open_method ) . '" id="ticket_' . esc_attr( $id ) . '"><span class="title">' . esc_html( $title ) . '</span></a>' . ( ( 'after' == $price_position ) ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
+                            $button = '<form class="cart_form">' . $nonce . wp_kses(( true == $quantity ? tickera_quantity_selector( $id, true, false ) : '' ), wp_kses_allowed_html( 'tickera_quantity_selector' ) ) . ( ( 'before' == $price_position ) ? $with_price_content : '' ) . '<a href="#" class="add_to_cart" data-button-type="' . esc_attr( $type ) . '" data-open-method="' . esc_attr( $open_method ) . '" id="ticket_' . esc_attr( $id ) . '"><span class="title">' . esc_html( $title ) . '</span></a>' . ( ( 'after' == $price_position ) ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
                         }
 
                     } else {

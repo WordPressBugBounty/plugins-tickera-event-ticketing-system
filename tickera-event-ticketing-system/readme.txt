@@ -1,9 +1,9 @@
 === Tickera - WordPress Event Ticketing ===  
 Contributors: tickera
-Tags: event ticketing, e-tickets, event, wordpress events, , e-commerce,
+Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.6.2
-Stable tag: 3.5.4.5
+Stable tag: 3.5.4.6
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,11 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.4.6 31/10/2024 =
+* Wordfence security patch
+* Additional error handler for Stripe payment method.
+* Selecting "Courier" font in Ticket Template is being overridden by "Al Arabiya". [Fixed]
 
 = 3.5.4.5 28/10/2024=
 * New "tickera_track_added_to_cart" hook. Arguments: $ticket_id, $quantity, $cart_content.

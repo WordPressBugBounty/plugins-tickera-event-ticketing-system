@@ -281,18 +281,19 @@
                 current_form = $( this ).parents( 'form.cart_form' ),
                 parent_container = current_form.parent(),
                 ticket_id = current_form.find( '.ticket_id' ).val(),
-                qty = $( this ).closest( 'tr' ).find( '.tc_quantity_selector' ).val();
+                qty = $( this ).closest( 'tr' ).find( '.tc_quantity_selector' ).val(),
+                nonce = $( this ).closest( 'form.cart_form' ).find( '[name="nonce"]' ).val();
 
             qty = ( typeof qty === 'undefined' ) ? $( this ).closest( '.cart_form' ).find( '.tc_quantity_selector' ).val() : qty;
 
-            $.post( tc_ajax.ajaxUrl, { action: 'add_to_cart', ticket_id: ticket_id, tc_qty: qty, nonce: tc_ajax.ajaxNonce }, function( data ) {
+            $.post( tc_ajax.ajaxUrl, { action: 'add_to_cart', ticket_id: ticket_id, tc_qty: qty, nonce: nonce }, function( data ) {
 
                 if ( 'error' != data ) {
 
                     parent_container.html( data );
 
                     if ( $( '.tc_cart_contents' ).length > 0 ) {
-                        $.post( tc_ajax.ajaxUrl, { action: 'update_cart_widget', nonce: tc_ajax.ajaxNonce }, function( widget_data ) {
+                        $.post( tc_ajax.ajaxUrl, { action: 'update_cart_widget', nonce: nonce }, function( widget_data ) {
                             $( '.tc_cart_contents' ).html( widget_data );
                         } );
                     }

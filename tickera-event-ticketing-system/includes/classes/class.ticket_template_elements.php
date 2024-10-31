@@ -200,7 +200,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Template_Elements' ) ) {
                 <option value='cid0cs' <?php selected( $template_prefix_font, 'cid0cs', true ); ?>><?php esc_html_e( 'Arial Unicode MS (Simplified Chinese)', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='cid0jp' <?php selected( $template_prefix_font, 'cid0jp', true ); ?>><?php esc_html_e( 'Arial Unicode MS (Japanese)', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='cid0kr' <?php selected( $template_prefix_font, 'cid0kr', true ); ?>><?php esc_html_e( 'Arial Unicode MS (Korean)', 'tickera-event-ticketing-system' ); ?></option>
-                <option value='courier <?php selected( $template_prefix_font, 'courier', true ); ?>'><?php esc_html_e( 'Courier', 'tickera-event-ticketing-system' ); ?></option>
+                <option value='courier' <?php selected( $template_prefix_font, 'courier', true ); ?>'><?php esc_html_e( 'Courier', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='dejavusans' <?php selected( $template_prefix_font, 'dejavusans', true ); ?>><?php esc_html_e( 'DejaVu Sans', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='dejavusanscondensed' <?php selected( $template_prefix_font, 'dejavusanscondensed', true ); ?>><?php esc_html_e( 'DejaVu Sans Condensed', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='dejavusansextralight' <?php selected( $template_prefix_font, 'dejavusansextralight', true ); ?>><?php esc_html_e( 'DejaVu Sans ExtraLight', 'tickera-event-ticketing-system' ); ?></option>

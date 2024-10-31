@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.5
+ * Version: 3.5.4.6
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.5';
+        var $version = '3.5.4.6';
 
         var $title = 'Tickera';
 
@@ -2513,7 +2513,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
          * If set to skip add to cart, it will simply recreate the add to cart button.
          */
         function add_to_cart() {
-            if ( isset( $_POST['ticket_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( isset( $_POST['ticket_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tickera_add_to_cart_ajax' ) ) {
                 $ticket_id = (int) $_POST['ticket_id'];
                 $quantity = ( isset( $_POST['tc_qty'] ) && !empty( $_POST['tc_qty'] ) ? (int) $_POST['tc_qty'] : 1 );
                 $quantity_selector = ( isset( $_POST['tc_qty_selector'] ) ? (bool) $_POST['tc_qty_selector'] : false );
@@ -2541,7 +2541,14 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     ob_end_clean();
                 }
                 ob_start();
-                echo wp_kses( do_shortcode( '[ticket id="' . $ticket_id . '" type="' . $type . '" open_method="' . $method . '" title="' . $title . '" soldout_message="' . $soldout_message . '" quantity="' . $quantity_selector . '"]' ), wp_kses_allowed_html( 'tickera_add_to_cart' ) );
+                echo wp_kses( TC_Shortcodes::render_ticket_cart_button( [
+                    'id'              => $ticket_id,
+                    'type'            => $type,
+                    'open_method'     => $method,
+                    'title'           => $title,
+                    'soldout_message' => $soldout_message,
+                    'quantity'        => $quantity_selector,
+                ] ), wp_kses_allowed_html( 'tickera_add_to_cart' ) );
                 ob_end_flush();
                 exit;
             }
