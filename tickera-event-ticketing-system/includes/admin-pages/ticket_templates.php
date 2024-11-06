@@ -368,8 +368,11 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                 $template_elements->get_document_margins();
                 do_action( 'tc_template_elements_side_bar_before_background_image', $template_elements );
                 $template_elements->get_full_background_image();
+                do_action( 'tc_template_elements_side_bar_before_background_image_placement', $template_elements );
+                $template_elements->get_background_image_placement();
                 do_action( 'tc_template_document_settings', $template_elements ); ?>
                 <br/>
+                <br>
                 <?php submit_button( __( 'Save', 'tickera-event-ticketing-system' ), 'primary', 'add_new_template', false ); ?>
                 <div class="clear"></div>
             </div>

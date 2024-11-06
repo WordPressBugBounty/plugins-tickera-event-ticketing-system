@@ -5,14 +5,27 @@ namespace Tickera;
 class TCPDF_EXT extends TCPDF {
 
     /**
-     * Elements
+     * Background Image
+     *
      * Image: Image absolute url
      * Size: Orientation Size (e.g A4)
+     * Placement:
+     * 0 = All Pages        `Render background image across pdf pages`
+     * 1 = First Page       `Render background image only in first page`
      *
      * @var array
      */
     private $background;
 
+    /**
+     * Orientations
+     *
+     * Values:
+     * P = Portrait
+     * L = Landscape
+     *
+     * @var string
+     */
     private $orientation;
 
     function __construct( $orientation = 'P', $unit = 'mm', $format = 'A4', $unicode = true, $encoding = 'UTF-8', $diskcache = false, $pdfa = false, $background = [] ) {
@@ -23,7 +36,9 @@ class TCPDF_EXT extends TCPDF {
 
     function Header() {
 
-        if ( $this->background[ 'image' ] ) {
+        $placement = isset( $this->background[ 'placement' ] ) ? $this->background[ 'placement' ] : 0;
+
+        if ( $this->background[ 'image' ] && ( ! $placement || $this->page == $placement ) ) {
 
             // Set variable to eliminate overwrite in multi-page
             $background_size = $this->background[ 'size' ];

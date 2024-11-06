@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.6.2
-Stable tag: 3.5.4.6
+Stable tag: 3.5.4.7
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,10 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.4.7 06/11/2024 =
+* Additional error handler for Stripe payment method.
+* New "Background Placement" option in Tickera > Ticket Templates. The option allows to render background image either in first page or across all pdf pages.
 
 = 3.5.4.6 31/10/2024 =
 * Wordfence security patch

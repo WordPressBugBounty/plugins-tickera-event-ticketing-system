@@ -102,6 +102,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
             // Background Data
             $background = [
                 'image' => isset( $metas[ 'document_ticket_background_image' ] ) ? tickera_ticket_template_image_url( $metas[ 'document_ticket_background_image' ] ) : '',
+                'placement' => isset( $metas[ 'document_ticket_background_image_placement' ] ) ? $metas[ 'document_ticket_background_image_placement' ] : 0,
                 'size' => $tc_document_paper_size
             ];
 

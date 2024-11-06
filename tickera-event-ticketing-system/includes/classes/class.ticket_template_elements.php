@@ -117,10 +117,19 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Template_Elements' ) ) {
         }
 
         function get_full_background_image() { ?>
-            <label><?php esc_html_e( 'Ticket Background Image', 'tickera-event-ticketing-system' ); ?>
-                <input class="file_url" type="text" size="36" name="document_ticket_background_image_post_meta" value="<?php echo esc_attr( ( isset( $this->template_metas[ 'document_ticket_background_image' ] ) && $this->template_metas[ 'document_ticket_background_image' ] !== '' ) ? $this->template_metas[ 'document_ticket_background_image' ] : '' ); ?>"/>
-                <input class="file_url_button button-secondary" type="button" value="<?php esc_html_e( 'Browse', 'tickera-event-ticketing-system' ); ?>"/>
-            </label>
+            <label><?php esc_html_e( 'Ticket Background Image', 'tickera-event-ticketing-system' ); ?></label>
+            <input class="file_url" type="text" size="36" name="document_ticket_background_image_post_meta" value="<?php echo esc_attr( ( isset( $this->template_metas[ 'document_ticket_background_image' ] ) && $this->template_metas[ 'document_ticket_background_image' ] !== '' ) ? $this->template_metas[ 'document_ticket_background_image' ] : '' ); ?>"/>
+            <input class="file_url_button button-secondary" type="button" value="<?php esc_html_e( 'Browse', 'tickera-event-ticketing-system' ); ?>"/>
+            <?php
+        }
+
+        function get_background_image_placement() { ?>
+            <label><?php esc_html_e( 'Background Placement', 'tickera-event-ticketing-system' ); ?></label>
+            <select name="document_ticket_background_image_placement_post_meta">
+                <?php $background_image_placement = isset( $this->template_metas[ 'document_ticket_background_image_placement' ] ) ? $this->template_metas[ 'document_ticket_background_image_placement' ] : 'all_pages'; ?>
+                <option value="0" <?php selected( $background_image_placement, 'all_pages', true ); ?>><?php esc_html_e( 'All pages', 'tickera-event-ticketing-system' ); ?></option>
+                <option value="1" <?php selected( $background_image_placement, 'page_1', true ); ?>><?php esc_html_e( 'First page', 'tickera-event-ticketing-system' ); ?></option>
+            </select>
             <?php
         }
 

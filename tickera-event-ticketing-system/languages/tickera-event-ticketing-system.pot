@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Tickera\n"
-"POT-Creation-Date: 2024-10-31 08:48+0100\n"
+"POT-Creation-Date: 2024-11-06 09:54+0100\n"
 "PO-Revision-Date: 2024-10-31 08:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -195,7 +195,7 @@ msgstr ""
 #: includes/classes/class.discounts.php:637
 #: includes/classes/class.events.php:156 includes/classes/class.orders.php:377
 #: includes/classes/class.ticket_templates-new.php:448
-#: includes/classes/class.ticket_templates.php:346
+#: includes/classes/class.ticket_templates.php:347
 #: includes/classes/class.tickets.php:261
 #: includes/classes/class.tickets_instances.php:140
 msgid "Delete"
@@ -755,7 +755,7 @@ msgid " (%s)"
 msgstr ""
 
 #: includes/addons/better-ticket-types/index.php:456
-#: includes/admin-pages/ticket_templates.php:384
+#: includes/admin-pages/ticket_templates.php:387
 #: includes/admin-pages/ticket_templates_new.php:455
 #: includes/admin-pages/ticket_templates_new.php:534
 #: includes/general-functions.php:4188
@@ -967,157 +967,157 @@ msgid "Document font"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:86
-#: includes/classes/class.ticket_template_elements.php:198
+#: includes/classes/class.ticket_template_elements.php:207
 #: includes/classes/class.ticket_template_elements_new.php:236
 msgid "Al Arabiya"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:87
-#: includes/classes/class.ticket_template_elements.php:199
+#: includes/classes/class.ticket_template_elements.php:208
 #: includes/classes/class.ticket_template_elements_new.php:237
 msgid "Furat"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:88
-#: includes/classes/class.ticket_template_elements.php:200
+#: includes/classes/class.ticket_template_elements.php:209
 #: includes/classes/class.ticket_template_elements_new.php:238
 msgid "Arial Unicode MS (Simplified Chinese)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:89
-#: includes/classes/class.ticket_template_elements.php:201
+#: includes/classes/class.ticket_template_elements.php:210
 #: includes/classes/class.ticket_template_elements_new.php:239
 msgid "Arial Unicode MS (Japanese)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:90
-#: includes/classes/class.ticket_template_elements.php:202
+#: includes/classes/class.ticket_template_elements.php:211
 #: includes/classes/class.ticket_template_elements_new.php:240
 msgid "Arial Unicode MS (Korean)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:91
-#: includes/classes/class.ticket_template_elements.php:203
+#: includes/classes/class.ticket_template_elements.php:212
 #: includes/classes/class.ticket_template_elements_new.php:241
 msgid "Courier"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:92
-#: includes/classes/class.ticket_template_elements.php:204
+#: includes/classes/class.ticket_template_elements.php:213
 #: includes/classes/class.ticket_template_elements_new.php:242
 msgid "DejaVu Sans"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:93
-#: includes/classes/class.ticket_template_elements.php:205
+#: includes/classes/class.ticket_template_elements.php:214
 #: includes/classes/class.ticket_template_elements_new.php:243
 msgid "DejaVu Sans Condensed"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:94
-#: includes/classes/class.ticket_template_elements.php:206
+#: includes/classes/class.ticket_template_elements.php:215
 #: includes/classes/class.ticket_template_elements_new.php:244
 msgid "DejaVu Sans ExtraLight"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:95
-#: includes/classes/class.ticket_template_elements.php:207
+#: includes/classes/class.ticket_template_elements.php:216
 #: includes/classes/class.ticket_template_elements_new.php:245
 msgid "DejaVu Sans Mono"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:96
-#: includes/classes/class.ticket_template_elements.php:208
+#: includes/classes/class.ticket_template_elements.php:217
 #: includes/classes/class.ticket_template_elements_new.php:246
 msgid "DejaVu Serif"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:97
-#: includes/classes/class.ticket_template_elements.php:209
+#: includes/classes/class.ticket_template_elements.php:218
 #: includes/classes/class.ticket_template_elements_new.php:247
 msgid "DejaVu Serif Condensed"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:98
-#: includes/classes/class.ticket_template_elements.php:210
+#: includes/classes/class.ticket_template_elements.php:219
 #: includes/classes/class.ticket_template_elements_new.php:248
 msgid "FreeMono"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:99
-#: includes/classes/class.ticket_template_elements.php:211
+#: includes/classes/class.ticket_template_elements.php:220
 #: includes/classes/class.ticket_template_elements_new.php:249
 msgid "FreeSans"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:100
-#: includes/classes/class.ticket_template_elements.php:212
+#: includes/classes/class.ticket_template_elements.php:221
 #: includes/classes/class.ticket_template_elements_new.php:250
 msgid "FreeSerif"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:101
-#: includes/classes/class.ticket_template_elements.php:213
+#: includes/classes/class.ticket_template_elements.php:222
 #: includes/classes/class.ticket_template_elements_new.php:251
 msgid "Helvetica"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:102
-#: includes/classes/class.ticket_template_elements.php:214
+#: includes/classes/class.ticket_template_elements.php:223
 #: includes/classes/class.ticket_template_elements_new.php:252
 msgid "MyungJo Medium (Korean)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:103
-#: includes/classes/class.ticket_template_elements.php:215
+#: includes/classes/class.ticket_template_elements.php:224
 #: includes/classes/class.ticket_template_elements_new.php:253
 msgid "Kozuka Gothic Pro (Japanese Sans-Serif)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:104
-#: includes/classes/class.ticket_template_elements.php:216
+#: includes/classes/class.ticket_template_elements.php:225
 #: includes/classes/class.ticket_template_elements_new.php:254
 msgid "Kozuka Mincho Pro (Japanese Serif)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:105
-#: includes/classes/class.ticket_template_elements.php:217
+#: includes/classes/class.ticket_template_elements.php:226
 #: includes/classes/class.ticket_template_elements_new.php:255
 msgid "MSung Light (Traditional Chinese)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:106
-#: includes/classes/class.ticket_template_elements.php:218
+#: includes/classes/class.ticket_template_elements.php:227
 #: includes/classes/class.ticket_template_elements_new.php:256
 msgid "PDFA Courier"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:107
-#: includes/classes/class.ticket_template_elements.php:219
+#: includes/classes/class.ticket_template_elements.php:228
 #: includes/classes/class.ticket_template_elements_new.php:257
 msgid "PDFA Helvetica"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:108
-#: includes/classes/class.ticket_template_elements.php:220
+#: includes/classes/class.ticket_template_elements.php:229
 #: includes/classes/class.ticket_template_elements_new.php:258
 msgid "PDFA Times"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:109
-#: includes/classes/class.ticket_template_elements.php:221
+#: includes/classes/class.ticket_template_elements.php:230
 #: includes/classes/class.ticket_template_elements_new.php:259
 msgid "STSong Light (Simplified Chinese)"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:110
-#: includes/classes/class.ticket_template_elements.php:222
+#: includes/classes/class.ticket_template_elements.php:231
 #: includes/classes/class.ticket_template_elements_new.php:260
 msgid "Symbol"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:111
-#: includes/classes/class.ticket_template_elements.php:223
+#: includes/classes/class.ticket_template_elements.php:232
 #: includes/classes/class.ticket_template_elements_new.php:261
 msgid "Times-Roman"
 msgstr ""
@@ -1278,10 +1278,10 @@ msgstr ""
 #: includes/gateways/custom-offline-payments.php:246
 #: includes/gateways/paymill.php:257 includes/gateways/paypal-standard.php:362
 #: includes/gateways/paytabs.php:271 includes/gateways/payu-latam.php:191
-#: includes/gateways/stripe-elements-3ds.php:789
-#: includes/gateways/stripe-elements-3ds.php:800
-#: includes/gateways/stripe-elements-3ds.php:811
-#: includes/gateways/stripe-elements-3ds.php:823
+#: includes/gateways/stripe-elements-3ds.php:795
+#: includes/gateways/stripe-elements-3ds.php:806
+#: includes/gateways/stripe-elements-3ds.php:817
+#: includes/gateways/stripe-elements-3ds.php:829
 #: includes/gateways/stripe.php:491 includes/gateways/stripe.php:502
 #: includes/general-functions.php:1787 includes/general-functions.php:1844
 #: includes/general-functions.php:3972 includes/general-functions.php:4136
@@ -1306,10 +1306,10 @@ msgstr ""
 #: includes/gateways/custom-offline-payments.php:245
 #: includes/gateways/paymill.php:256 includes/gateways/paypal-standard.php:363
 #: includes/gateways/paytabs.php:271 includes/gateways/payu-latam.php:192
-#: includes/gateways/stripe-elements-3ds.php:790
-#: includes/gateways/stripe-elements-3ds.php:801
-#: includes/gateways/stripe-elements-3ds.php:812
-#: includes/gateways/stripe-elements-3ds.php:824
+#: includes/gateways/stripe-elements-3ds.php:796
+#: includes/gateways/stripe-elements-3ds.php:807
+#: includes/gateways/stripe-elements-3ds.php:818
+#: includes/gateways/stripe-elements-3ds.php:830
 #: includes/gateways/stripe.php:492 includes/gateways/stripe.php:503
 #: includes/general-functions.php:1790 includes/general-functions.php:1847
 #: includes/general-functions.php:3973 includes/general-functions.php:4137
@@ -1606,7 +1606,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/event_date/tc_event_date_block_editor.js:80
 #: includes/classes/class.ticket_templates-new.php:425
-#: includes/classes/class.ticket_templates.php:323
+#: includes/classes/class.ticket_templates.php:324
 #: includes/internal-hooks.php:115
 #: includes/templates/shortcode-order-history-contents.php:26
 msgid "Date"
@@ -1668,8 +1668,8 @@ msgstr ""
 #: includes/addons/gutenberg/assets/event_tickets_left/tc_event_tickets_left_block_editor.js:80
 #: includes/addons/gutenberg/assets/tickets_left/tc_tickets_left_block_editor.js:79
 #: includes/classes/class.ticket_template_elements.php:114
-#: includes/classes/class.ticket_template_elements.php:130
-#: includes/classes/class.ticket_template_elements.php:140
+#: includes/classes/class.ticket_template_elements.php:139
+#: includes/classes/class.ticket_template_elements.php:149
 #: includes/classes/class.ticket_template_elements_new.php:131
 #: includes/classes/class.ticket_template_elements_new.php:153
 #: includes/classes/class.ticket_template_elements_new.php:163
@@ -2485,7 +2485,7 @@ msgstr ""
 #: includes/classes/class.discounts.php:636
 #: includes/classes/class.events.php:155
 #: includes/classes/class.ticket_templates-new.php:447
-#: includes/classes/class.ticket_templates.php:345
+#: includes/classes/class.ticket_templates.php:346
 #: includes/classes/class.tickets.php:260 tickera.php:4773 tickera.php:4814
 #: tickera.php:4854 tickera.php:4877 tickera.php:4917 tickera.php:4994
 msgid "Edit"
@@ -2658,7 +2658,7 @@ msgstr ""
 #: includes/gateways/paypal-standard.php:353
 #: includes/gateways/payu-latam.php:183 includes/gateways/payumoney.php:327
 #: includes/gateways/pin.php:285 includes/gateways/simplify.php:252
-#: includes/gateways/stripe-elements-3ds.php:779
+#: includes/gateways/stripe-elements-3ds.php:785
 #: includes/gateways/stripe.php:481 includes/gateways/voguepay.php:118
 msgid "Currency"
 msgstr ""
@@ -2892,7 +2892,7 @@ msgid "Row"
 msgstr ""
 
 #: includes/admin-pages/ticket_templates.php:356
-#: includes/admin-pages/ticket_templates.php:373
+#: includes/admin-pages/ticket_templates.php:376
 #: includes/admin-pages/ticket_templates_new.php:536
 msgid "Save"
 msgstr ""
@@ -2901,13 +2901,13 @@ msgstr ""
 msgid "Ticket PDF Settings"
 msgstr ""
 
-#: includes/admin-pages/ticket_templates.php:379
+#: includes/admin-pages/ticket_templates.php:382
 #: includes/admin-pages/ticket_templates_new.php:452
 msgid ""
 "NOTE: After saving, you will have an option to see a preview of the ticket."
 msgstr ""
 
-#: includes/admin-pages/ticket_templates.php:381
+#: includes/admin-pages/ticket_templates.php:384
 #: includes/admin-pages/ticket_templates_new.php:454
 msgid ""
 "NOTE: Save changes first, then check the preview.</br></br><strong>Important:"
@@ -2988,7 +2988,7 @@ msgstr ""
 #: includes/classes/class.discounts.php:630
 #: includes/classes/class.events.php:149 includes/classes/class.orders.php:214
 #: includes/classes/class.ticket_templates-new.php:441
-#: includes/classes/class.ticket_templates.php:339
+#: includes/classes/class.ticket_templates.php:340
 #: includes/classes/class.tickets.php:31
 msgid "ID"
 msgstr ""
@@ -4319,15 +4319,15 @@ msgid "Document Margins"
 msgstr ""
 
 #: includes/classes/class.ticket_template_elements.php:112
-#: includes/classes/class.ticket_template_elements.php:149
+#: includes/classes/class.ticket_template_elements.php:158
 #: includes/classes/class.ticket_template_elements_new.php:125
 #: includes/classes/class.ticket_template_elements_new.php:172
 msgid "Top"
 msgstr ""
 
 #: includes/classes/class.ticket_template_elements.php:113
-#: includes/classes/class.ticket_template_elements.php:131
-#: includes/classes/class.ticket_template_elements.php:141
+#: includes/classes/class.ticket_template_elements.php:140
+#: includes/classes/class.ticket_template_elements.php:150
 #: includes/classes/class.ticket_template_elements_new.php:128
 #: includes/classes/class.ticket_template_elements_new.php:154
 #: includes/classes/class.ticket_template_elements_new.php:164
@@ -4339,110 +4339,122 @@ msgstr ""
 msgid "Ticket Background Image"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:128
+#: includes/classes/class.ticket_template_elements.php:127
+msgid "Background Placement"
+msgstr ""
+
+#: includes/classes/class.ticket_template_elements.php:130
+msgid "All pages"
+msgstr ""
+
+#: includes/classes/class.ticket_template_elements.php:131
+msgid "First page"
+msgstr ""
+
+#: includes/classes/class.ticket_template_elements.php:137
 #: includes/classes/class.ticket_template_elements_new.php:150
 msgid "Text Alignment"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:132
-#: includes/classes/class.ticket_template_elements.php:142
+#: includes/classes/class.ticket_template_elements.php:141
+#: includes/classes/class.ticket_template_elements.php:151
 #: includes/classes/class.ticket_template_elements_new.php:155
 #: includes/classes/class.ticket_template_elements_new.php:165
 msgid "Center"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:138
+#: includes/classes/class.ticket_template_elements.php:147
 #: includes/classes/class.ticket_template_elements_new.php:161
 msgid "Cell Alignment"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:148
+#: includes/classes/class.ticket_template_elements.php:157
 #: includes/classes/class.ticket_template_elements_new.php:171
 msgid "Element Break Lines"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:150
+#: includes/classes/class.ticket_template_elements.php:159
 #: includes/classes/class.ticket_template_elements_new.php:176
 msgid "Bottom"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:156
+#: includes/classes/class.ticket_template_elements.php:165
 #: includes/classes/class.ticket_template_elements_new.php:185
 msgid "Font Style"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:159
+#: includes/classes/class.ticket_template_elements.php:168
 #: includes/classes/class.ticket_template_elements_new.php:189
 msgid "Regular"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:160
+#: includes/classes/class.ticket_template_elements.php:169
 #: includes/classes/class.ticket_template_elements_new.php:190
 msgid "Bold"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:161
+#: includes/classes/class.ticket_template_elements.php:170
 #: includes/classes/class.ticket_template_elements_new.php:191
 msgid "Bold + Italic"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:162
+#: includes/classes/class.ticket_template_elements.php:171
 #: includes/classes/class.ticket_template_elements_new.php:192
 msgid "Bold + Underline"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:163
+#: includes/classes/class.ticket_template_elements.php:172
 #: includes/classes/class.ticket_template_elements_new.php:193
 msgid "Bold + Underline + Italic"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:164
+#: includes/classes/class.ticket_template_elements.php:173
 #: includes/classes/class.ticket_template_elements_new.php:194
 msgid "Italic"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:165
+#: includes/classes/class.ticket_template_elements.php:174
 #: includes/classes/class.ticket_template_elements_new.php:195
 msgid "Italic + Underline"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:166
+#: includes/classes/class.ticket_template_elements.php:175
 #: includes/classes/class.ticket_template_elements_new.php:196
 msgid "Underline"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:186
+#: includes/classes/class.ticket_template_elements.php:195
 #: includes/classes/class.ticket_template_elements_new.php:224
 #: includes/general-functions.php:2565
 msgid "Montserrat"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:187
+#: includes/classes/class.ticket_template_elements.php:196
 #: includes/classes/class.ticket_template_elements_new.php:225
 msgid "Oswald"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:188
+#: includes/classes/class.ticket_template_elements.php:197
 #: includes/classes/class.ticket_template_elements_new.php:226
 msgid "Indie Flower"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:189
+#: includes/classes/class.ticket_template_elements.php:198
 #: includes/classes/class.ticket_template_elements_new.php:227
 msgid "Faster One"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:195
+#: includes/classes/class.ticket_template_elements.php:204
 #: includes/classes/class.ticket_template_elements_new.php:233
 msgid "Font"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:224
+#: includes/classes/class.ticket_template_elements.php:233
 #: includes/classes/class.ticket_template_elements_new.php:262
 msgid "Sarabun (Thai)"
 msgstr ""
 
-#: includes/classes/class.ticket_template_elements.php:236
+#: includes/classes/class.ticket_template_elements.php:245
 #: includes/classes/class.ticket_template_elements_new.php:274
 msgid "Font Size"
 msgstr ""
@@ -4458,12 +4470,12 @@ msgid "preview"
 msgstr ""
 
 #: includes/classes/class.ticket_templates-new.php:417
-#: includes/classes/class.ticket_templates.php:315
+#: includes/classes/class.ticket_templates.php:316
 msgid "Template Name"
 msgstr ""
 
 #: includes/classes/class.ticket_templates-new.php:452
-#: includes/classes/class.ticket_templates.php:350
+#: includes/classes/class.ticket_templates.php:351
 msgid "Action"
 msgstr ""
 
@@ -5223,7 +5235,7 @@ msgstr ""
 #: includes/gateways/paypal-standard.php:325 includes/gateways/paytabs.php:253
 #: includes/gateways/payu-latam.php:146 includes/gateways/payumoney.php:303
 #: includes/gateways/pin.php:259 includes/gateways/simplify.php:236
-#: includes/gateways/stripe-elements-3ds.php:750
+#: includes/gateways/stripe-elements-3ds.php:756
 #: includes/gateways/stripe.php:446 includes/gateways/voguepay.php:106
 #, php-format
 msgid "%s Settings"
@@ -5243,7 +5255,7 @@ msgstr ""
 #: includes/gateways/paypal-pro.php:263
 #: includes/gateways/paypal-standard.php:333
 #: includes/gateways/payu-latam.php:153 includes/gateways/payumoney.php:310
-#: includes/gateways/pin.php:267 includes/gateways/stripe-elements-3ds.php:758
+#: includes/gateways/pin.php:267 includes/gateways/stripe-elements-3ds.php:764
 #: includes/gateways/stripe.php:453
 msgid "Mode"
 msgstr ""
@@ -5256,7 +5268,7 @@ msgstr ""
 #: includes/gateways/paypal-pro.php:266
 #: includes/gateways/paypal-standard.php:336
 #: includes/gateways/payu-latam.php:156 includes/gateways/payumoney.php:313
-#: includes/gateways/pin.php:270 includes/gateways/stripe-elements-3ds.php:761
+#: includes/gateways/pin.php:270 includes/gateways/stripe-elements-3ds.php:767
 #: includes/gateways/stripe.php:456
 msgid "Sandbox / Test"
 msgstr ""
@@ -5267,7 +5279,7 @@ msgstr ""
 #: includes/gateways/netbanx.php:164 includes/gateways/paypal-pro.php:267
 #: includes/gateways/paypal-standard.php:337
 #: includes/gateways/payu-latam.php:157 includes/gateways/payumoney.php:314
-#: includes/gateways/pin.php:271 includes/gateways/stripe-elements-3ds.php:762
+#: includes/gateways/pin.php:271 includes/gateways/stripe-elements-3ds.php:768
 #: includes/gateways/stripe.php:457
 msgid "Live"
 msgstr ""
@@ -5408,7 +5420,7 @@ msgstr ""
 #: includes/gateways/braintree.php:323 includes/gateways/ipay88.php:74
 #: includes/gateways/paymill.php:40 includes/gateways/paypal-pro.php:44
 #: includes/gateways/paypal-pro.php:230
-#: includes/gateways/stripe-elements-3ds.php:450
+#: includes/gateways/stripe-elements-3ds.php:456
 msgid "Credit Card"
 msgstr ""
 
@@ -8367,7 +8379,7 @@ msgid "Server key"
 msgstr ""
 
 #: includes/gateways/paytabs.php:269
-#: includes/gateways/stripe-elements-3ds.php:797
+#: includes/gateways/stripe-elements-3ds.php:803
 msgid "Capture payments manually"
 msgstr ""
 
@@ -8541,7 +8553,7 @@ msgid ""
 "deposited to any Australian bank account, no merchant account required."
 msgstr ""
 
-#: includes/gateways/pin.php:276 includes/gateways/stripe-elements-3ds.php:773
+#: includes/gateways/pin.php:276 includes/gateways/stripe-elements-3ds.php:779
 #: includes/gateways/stripe.php:468
 msgid "Secret API key"
 msgstr ""
@@ -8554,7 +8566,7 @@ msgid ""
 "Live."
 msgstr ""
 
-#: includes/gateways/pin.php:281 includes/gateways/stripe-elements-3ds.php:768
+#: includes/gateways/pin.php:281 includes/gateways/stripe-elements-3ds.php:774
 #: includes/gateways/stripe.php:463
 msgid "Publishable API key"
 msgstr ""
@@ -8633,7 +8645,7 @@ msgstr ""
 
 #: includes/gateways/stripe-elements-3ds.php:81
 #: includes/gateways/stripe-elements-3ds.php:82
-#: includes/gateways/stripe-elements-3ds.php:863
+#: includes/gateways/stripe-elements-3ds.php:869
 msgid "Stripe Elements 3D Secure"
 msgstr ""
 
@@ -8961,7 +8973,7 @@ msgid "Submit Payment"
 msgstr ""
 
 #. translators: 1: Either /test or ot 2: Payment Intent
-#: includes/gateways/stripe-elements-3ds.php:462
+#: includes/gateways/stripe-elements-3ds.php:468
 #: includes/gateways/stripe.php:380
 #, php-format
 msgid ""
@@ -8969,45 +8981,45 @@ msgid ""
 "\">View Payment Intent</a>"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:534
+#: includes/gateways/stripe-elements-3ds.php:540
 msgid "Invalid transaction: Nonce did not matched."
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:751
+#: includes/gateways/stripe-elements-3ds.php:757
 #: includes/gateways/stripe.php:447
 msgid ""
 "Sell your tickets via Stripe and accept Visa, MasterCard, American Express, "
 "Discover, JCB, and Diners Club cards"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:775
+#: includes/gateways/stripe-elements-3ds.php:781
 #: includes/gateways/stripe.php:470
 msgid ""
 "You must log in to your Stripe merchant account to <a target=\"_blank\" href="
 "\"https://manage.stripe.com/#account/apikeys\">get your API credentials</a>."
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:786
+#: includes/gateways/stripe-elements-3ds.php:792
 msgid "Send Receipt"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:793
+#: includes/gateways/stripe-elements-3ds.php:799
 #: includes/gateways/stripe.php:495
 msgid ""
 "Allow Stripe to automatically send a receipt to the customer after their "
 "payment has been made."
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:804
+#: includes/gateways/stripe-elements-3ds.php:810
 msgid "Manually capture payments in Stripe dashboard."
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:808
+#: includes/gateways/stripe-elements-3ds.php:814
 #: includes/gateways/stripe.php:499
 msgid "Enable webhook"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:815
+#: includes/gateways/stripe-elements-3ds.php:821
 #: includes/gateways/stripe.php:506
 msgid ""
 "Allow Stripe webhook to stay connected with your website. This will "
@@ -9015,11 +9027,11 @@ msgid ""
 "status"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:820
+#: includes/gateways/stripe-elements-3ds.php:826
 msgid "Enable Curl Persistent Connection"
 msgstr ""
 
-#: includes/gateways/stripe-elements-3ds.php:827
+#: includes/gateways/stripe-elements-3ds.php:833
 msgid ""
 "Allow your site to persistently connect to Stripe to maximize checkout "
 "performance."
