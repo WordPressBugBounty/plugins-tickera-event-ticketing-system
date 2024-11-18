@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.7
+ * Version: 3.5.4.8
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.7';
+        var $version = '3.5.4.8';
 
         var $title = 'Tickera';
 
@@ -151,7 +151,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 2
             );
             // Localize the plugin
-            add_action( 'plugins_loaded', array($this, 'localization'), 8 );
+            add_action( 'init', array($this, 'localization'), 8 );
             // Payment gateway returns
             add_action( 'template_redirect', array($this, 'handle_gateway_returns'), 1 );
             // Add additional rewrite rules
@@ -2150,21 +2150,13 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     $plugin_name = ( $gateway->plugin_name == 'checkout' ? '2checkout' : $gateway->plugin_name );
                     $active_gateways = ( isset( $settings['gateways']['active'] ) ? $settings['gateways']['active'] : [] );
                     $gateway_show_priority = ( isset( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) && is_numeric( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) ? $settings['gateways'][$plugin_name]['gateway_show_priority'] : '30' );
-                    if ( $active_gateways ) {
-                        if ( in_array( $code, $active_gateways ) ) {
-                            $visible = true;
-                            $active_gateways_num++;
-                        } else {
-                            $visible = false;
-                        }
-                    } elseif ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+                    if ( in_array( $code, $active_gateways ) || isset( $gateway->permanently_active ) && $gateway->permanently_active || !$active_gateways && isset( $gateway->default_status ) && $gateway->default_status ) {
                         $visible = true;
                         $active_gateways_num++;
                     } else {
                         $visible = false;
                     }
-                    $active_plugins = ( isset( $settings['gateways']['active'] ) ? $settings['gateways']['active'] : [] );
-                    if ( 'custom_offline_payments' == $plugin_name && in_array( $code, $active_plugins ) ) {
+                    if ( 'custom_offline_payments' == $plugin_name && in_array( $code, $active_gateways ) ) {
                         $show_gateway_admin = ( 'custom_offline_payments' == $plugin_name ? $settings['gateways']['custom_offline_payments']['admin_gateway'] : '' );
                         if ( apply_filters( 'tc_change_user_role_offline_payment', current_user_can( 'administrator' ) ) && 'yes' == $show_gateway_admin ) {
                             $visible = true;
@@ -2306,12 +2298,12 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
                     $gateway = ( is_array( $plugin ) ? new $plugin[0]() : new $plugin() );
                     if ( isset( $settings['gateways']['active'] ) ) {
-                        if ( in_array( $code, $settings['gateways']['active'] ) || isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+                        if ( in_array( $code, $settings['gateways']['active'] ) || isset( $gateway->permanently_active ) && $gateway->permanently_active ) {
                             if ( $gateway->force_ssl ) {
                                 $gateway_force_ssl = true;
                             }
                         }
-                    } elseif ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+                    } elseif ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) {
                         if ( $gateway->force_ssl ) {
                             $gateway_force_ssl = true;
                         }
@@ -3231,13 +3223,10 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         }
 
         /**
-         * Plugin localization function
+         * Load up the localization file if we're using WordPress in a different language
+         * Place it in this plugin's "languages" folder and name it "tickera-event-ticketing-system-[value in wp-config].mo"
          */
         function localization() {
-            /*
-             * Load up the localization file if we're using WordPress in a different language
-             * Place it in this plugin's "languages" folder and name it "tc-[value in wp-config].mo"
-             */
             if ( $this->location == 'mu-plugins' ) {
                 load_muplugin_textdomain( 'tickera-event-ticketing-system', 'languages/' );
             } elseif ( $this->location == 'subfolder-plugins' ) {
@@ -3463,7 +3452,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
 
         function gateway_is_network_allowed( $gateway ) {
             $settings = get_site_option( 'tickera_network_settings', '' );
-            if ( in_array( $gateway, $this->get_network_setting( 'gateways->active', array() ) ) || $gateway == 'free_orders' ) {
+            if ( in_array( $gateway, $this->get_network_setting( 'gateways->active', [] ) ) || $gateway == 'free_orders' ) {
                 return true;
             } else {
                 return ( '' == $settings ? true : false );

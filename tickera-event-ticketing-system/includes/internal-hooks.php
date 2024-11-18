@@ -334,7 +334,7 @@ if ( ! function_exists( 'tickera_total_fees_value_modify' ) ) {
 
     function tickera_total_fees_value_modify( $total_fees, $use_global_fees, $global_fee_scope, $ordered_count, $global_fee_value, $ticket_price, $global_fee_type ) {
         if ( $use_global_fees == 'yes' && $global_fee_scope == 'order' && $global_fee_type == 'fixed' ) {
-            $total_fees = $global_fee_value;
+            $total_fees = (float) $global_fee_value;
         }
         return $total_fees;
     }

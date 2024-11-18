@@ -73,8 +73,8 @@ if ( ! class_exists( 'Tickera\TC_Shortcode_Builder' ) ) {
             <form id="tc-shortcode-builder">
                 <div class="tc-title-wrap">
                     <h3><?php esc_html_e( 'Add Shortcode', 'tickera-event-ticketing-system' ); ?></h3>
-                    <div class="tc-close"><!-- Being used at builders handler --></div>
-                </div><!-- .tc-title-wrap -->
+                    <div class="tc-close"></div>
+                </div>
                 <div class="tc-shortcode-wrap">
                     <select name="shortcode-select" id="tc-shortcode-select">
                         <?php foreach ( $shortcodes as $shortcode => $label ) : ?>
@@ -100,7 +100,7 @@ if ( ! class_exists( 'Tickera\TC_Shortcode_Builder' ) ) {
                     <p class="submit">
                         <input class="button-primary" type="submit" value="<?php esc_html_e( 'Insert Shortcode', 'tickera-event-ticketing-system' ); ?>"/>
                     </p>
-                </div><!-- .tc-shortcode-wrap -->
+                </div>
             </form>
             </div><?php
             return ob_get_clean();

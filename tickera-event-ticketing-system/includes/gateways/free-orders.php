@@ -19,7 +19,7 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Free_Orders' ) ) {
         var $admin_img_url = '';
         var $force_ssl = false;
         var $ipn_url;
-        var $automatically_activated = true;
+        var $permanently_active = true;
         var $skip_payment_screen = true;
 
         /**

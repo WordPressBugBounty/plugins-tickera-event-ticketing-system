@@ -39,7 +39,7 @@ if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
                                 $gateway = new $plugin[ 0 ]; ?>
                                 <div class="image-check-wrap">
                                     <label>
-                                        <input type="checkbox" class="tc_active_gateways" name="tc[gateways][active][]" value="<?php echo esc_attr( $code ); ?>"<?php echo esc_attr( in_array( $code, $this->get_network_setting( 'gateways->active', array() ) ) ) ? ' checked="checked"' : ( ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) ? ' checked="checked"' : '' ); ?> <?php echo esc_attr( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) ? 'disabled' : ''; ?> />
+                                        <input type="checkbox" class="tc_active_gateways" name="tc[gateways][active][]" value="<?php echo esc_attr( $code ); ?>"<?php echo esc_attr( in_array( $code, $this->get_network_setting( 'gateways->active', array() ) ) ) ? ' checked="checked"' : ( ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? ' checked="checked"' : '' ); ?> <?php echo esc_attr( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? 'disabled' : ''; ?> />
                                         <div class="check-image check-image-<?php echo esc_attr( in_array( $code, $this->get_network_setting( 'gateways->active', array() ) ) ) ?>">
                                             <img src="<?php echo esc_attr( $gateway->admin_img_url ); ?>"/>
                                         </div>
@@ -55,12 +55,12 @@ if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
         <?php foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
             $gateway = new $plugin[ 0 ];
             if ( isset( $settings[ 'gateways' ][ 'active' ] ) ) {
-                if ( in_array( $code, $settings[ 'gateways' ][ 'active' ] ) || ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) ) {
+                if ( in_array( $code, $settings[ 'gateways' ][ 'active' ] ) || ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ) {
                     $visible = true;
                 } else {
                     $visible = false;
                 }
-            } else if ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+            } else if ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) {
                 $visible = true;
             } else {
                 $visible = false;

@@ -1,6 +1,12 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.4.8 18/11/2024 =
+* Unable to save "Background Placement" option in Tickera > Ticket Templates.
+* Unable to render "Google Map" Ticket Template Element. [Fixed]
+* Set offline payments active as default.
+* Load up localization file on init hook
+
 = 3.5.4.7 06/11/2024 =
 * Additional error handler for Stripe payment method.
 * New "Background Placement" option in Tickera > Ticket Templates. The option allows to render background image either in first page or across all pdf pages.

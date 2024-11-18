@@ -103,7 +103,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'fieldset'      => [],
                 'legend'        => $default_attributes,
                 'form'          => array_merge( $default_attributes, $default_form_attributes ),
-                'img'           => array_merge( $default_attributes, [ 'decoding' => [], 'alt' => [], 'title' => [], 'src' => [] ] )
+                'img'           => array_merge( $default_attributes, [ 'decoding' => [], 'alt' => [], 'title' => [], 'src' => [], 'width' => [] ] )
             ];
 
             switch( $context ) {

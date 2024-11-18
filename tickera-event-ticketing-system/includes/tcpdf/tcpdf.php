@@ -16473,6 +16473,8 @@ class TCPDF {
         $html = preg_replace('/<li><br([^\>]*)>/', '<li> <br\\1>', $html);
         // fix first image tag alignment
         $html = preg_replace('/^<img/', '<span style="font-size:0"><br /></span> <img', $html, 1);
+        // render html entities escaped from wp_kses
+        $html = str_replace( '&#038;', '&', $html );
         // pattern for generic tag
         $tagpattern = '/(<[^>]+>)/';
         // explodes the string

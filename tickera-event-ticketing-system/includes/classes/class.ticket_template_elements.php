@@ -126,9 +126,9 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Template_Elements' ) ) {
         function get_background_image_placement() { ?>
             <label><?php esc_html_e( 'Background Placement', 'tickera-event-ticketing-system' ); ?></label>
             <select name="document_ticket_background_image_placement_post_meta">
-                <?php $background_image_placement = isset( $this->template_metas[ 'document_ticket_background_image_placement' ] ) ? $this->template_metas[ 'document_ticket_background_image_placement' ] : 'all_pages'; ?>
-                <option value="0" <?php selected( $background_image_placement, 'all_pages', true ); ?>><?php esc_html_e( 'All pages', 'tickera-event-ticketing-system' ); ?></option>
-                <option value="1" <?php selected( $background_image_placement, 'page_1', true ); ?>><?php esc_html_e( 'First page', 'tickera-event-ticketing-system' ); ?></option>
+                <?php $background_image_placement = isset( $this->template_metas[ 'document_ticket_background_image_placement' ] ) ? $this->template_metas[ 'document_ticket_background_image_placement' ] : 0; ?>
+                <option value="0" <?php selected( $background_image_placement, 0, true ); ?>><?php esc_html_e( 'All pages', 'tickera-event-ticketing-system' ); ?></option>
+                <option value="1" <?php selected( $background_image_placement, 1, true ); ?>><?php esc_html_e( 'First page', 'tickera-event-ticketing-system' ); ?></option>
             </select>
             <?php
         }

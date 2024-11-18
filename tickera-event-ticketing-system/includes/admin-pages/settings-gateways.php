@@ -55,13 +55,15 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
                                         $checked = '';
                                         $input_class = '';
                                         $gateway = new $plugin[ 0 ];
+                                        $active_gateways = $this->get_setting( 'gateways->active', [] );
 
-                                        if ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+                                        if ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) {
                                             $checked = ' checked="checked" readonly';
                                             $input_class = ' auto';
 
-                                        } elseif ( in_array( $code, $this->get_setting( 'gateways->active', [] ) ) ) {
+                                        } elseif ( in_array( $code, $active_gateways ) || ( ! $active_gateways && isset( $gateway->default_status ) && $gateway->default_status ) ) {
                                             $checked = ' checked="checked"';
+
                                         } ?>
                                         <div class="image-check-wrap<?php echo esc_attr( $input_class ); ?>">
                                             <label>
@@ -82,19 +84,17 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
                 </div>
             </div>
             <?php foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+
                 if ( $tc->gateway_is_network_allowed( $code ) ) {
+
                     $gateway = new $plugin[ 0 ];
                     $active_gateways = isset( $settings[ 'gateways' ][ 'active' ] ) ? $settings[ 'gateways' ][ 'active' ] : [];
 
-                    if ( $active_gateways ) {
-                        if ( in_array( $code, $active_gateways ) || ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) ) {
-                            $visible = true;
-
-                        } else {
-                            $visible = false;
-                        }
-
-                    } elseif ( isset( $gateway->automatically_activated ) && $gateway->automatically_activated ) {
+                    if (
+                        in_array( $code, $active_gateways )
+                        || ( isset( $gateway->permanently_active ) && $gateway->permanently_active )
+                        || ( ! $active_gateways && isset( $gateway->default_status ) && $gateway->default_status )
+                    ) {
                         $visible = true;
 
                     } else {

@@ -19,8 +19,15 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
         var $admin_img_url = '';
         var $force_ssl = false;
         var $ipn_url;
-        var $automatically_activated = false;
         var $skip_payment_screen = false;
+        var $permanently_active = false;
+
+        /**
+         * Set initial status.
+         * true as active
+         * @var bool
+         */
+        var $default_status = true;
 
         /**
          * Support for older payment gateway API

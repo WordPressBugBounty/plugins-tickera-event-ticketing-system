@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.6.2
-Stable tag: 3.5.4.7
+Tested up to: 6.7
+Stable tag: 3.5.4.8
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,12 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.4.8 18/11/2024 =
+* Unable to save "Background Placement" option in Tickera > Ticket Templates.
+* Unable to render "Google Map" Ticket Template Element. [Fixed]
+* Set offline payments active as default.
+* Load up localization file on init hook
 
 = 3.5.4.7 06/11/2024 =
 * Additional error handler for Stripe payment method.

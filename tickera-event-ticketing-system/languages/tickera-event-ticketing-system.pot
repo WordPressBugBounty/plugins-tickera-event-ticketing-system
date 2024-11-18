@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Tickera\n"
-"POT-Creation-Date: 2024-11-06 09:54+0100\n"
+"POT-Creation-Date: 2024-11-18 11:52+0100\n"
 "PO-Revision-Date: 2024-10-31 08:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -42,10 +42,12 @@ msgstr ""
 
 #. translators: %s: Barcode Reader label
 #. translators: %s: Label of a radio button.
+#. translators: %s: Google Map API response.
 #. translators: %s: Tickera submenu title
 #: includes/addons/barcode-reader/index.php:98
 #: includes/classes/class.fields.php:318 includes/general-functions.php:1814
-#: tickera.php:3419 tickera.php:3432
+#: includes/ticket-elements/google_map_element.php:69 tickera.php:3412
+#: tickera.php:3425
 #, php-format
 msgid "%s"
 msgstr ""
@@ -792,8 +794,8 @@ msgid ""
 msgstr ""
 
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:73
-#: includes/classes/class.events.php:16 tickera.php:3350 tickera.php:4768
-#: tickera.php:4769
+#: includes/classes/class.events.php:16 tickera.php:3343 tickera.php:4759
+#: tickera.php:4760
 msgid "Events"
 msgstr ""
 
@@ -1274,8 +1276,8 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:231
 #: includes/classes/class.shortcode_builder.php:277
 #: includes/gateways/authorizenet-aim.php:456
-#: includes/gateways/custom-offline-payments.php:221
-#: includes/gateways/custom-offline-payments.php:246
+#: includes/gateways/custom-offline-payments.php:228
+#: includes/gateways/custom-offline-payments.php:253
 #: includes/gateways/paymill.php:257 includes/gateways/paypal-standard.php:362
 #: includes/gateways/paytabs.php:271 includes/gateways/payu-latam.php:191
 #: includes/gateways/stripe-elements-3ds.php:795
@@ -1302,8 +1304,8 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:232
 #: includes/classes/class.shortcode_builder.php:276
 #: includes/gateways/authorizenet-aim.php:457
-#: includes/gateways/custom-offline-payments.php:220
-#: includes/gateways/custom-offline-payments.php:245
+#: includes/gateways/custom-offline-payments.php:227
+#: includes/gateways/custom-offline-payments.php:252
 #: includes/gateways/paymill.php:256 includes/gateways/paypal-standard.php:363
 #: includes/gateways/paytabs.php:271 includes/gateways/payu-latam.php:192
 #: includes/gateways/stripe-elements-3ds.php:796
@@ -1387,7 +1389,7 @@ msgstr ""
 #: includes/classes/class.shortcodes.php:228
 #: includes/classes/class.visual_composer_shortcodes.php:18
 #: includes/widgets/cart-widget.php:20 tickera.php:1915 tickera.php:1942
-#: tickera.php:2412
+#: tickera.php:2405
 msgid "Cart"
 msgstr ""
 
@@ -1399,7 +1401,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:143
 #: includes/classes/class.shortcode_builder.php:269
 #: includes/classes/class.shortcodes.php:72
-#: includes/classes/class.shortcodes.php:210 tickera.php:2699
+#: includes/classes/class.shortcodes.php:210 tickera.php:2692
 msgid "Tickets are sold out."
 msgstr ""
 
@@ -1466,7 +1468,7 @@ msgstr ""
 #: includes/admin-pages/ticket_templates.php:302
 #: includes/classes/class.orders.php:328
 #: includes/classes/class.tickets_instances.php:94
-#: includes/general-functions.php:1981 tickera.php:4810
+#: includes/general-functions.php:1981 tickera.php:4801
 msgid "Ticket"
 msgstr ""
 
@@ -1495,7 +1497,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:137
 #: includes/classes/class.shortcode_builder.php:239
 #: includes/classes/class.shortcodes.php:77
-#: includes/classes/class.shortcodes.php:205 tickera.php:2698
+#: includes/classes/class.shortcodes.php:205 tickera.php:2691
 msgid "Add to Cart"
 msgstr ""
 
@@ -1700,7 +1702,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/order_history/tc_order_history_block_editor.js:79
 #: includes/classes/class.tickets_instances.php:76
-#: includes/general-functions.php:1984 tickera.php:2511 tickera.php:4916
+#: includes/general-functions.php:1984 tickera.php:2504 tickera.php:4907
 msgid "Order"
 msgstr ""
 
@@ -2467,7 +2469,7 @@ msgid "Cancel"
 msgstr ""
 
 #: includes/admin-pages/discount_codes.php:191
-#: includes/classes/class.discounts.php:17 tickera.php:3352
+#: includes/classes/class.discounts.php:17 tickera.php:3345
 msgid "Discount Codes"
 msgstr ""
 
@@ -2486,8 +2488,8 @@ msgstr ""
 #: includes/classes/class.events.php:155
 #: includes/classes/class.ticket_templates-new.php:447
 #: includes/classes/class.ticket_templates.php:346
-#: includes/classes/class.tickets.php:260 tickera.php:4773 tickera.php:4814
-#: tickera.php:4854 tickera.php:4877 tickera.php:4917 tickera.php:4994
+#: includes/classes/class.tickets.php:260 tickera.php:4764 tickera.php:4805
+#: tickera.php:4845 tickera.php:4868 tickera.php:4908 tickera.php:4985
 msgid "Edit"
 msgstr ""
 
@@ -2761,7 +2763,7 @@ msgid "API Access"
 msgstr ""
 
 #: includes/admin-pages/settings-api.php:203
-#: includes/classes/class.api_keys.php:16 tickera.php:4849
+#: includes/classes/class.api_keys.php:16 tickera.php:4840
 msgid "API Keys"
 msgstr ""
 
@@ -2799,12 +2801,12 @@ msgid ""
 "payment gateway below."
 msgstr ""
 
-#: includes/admin-pages/settings-gateways.php:80
+#: includes/admin-pages/settings-gateways.php:82
 msgid ""
 "Get premium support, more payment gateways and unlock additional features"
 msgstr ""
 
-#: includes/admin-pages/settings.php:16 tickera.php:3353 tickera.php:3455
+#: includes/admin-pages/settings.php:16 tickera.php:3346 tickera.php:3448
 msgid "Settings"
 msgstr ""
 
@@ -2845,7 +2847,7 @@ msgstr ""
 msgid "Template has been successfully deleted."
 msgstr ""
 
-#: includes/admin-pages/ticket_templates.php:163 tickera.php:3351
+#: includes/admin-pages/ticket_templates.php:163 tickera.php:3344
 msgid "Ticket Templates"
 msgstr ""
 
@@ -3356,7 +3358,7 @@ msgid ""
 "the number, the higher in the list it goes. 30 is the default value."
 msgstr ""
 
-#: includes/classes/class.orders.php:16 tickera.php:4915
+#: includes/classes/class.orders.php:16 tickera.php:4906
 msgid "Orders"
 msgstr ""
 
@@ -3440,7 +3442,7 @@ msgstr ""
 #. translators: 1: Payment Gateway name 2: Order total value
 #. translators: 1: Payment gateway name 2: Order total amount
 #: includes/classes/class.payment_gateways.php:123
-#: includes/gateways/custom-offline-payments.php:153
+#: includes/gateways/custom-offline-payments.php:160
 #: includes/gateways/free-orders.php:103
 #, php-format
 msgid ""
@@ -3458,7 +3460,7 @@ msgid "Pending Payment"
 msgstr ""
 
 #: includes/classes/class.payment_gateways.php:128
-#: includes/gateways/custom-offline-payments.php:158
+#: includes/gateways/custom-offline-payments.php:165
 #: includes/gateways/free-orders.php:108 includes/gateways/paymill.php:157
 #: includes/gateways/pin.php:146 includes/gateways/simplify.php:144
 #: includes/gateways/stripe.php:415
@@ -3468,7 +3470,7 @@ msgstr ""
 #. translators: 1: Payment Gateway name 2: Order total value
 #. translators: 1: Payment gateway name 2: Order total amount
 #: includes/classes/class.payment_gateways.php:132
-#: includes/gateways/custom-offline-payments.php:162
+#: includes/gateways/custom-offline-payments.php:169
 #: includes/gateways/free-orders.php:112
 #, php-format
 msgid ""
@@ -3479,7 +3481,7 @@ msgstr ""
 #. translators: 1: Payment Gateway name 2: Order total value
 #. translators: 1: Payment gateway name 2: Order total amount
 #: includes/classes/class.payment_gateways.php:136
-#: includes/gateways/custom-offline-payments.php:166
+#: includes/gateways/custom-offline-payments.php:173
 #: includes/gateways/free-orders.php:116
 #, php-format
 msgid ""
@@ -3490,7 +3492,7 @@ msgstr ""
 #. translators: 1: Payment Gateway name 2: Order total value
 #. translators: 1: Payment gateway name 2: Order total amount
 #: includes/classes/class.payment_gateways.php:140
-#: includes/gateways/custom-offline-payments.php:170
+#: includes/gateways/custom-offline-payments.php:177
 #: includes/gateways/free-orders.php:120
 #, php-format
 msgid ""
@@ -3506,7 +3508,7 @@ msgid ""
 "plugin!"
 msgstr ""
 
-#: includes/classes/class.payment_gateways.php:391 tickera.php:4701
+#: includes/classes/class.payment_gateways.php:391 tickera.php:4692
 msgid "Your transaction has been canceled."
 msgstr ""
 
@@ -4618,11 +4620,11 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: includes/classes/class.tickets_instances.php:16 tickera.php:4872
+#: includes/classes/class.tickets_instances.php:16 tickera.php:4863
 msgid "Attendees & Tickets"
 msgstr ""
 
-#: includes/classes/class.tickets_instances.php:39 tickera.php:4873
+#: includes/classes/class.tickets_instances.php:39 tickera.php:4864
 msgid "Attendee"
 msgstr ""
 
@@ -5227,7 +5229,7 @@ msgstr ""
 #: includes/gateways/authorizenet-aim.php:426
 #: includes/gateways/beanstream.php:161
 #: includes/gateways/braintree-3ds2.php:434 includes/gateways/braintree.php:349
-#: includes/gateways/custom-offline-payments.php:188
+#: includes/gateways/custom-offline-payments.php:195
 #: includes/gateways/free-orders.php:137 includes/gateways/ipay88.php:191
 #: includes/gateways/komoju.php:186 includes/gateways/netbanx.php:151
 #: includes/gateways/paygate.php:263 includes/gateways/paymill.php:245
@@ -6044,121 +6046,121 @@ msgid ""
 "MasterCard, AmEx, Discover, JCB, Maestro and UnionPay)"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:36
+#: includes/gateways/custom-offline-payments.php:43
 msgid "Offline Payment"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:37
+#: includes/gateways/custom-offline-payments.php:44
 msgid "Cash on Delivery"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:154
+#: includes/gateways/custom-offline-payments.php:161
 #: includes/gateways/paymill.php:153 includes/gateways/pin.php:142
 #: includes/gateways/simplify.php:140 includes/gateways/stripe.php:411
 msgid "Current order status: <strong>Pending Payment</strong>"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:189
+#: includes/gateways/custom-offline-payments.php:196
 msgid ""
 "A simple pass-thru payment method for accepting offline payments (Cash on "
 "Delivery, Money Orders, Bank Deposits, Cheques etc.)"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:195
+#: includes/gateways/custom-offline-payments.php:202
 #: includes/gateways/free-orders.php:144
 msgid "Public title"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:197
+#: includes/gateways/custom-offline-payments.php:204
 msgid ""
 "Enter the title of this payment method that will be visible to customers on "
 "the front end (eg. Cash on delivery, Checque payment, etc.)"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:201
+#: includes/gateways/custom-offline-payments.php:208
 #: includes/gateways/free-orders.php:150
 msgid "Admin title"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:203
+#: includes/gateways/custom-offline-payments.php:210
 #: includes/gateways/free-orders.php:152
 msgid ""
 "Enter the title of this pamyment method that will be used in the back end "
 "(admin) area of your website"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:207
+#: includes/gateways/custom-offline-payments.php:214
 #: includes/gateways/free-orders.php:156
 msgid "Payment method additional info"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:209
+#: includes/gateways/custom-offline-payments.php:216
 #: includes/gateways/free-orders.php:158
 msgid ""
 "Additional information that will be visible to the customers on the front "
 "end when they select this payment method"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:212
-#: includes/gateways/custom-offline-payments.php:229
+#: includes/gateways/custom-offline-payments.php:219
+#: includes/gateways/custom-offline-payments.php:236
 msgid "Payment instruction"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:214
+#: includes/gateways/custom-offline-payments.php:221
 msgid ""
 "The instruction that will be displayed to customers once they finish the "
 "checkout using this payment method. You can use the following placeholders: "
 "ORDER_ID, ORDER_TOTAL, BUYER_NAME"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:217
+#: includes/gateways/custom-offline-payments.php:224
 msgid "Send instruction via email"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:224
+#: includes/gateways/custom-offline-payments.php:231
 msgid ""
 "Choose Yes if you want to send an email with the payment instruction to the "
 "customer once they finish their order. The e-mail will be sent only the "
 "order has a status \"Order Received\"."
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:227
+#: includes/gateways/custom-offline-payments.php:234
 msgid "Instruction email subject"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:232
+#: includes/gateways/custom-offline-payments.php:239
 #: includes/gateways/free-orders.php:166
 msgid "Automatic payment status"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:235
+#: includes/gateways/custom-offline-payments.php:242
 #: includes/gateways/free-orders.php:169
 msgid "Order Received"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:236
+#: includes/gateways/custom-offline-payments.php:243
 #: includes/gateways/free-orders.php:170
 msgid "Order Paid"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:239
+#: includes/gateways/custom-offline-payments.php:246
 msgid ""
 "Set the payment status for the orders made using this payment method. If you "
 "want customers to receive their tickets immediately upon finishing the "
 "checkout using this payment method, select \"Order Paid\""
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:242
+#: includes/gateways/custom-offline-payments.php:249
 msgid "Visible to admins only"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:249
+#: includes/gateways/custom-offline-payments.php:256
 msgid ""
 "Select whether you want this payment method to be available to website "
 "admins only"
 msgstr ""
 
-#: includes/gateways/custom-offline-payments.php:264
+#: includes/gateways/custom-offline-payments.php:271
 msgid "Offline Payments"
 msgstr ""
 
@@ -6391,7 +6393,7 @@ msgstr ""
 msgid "Something went wrong, %s. Please try again."
 msgstr ""
 
-#: includes/gateways/paygate.php:188 tickera.php:5223
+#: includes/gateways/paygate.php:188 tickera.php:5214
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -10343,7 +10345,7 @@ msgid "Percentage (%)"
 msgstr ""
 
 #: includes/general-functions.php:4523 includes/widgets/cart-widget.php:68
-#: tickera.php:2756
+#: tickera.php:2749
 msgid "The cart is empty"
 msgstr ""
 
@@ -10589,7 +10591,7 @@ msgstr ""
 #: includes/ticket-elements-new/google_map_element.php:20
 #: includes/ticket-elements-new/google_map_element.php:117
 #: includes/ticket-elements/google_map_element.php:17
-#: includes/ticket-elements/google_map_element.php:80
+#: includes/ticket-elements/google_map_element.php:87
 msgid "Google Map"
 msgstr ""
 
@@ -10651,7 +10653,7 @@ msgstr ""
 
 #: includes/ticket-elements-new/google_map_element.php:82
 #: includes/ticket-elements-new/google_map_element.php:108
-#: includes/ticket-elements/google_map_element.php:71
+#: includes/ticket-elements/google_map_element.php:78
 msgid ""
 "NOTE: Please set your Google Maps API Key in the Settings > General > "
 "Miscellaneous > Google Maps API Key"
@@ -11052,356 +11054,356 @@ msgid "<li>%1$s <a href=\"%2$s\">Please try again</a>.</li>"
 msgstr ""
 
 #. translators: %s: Gateway public name.
-#: tickera.php:2313
+#: tickera.php:2306
 #, php-format
 msgid "Redirecting to %s payment page..."
 msgstr ""
 
-#: tickera.php:2321
+#: tickera.php:2314
 msgid "Continue &raquo;"
 msgstr ""
 
-#: tickera.php:2324
+#: tickera.php:2317
 msgid "Continue Checkout &raquo;"
 msgstr ""
 
-#: tickera.php:2436
+#: tickera.php:2429
 msgid "Payment"
 msgstr ""
 
-#: tickera.php:2488
+#: tickera.php:2481
 msgid "Process Payment"
 msgstr ""
 
-#: tickera.php:2534
+#: tickera.php:2527
 msgid "Confirmation"
 msgstr ""
 
 #. translators: %s: Ticket type name
 #. translators: %s: Ticket type name.
-#: tickera.php:2829 tickera.php:2954
+#: tickera.php:2822 tickera.php:2947
 #, php-format
 msgid "\"%s\" tickets are sold out"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A minimum number of tickets per order.
-#: tickera.php:2888
+#: tickera.php:2881
 #, php-format
 msgid "Minimum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A maximum number of tickets per order
-#: tickera.php:2922
+#: tickera.php:2915
 #, php-format
 msgid "Maximum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: A number of quantity left 2: Ticket type name 3: Singular or plural form of a string "ticket".
-#: tickera.php:2940
+#: tickera.php:2933
 #, php-format
 msgid "Only %1$s \"%2$s\" %3$s left"
 msgstr ""
 
-#: tickera.php:2943
+#: tickera.php:2936
 msgid "tickets"
 msgstr ""
 
-#: tickera.php:2943
+#: tickera.php:2936
 msgid "ticket"
 msgstr ""
 
 #. translators: %s: Ticket type name.
-#: tickera.php:2980
+#: tickera.php:2973
 #, php-format
 msgid "\"%s\" You have reached the maximum number of purchases of this ticket"
 msgstr ""
 
-#: tickera.php:3057
+#: tickera.php:3050
 msgid "All fields marked with * are required."
 msgstr ""
 
-#: tickera.php:3202
+#: tickera.php:3195
 msgid "here"
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3212
+#: tickera.php:3205
 #, php-format
 msgid "You can check your order status %s."
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3220
+#: tickera.php:3213
 #, php-format
 msgid "You can check your order status and download tickets %s."
 msgstr ""
 
 #. translators: %s: Tickera
-#: tickera.php:3332
+#: tickera.php:3325
 #, php-format
 msgid ""
 "There was an issue determining where %s is installed. Please reinstall it."
 msgstr ""
 
-#: tickera.php:3772
+#: tickera.php:3763
 msgid "IPN"
 msgstr ""
 
-#: tickera.php:3937
+#: tickera.php:3928
 msgid "Something went wrong. Cart data is not available"
 msgstr ""
 
-#: tickera.php:3947
+#: tickera.php:3938
 msgid ""
 "Something went wrong. The order with the same ID already exists. Please try "
 "again."
 msgstr ""
 
-#: tickera.php:4696
+#: tickera.php:4687
 msgid "Order cancelled by client."
 msgstr ""
 
-#: tickera.php:4770 tickera.php:4811 tickera.php:4851 tickera.php:4991
+#: tickera.php:4761 tickera.php:4802 tickera.php:4842 tickera.php:4982
 msgid "Create new"
 msgstr ""
 
-#: tickera.php:4771
+#: tickera.php:4762
 msgid "Create new event"
 msgstr ""
 
-#: tickera.php:4772
+#: tickera.php:4763
 msgid "Edit events"
 msgstr ""
 
-#: tickera.php:4774
+#: tickera.php:4765
 msgid "New event"
 msgstr ""
 
-#: tickera.php:4775
+#: tickera.php:4766
 msgid "View event"
 msgstr ""
 
-#: tickera.php:4776
+#: tickera.php:4767
 msgid "Search events"
 msgstr ""
 
-#: tickera.php:4777
+#: tickera.php:4768
 msgid "No events found"
 msgstr ""
 
-#: tickera.php:4778
+#: tickera.php:4769
 msgid "No events found in the trash"
 msgstr ""
 
-#: tickera.php:4779
+#: tickera.php:4770
 msgid "View Event"
 msgstr ""
 
-#: tickera.php:4809
+#: tickera.php:4800
 msgid "Ticket Types"
 msgstr ""
 
-#: tickera.php:4812
+#: tickera.php:4803
 msgid "Create new ticket type"
 msgstr ""
 
-#: tickera.php:4813
+#: tickera.php:4804
 msgid "Edit Ticket"
 msgstr ""
 
-#: tickera.php:4815
+#: tickera.php:4806
 msgid "New ticket"
 msgstr ""
 
-#: tickera.php:4816
+#: tickera.php:4807
 msgid "View ticket"
 msgstr ""
 
-#: tickera.php:4817
+#: tickera.php:4808
 msgid "Search tickets"
 msgstr ""
 
-#: tickera.php:4818
+#: tickera.php:4809
 msgid "No tickets found"
 msgstr ""
 
-#: tickera.php:4819
+#: tickera.php:4810
 msgid "No tickets found in the trash"
 msgstr ""
 
-#: tickera.php:4820
+#: tickera.php:4811
 msgid "View Ticket"
 msgstr ""
 
-#: tickera.php:4850
+#: tickera.php:4841
 msgid "API keys"
 msgstr ""
 
-#: tickera.php:4852
+#: tickera.php:4843
 msgid "Create new API keys"
 msgstr ""
 
-#: tickera.php:4853
+#: tickera.php:4844
 msgid "Edit API keys"
 msgstr ""
 
-#: tickera.php:4855
+#: tickera.php:4846
 msgid "New API key"
 msgstr ""
 
-#: tickera.php:4856 tickera.php:4860
+#: tickera.php:4847 tickera.php:4851
 msgid "View API key"
 msgstr ""
 
-#: tickera.php:4857
+#: tickera.php:4848
 msgid "Search API keys"
 msgstr ""
 
-#: tickera.php:4858
+#: tickera.php:4849
 msgid "No API keys found"
 msgstr ""
 
-#: tickera.php:4859
+#: tickera.php:4850
 msgid "No API keys found in the trash"
 msgstr ""
 
-#: tickera.php:4874
+#: tickera.php:4865
 msgid "Create Attendee"
 msgstr ""
 
-#: tickera.php:4875
+#: tickera.php:4866
 msgid "Create New Attendee"
 msgstr ""
 
-#: tickera.php:4876
+#: tickera.php:4867
 msgid "Check-in details"
 msgstr ""
 
-#: tickera.php:4878
+#: tickera.php:4869
 msgid "New Attendee"
 msgstr ""
 
-#: tickera.php:4879 tickera.php:4883
+#: tickera.php:4870 tickera.php:4874
 msgid "View attendee"
 msgstr ""
 
-#: tickera.php:4880
+#: tickera.php:4871
 msgid "Search attendees"
 msgstr ""
 
-#: tickera.php:4881
+#: tickera.php:4872
 msgid "No attendees found"
 msgstr ""
 
-#: tickera.php:4882
+#: tickera.php:4873
 msgid "No attendee records found in the trash"
 msgstr ""
 
-#: tickera.php:4918
+#: tickera.php:4909
 msgid "View order"
 msgstr ""
 
-#: tickera.php:4919
+#: tickera.php:4910
 msgid "Search orders"
 msgstr ""
 
-#: tickera.php:4920
+#: tickera.php:4911
 msgid "No orders found"
 msgstr ""
 
-#: tickera.php:4952
+#: tickera.php:4943
 msgid "Received"
 msgstr ""
 
-#: tickera.php:4953
+#: tickera.php:4944
 #, php-format
 msgid "Received <span class=\"count\">(%s)</span>"
 msgid_plural "Received <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:4959
+#: tickera.php:4950
 msgid "Paid"
 msgstr ""
 
-#: tickera.php:4960
+#: tickera.php:4951
 #, php-format
 msgid "Paid <span class=\"count\">(%s)</span>"
 msgid_plural "Paid <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:4966
+#: tickera.php:4957
 msgid "Cancelled"
 msgstr ""
 
-#: tickera.php:4967
+#: tickera.php:4958
 #, php-format
 msgid "Cancelled <span class=\"count\">(%s)</span>"
 msgid_plural "Cancelled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:4973
+#: tickera.php:4964
 msgid "Refunded"
 msgstr ""
 
-#: tickera.php:4974
+#: tickera.php:4965
 #, php-format
 msgid "Refunded <span class=\"count\">(%s)</span>"
 msgid_plural "Refunded <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:4981
+#: tickera.php:4972
 msgid "Fraud"
 msgstr ""
 
-#: tickera.php:4982
+#: tickera.php:4973
 #, php-format
 msgid "Fraud <span class=\"count\">(%s)</span>"
 msgid_plural "Fraud <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:4989 tickera.php:4990
+#: tickera.php:4980 tickera.php:4981
 msgid "Templates"
 msgstr ""
 
-#: tickera.php:4992
+#: tickera.php:4983
 msgid "Create new template"
 msgstr ""
 
-#: tickera.php:4993
+#: tickera.php:4984
 msgid "Edit templates"
 msgstr ""
 
-#: tickera.php:4995
+#: tickera.php:4986
 msgid "New template"
 msgstr ""
 
-#: tickera.php:4996
+#: tickera.php:4987
 msgid "View template"
 msgstr ""
 
-#: tickera.php:4997
+#: tickera.php:4988
 msgid "Search templates"
 msgstr ""
 
-#: tickera.php:4998
+#: tickera.php:4989
 msgid "No templates found"
 msgstr ""
 
-#: tickera.php:4999
+#: tickera.php:4990
 msgid "No templates found in the trash"
 msgstr ""
 
-#: tickera.php:5000
+#: tickera.php:4991
 msgid "View Template"
 msgstr ""
 
 #. translators: %s: Plugin dir url
-#: tickera.php:5121
+#: tickera.php:5112
 #, php-format
 msgid ""
 "<div class=\"notice notice-warning tc-notice-bridge is-dismissible\"><img "
@@ -11415,168 +11417,168 @@ msgid ""
 "ticketing and e-commerce strategy.</p></div>"
 msgstr ""
 
-#: tickera.php:5195
+#: tickera.php:5186
 msgid "Please confirm that you want to delete it permanently?"
 msgstr ""
 
-#: tickera.php:5196
+#: tickera.php:5187
 msgid "Order status changed successfully."
 msgstr ""
 
-#: tickera.php:5197
+#: tickera.php:5188
 msgid "Order confirmation e-mail has been sent successfully."
 msgstr ""
 
-#: tickera.php:5198
+#: tickera.php:5189
 msgid "Sending..."
 msgstr ""
 
-#: tickera.php:5199
+#: tickera.php:5190
 msgid "Sent"
 msgstr ""
 
-#: tickera.php:5200
+#: tickera.php:5191
 msgid "Failed"
 msgstr ""
 
-#: tickera.php:5201
+#: tickera.php:5192
 #, php-format
 msgid ""
 "Are you sure you want to delete this Ticket Type? You have %s ticket sold "
 "for some of the selected ticket types"
 msgstr ""
 
-#: tickera.php:5202
+#: tickera.php:5193
 #, php-format
 msgid ""
 "Are you sure you want to delete this Ticket Type? You have %s tickets sold "
 "for some of the selected ticket types"
 msgstr ""
 
-#: tickera.php:5203
+#: tickera.php:5194
 msgid ""
 "Are you sure you want to delete all Ticket Types? You have tickets sold for "
 "some of the selected ticket types."
 msgstr ""
 
-#: tickera.php:5206
+#: tickera.php:5197
 msgid "Please enter at least 3 characters."
 msgstr ""
 
-#: tickera.php:5222
+#: tickera.php:5213
 msgid "tickets have been deleted."
 msgstr ""
 
-#: tickera.php:5224
+#: tickera.php:5215
 msgid "Please confirm if you want to proceed."
 msgstr ""
 
-#: tickera.php:5265
+#: tickera.php:5256
 msgid "This field is required."
 msgstr ""
 
-#: tickera.php:5266
+#: tickera.php:5257
 msgid "Please fix this field."
 msgstr ""
 
-#: tickera.php:5267
+#: tickera.php:5258
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: tickera.php:5268
+#: tickera.php:5259
 msgid "Please enter a valid URL."
 msgstr ""
 
-#: tickera.php:5269
+#: tickera.php:5260
 msgid "Please enter a valid date."
 msgstr ""
 
-#: tickera.php:5270
+#: tickera.php:5261
 msgid "Please enter a valid date (ISO)."
 msgstr ""
 
-#: tickera.php:5271
+#: tickera.php:5262
 msgid "Please enter a valid number."
 msgstr ""
 
-#: tickera.php:5272
+#: tickera.php:5263
 msgid "Please enter only digits."
 msgstr ""
 
-#: tickera.php:5273
+#: tickera.php:5264
 msgid "Please enter the same value again."
 msgstr ""
 
-#: tickera.php:5274
+#: tickera.php:5265
 msgid "Please enter no more than {0} characters."
 msgstr ""
 
-#: tickera.php:5275
+#: tickera.php:5266
 msgid "Please enter at least {0} characters."
 msgstr ""
 
-#: tickera.php:5276
+#: tickera.php:5267
 msgid "Please enter a value between {0} and {1} characters long."
 msgstr ""
 
-#: tickera.php:5277
+#: tickera.php:5268
 msgid "Please enter a value between {0} and {1}."
 msgstr ""
 
-#: tickera.php:5278
+#: tickera.php:5269
 msgid "Please enter a value less than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5279
+#: tickera.php:5270
 msgid "Please enter a value greater than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5280
+#: tickera.php:5271
 msgid "Please enter a multiple of {0}."
 msgstr ""
 
-#: tickera.php:5290
+#: tickera.php:5281
 msgid ""
 "Only customers aged 16 or older are permitted for purchase on this website"
 msgstr ""
 
-#: tickera.php:5299
+#: tickera.php:5290
 msgid "In order to continue you need to agree to provide your details."
 msgstr ""
 
-#: tickera.php:5306
+#: tickera.php:5297
 msgid "Are you sure you want to remove all tickets from your cart?"
 msgstr ""
 
-#: tickera.php:5307
+#: tickera.php:5298
 msgid "Ticket Added!"
 msgstr ""
 
-#: tickera.php:5309
+#: tickera.php:5300
 msgid "Adding ticket to cart..."
 msgstr ""
 
-#: tickera.php:5310
+#: tickera.php:5301
 msgid "In Your Cart"
 msgstr ""
 
-#: tickera.php:5312
+#: tickera.php:5303
 msgid "Please update your cart before to proceed."
 msgstr ""
 
-#: tickera.php:5313
+#: tickera.php:5304
 msgid "Please confirm to remove all of the items from your cart."
 msgstr ""
 
-#: tickera.php:5318
+#: tickera.php:5309
 msgid "This field is required *"
 msgstr ""
 
-#: tickera.php:5319
+#: tickera.php:5310
 msgid "Please use alphanumeric characters only."
 msgstr ""
 
-#: tickera.php:5343
+#: tickera.php:5334
 msgid ""
 "You have both FREE and PREMIUM version of Tickera plugin activated. In order "
 "to avoid conflicts, please deactivate one of them. </br> Once premium "

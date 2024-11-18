@@ -21,7 +21,7 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
         var $ipn_url;
         var $API_Username, $API_Password, $SandboxFlag, $returnURL, $API_Endpoint, $version, $currency, $locale;
         var $currencies = array();
-        var $automatically_activated = false;
+        var $permanently_active = false;
         var $skip_payment_screen = true;
 
         /**
