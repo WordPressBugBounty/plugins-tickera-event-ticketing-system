@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Tickera\n"
-"POT-Creation-Date: 2024-11-18 11:52+0100\n"
+"POT-Creation-Date: 2024-12-03 10:10+0100\n"
 "PO-Revision-Date: 2024-10-31 08:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -58,7 +58,7 @@ msgstr ""
 
 #: includes/addons/barcode-reader/index.php:123
 #: includes/addons/better-attendees-and-tickets/index.php:491
-#: includes/classes/class.checkin_api.php:714
+#: includes/classes/class.checkin_api.php:717
 msgid "Insufficient permissions. This API key cannot check in this ticket."
 msgstr ""
 
@@ -2185,8 +2185,8 @@ msgid "The version of cURL installed on your server."
 msgstr ""
 
 #: includes/addons/system-info/includes/admin-pages/settings-tickera_system_info.php:213
-#: includes/classes/class.checkin_api.php:335
-#: includes/classes/class.checkin_api.php:336
+#: includes/classes/class.checkin_api.php:338
+#: includes/classes/class.checkin_api.php:339
 #: includes/gateways/paypal-standard.php:405
 #: includes/gateways/paypal-standard.php:419
 #: includes/general-functions.php:2878 includes/general-functions.php:2912
@@ -3027,12 +3027,12 @@ msgstr ""
 msgid "Confirm E-Mail"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:334
+#: includes/classes/class.checkin_api.php:337
 msgid "Multiple Events"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:688
-#: includes/classes/class.checkin_api.php:700
+#: includes/classes/class.checkin_api.php:691
+#: includes/classes/class.checkin_api.php:703
 #: includes/classes/class.sales_api.php:295
 #: includes/classes/class.sales_api.php:301
 msgid "Ticket does not exist"

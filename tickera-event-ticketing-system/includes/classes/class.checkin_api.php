@@ -161,6 +161,9 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
 
         function get_api_key_id() {
 
+            if ( ! trim( $this->api_key ) )
+                return;
+
             $args = array(
                 'post_type' => 'tc_api_keys',
                 'post_status' => 'publish',

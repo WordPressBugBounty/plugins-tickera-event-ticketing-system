@@ -1,6 +1,9 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.4.9 03/12/2024 =
+* Additional security patch for Checkin API
+
 = 3.5.4.8 18/11/2024 =
 * Unable to save "Background Placement" option in Tickera > Ticket Templates.
 * Unable to render "Google Map" Ticket Template Element. [Fixed]

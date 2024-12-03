@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.7
-Stable tag: 3.5.4.8
+Tested up to: 6.7.1
+Stable tag: 3.5.4.9
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,9 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.4.9 03/12/2024 =
+* Additional security patch for Checkin API
 
 = 3.5.4.8 18/11/2024 =
 * Unable to save "Background Placement" option in Tickera > Ticket Templates.
