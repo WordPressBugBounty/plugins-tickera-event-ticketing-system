@@ -1,6 +1,9 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.5.0 10/12/2024 =
+* Ability to enable/disable wpautop within Tickera Custom Post Types via "tc_the_content_wpautop" filter hook. Argument(s): $content
+
 = 3.5.4.9 03/12/2024 =
 * Additional security patch for Checkin API
 

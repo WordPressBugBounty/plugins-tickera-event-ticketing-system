@@ -541,7 +541,12 @@ add_filter( 'tc_the_content', 'tickera_the_content' );
 if ( ! function_exists( 'tickera_the_content' ) ) {
 
     function tickera_the_content( $content ) {
-        return wpautop( $content );
+
+        if ( apply_filters( 'tc_the_content_wpautop', true ) ) {
+            return wpautop( $content );
+        }
+
+        return $content;
     }
 }
 

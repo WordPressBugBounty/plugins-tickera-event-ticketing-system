@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.4.9
+ * Version: 3.5.5.0
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.4.9';
+        var $version = '3.5.5.0';
 
         var $title = 'Tickera';
 
@@ -303,7 +303,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
          * @since 3.5.3.0
          */
         function set_dependencies_slug( $slug ) {
-            if ( $slug == \Tickera\tets_fs()->get_slug() ) {
+            if ( function_exists( '\\Tickera\\tets_fs' ) && $slug == \Tickera\tets_fs()->get_slug() ) {
                 $slug = $this->dir_name;
             }
             return $slug;
@@ -3328,7 +3328,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             if ( defined( 'FS_ACTIVATION' ) && !FS_ACTIVATION ) {
                 // Do nothing if freemius activation is disabled
             } else {
-                if ( !\Tickera\tets_fs()->is_free_plan() ) {
+                if ( !tets_fs()->is_free_plan() ) {
                     return true;
                 } else {
                     return ( in_array( $plugin, $premium_gateways ) ? false : true );
@@ -5048,7 +5048,7 @@ if ( !function_exists( 'tickera_is_json' ) ) {
     }
 
 }
-if ( !function_exists( 'Tickera\\tets_fs' ) ) {
+if ( !function_exists( '\\Tickera\\tets_fs' ) ) {
     if ( $_POST && isset( $_POST['fs_activation'] ) && $_POST['fs_activation'] === 'false' || defined( 'FS_ACTIVATION' ) && !FS_ACTIVATION ) {
         // Do nothing if freemius activation is disabled
         define( 'FS_ACTIVATION', false );
