@@ -314,7 +314,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                                 foreach ( $element_class_names as $element_class_name ) {
 
                                     $element_class_name = str_replace( 'Tickera\\Ticket\\Element\\', '', $element_class_name );
-                                    $element_class_namespace = '\\Tickera\\Ticket\\Element\\' . $element_class_name;
+                                    $element_class_namespace = 'Tickera\\Ticket\\Element\\' . $element_class_name;
 
                                     if ( class_exists( $element_class_namespace ) ) {
 
@@ -325,7 +325,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                                         }
                                         ?>
                                     <li class="ui-state-default cols"
-                                        data-class="<?php echo esc_attr( $element_class_name ); ?>">
+                                        data-class="<?php echo esc_attr( $element_class_namespace ); ?>">
                                         <div class="elements-wrap">
                                             <div class="element_title"><?php echo esc_html( $element->element_title ); ?>
                                                 <a class="close-this" href="#"><i class="fa fa-times"></i></a>

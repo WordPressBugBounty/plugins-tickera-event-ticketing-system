@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.0
+ * Version: 3.5.5.1
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.0';
+        var $version = '3.5.5.1';
 
         var $title = 'Tickera';
 
@@ -1333,7 +1333,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                             }
                         }
                         $order = new \Tickera\TC_Order($order_id);
-                        $order_status = $order->details->post_status;
+                        $order_status = apply_filters( 'tc_order_details_post_status', $order->details->post_status, $order );
                         $order_date = strtotime( $order->details->post_date );
                         $order_modified = strtotime( $order->details->post_modified );
                         $tc_order_date = $order->details->tc_order_date;
@@ -1351,7 +1351,6 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                                     '',
                                     false
                                 );
-                                // do_action( 'tc_after_invalid_downloadable_ticket', $order_id );
                                 tickera_redirect( $order_details_page, true );
                             }
                         }
@@ -4673,7 +4672,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
          * @return bool
          */
         function in_admin_pages_require_admin_styles() {
-            $post_type = $this->get_current_post_type();
+            $current_post_type = $this->get_current_post_type();
             $post_types_require_admin_styles = array(
                 'tc_forms',
                 'tc_form_fields',
@@ -4692,7 +4691,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             );
             $tc_get_page = ( isset( $_GET['page'] ) ? sanitize_key( $_GET['page'] ) : '' );
             $tc_pages_array = apply_filters( 'tc_pages_array', array('tc_ticket_templates') );
-            return ( in_array( $post_type, $post_types_require_admin_styles ) || in_array( $tc_get_page, $tc_pages_array ) ? true : false );
+            return ( in_array( $current_post_type, $post_types_require_admin_styles ) || in_array( $tc_get_page, $tc_pages_array ) ? true : false );
         }
 
         function bridge_admin_notice() {

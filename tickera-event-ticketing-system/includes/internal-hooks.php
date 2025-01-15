@@ -538,32 +538,36 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
 
         if ( 'order_status' == $field_type ) {
 
-            $new_value = ucwords( str_replace( '_', ' ', $value ) );
-
             switch ( $value ) {
 
                 case 'order_refunded':
                     $color = 'tc_order_refunded';
+                    $status = __( 'Order Refunded', 'tickera-event-ticketing-system' );
                     break;
 
                 case 'order_fraud':
                     $color = 'tc_order_fraud';
+                    $status = __( 'Order Fraud', 'tickera-event-ticketing-system' );
                     break;
 
                 case 'order_received':
                     $color = 'tc_order_received';
+                    $status = __( 'Order Received', 'tickera-event-ticketing-system' );
                     break;
 
                 case 'order_paid':
                     $color = 'tc_order_paid';
+                    $status = __( 'Order Paid', 'tickera-event-ticketing-system' );
                     break;
 
                 case 'order_cancelled':
                     $color = 'tc_order_cancelled';
+                    $status = __( 'Order Cancelled', 'tickera-event-ticketing-system' );
                     break;
 
                 default:
                     $color = 'black';
+                    $status = $value;
             }
 
             $note = '';
@@ -574,13 +578,7 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
                 $note = '<i class="fa fa-flag" title="' . esc_attr( $note_text ) . '" alt="' . esc_attr( $note_text ) . '" aria-hidden="true"></i>';
             }
 
-            return sprintf(
-            /* translators: 1: Order status color class identifier 2: Order status 3: flag icon */
-                __( '<span class="%1$s">%2$s %3$s</span>', 'tickera-event-ticketing-system' ),
-                esc_attr( $color ),
-                esc_html( $new_value ),
-                $note
-            );
+            return '<span class="' . esc_attr( $color ) . '">' . esc_html( $status ) . ' ' . wp_kses( $note, wp_kses_allowed_html( 'tickera' ) ) . '</span>';
 
         } elseif ( 'order_date' == $field_id ) {
             return tickera_format_date( $value );

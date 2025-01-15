@@ -483,6 +483,11 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
             $tc->session->set( 'tc_discount_code', $discount_code );
             $minimum_discounted_total = tickera_minimum_total( apply_filters( 'tc_discounted_total', $new_total ) );
             $tc->session->set( 'discounted_total', $minimum_discounted_total );
+
+            return [
+                'success' => ! $discount_error_message ? true : false,
+                'message' => $discount->discount_message
+            ];
         }
 
         public static function discount_code_message( $message ) {

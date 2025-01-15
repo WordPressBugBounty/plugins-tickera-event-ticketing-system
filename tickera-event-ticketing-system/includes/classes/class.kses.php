@@ -82,7 +82,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'em'            => [],
                 'tbody'         => [],
                 'br'            => [],
-                'i'             => $default_attributes,
+                'i'             => array_merge( $default_attributes, [ 'title' => [], 'alt' => [], 'aria-hidden' => [] ] ),
                 'div'           => $default_attributes,
                 'label'         => array_merge( $default_attributes, [ 'for' => [] ] ),
                 'a'             => array_merge( $default_attributes, $default_form_attributes, [ 'onclick' => [] ] ),

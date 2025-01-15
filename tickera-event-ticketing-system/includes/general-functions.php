@@ -86,12 +86,23 @@ if ( ! function_exists( 'tickera_final_cart_check' ) ) {
         $tickets_soldout = [];
         $error_numbers = 0;
 
+        // Cart items validation
         foreach ( $cart as $ticket_type_id => $tc_quantity ) {
             $ticket = new \Tickera\TC_Ticket( $ticket_type_id );
 
             if ( ! \Tickera\TC_Ticket::is_sales_available( $ticket_type_id )
                 || $ticket->is_sold_ticket_exceeded_limit_level() ) {
                 $tickets_soldout[] = $ticket->id;
+                $error_numbers++;
+            }
+        }
+
+        // Discount code validation
+        $discount_code = $tc->session->get( 'tc_discount_code' );
+        if ( $discount_code ) {
+            $discount = ( new \Tickera\TC_Discounts() )->discounted_cart_total( false, $discount_code );
+            if ( ! $discount[ 'success' ] ) {
+                $tc->session->set( 'tc_cart_errors', $discount[ 'message' ] );
                 $error_numbers++;
             }
         }
@@ -3610,9 +3621,7 @@ if ( ! function_exists( 'tickera_get_order_event' ) ) {
     function tickera_get_order_event( $field_name = '', $post_id = '' ) {
 
         $order_status = get_post_status( $post_id );
-
         $order_status = $order_status == 'trash' ? 'trash' : 'publish';
-
         $orders = new \Tickera\TC_Orders();
 
         $user_id = get_current_user_id();
@@ -4398,7 +4407,7 @@ if ( ! function_exists( 'tickera_get_event_limit_level_option' ) ) {
 if ( ! function_exists( 'tickera_get_ticket_types' ) ) {
 
     function tickera_get_ticket_types( $field_name = '', $post_id = '' ) {
-        $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1 );
+        $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1, 'publish' );
         if ( $post_id !== '' ) {
             $currently_selected = get_post_meta( $post_id, $field_name, true );
             $currently_selected = explode( ',', $currently_selected );

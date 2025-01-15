@@ -58,19 +58,22 @@ if ( ! class_exists( 'Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
             $todays_revenue = 0;
             $count_of_paid_tickets = 0;
             $todays_date = date( "Y-m-d" );
-            $totals_30 = $wpdb->get_results( $wpdb->prepare( "SELECT orders.post_date as order_date, order_meta.meta_value FROM {$wpdb->prefix}posts as orders, {$wpdb->prefix}postmeta as order_meta WHERE orders.ID = order_meta.post_id AND orders.post_type = 'tc_orders' AND orders.post_status = 'order_paid' AND order_meta.meta_key IN ( 'tc_cart_info' ) AND orders.post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", 30, 1 ) );
+            $totals_30 = $wpdb->get_results( $wpdb->prepare( "SELECT orders.post_date as order_date, orders.post_status as order_status, order_meta.meta_value FROM {$wpdb->prefix}posts as orders, {$wpdb->prefix}postmeta as order_meta WHERE orders.ID = order_meta.post_id AND orders.post_type = 'tc_orders' AND orders.post_status IN ('order_paid','order_received') AND order_meta.meta_key IN ( 'tc_cart_info' ) AND orders.post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
 
             foreach ( $totals_30 as $total_record_30_init ) {
 
                 $total_record_30 = maybe_unserialize( $total_record_30_init->meta_value );
 
-                // Last 30 Days Earnings
-                $total_record_val = isset( $total_record_30[ 'total' ] ) ? (float) $total_record_30[ 'total' ] : 0;
-                $total_revenue += $total_record_val;
+                if ( 'order_paid' == $total_record_30_init->order_status ) {
 
-                // Today's Earnings
-                if ( date( 'Y-m-d', strtotime( $total_record_30_init->order_date ) ) == $todays_date ) {
-                    $todays_revenue += $total_record_val;
+                    // Last 30 Days Earnings
+                    $total_record_val = isset( $total_record_30[ 'total' ] ) ? (float) $total_record_30[ 'total' ] : 0;
+                    $total_revenue += $total_record_val;
+
+                    // Today's Earnings
+                    if ( date( 'Y-m-d', strtotime( $total_record_30_init->order_date ) ) == $todays_date ) {
+                        $todays_revenue += $total_record_val;
+                    }
                 }
 
                 // Tickets Sold
@@ -85,7 +88,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
             }
 
             $total_revenue = round( $total_revenue, 2 );
-            $pending_orders_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'tc_orders' AND post_status = 'order_received' AND post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL 1 DAY)", (int) $days_range, 1 ) );
+            $pending_orders_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'tc_orders' AND post_status = 'order_received' AND post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
             $paid_orders_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'tc_orders' AND post_status = 'order_paid' AND post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
             ?>
             <ul class="tc-status-list">

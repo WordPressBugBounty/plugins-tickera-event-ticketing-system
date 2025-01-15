@@ -45,7 +45,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
             add_filter( 'tc_add_admin_menu_page', array( $this, 'tc_add_admin_menu_page' ) );
             add_filter( 'first_tc_menu_handler', array( $this, 'first_tc_menu_handler' ) );
             add_action( 'admin_menu', array( $this, 'rename_events_menu_item' ) );
-            add_action( 'add_meta_boxes', array( $this, 'add_events_metaboxes' ) );
+            add_action( 'add_meta_boxes', array( $this, 'add_events_metaboxes' ), 10, 2 );
             add_action( 'save_post', array( $this, 'save_metabox_values' ) );
             add_action( 'delete_post', array( $this, 'delete_event_api_keys' ) );
             add_filter( 'the_content', array( $this, 'modify_the_content' ) );
@@ -458,7 +458,10 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
                     $new_content .= '<span class="tc_event_location_title_front"><i class="fa fa-map-marker"></i>' . '&nbsp;' . wp_kses_post( $event_location ) . '</span>';
                 }
 
-                $content = '<div class="tc_the_content_pre">' . apply_filters( 'tc_the_content_pre', $new_content ) . '</div>' . $content;
+                $pre_content = apply_filters( 'tc_the_content_pre', $new_content );
+                if ( $pre_content ) {
+                    $content = '<div class="tc_the_content_pre">' . $pre_content . '</div>' . $content;
+                }
 
                 // Add events shortcode to the end of the content if selected
                 $show_tickets_automatically = get_post_meta( $post->ID, 'show_tickets_automatically', true );
@@ -1011,9 +1014,19 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
             ];
         }
 
-        function add_events_metaboxes() {
+        /**
+         * Tickera > Events Metaboxes
+         *
+         * @param $post_type
+         * @param $post
+         */
+        function add_events_metaboxes( $post_type, $post ) {
 
-            global $pagenow, $typenow, $post;
+            global $pagenow, $typenow;
+
+            if ( ! $post || ! isset( $post->ID ) ) {
+                return;
+            }
 
             if ( ( 'edit.php' == $pagenow ) || ( $post->post_type !== 'tc_events' ) ) {
                 return;

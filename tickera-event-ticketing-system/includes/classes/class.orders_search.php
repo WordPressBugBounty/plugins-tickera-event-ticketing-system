@@ -15,6 +15,13 @@ if ( ! class_exists( 'Tickera\TC_Orders_Search' ) ) {
         var $page_name = 'tc_orders';
         var $items_title = 'Orders';
 
+        var $post_status;
+        var $search_term;
+        var $raw_page;
+        var $page_num;
+        var $period;
+        var $period_compare;
+
         function __construct( $search_term = '', $page_num = '', $per_page = '', $post_status = array( 'any' ), $period = '', $period_compare = '=' ) {
 
             global $tc;

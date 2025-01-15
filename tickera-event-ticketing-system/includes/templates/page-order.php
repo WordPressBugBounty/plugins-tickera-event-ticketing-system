@@ -19,6 +19,7 @@ if ( is_admin() || isset( $_POST[ 'action' ] ) && 'heartbeat' == $_POST[ 'action
     // Retrieve Order ID
     if ( isset( $wp->query_vars[ 'tc_order' ] ) ) {
         $order_id = sanitize_text_field( $wp->query_vars[ 'tc_order' ] );
+
     } elseif ( isset( $_GET[ 'tc_order' ] ) ) {
         $order_id = sanitize_text_field( $_GET[ 'tc_order' ] );
     }
@@ -26,6 +27,7 @@ if ( is_admin() || isset( $_POST[ 'action' ] ) && 'heartbeat' == $_POST[ 'action
     // Retrieve Order Key
     if ( isset( $wp->query_vars[ 'tc_order_key' ] ) ) {
         $order_key = sanitize_text_field( $wp->query_vars[ 'tc_order_key' ] );
+
     } elseif ( isset( $_GET[ 'tc_order_key' ] ) ) {
         $order_key = sanitize_text_field( $_GET[ 'tc_order_key' ] );
     }
@@ -40,7 +42,7 @@ if ( is_admin() || isset( $_POST[ 'action' ] ) && 'heartbeat' == $_POST[ 'action
 
     if ( $order_id && $order_key ) {
 
-        if ( isset( $settings[ 'force_login' ] ) && 'yes' == $settings[ 'force_login' ] && ! is_user_logged_in() ) : ?>
+        if ( isset( $settings[ 'force_login' ] ) && 'yes' == $settings[ 'force_login' ] && ( ! is_user_logged_in() || ( $order && get_current_user_id() != $order->post_author ) ) ) : ?>
             <div class="force_login_message"><?php echo wp_kses_post( sprintf( /* translators: %s: A link to Wordpress login page. */ __( 'Please <a href="%s">Log In</a> to see this page', 'tickera-event-ticketing-system' ), esc_url( apply_filters( 'tc_force_login_url', wp_login_url( tickera_current_url() ), tickera_current_url() ) ) ) ); ?></div>
         <?php else : ?>
             <div class="tc-container">

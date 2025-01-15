@@ -1319,16 +1319,39 @@ class TCPDFBarcode {
     }
 
     /**
+     *
+     * @param $msg
+     * @throws \Exception
+     *
+     * @since 3.5.5.1
+     */
+    protected function Error($msg) {
+
+        if (defined('TC_K_TCPDF_THROW_EXCEPTION_ERROR') AND !TC_K_TCPDF_THROW_EXCEPTION_ERROR) {
+            die('<strong>TCPDF_BARCODE ERROR: </strong>'.$msg);
+
+        } else {
+            throw new \Exception('TCPDF_BARCODE ERROR: '.$msg);
+        }
+    }
+
+    /**
      * EAN13 and UPC-A barcodes.
      * EAN13: European Article Numbering international retail product code
      * UPC-A: Universal product code seen on almost all retail products in the USA and Canada
      * UPC-E: Short version of UPC symbol
      * @param $code (string) code to represent.
-     * @param $len (string) barcode type: 6 = UPC-E, 8 = EAN8, 13 = EAN13, 12 = UPC-A
+     * @param int $len (string) barcode type: 6 = UPC-E, 8 = EAN8, 13 = EAN13, 12 = UPC-A
      * @return array barcode representation.
+     * @throws \Exception
      * @protected
      */
     protected function barcode_eanupc($code, $len=13) {
+
+        if ( $len == 13 && strlen( $code ) < 12 ) {
+            $this->Error( 'Ticket code string doesn\'t match the configured barcode type.' );
+        }
+
         $upce = false;
         if ($len == 6) {
             $len = 12; // UPC-A

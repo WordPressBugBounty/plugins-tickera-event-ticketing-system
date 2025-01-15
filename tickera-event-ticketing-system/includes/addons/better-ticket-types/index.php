@@ -36,7 +36,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             add_filter( 'manage_tc_tickets_posts_columns', array( $this, 'manage_tc_tickets_columns' ) );
             add_action( 'manage_tc_tickets_posts_custom_column', array( $this, 'manage_tc_tickets_posts_custom_column' ) );
             add_filter( "manage_edit-tc_tickets_sortable_columns", array( $this, 'manage_edit_tc_tickets_sortable_columns' ) );
-            add_action( 'add_meta_boxes', array( $this, 'add_ticket_types_metaboxes' ) );
+            add_action( 'add_meta_boxes', array( $this, 'add_ticket_types_metaboxes' ), 10, 2 );
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts_and_styles' ) );
 
             if ( $post_type == 'tc_tickets' ) {
@@ -469,8 +469,19 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             );
         }
 
-        function add_ticket_types_metaboxes() {
-            global $pagenow, $typenow, $post;
+        /**
+         * Tickera > Ticket Types Metaboxes
+         *
+         * @param $post_type
+         * @param $post
+         */
+        function add_ticket_types_metaboxes( $post_type, $post ) {
+
+            global $pagenow, $typenow;
+
+            if ( ! $post || ! isset( $post->ID ) ) {
+                return;
+            }
 
             $tc_general_settings = get_option( 'tickera_general_setting', false );
             $force_login = ( isset( $tc_general_settings[ 'force_login' ] ) ) ? $tc_general_settings[ 'force_login' ] : 'no';

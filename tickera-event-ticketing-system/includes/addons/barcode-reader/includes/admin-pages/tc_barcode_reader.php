@@ -6,19 +6,21 @@
         <?php endif;
         $current_user = wp_get_current_user();
         $current_user_name = $current_user->user_login;
-        $staff_api_keys_num = 0; //set 0 for number of current user API key available
+        $staff_api_keys_num = false; // Set 0 for number of current user API key available
         $wp_api_keys_search = new \Tickera\TC_API_Keys_Search( '', '', '', 9999 ); //$ticket_event_id
 
-        if ( ! current_user_can( 'manage_options' ) ) { //count current user API keys available for non-admin users
+        // Count current user API keys available for non-admin users
+        if ( ! current_user_can( 'manage_options' ) ) {
             foreach ( $wp_api_keys_search->get_results() as $api_key ) {
                 $api_key_obj = new \Tickera\TC_API_Key( $api_key->ID );
-                if ( ( $api_key_obj->details->api_username == $current_user_name ) ) {
-                    $staff_api_keys_num++;
+                if ( ( $api_key_obj->details->api_username && strtolower( $api_key_obj->details->api_username ) == strtolower( $current_user_name ) ) ) {
+                    $staff_api_keys_num = true;
+                    break;
                 }
             }
         }
 
-        if ( count( $wp_api_keys_search->get_results() ) > 0 && ( current_user_can( 'manage_options' ) || ( ! current_user_can( 'manage_options' ) && $staff_api_keys_num > 0 ) ) ) { ?>
+        if ( count( $wp_api_keys_search->get_results() ) > 0 && ( current_user_can( 'manage_options' ) || ( ! current_user_can( 'manage_options' ) && $staff_api_keys_num ) ) ) { ?>
             <form action="" method="post" enctype="multipart/form-data">
                 <table class="checkin-table">
                     <tbody>
@@ -29,7 +31,7 @@
                                 <?php
                                 foreach ( $wp_api_keys_search->get_results() as $api_key ) {
                                     $api_key_obj = new \Tickera\TC_API_Key( $api_key->ID );
-                                    if ( current_user_can( 'manage_options' ) || ( $api_key_obj->details->api_username == $current_user_name ) ) { ?>
+                                    if ( current_user_can( 'manage_options' ) || ( $api_key_obj->details->api_username && strtolower( $api_key_obj->details->api_username ) == strtolower( $current_user_name ) ) ) { ?>
                                         <option value="<?php echo esc_attr( $api_key->ID ); ?>"><?php echo esc_html( $api_key_obj->details->api_key_name ); ?></option>
                                         <?php
                                     }

@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.7.1
-Stable tag: 3.5.5.0
+Stable tag: 3.5.5.1
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,20 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.1 15/01/2025 =
+* Remove extra spaces below the event page title.
+* Order statuses string translation. Tickera > Orders.
+* Discount code validation in payment summary page. A final discount code validation right after the "continue checkout" button is clicked.
+* Limit Tickera > Discount Codes > "Discount Available for" select options with published ticket types only.
+* Additional security measures in Order details page (frontend).
+* Additional error handler in TCPDF Library.
+* Duplicated ticket template element values not rendered. [Fixed]
+* Clear out PHP Deprecated: Creation of dynamic property notice at Dashboard widget "Ticketing store at a Glance".
+* "Ticketing store at a Glance" number of tickets sold discrepancy. [Fixed]
+* Additional security measures in Tickera > Barcode Reader
+* Ticket checkin via Tickera > Barcode Reader can be processed by admin and associated APIs user only. No privilege access will be invalidated.
+* Additional error handler in Authorize.net payment method.
 
 = 3.5.5.0 10/12/2024 =
 * Ability to enable/disable wpautop within Tickera Custom Post Types via "tc_the_content_wpautop" filter hook. Argument(s): $content

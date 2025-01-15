@@ -629,6 +629,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
          *
          * @param bool $echo
          * @return array|int|mixed|void
+         * @throws \Exception
          */
         function ticket_checkin( $echo = true ) {
 

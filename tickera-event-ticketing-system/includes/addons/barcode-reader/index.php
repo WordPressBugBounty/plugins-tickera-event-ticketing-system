@@ -34,7 +34,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
                 add_action( 'tc_add_menu_items_after_ticket_templates', array( $this, 'add_admin_menu_item_to_tc' ) );
                 add_action( 'admin_enqueue_scripts', array( $this, 'admin_header' ) );
                 add_action( 'wp_ajax_check_in_barcode', array( $this, 'check_in_barcode' ) );
-                add_action( 'wp_ajax_nopriv_check_in_barcode', array( $this, 'check_in_barcode' ) );
             }
         }
 
@@ -45,27 +44,42 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
 
             if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 
-                $api_key = new \Tickera\TC_API_Key( sanitize_text_field( $_POST[ 'api_key' ] ) );
-                $checkin = new \Tickera\TC_Checkin_API( $api_key->details->api_key, apply_filters( 'tc_checkin_request_name', 'tickera_scan' ), 'return', sanitize_text_field( $_POST[ 'barcode' ] ), false );
-                $checkin_result = $checkin->ticket_checkin( false );
+                $api_key = sanitize_text_field( $_POST[ 'api_key' ] );
+                $barcode = sanitize_text_field( $_POST[ 'barcode' ] );
 
-                if ( is_numeric( $checkin_result ) && $checkin_result == 403 ) {
+                $api = new \Tickera\TC_API_Key( $api_key );
+                $current_user = wp_get_current_user();
+                $current_username = $current_user->user_login;
 
-                    // Permissions issue
-                    wp_send_json( (int) $checkin_result );
+                if (
+                    current_user_can( 'manage_options' )
+                    || ( ! current_user_can( 'manage_options' ) && strtolower( $api->details->api_username ) == strtolower( $current_username ) )
+                ) {
 
-                } else {
+                    $checkin = new \Tickera\TC_Checkin_API( $api->details->api_key, apply_filters( 'tc_checkin_request_name', 'tickera_scan' ), 'return', $barcode, false );
+                    $checkin_result = $checkin->ticket_checkin( false );
 
-                    if ( isset( $checkin_result[ 'status' ] ) && $checkin_result[ 'status' ] == 1 ) {
+                    if ( is_numeric( $checkin_result ) && $checkin_result == 403 ) {
 
-                        // Success
-                        wp_send_json( 1 );
+                        // Permissions issue
+                        wp_send_json( (int) $checkin_result );
 
                     } else {
 
-                        // Fail
-                        wp_send_json( 2 );
+                        if ( isset( $checkin_result[ 'status' ] ) && $checkin_result[ 'status' ] == 1 ) {
+
+                            // Success
+                            wp_send_json( 1 );
+
+                        } else {
+
+                            // Fail
+                            wp_send_json( 2 );
+                        }
                     }
+
+                } else {
+                    wp_send_json( 403 );
                 }
             }
         }
