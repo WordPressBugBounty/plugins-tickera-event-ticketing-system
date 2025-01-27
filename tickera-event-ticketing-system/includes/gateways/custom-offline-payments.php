@@ -188,8 +188,7 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
             return $content;
         }
 
-        function gateway_admin_settings( $settings, $visible ) {
-            ?>
+        function gateway_admin_settings( $settings, $visible ) { ?>
             <div id="<?php echo esc_attr( $this->plugin_name ); ?>" class="postbox" <?php echo wp_kses_post( ! $visible ? 'style="display:none;"' : '' ); ?>>
                 <h3>
                     <span><?php echo esc_html( sprintf( /* translators: %s: Custom Offline Payment Gateway admin name */ __( '%s Settings', 'tickera-event-ticketing-system' ), esc_html( wp_unslash( $this->admin_name ) ) ) ); ?></span>
@@ -197,6 +196,14 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
                 </h3>
                 <div class="inside">
                     <?php
+
+                    $roles = get_editable_roles();
+                    $user_roles_key = array_keys( $roles );
+                    $user_roles_name = array_column( $roles, 'name' );
+
+                    $user_roles = array_combine( $user_roles_key, $user_roles_name );
+                    $user_roles = array_merge( [ 'any' => __( 'Any', 'tickera-event-ticketing-system' ) ], $user_roles );
+
                     $fields = array(
                         'public_name' => array(
                             'title' => __( 'Public title', 'tickera-event-ticketing-system' ),
@@ -245,16 +252,14 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
                             'default' => 'order_received',
                             'description' => __( 'Set the payment status for the orders made using this payment method. If you want customers to receive their tickets immediately upon finishing the checkout using this payment method, select "Order Paid"', 'tickera-event-ticketing-system' )
                         ),
-                        'admin_gateway' => array(
-                            'title' => __( 'Visible to admins only', 'tickera-event-ticketing-system' ),
+                        'user_roles_gateway' => array(
+                            'title' => __( 'Visible to user roles', 'tickera-event-ticketing-system' ),
                             'type' => 'select',
-                            'options' => array(
-                                'no' => __( 'No', 'tickera-event-ticketing-system' ),
-                                'yes' => __( 'Yes', 'tickera-event-ticketing-system' )
-                            ),
-                            'default' => 'no',
-                            'description' => __( 'Select whether you want this payment method to be available to website admins only', 'tickera-event-ticketing-system' )
-                        ),
+                            'multiple' => true,
+                            'options' => $user_roles,
+                            'default' => 'any',
+                            'description' => __( 'Select which user roles this payment method should be available to.', 'tickera-event-ticketing-system' )
+                        )
                     );
 
                     $form = new \Tickera\TC_Form_Fields_API( $fields, 'tc', 'gateways', $this->plugin_name );

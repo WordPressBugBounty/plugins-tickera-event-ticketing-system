@@ -170,7 +170,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                     ] );
 
                     $default_tags[ 'label' ] = array_merge( $default_tags[ 'label' ], $default_conditional_attributes );
-                    $default_tags[ 'select' ] = array_merge( $default_tags[ 'select' ], $default_conditional_attributes );
+                    $default_tags[ 'select' ] = array_merge( $default_tags[ 'select' ], $default_conditional_attributes, [ 'multiple' => [] ] );
                     $default_tags[ 'input' ] = array_merge( $default_tags[ 'input' ], $default_conditional_attributes );
 
                     $allowed_tags = $default_tags;

@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.1
+ * Version: 3.5.5.2
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.1';
+        var $version = '3.5.5.2';
 
         var $title = 'Tickera';
 
@@ -2156,11 +2156,17 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                         $visible = false;
                     }
                     if ( 'custom_offline_payments' == $plugin_name && in_array( $code, $active_gateways ) ) {
-                        $show_gateway_admin = ( 'custom_offline_payments' == $plugin_name ? $settings['gateways']['custom_offline_payments']['admin_gateway'] : '' );
-                        if ( apply_filters( 'tc_change_user_role_offline_payment', current_user_can( 'administrator' ) ) && 'yes' == $show_gateway_admin ) {
+                        $show_gateway_to_specific_user_roles = ( isset( $settings['gateways']['custom_offline_payments']['user_roles_gateway'] ) ? (array) $settings['gateways']['custom_offline_payments']['user_roles_gateway'] : ['any'] );
+                        if ( in_array( 'any', $show_gateway_to_specific_user_roles ) ) {
                             $visible = true;
                         } else {
-                            $visible = ( 'yes' == $show_gateway_admin ? false : true );
+                            $visible = false;
+                            foreach ( $show_gateway_to_specific_user_roles as $role ) {
+                                if ( in_array( $role, (array) wp_get_current_user()->roles ) ) {
+                                    $visible = true;
+                                    break;
+                                }
+                            }
                         }
                     }
                     if ( $visible ) {

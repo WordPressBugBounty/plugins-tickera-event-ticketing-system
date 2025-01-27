@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.7.1
-Stable tag: 3.5.5.1
+Stable tag: 3.5.5.2
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,11 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.2 XX/XX/XXXX =
+* Updated "Offline Payment Gateway" > "Visible to admin only" option to "Visible to user roles".
+* Discontinued "tc_change_user_role_offline_payment" filter hook.
+* Freemius SDK updated to v2.11
 
 = 3.5.5.1 15/01/2025 =
 * Remove extra spaces below the event page title.
