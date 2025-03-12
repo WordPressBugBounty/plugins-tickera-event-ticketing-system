@@ -87,7 +87,7 @@ $settings_discount_url = add_query_arg(
                         <tbody>
                         <?php foreach ( $fields as $field ) { ?>
                             <?php if ( $discounts->is_valid_discount_field_type( $field[ 'field_type' ] ) && ( ! isset( $field[ 'form_visibility' ] ) || $field[ 'form_visibility' ] ) ) { ?>
-                                <tr valign="top" class="<?php echo esc_attr( $field[ 'field_name' ] ); ?>">
+                                <tr valign="top" <?php echo wp_kses_post( \Tickera\TC_Fields::conditionals( $field, false ) ); ?>>
                                     <th scope="row"><label for="<?php echo esc_attr( $field[ 'field_name' ] ); ?>"><?php echo esc_html( $field[ 'field_title' ] ); ?></label></th>
                                     <td>
                                         <?php do_action( 'tc_before_discounts_field_type_check' ); ?>
@@ -108,14 +108,14 @@ $settings_discount_url = add_query_arg(
                                                     call_user_func( $field[ 'function' ], $field[ 'field_name' ] );
                                                 }
                                             } ?>
-                                            <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span>
-                                        <?php } ?>
-                                        <?php if ( $field[ 'field_type' ] == 'text' ) { ?>
+                                            <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span><?php
+
+                                        } elseif ( $field[ 'field_type' ] == 'text' ) { ?>
                                             <input type="text" <?php
                                             if ( isset( $field[ 'placeholder' ] ) ) {
                                                 echo wp_kses_post( 'placeholder="' . esc_attr( $field[ 'placeholder' ] ) . '"' );
                                             }
-                                            ?> class="regular-<?php echo esc_attr( $field[ 'field_type' ] ); ?>" value="<?php
+                                            ?> class="regular-<?php echo esc_attr( $field[ 'field_type' ] ); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" value="<?php
                                             if ( isset( $discount ) ) {
                                                 if ( $field[ 'post_field_type' ] == 'post_meta' ) {
                                                     echo esc_attr( isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : '' );
@@ -125,10 +125,10 @@ $settings_discount_url = add_query_arg(
                                                 }
                                             }
                                             ?>" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>" <?php echo esc_attr( isset( $field[ 'required' ] ) ? 'required' : '' ); ?> <?php echo esc_attr( isset( $field[ 'number' ] ) ? 'number="true"' : '' ); ?>>
-                                            <span class="description"><?php echo esc_html($field[ 'field_description' ]); ?></span>
-                                        <?php } ?>
-                                        <?php if ( $field[ 'field_type' ] == 'textarea' ) { ?>
-                                            <textarea class="regular-<?php echo esc_html($field[ 'field_type' ]); ?>" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>"><?php
+                                            <span class="description"><?php echo esc_html($field[ 'field_description' ]); ?></span><?php
+
+                                        } elseif ( $field[ 'field_type' ] == 'textarea' ) { ?>
+                                            <textarea class="regular-<?php echo esc_html($field[ 'field_type' ]); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>"><?php
                                                 if ( isset( $discount ) ) {
                                                     if ( $field[ 'post_field_type' ] == 'post_meta' ) {
                                                         echo esc_textarea( isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : '' );
@@ -139,13 +139,12 @@ $settings_discount_url = add_query_arg(
                                                 }
                                                 ?>
                                             </textarea>
-                                            <br/><?php echo esc_html( $field[ 'field_description' ] ); ?>
-                                        <?php } ?>
-                                        <?php
-                                        if ( $field[ 'field_type' ] == 'image' ) { ?>
+                                            <br/><?php echo esc_html( $field[ 'field_description' ] );
+
+                                        } elseif ( $field[ 'field_type' ] == 'image' ) { ?>
                                             <div class="file_url_holder">
                                                 <label>
-                                                    <input class="file_url" type="text" size="36" name="<?php echo esc_attr( $field[ 'field_name' ] . '_file_url_' . $field[ 'post_field_type' ] ); ?>" value="<?php
+                                                    <input class="file_url <?php echo esc_attr( $field[ 'field_name' ] ); ?>" type="text" size="36" name="<?php echo esc_attr( $field[ 'field_name' ] . '_file_url_' . $field[ 'post_field_type' ] ); ?>" value="<?php
                                                            if ( isset( $discount ) ) {
                                                                echo esc_attr( isset( $discount->details->{$field[ 'field_name' ] . '_file_url'} ) ? $discount->details->{$field[ 'field_name' ] . '_file_url'} : '' );
                                                            }
@@ -153,9 +152,19 @@ $settings_discount_url = add_query_arg(
                                                     />
                                                     <input class="file_url_button button-secondary" type="button" value="<?php esc_html_e( 'Browse', 'tickera-event-ticketing-system' ); ?>"/><?php echo esc_html( $field[ 'field_description' ] ); ?>
                                                 </label>
-                                            </div>
-                                        <?php } ?>
-                                        <?php do_action( 'tc_after_discounts_field_type_check' ); ?>
+                                            </div><?php
+
+                                        } elseif ( $field[ 'field_type' ] == 'select' ) {
+                                            $selected = isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : ''; ?>
+                                            <select id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" class="regular-<?php echo esc_attr( $field[ 'field_type' ] ); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>" <?php echo esc_attr( isset( $field[ 'required' ] ) ? 'required' : '' ); ?>>
+                                                <?php foreach( $field[ 'options' ] as $key => $value ) : ?>
+                                                    <option value="<?php echo esc_attr( $key ) ?>" <?php selected( $selected, $key, true ) ?>><?php esc_html_e( $value, 'tickera-event-ticketing-system' ) ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <span class="description"><?php echo esc_html($field[ 'field_description' ]); ?></span>
+                                            <?php
+                                        }
+                                        do_action( 'tc_after_discounts_field_type_check' ); ?>
                                     </td>
                                 </tr><?php
                             }
@@ -233,10 +242,8 @@ $settings_discount_url = add_query_arg(
 
                         <!-- Discount code used count -->
                         <?php if ( $key == 'used_count' ) :
-
                             $discount_title = $discount->post_title;
-                            $discount_used_times = $discounts->discount_used_times( $discount_title );
-                            ?>
+                            $discount_used_times = $discounts->discount_used_times( $discount_title ); ?>
                             <td>
                                 <?php echo esc_html( absint( $discount_used_times ) ); ?>
                             </td>

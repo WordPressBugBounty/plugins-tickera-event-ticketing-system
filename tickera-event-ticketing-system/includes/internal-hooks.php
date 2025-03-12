@@ -780,7 +780,10 @@ add_filter( 'tc_ticket_instance_field_value', 'tickera_ticket_instance_field_val
 if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
 
     function tickera_ticket_instance_field_value( $value = false, $field_value = false, $post_field_type = false, $col_field_id = false, $field_id = false ) {//$value, $post_field_type, $var_name
-        if ( $field_id == 'order' ) {
+
+        $initial_value = $value;
+
+        if ( 'order' == $field_id ) {
 
             $parent_post = get_post_ancestors( $value );
             $parent_post = isset( $parent_post[ 0 ] ) ? $parent_post[ 0 ] : 0;
@@ -805,26 +808,22 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
             } else {
                 $value = __( 'N/A', 'tickera-event-ticketing-system' );
             }
-        }
 
-        if ( $field_id == 'event' ) {
+        } elseif ( 'event' == $field_id ) {
             $value = tickera_get_ticket_instance_event( false, false, $value, false );
-        }
 
-        if ( $field_id == 'ticket_code' ) {
+        } elseif ( 'ticket_code' == $field_id ) {
             $value = $field_value;
-        }
 
-        if ( $field_id == 'ticket_type_id' ) {
+        } elseif ( 'ticket_type_id' == $field_id ) {
             $ticket_type = new \Tickera\TC_Ticket( $field_value );
             $value = apply_filters( 'tc_checkout_owner_info_ticket_title', isset( $ticket_type->details->post_title ) ? $ticket_type->details->post_title : __( 'N/A', 'tickera-event-ticketing-system' ), $field_value, array(), $value );
-        }
 
-        if ( $field_id == 'ticket' ) {
+        } elseif ( 'ticket' == $field_id ) {
             $value = '<a target="_blank" href="' . esc_url( admin_url( 'edit.php?post_type=tc_tickets_instances&tc_preview&ticket_instance_id=' . $field_value ) ) . '">' . esc_html__( 'View', 'tickera-event-ticketing-system' ) . '</a> | <a target="_top" href="' . esc_url( admin_url( 'edit.php?post_type=tc_tickets_instances&tc_download&ticket_instance_id=' . $field_value ) ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>';
-        }
 
-        if ( $field_id == 'checkins' ) {
+        } elseif ( 'checkins' == $field_id ) {
+
             $ticket_instance = new \Tickera\TC_Ticket_Instance( $field_value );
             $checkins_pass = $ticket_instance->get_number_of_checkins( 'pass' );
             $checkins_fail = $ticket_instance->get_number_of_checkins( 'fail' );
@@ -837,9 +836,9 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
 
             $value .= esc_html__( ' Details', 'tickera-event-ticketing-system' );
             $value .= '</a>';
-        }
 
-        if ( $field_id == 'owner_name' ) {
+        } elseif ( 'owner_name' == $field_id ) {
+
             $owner_name = get_post_meta( $value, 'first_name', true ) . ' ' . get_post_meta( $value, 'last_name', true );
             if ( trim( $owner_name ) == '' ) {
                 $parent_post = get_post_ancestors( $value );
@@ -865,9 +864,47 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
             } else {
                 $value = $owner_name;
             }
+
+        } elseif ( 'order_status' == $field_id ) {
+
+            $order_status = get_post( wp_get_post_parent_id( $value ) );
+
+            if ( isset( $order_status->post_status ) && ! empty( $order_status->post_status ) ) {
+
+                if ( strrpos( $order_status->post_status, '_' ) ) {
+                    $value = str_replace( '_', ' ', $order_status->post_status );
+
+                } else {
+                    $value = str_replace( '-', ' ', $order_status->post_status );
+                }
+
+                $tc_post_status_color = array(
+                    'order_fraud' => 'tc_order_fraud',
+                    'order_received' => 'tc_order_received',
+                    'order_paid' => 'tc_order_paid',
+                    'order_cancelled' => 'tc_order_cancelled',
+                    'order_refunded' => 'tc_order_fraud',
+                    'wc-cancelled' => 'tc_order_cancelled',
+                    'wc-completed' => 'tc_order_paid',
+                    'wc-processing' => 'tc_order_received',
+                    'wc-pending' => 'tc_order_received',
+                    'wc-on-hold' => 'tc_order_hold',
+                    'wc-refunded' => 'tc_order_fraud',
+                    'wc-failed' => 'tc_order_fraud'
+                );
+
+                $color = isset( $tc_post_status_color[ $order_status->post_status ] ) ? $tc_post_status_color[ $order_status->post_status ] : 'tc_order_received';
+
+                $value = sprintf(
+                    /* translators: 1: Order status color identifier 2: Order status name */
+                    __( '<span class="%1$s">%2$s</span>', 'tickera-event-ticketing-system' ),
+                    esc_attr( $color ),
+                    esc_html( ucwords( $value ) )
+                );
+            }
         }
 
-        return apply_filters( 'tc_column_value', $value, $field_id );
+        return apply_filters( 'tc_tickets_instances_column_value', $value, $field_id, $initial_value );
     }
 }
 
@@ -1045,13 +1082,26 @@ if ( ! function_exists( 'tickera_discount_values' ) ) {
             case 'discount_type':
 
                 if ( 1 == $value ) {
-                    $value = __( 'Fixed Amount (per item)', 'tickera-event-ticketing-system' );
+                    $value = __( 'Fixed Amount', 'tickera-event-ticketing-system' );
 
                 } elseif ( 2 == $value ) {
                     $value = __( 'Percentage (%)', 'tickera-event-ticketing-system' );
 
                 } else {
-                    $value = __( 'Fixed Amount (per order)', 'tickera-event-ticketing-system' );
+                    $value = __( 'Fixed Amount', 'tickera-event-ticketing-system' );
+                }
+                break;
+
+            case 'discount_scope':
+
+                if ( 'per_item' == $value ) {
+                    $value = __( 'Per Item', 'tickera-event-ticketing-system' );
+
+                } elseif( 'per_order' == $value ) {
+                    $value = __( 'Per Order', 'tickera-event-ticketing-system' );
+
+                } else {
+                    $value = __( 'N/A', 'tickera-event-ticketing-system' );
                 }
                 break;
 

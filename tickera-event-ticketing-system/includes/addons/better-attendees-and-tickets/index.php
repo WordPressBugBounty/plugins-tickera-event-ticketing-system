@@ -170,9 +170,20 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          * @return string
          */
         function pre_get_posts_order_status_filter_where( $where ) {
+
             global $wpdb;
-            $where .= " AND " . $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status = '" . sanitize_text_field( $_REQUEST[ 'tc_order_status_filter' ] ) . "')";
-            return $where;
+            $order_statuses = ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) && $_REQUEST[ 'tc_order_status_filter' ] ) ? [ sanitize_text_field( $_REQUEST[ 'tc_order_status_filter' ] ) ] : [];
+
+            if ( ! $order_statuses )
+                return $where;
+
+            $order_statuses = "'" . implode( '\',\'', $order_statuses ) . "'";
+
+            $where .= " AND ";
+            $order_status_filter = $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ( " . $order_statuses . "))";
+            $order_status_filter = apply_filters( 'tc_tickets_instances_order_status_where_clause', $order_status_filter, $order_statuses, true );
+
+            return $where . $order_status_filter;
         }
 
         /**
@@ -194,11 +205,15 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          * @return string
          */
         function init_table_by_order_status_where_clause( $where, $query ) {
+
             global $wpdb;
-            $order_statuses = apply_filters( 'tc_tickets_instances_init_table_by_order_statuses', array_keys( $this->checkin_eligible_order_statuses ) );
-            $order_statuses = implode( '\',\'', $order_statuses );
-            $where .= " AND " . $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ('trash','" . $order_statuses . "'))";
-            return $where;
+            $order_statuses = "'" . implode( '\',\'', array_keys( $this->checkin_eligible_order_statuses ) ) . "'";
+
+            $where .= " AND ";
+            $where_order_status = $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ('trash'," . $order_statuses . "))";
+            $where_order_status = apply_filters( 'tc_tickets_instances_order_status_where_clause', $where_order_status, $order_statuses );
+
+            return $where . $where_order_status;
         }
 
         /**
@@ -343,7 +358,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                 } else {
                     return $query;
-
                 }
             }
 
@@ -584,66 +598,27 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                     if ( $name == $tickets_instances_column[ 'field_name' ] ) {
 
+                        $ticket_instance = new \Tickera\TC_Ticket_Instance( $post_id );
                         $post_field_type = \Tickera\TC_Tickets_Instances::check_field_property( $tickets_instances_column[ 'field_name' ], 'post_field_type' );
                         $field_id = $tickets_instances_column[ 'id' ];
                         $field_name = $tickets_instances_column[ 'field_name' ];
 
-                        $ticket_instance_obj = new \Tickera\TC_Ticket_Instance( $post_id );
-                        $ticket_instance_object = apply_filters( 'tc_ticket_instance_object_details', $ticket_instance_obj->details );
-
                         if ( isset( $post_field_type ) && 'post_meta' == $post_field_type ) {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance_object->ID, $ticket_instance_object->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ), $field_id ) );
+                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ), $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance_object->ID, $ticket_instance_object->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ) ) );
-                            }
-
-                        } elseif ( isset( $post_field_type ) && 'post_status' == $post_field_type ) {
-
-                            $order_status = get_post( $ticket_instance_object->post_parent );
-
-                            if ( isset( $order_status->post_status ) && ! empty( $order_status->post_status ) ) {
-
-                                if ( strrpos( $order_status->post_status, '_' ) ) {
-                                    $new_value = str_replace( '_', ' ', $order_status->post_status );
-
-                                } else {
-                                    $new_value = str_replace( '-', ' ', $order_status->post_status );
-                                }
-
-                                $tc_post_status_color = array(
-                                    'order_fraud' => 'tc_order_fraud',
-                                    'order_received' => 'tc_order_received',
-                                    'order_paid' => 'tc_order_paid',
-                                    'order_cancelled' => 'tc_order_cancelled',
-                                    'order_refunded' => 'tc_order_fraud',
-                                    'wc-cancelled' => 'tc_order_cancelled',
-                                    'wc-completed' => 'tc_order_paid',
-                                    'wc-processing' => 'tc_order_received',
-                                    'wc-pending' => 'tc_order_received',
-                                    'wc-on-hold' => 'tc_order_hold',
-                                    'wc-refunded' => 'tc_order_fraud',
-                                    'wc-failed' => 'tc_order_fraud'
-                                );
-
-                                $color = isset( $tc_post_status_color[ $order_status->post_status ] ) ? $tc_post_status_color[ $order_status->post_status ] : 'tc_order_received';
-                                echo wp_kses_post( sprintf(
-                                    /* translators: 1: Order status color identifier 2: Order status name */
-                                    __( '<span class="%1$s">%2$s</span>', 'tickera-event-ticketing-system' ),
-                                    esc_attr( $color ),
-                                    esc_html( ucwords( $new_value ) )
-                                ) );
+                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ) ) );
                             }
 
                         } else {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance_object->ID, ( isset( $ticket_instance_object->{$post_field_type} ) ? $ticket_instance_object->{$post_field_type} : $ticket_instance_object->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ], $field_id ) );
+                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ], $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance_object->ID, ( isset( $ticket_instance_object->{$post_field_type} ) ? $ticket_instance_object->{$post_field_type} : $ticket_instance_object->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ] ) );
+                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ] ) );
                             }
                         }
                     }

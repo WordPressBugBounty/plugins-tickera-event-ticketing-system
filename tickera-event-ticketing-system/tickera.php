@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.2
+ * Version: 3.5.5.3
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.2';
+        var $version = '3.5.5.3';
 
         var $title = 'Tickera';
 
@@ -139,6 +139,8 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             add_action( 'admin_enqueue_scripts', array($this, 'admin_scripts_styles') );
             // Add plugin admin menu
             add_action( 'admin_menu', array($this, 'add_admin_menu') );
+            // Load payment gateways
+            add_action( 'plugins_loaded', array($this, 'load_payment_gateway_addons'), 8 );
             // Load add-ons
             add_action( 'plugins_loaded', array($this, 'load_addons'), 9 );
             // Add plugin newtork admin menu
@@ -252,7 +254,32 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             if ( version_compare( get_bloginfo( 'version' ), '6.5', '>=' ) ) {
                 add_filter( 'wp_plugin_dependencies_slug', array($this, 'set_dependencies_slug') );
             }
-            add_action( 'wp_loaded', array($this, 'update_option_names') );
+            add_action( 'admin_init', array($this, 'update_option_names') );
+            add_action( 'admin_init', array($this, 'update_discount_settings') );
+        }
+
+        /**
+         * Align discount type with the new discount scope filed.
+         * @return void
+         * @since 3.5.5.3
+         */
+        function update_discount_settings() {
+            $discounts = ( new TC_Discounts_Search() )->get_results();
+            foreach ( $discounts as $discount ) {
+                $discount_type = get_post_meta( $discount->ID, 'discount_type', true );
+                $discount_scope = get_post_meta( $discount->ID, 'discount_scope', true );
+                if ( !$discount_scope ) {
+                    switch ( $discount_type ) {
+                        case 1:
+                        case 2:
+                            add_post_meta( $discount->ID, 'discount_scope', 'per_item' );
+                            break;
+                        case 3:
+                            add_post_meta( $discount->ID, 'discount_scope', 'per_order' );
+                            break;
+                    }
+                }
+            }
         }
 
         /**
@@ -940,11 +967,11 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $tc_age_check = ( isset( $tc_general_settings['show_age_check'] ) ? $tc_general_settings['show_age_check'] : 'no' );
             if ( 'yes' == $tc_age_check ) {
                 $tc_age_text = ( isset( $tc_general_settings['age_text'] ) ? $tc_general_settings['age_text'] : __( 'I hereby declare that I am 16 years or older', 'tickera-event-ticketing-system' ) );
-                echo wp_kses_post( sprintf( 
+                echo wp_kses( sprintf( 
                     /* translators: %s: Age */
                     __( '<label class="tc-age-check-label"><input type="checkbox" id="tc_age_check" class="tc_age_check"/> %s</label>', 'tickera-event-ticketing-system' ),
                     esc_html( $tc_age_text )
-                 ) );
+                 ), wp_kses_allowed_html( 'tickera' ) );
             }
         }
 
@@ -2795,8 +2822,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 } elseif ( 'empty_cart' == $cart_action ) {
                     $this->remove_order_session_data( false );
                 } elseif ( 'apply_coupon' == $cart_action ) {
-                    $discount = new \Tickera\TC_Discounts();
-                    $discount->discounted_cart_total();
+                    ( new \Tickera\TC_Discounts() )->discounted_cart_total();
                 }
                 /*
                  * Additional validation when proceeding to checkout.
@@ -3244,11 +3270,78 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         }
 
         /**
-         * Load payment gateways
+         * Load Payment Gateways
+         * @return void
+         * @throws \Exception
+         */
+        function load_payment_gateway_addons() {
+            global $tc_gateways_currencies;
+            require_once $this->plugin_dir . 'includes/classes/class.payment_gateways.php';
+            $post_data = tickera_sanitize_array( $_POST, true, true );
+            $post_data = ( $post_data ? $post_data : [] );
+            if ( !is_array( $tc_gateways_currencies ) ) {
+                $tc_gateways_currencies = array();
+            }
+            if ( isset( $_post['gateway_settings'] ) ) {
+                $settings = get_option( 'tickera_settings' );
+                if ( isset( $_post['tc']['gateways']['active'] ) ) {
+                    $settings['gateways']['active'] = $post_data['tc']['gateways']['active'];
+                } else {
+                    $settings['gateways']['active'] = [];
+                }
+                update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
+            }
+            $dir = $this->plugin_dir . 'includes/gateways/';
+            $gateway_plugins = [];
+            $gateway_plugins_originals = [];
+            if ( !is_dir( $dir ) ) {
+                return;
+            }
+            if ( !($dh = opendir( $dir )) ) {
+                return;
+            }
+            while ( ($plugin = readdir( $dh )) !== false ) {
+                if ( version_compare( phpversion(), '5.3', '<' ) ) {
+                    if ( in_array( $plugin, $this->gateways_require_53php() ) ) {
+                        $plugin = str_replace( '.php', '.53', $plugin );
+                    }
+                }
+                if ( substr( $plugin, -4 ) == '.php' ) {
+                    if ( $this->can_use_gateway( $plugin ) || is_network_admin() ) {
+                        $gateway_plugins[] = trailingslashit( $dir ) . $plugin;
+                        $gateway_plugins_originals[] = $plugin;
+                    }
+                }
+            }
+            closedir( $dh );
+            $gateway_plugins = apply_filters( 'tc_gateway_plugins', $gateway_plugins, $gateway_plugins_originals );
+            sort( $gateway_plugins );
+            foreach ( $gateway_plugins as $file ) {
+                include $file;
+            }
+            do_action( 'tc_load_gateway_plugins' );
+            global $tc_gateway_plugins, $tc_gateway_active_plugins;
+            $gateways = $this->get_setting( 'gateways' );
+            foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+                $class = $plugin[0];
+                if ( isset( $gateways['active'] ) && in_array( $code, (array) $gateways['active'] ) && class_exists( $class ) && !$plugin[3] ) {
+                    $tc_gateway_active_plugins[] = new $class();
+                }
+                $gateway = new $class();
+                if ( isset( $gateway->currencies ) && is_array( $gateway->currencies ) ) {
+                    $tc_gateways_currencies = array_merge( $gateway->currencies, $tc_gateways_currencies );
+                }
+            }
+            $settings = get_option( 'tickera_settings', [] );
+            $settings['gateways']['currencies'] = apply_filters( 'tc_gateways_currencies', $tc_gateways_currencies );
+            update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
+        }
+
+        /**
+         * Load Add-ons
+         * @return void
          */
         function load_addons() {
-            require_once $this->plugin_dir . 'includes/classes/class.payment_gateways.php';
-            $this->load_payment_gateway_addons();
             // Load Ticket Template Elements
             if ( defined( 'TC_DEV' ) ) {
                 require_once $this->plugin_dir . 'includes/classes/class.ticket_template_elements_new.php';
@@ -3339,68 +3432,6 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     return ( in_array( $plugin, $premium_gateways ) ? false : true );
                 }
             }
-        }
-
-        function load_payment_gateway_addons() {
-            global $tc_gateways_currencies;
-            $post_data = tickera_sanitize_array( $_POST, true, true );
-            $post_data = ( $post_data ? $post_data : [] );
-            if ( !is_array( $tc_gateways_currencies ) ) {
-                $tc_gateways_currencies = array();
-            }
-            if ( isset( $_post['gateway_settings'] ) ) {
-                $settings = get_option( 'tickera_settings' );
-                if ( isset( $_post['tc']['gateways']['active'] ) ) {
-                    $settings['gateways']['active'] = $post_data['tc']['gateways']['active'];
-                } else {
-                    $settings['gateways']['active'] = [];
-                }
-                update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
-            }
-            $dir = $this->plugin_dir . 'includes/gateways/';
-            $gateway_plugins = [];
-            $gateway_plugins_originals = [];
-            if ( !is_dir( $dir ) ) {
-                return;
-            }
-            if ( !($dh = opendir( $dir )) ) {
-                return;
-            }
-            while ( ($plugin = readdir( $dh )) !== false ) {
-                if ( version_compare( phpversion(), '5.3', '<' ) ) {
-                    if ( in_array( $plugin, $this->gateways_require_53php() ) ) {
-                        $plugin = str_replace( '.php', '.53', $plugin );
-                    }
-                }
-                if ( substr( $plugin, -4 ) == '.php' ) {
-                    if ( $this->can_use_gateway( $plugin ) || is_network_admin() ) {
-                        $gateway_plugins[] = trailingslashit( $dir ) . $plugin;
-                        $gateway_plugins_originals[] = $plugin;
-                    }
-                }
-            }
-            closedir( $dh );
-            $gateway_plugins = apply_filters( 'tc_gateway_plugins', $gateway_plugins, $gateway_plugins_originals );
-            sort( $gateway_plugins );
-            foreach ( $gateway_plugins as $file ) {
-                include $file;
-            }
-            do_action( 'tc_load_gateway_plugins' );
-            global $tc_gateway_plugins, $tc_gateway_active_plugins;
-            $gateways = $this->get_setting( 'gateways' );
-            foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
-                $class = $plugin[0];
-                if ( isset( $gateways['active'] ) && in_array( $code, (array) $gateways['active'] ) && class_exists( $class ) && !$plugin[3] ) {
-                    $tc_gateway_active_plugins[] = new $class();
-                }
-                $gateway = new $class();
-                if ( isset( $gateway->currencies ) && is_array( $gateway->currencies ) ) {
-                    $tc_gateways_currencies = array_merge( $gateway->currencies, $tc_gateways_currencies );
-                }
-            }
-            $settings = get_option( 'tickera_settings', [] );
-            $settings['gateways']['currencies'] = apply_filters( 'tc_gateways_currencies', $tc_gateways_currencies );
-            update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
         }
 
         function show_page_tab( $tab ) {
@@ -3784,6 +3815,15 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $payment_class_name = sanitize_text_field( $session['cart_info']['gateway_class'] );
             $payment_class_name = ( class_exists( $payment_class_name ) ? $payment_class_name : "\\Tickera\\Gateway\\" . $payment_class_name );
             $payment_gateway = new $payment_class_name();
+            /**
+             * The action is executed immediately after the order is created, regardless of the status.
+             *
+             * @param $order_id string          The order title (e.g C2F09IE46)
+             * @param $status string            Order status (e.g order_paid, order_received)
+             * @param $cart_contents string     Ticket type id as the key and value as the quantity (e.g [ 24 => 1, 65 => 3 ] )
+             * @param $cart_info array          Includes the buyer and attendee information
+             * @param $payment_info array       Totals, discounts, fee, payment method, soon
+             */
             do_action(
                 'tc_order_created',
                 $order_id,

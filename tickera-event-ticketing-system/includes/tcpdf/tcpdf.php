@@ -4547,7 +4547,7 @@ class TCPDF {
      * @since 5.9.186 (2012-09-13)
      */
     public function getAbsFontMeasure($s) {
-        return ($s * $this->FontSize / 1000);
+        return ($s * $this->FontSize / 940);
     }
 
     /**

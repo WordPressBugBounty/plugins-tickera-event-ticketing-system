@@ -4400,6 +4400,8 @@ if ( ! function_exists( 'tickera_get_event_limit_level_option' ) ) {
  * Get tickets drop down (used in the discount codes admin page)
  * @param string $field_name
  * @param string $post_id
+ * @param string $checked
+ * @param string $field
  *
  * Deprecated function "tc_get_ticket_types".
  * @since 3.5.3.0
@@ -4476,8 +4478,7 @@ if ( ! function_exists( 'tickera_get_discount_types' ) ) {
         }
         ?>
         <select name="<?php echo esc_attr( $field_name ); ?>_post_meta" class="postform" id="<?php echo esc_attr( $field_name ); ?>">
-            <option value="1" <?php selected( $currently_selected, '1', true ); ?>><?php esc_html_e( 'Fixed Amount (per item)', 'tickera-event-ticketing-system' ); ?></option>
-            <option value="3" <?php selected( $currently_selected, '3', true ); ?>><?php esc_html_e( 'Fixed Amount (per order)', 'tickera-event-ticketing-system' ); ?></option>
+            <option value="1" <?php selected( $currently_selected, '1', true ); ?>><?php esc_html_e( 'Fixed Amount', 'tickera-event-ticketing-system' ); ?></option>
             <option value="2" <?php selected( $currently_selected, '2', true ); ?>><?php esc_html_e( 'Percentage (%)', 'tickera-event-ticketing-system' ); ?></option>
         </select>
         <?php

@@ -111,7 +111,8 @@ if ( ( isset( $_GET[ 'action' ] ) ) && $_GET[ 'action' ] == 'tc_duplicate' ) {
         // Clone post meta onto new post
         $post_meta = get_post_meta( $post_id );
         foreach ( $post_meta as $key => $value ) {
-            add_post_meta( $new_post_id, sanitize_key( $key ), sanitize_text_field( $value[ 0 ] ) );
+            $value = addslashes( $value[ 0 ] );
+            add_post_meta( $new_post_id, sanitize_key( $key ), sanitize_text_field( $value ) );
         }
 
         // Finally, redirect to the edit post screen for the new draft

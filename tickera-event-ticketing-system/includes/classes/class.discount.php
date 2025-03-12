@@ -61,26 +61,16 @@ if ( ! class_exists( 'Tickera\TC_Discount' ) ) {
             ]);
 
             if ( $post != NULL ) {
-                return reset( $post );
 
-            } else {
-                return false;
-            }
-        }
+                $post = reset( $post );
+                $post->details = new \stdClass();
+                $fields = ( new \Tickera\TC_Discounts() )->get_discount_fields();
 
-        function get_discount_id_by_name( $slug ) {
+                foreach ( $fields as $field ) {
+                    $post->details->{$field[ 'field_name' ]} = get_post_meta( $post->ID, $field[ 'field_name' ], true );
+                }
 
-            $args = array(
-                'name' => $slug,
-                'post_type' => 'tc_discounts',
-                'post_status' => 'any',
-                'posts_per_page' => 1
-            );
-
-            $post = get_posts( $args );
-
-            if ( $post ) {
-                return $post[ 0 ]->ID;
+                return $post;
 
             } else {
                 return false;

@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.7.1
-Stable tag: 3.5.5.2
+Tested up to: 6.7.2
+Stable tag: 3.5.5.
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -157,7 +157,18 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 
   == Changelog ==
 
-= 3.5.5.2 XX/XX/XXXX =
+= 3.5.5.3 12/03/2025 =
+* Ticket template spacing issue on bold text. [Fixed]
+* New "Enable line breaks" option in Ticket Template's Ticket Description Element.
+* Disable default payment gateways when Tickera is running alongside Bridge for Woocommerce. 
+* Duplicated Ticket Template fail to save existing elements. [Fixed]
+* The PayU Latam payment method is unable to proceed to the payment form. [Fixed]
+* Deprecated "tc_tickets_instances_init_table_by_order_statuses" filter hook.
+* Missing age confirmation checkbox in checkout page. [Fixed]
+* New discount scope option in Tickera > Discount Codes.
+* Broken Access Control vulnerability via Event duplication. [Fixed]
+
+= 3.5.5.2 22/02/2025 =
 * Updated "Offline Payment Gateway" > "Visible to admin only" option to "Visible to user roles".
 * Discontinued "tc_change_user_role_offline_payment" filter hook.
 * Freemius SDK updated to v2.11

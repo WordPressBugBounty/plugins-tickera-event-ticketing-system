@@ -118,7 +118,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
             global $wpdb;
 
             if ( $post_id !== false ) {
-                if ( ! ( isset( $_GET[ 'post' ] ) || isset( $_POST[ 'post' ] ) || ( isset( $_REQUEST[ 'action' ] ) && 'tc_duplicate_event_as_draft' == $_REQUEST[ 'action' ] ) ) ) {
+                if ( ! ( isset( $_GET[ 'post' ] ) || isset( $_POST[ 'post' ] ) || ( isset( $_REQUEST[ 'action' ] ) && 'tc_duplicate_event_as_draft' == $_REQUEST[ 'action' ] ) || current_user_can( 'manage_options' ) ) ) {
                     wp_die( 'No event to duplicate has been supplied!' );
                 }
             }

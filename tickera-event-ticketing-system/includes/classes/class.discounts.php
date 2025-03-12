@@ -11,7 +11,7 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
 
         var $form_title = '';
         var $discount_message = '';
-        var $valid_admin_fields_type = array( 'text', 'textarea', 'image', 'function' );
+        var $valid_admin_fields_type = array( 'text', 'textarea', 'image', 'function', 'select' );
 
         function __construct() {
             $this->form_title = __( 'Discount Codes', 'tickera-event-ticketing-system' );
@@ -110,7 +110,13 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
          */
         public static function discount_used_times( $discount_code, $user_id = null ) {
 
-            $discount_used_times = 0;
+            $discount_per_item_used_times = 0;
+            $discount_per_order_used_times = 0;
+
+            // Initialize Variables
+            $discount = ( new \Tickera\TC_Discount() )->get_discount_by_code( $discount_code );
+            $discount_scope = isset( $discount->details->discount_scope ) ? $discount->details->discount_scope : 'per_item';
+            $discount_availability = array_filter( explode( ',', $discount->details->discount_availability ) );
 
             // Retrieve the orders that are associated with the discount code
             $orders = get_posts( [
@@ -122,17 +128,9 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                 'post_status' => 'any'
             ] );
 
-            $discount = new \Tickera\TC_Discount();
-            $discount_id = $discount->get_discount_by_code( $discount_code )->ID;
-
-            // Generate discount object
-            $discount_object = new \Tickera\TC_Discount( $discount_id );
-
-            // Initialize Variables
-            $discount_type = $discount_object->details->discount_type;
-            $discount_availability = array_filter( explode( ',', $discount_object->details->discount_availability ) );
-
             foreach ( $orders as $order ) {
+
+                $applied = false;
 
                 $ticket_instances = get_posts( [
                     'posts_per_page' => -1,
@@ -142,25 +140,22 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
 
                 foreach ( $ticket_instances as $ticket_instance ) {
 
-                    $ticket_type_id = get_post_meta( $ticket_instance->ID, 'ticket_type_id', true );
+                    $ticket = new \Tickera\TC_Ticket_Instance( $ticket_instance->ID );
+                    $ticket_type_id = $ticket->details->ticket_type_id;
+                    $discount_amount = $ticket->details->ticket_discount;
 
-                    switch ( $discount_type ) {
-
-                        case 1: // Fixed amount per item
-                        case 2: // Percentage
-                            if ( in_array( $ticket_type_id, $discount_availability ) || ! $discount_availability ) {
-                                $discount_used_times = get_post_meta( $ticket_instance->ID, 'ticket_discount', true ) ? ( $discount_used_times + 1 ) : $discount_used_times;
-                            }
-                            break;
-
-                        case 3: // Fixed amount per order
-                            $discount_used_times++;
-                            break 2;
+                    if ( in_array( $ticket_type_id, $discount_availability ) || ! $discount_availability ) {
+                        $discount_per_item_used_times = $discount_amount ? ( $discount_per_item_used_times + 1 ) : $discount_per_item_used_times;
+                        $applied = true;
                     }
+                }
+
+                if ( $applied ) {
+                    $discount_per_order_used_times++;
                 }
             }
 
-            return $discount_used_times;
+            return ( 'per_item' == $discount_scope ) ? $discount_per_item_used_times : $discount_per_order_used_times;
         }
 
         /**
@@ -306,20 +301,23 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                     // Initialize Discount Variables
                     $discount_object = new \Tickera\TC_Discount( $discount_object->ID );
                     $discount_details = $discount_object->details;
-                    $discount_availability = explode( ',', $discount_details->discount_availability );
-                    $discount_on_user_roles = isset( $discount_details->discount_on_user_roles ) ? array_filter( explode( ',', $discount_details->discount_on_user_roles ) ) : [];
+
+                    $discount_availability = isset( $discount_details->discount_availability ) ? $discount_details->discount_availability : '';
+                    $discount_availability = ( $discount_availability ) ? explode( ',', $discount_details->discount_availability ) : [];
+                    $discount_availability = array_filter( $discount_availability );
+
+                    $discount_on_user_roles = isset( $discount_details->discount_on_user_roles ) ? $discount_details->discount_on_user_roles : '';
+                    $discount_on_user_roles =  ( $discount_on_user_roles ) ? explode( ',', $discount_on_user_roles ) : [];
+                    $discount_on_user_roles = array_filter( $discount_on_user_roles );
 
                     // Calculate the number of times that a discount code was used
                     $usage_limit = ( '' != $discount_details->usage_limit ) ? $discount_details->usage_limit : 999999999;
                     $number_of_discount_uses = self::discount_used_times( $discount_code );
                     $discount_codes_available = (int) $usage_limit - (int) $number_of_discount_uses;
 
-                    // Prepare logic for discount availability per ticket type
-                    $array_diff = ( $discount_availability ) ? array_diff( array_keys( $tc->get_cart_cookie() ), array_filter( $discount_availability ) ) : null;
-
                     if ( $discount_object->details->post_status != 'publish' ) {
 
-                        // Check if discount code if published
+                        // Check if discount code is published
                         $discount_error_message = __( 'Discount code cannot be found', 'tickera-event-ticketing-system' );
 
                     } elseif ( $current_date >= $discount_object->details->expiry_date ) {
@@ -332,17 +330,10 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                         // Check if the discount code reach the maximum used limit
                         $discount_error_message = __( 'Discount code invalid or expired', 'tickera-event-ticketing-system' );
 
-                    } elseif ( ( isset( $discount_object->details->discount_on_user_roles ) && $discount_on_user_roles )
-                        && ( empty( array_intersect( $current_user_roles, $discount_on_user_roles ) ) ) ) {
+                    } elseif ( $discount_on_user_roles && empty( array_intersect( $current_user_roles, $discount_on_user_roles ) ) ) {
 
                         // Check if the user has a valid user role
                         $discount_error_message = __( 'Discount code is not available', 'tickera-event-ticketing-system' );
-
-                    } elseif ( 3 != $discount_details->discount_type && array_filter( $discount_availability )
-                        && $array_diff && count( $array_diff ) == count( array_keys( $tc->get_cart_cookie() ) ) ) {
-
-                        // If not available to all tickets. Message will only display if there's only 1 item in the cart
-                        $discount_error_message = __( "Discount code is not valid for the ticket type(s) in the cart.", 'tickera-event-ticketing-system' );
 
                     } elseif ( array_filter( $discount_availability ) ) {
 
@@ -362,11 +353,12 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                         // Apply discount if Post validation succeeded. Otherwise, display error message
                         if ( $tc_discount_code_post_validation[ 'validated' ] ) {
 
-                            $discount_applied_count = 0;
                             $cart_contents = ( isset( $discount_available_per_ticket ) ) ? $discount_availability : array_keys( $cart_contents );
 
                             foreach ( $cart_contents as $ticket_type_id ) {
+
                                 $cart_contents = $tc->get_cart_cookie();
+
                                 if ( isset( $cart_contents[ $ticket_type_id ] ) ) {
 
                                     $ordered_count = $cart_contents[ $ticket_type_id ];
@@ -383,50 +375,50 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                                         $max_discount = $ordered_count;
                                     }
 
-                                    // Current cart ordered count vs available discount
-                                    switch ( $discount_details->discount_type ) {
+                                    if ( 1 == $discount_details->discount_type && 'per_item' == $discount_details->discount_scope ) {
 
-                                        case 1: // IF: Fixed amount per item
+                                        // Fixed amount per item
+                                        if ( $max_discount > 0 ) {
                                             $discount_value_per_each = ( $discount_object->details->discount_value > $ticket_price ) ? $ticket_price : $discount_object->details->discount_value;
-                                            if ( $max_discount > 0 ) {
-                                                for ( $i = 1; $i <= (int) $max_discount; $i++ ) {
-                                                    $discount_value = $discount_value + $discount_value_per_each;
-                                                    $number_of_discount_uses++;
-                                                    $discount_codes_available = $usage_limit - $number_of_discount_uses;
-                                                }
-                                            }
-                                            break;
-
-                                        case 2: // IF: Percentage
-                                            $discount_rounded_value = $ticket_price * ( $discount_object->details->discount_value / 100 );
-                                            $discount_value_per_each = ( $discount_rounded_value > $ticket_price ) ? $ticket_price : $discount_rounded_value;
-
-                                            if ( $max_discount > 0 ) {
-                                                $discount_value = $discount_value + $discount_value_per_each * $ordered_count;
-                                                $number_of_discount_uses++;
-                                                $discount_codes_available = $usage_limit - $number_of_discount_uses;
-                                            }
-                                            break;
-
-                                        case 3: // IF: Fixed Per Order
-                                            $discount_value = $discount_object->details->discount_value;
-                                            break;
-
-                                        default: // Fallback discount value
-                                            $discount_value_per_each = ( $ticket_price / 100 ) * $discount_object->details->discount_value;
-                                            if ( $max_discount > 0 ) {
+                                            for ( $i = 1; $i <= (int) $max_discount; $i++ ) {
                                                 $discount_value = $discount_value + $discount_value_per_each;
                                                 $number_of_discount_uses++;
                                                 $discount_codes_available = $usage_limit - $number_of_discount_uses;
                                             }
-                                    }
+                                        }
 
-                                    /*
-                                     * Count the discount usage in the current cart.
-                                     * Not applicable if discount type is fixed per order.
-                                     */
-                                    if ( $discount_object->details->discount_type != 3 && $discount_value ) {
-                                        $discount_applied_count++;
+                                    } elseif ( 1 == $discount_details->discount_type && 'per_order' == $discount_object->details->discount_scope ) {
+
+                                        // Fixed amount per order
+                                        if ( $max_discount > 0 ) {
+                                            $discount_value = $discount_object->details->discount_value;
+                                        }
+
+                                    } elseif ( 2 == $discount_details->discount_type && 'per_item' == $discount_object->details->discount_scope ) {
+
+                                        // Percentage per item
+                                        if ( $max_discount > 0 ) {
+                                            $discount_rounded_value = $ticket_price * ( $discount_object->details->discount_value / 100 );
+                                            $discount_value_per_each = ( $discount_rounded_value > $ticket_price ) ? $ticket_price : $discount_rounded_value;
+                                            for ( $i = 1; $i <= (int) $max_discount; $i++ ) {
+                                                $discount_value = $discount_value + $discount_value_per_each;
+                                                $number_of_discount_uses++;
+                                                $discount_codes_available = $usage_limit - $number_of_discount_uses;
+                                            }
+                                        }
+
+                                    } elseif ( 2 == $discount_details->discount_type && 'per_order' == $discount_object->details->discount_scope ) {
+
+                                        // Percentage per order
+                                        if ( $max_discount > 0 ) {
+                                            $discount_rounded_value = $cart_subtotal * ( $discount_object->details->discount_value / 100 );
+                                            $discount_value =  ( $discount_rounded_value > $cart_subtotal ) ? $cart_subtotal : $discount_rounded_value;
+                                        }
+
+                                    } else {
+
+                                        // Fallback discount value
+                                        $discount_value = 0;
                                     }
                                 }
                             }
@@ -445,10 +437,23 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                     $this->unset_discount();
                     $discount->discount_message = __( 'Discount code cannot be found', 'tickera-event-ticketing-system' );
                 }
-            }
 
-            if ( isset( $discount_applied_count ) ) {
-                $discount->discount_message = ( $discount_applied_count ) ? sprintf( /* translators: %s: The number of cart items a discount code is applied. */ __( 'Discount applied for %s item(s)', 'tickera-event-ticketing-system' ), $discount_applied_count ) : __( 'Discount code applied.', 'tickera-event-ticketing-system' );
+                if ( $discount_value ) {
+
+                    if ( count( $cart_contents ) > 1
+                        && 'per_item' == $discount_details->discount_scope
+                        && isset( $discount_available_per_ticket ) && ( count( $discount_available_per_ticket ) != count( $cart_contents ) ) ) {
+
+                        // Discount code is applied for specific ticket types
+                        $discount->discount_message = __( 'Discount code is partially applied.', 'tickera-event-ticketing-system' );
+
+                    } else {
+                        $discount->discount_message = __( 'Discount code applied.', 'tickera-event-ticketing-system' );
+                    }
+
+                } else {
+                    $discount->discount_message = __( 'Discount code invalid or expired.', 'tickera-event-ticketing-system' );
+                }
             }
 
             $discount_value_total = round( $discount_value, 2 );
@@ -510,6 +515,19 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                     'post_field_type' => 'post_meta'
                 ),
                 array(
+                    'field_name' => 'discount_scope',
+                    'field_title' => __( 'Discount Scope', 'tickera-event-ticketing-system' ),
+                    'field_type' => 'select',
+                    'options' => [
+                        'per_item' => __( 'Per Item', 'tickera-event-ticketing-system' ),
+                        'per_order' => __( 'Per Order', 'tickera-event-ticketing-system' )
+                    ],
+                    'field_description' => '',
+                    'form_visibility' => true,
+                    'table_visibility' => true,
+                    'post_field_type' => 'post_meta'
+                ),
+                array(
                     'field_name' => 'discount_value',
                     'field_title' => __( 'Discount Value', 'tickera-event-ticketing-system' ),
                     'field_type' => 'text',
@@ -538,7 +556,13 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                     'field_description' => 'Select ticket type(s)',
                     'form_visibility' => true,
                     'table_visibility' => true,
-                    'post_field_type' => 'post_meta'
+                    'post_field_type' => 'post_meta',
+                    'conditional' => array(
+                        'field_name' => 'discount_scope',
+                        'field_type' => 'select',
+                        'value' => 'per_item',
+                        'action' => 'show'
+                    ),
                 ),
 
                 /*
