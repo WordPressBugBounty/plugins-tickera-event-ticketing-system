@@ -698,15 +698,33 @@ if ( ! function_exists( 'tickera_unistr_to_ords' ) ) {
  */
 if ( ! function_exists( 'tickera_format_date' ) ) {
 
-    function tickera_format_date( $timestamp, $date_only = false ) {
+    function tickera_format_date( $timestamp, $date_only = false, $local = true ) {
 
-        $format = get_option( 'date_format' );
-        if ( ! $date_only ) {
-            $format .= ' - ' . get_option( 'time_format' );
+        if ( $local ) {
+
+            $format = get_option( 'date_format' );
+
+            if ( ! $date_only ) {
+                $format .= ' - ' . get_option( 'time_format' );
+            }
+
+            $date = get_date_from_gmt( date_i18n( 'Y-m-d H:i:s', (int) $timestamp ) );
+            return date_i18n( $format, strtotime( $date ) );
+
+        } else {
+
+            $format = $date_only ? get_option( 'date_format' ) : get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
+            return date_i18n( $format, $timestamp );
         }
+    }
+}
 
-        $date = get_date_from_gmt( date( 'Y-m-d H:i:s', (int) $timestamp ) );
-        return date_i18n( $format, strtotime( $date ) );
+if ( ! function_exists( 'ticker_timestamp_to_local' ) ) {
+
+    function tickera_timestamp_to_local( $timestamp = null ) {
+        $local_datetime = wp_date( 'Y-m-d H:i:s', $timestamp );
+        $local_timestamp = strtotime( $local_datetime );
+        return $local_timestamp;
     }
 }
 

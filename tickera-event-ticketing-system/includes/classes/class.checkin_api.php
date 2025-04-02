@@ -400,7 +400,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
             }
 
             $basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id ), true );
-            $date_checked = isset( $_GET[ 'timestamp' ] ) ? intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) : date_i18n( 'U' );
+            $date_checked = isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local();
 
             $calendar_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $ticket_id ), true );
             $calendar_basis = $calendar_basis ? $calendar_basis : 'no';
@@ -601,7 +601,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
                                  */
                                 $latest_checkin = end( $passed_checkins );
                                 $checkouts[ 'outs' ][] = [
-                                    'date_checked' => isset( $_GET[ 'timestamp' ] ) ? intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) : time(),
+                                    'date_checked' => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local(),
                                     'status' => $latest_checkin[ 'status' ],
                                     'api_key_id' => $latest_checkin[ 'api_key_id' ]
                                 ];
@@ -751,7 +751,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
                 }
 
                 $new_checkin = [
-                    "date_checked" => isset( $_GET[ 'timestamp' ] ) ? intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) : time(),
+                    "date_checked" => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local(),
                     "status" => $check_in_status ? apply_filters( 'tc_checkin_status_name', 'Pass' ) : apply_filters( 'tc_checkin_status_name', 'Fail' ),
                     "api_key_id" => (int) $api_key_id
                 ];

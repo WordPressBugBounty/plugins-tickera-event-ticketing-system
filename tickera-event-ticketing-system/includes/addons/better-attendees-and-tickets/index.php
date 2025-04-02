@@ -731,7 +731,7 @@ if ( ! function_exists( 'Tickera\Addons\tickera_attendees_check_in_details_metab
                 arsort( $ticket_checkins );
                 foreach ( $ticket_checkins as $ticket_checkin ) { ?>
                     <tr class="alternate">
-                    <td><?php echo esc_html( tickera_format_date( $ticket_checkin[ 'date_checked' ] ) ); ?></td>
+                    <td><?php echo esc_html( tickera_format_date( $ticket_checkin[ 'date_checked' ], false, false ) ); ?></td>
                     <td><?php echo wp_kses_post( apply_filters( 'tc_checkins_status', $ticket_checkin[ 'status' ] ) ); ?></td>
                     <td><?php echo wp_kses_post( apply_filters( 'tc_checkins_api_key_id', $ticket_checkin[ 'api_key_id' ] ) ); ?></td>
                     <?php if ( current_user_can( 'manage_options' ) || current_user_can( 'delete_checkins_cap' ) ) { ?>

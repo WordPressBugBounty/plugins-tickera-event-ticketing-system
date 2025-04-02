@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.3
+ * Version: 3.5.5.4
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.3';
+        var $version = '3.5.5.4';
 
         var $title = 'Tickera';
 

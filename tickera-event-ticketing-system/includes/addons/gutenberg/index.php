@@ -1740,7 +1740,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_tc_gutentick' ) ) {
                 if ( $content ) {
                     $html .= $content;
                     $html .= '</div>';
-                    echo wp_kses_post( $html );
+                    echo wp_kses( $html, wp_kses_allowed_html( 'add_to_cart' ) );
 
                 } else {
                     esc_html_e( 'No associated ticket types (products) found. Try selecting another event.', 'tickera-event-ticketing-system' );

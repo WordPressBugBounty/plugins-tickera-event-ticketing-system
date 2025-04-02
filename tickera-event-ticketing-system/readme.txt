@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.7.2
-Stable tag: 3.5.5.
+Stable tag: 3.5.5.4
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,12 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.4 02/04/2025 =
+* Updated Braintree Server and Client Side SDK.
+* Unable to checkin per calendar basis due to timestamp discrepancy. [Fixed]
+* Gutenberg "Event - Add to Cart" block's dropdown type elements are being removed. [Fixed]
+* Terms and Conditions add-on: Tinymce unable to switch to "Text" editor.
 
 = 3.5.5.3 12/03/2025 =
 * Ticket template spacing issue on bold text. [Fixed]

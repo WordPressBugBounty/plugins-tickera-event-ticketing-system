@@ -26,7 +26,8 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'disabled'              => [],
                 'style'                 => [],
                 'data-column'           => [],
-                'data-tc-check-value'   => []
+                'data-tc-check-value'   => [],
+                '$default_attributes'   => []
             ];
 
             $default_form_attributes = [
@@ -48,7 +49,10 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'target'            => [],
                 'formnovalidate'    => [],
                 'action'            => [],
-                'method'            => []
+                'method'            => [],
+                'inputmode'         => [],
+                'aria-label'        => [],
+                'aria-describedby'  => []
             ];
 
             $default_conditional_attributes = [
@@ -96,28 +100,33 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'span'          => $default_attributes,
                 'select'        => array_merge( $default_attributes, $default_form_attributes ),
                 'input'         => array_merge( $default_attributes, $default_form_attributes, $default_conditional_attributes ),
-                'textarea'      => array_merge( $default_attributes, $default_form_attributes ),
+                'textarea'      => array_merge( $default_attributes, $default_form_attributes, [ 'rows' => [], 'cols' => [], 'aria-hidden' => [] ] ),
                 'option'        => [ 'value' => [], 'selected' => [] ],
                 'table'         => array_merge( $default_attributes, $default_table_attributes ),
                 'tr'            => array_merge( $default_attributes, $default_table_attributes ),
                 'th'            => $default_table_attributes,
                 'td'            => $default_attributes,
-                'button'        => $default_attributes,
+                'button'        => array_merge( $default_attributes, [ 'type' => [], 'data-editor' => [], 'data-wp-editor-id' => [], 'aria-pressed' => [] ] ),
                 'p'             => $default_attributes,
                 'fieldset'      => [],
                 'legend'        => $default_attributes,
                 'form'          => array_merge( $default_attributes, $default_form_attributes ),
-                'img'           => array_merge( $default_attributes, [ 'decoding' => [], 'alt' => [], 'title' => [], 'src' => [], 'width' => [] ] )
+                'img'           => array_merge( $default_attributes, [ 'decoding' => [], 'alt' => [], 'title' => [], 'src' => [], 'width' => [], 'data-wp-editor-id' => [], 'aria-pressed' => [] ] )
             ];
 
             switch( $context ) {
 
                 case 'add_to_cart':
                     $allowed_tags = [
+                        'h3' => [],
+                        'br' => [],
+                        'label' => [ 'class' => [], 'for' => [] ],
+                        'p' => [ 'id' => [], 'class' => [], 'style' => [] ],
+                        'div' => [ 'id' => [], 'class' => [], 'style' => [] ],
                         'form' => [ 'class' => [] ],
-                        'span' => [ 'class' => [] ],
-                        'a' => [ 'id' => [], 'class' => [], 'href' => [], 'data-button-type' => [], 'data-open-method' => [] ],
-                        'input' => [ 'type' => [], 'name' => [], 'class' => [], 'value' => [] ],
+                        'span' => [ 'id' => [], 'class' => [] ],
+                        'a' => [ 'id' => [], 'class' => [], 'href' => [], 'data-button-type' => [], 'data-open-method' => [], 'aria-describedby' => [], 'data-quantity' => [], 'data-product_id' => [], 'data-product_sku' => [], 'aria-label' => [], 'rel' => [], 'data-success_message' => [] ],
+                        'input' => [ 'type' => [], 'name' => [], 'id' => [], 'class' => [], 'value' => [], 'aria-label' => [], 'min' => [], 'max' => [], 'step' => [], 'placeholder' => [], 'inputmode' => [], 'autocomplete' => [] ],
                         'select' => [ 'class' => [] ],
                         'option' => [ 'value' => [], 'selected' => [] ]
                     ];
