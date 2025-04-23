@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.7.2
-Stable tag: 3.5.5.4
+Tested up to: 6.8
+Stable tag: 3.5.5.5
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,12 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.5 23/04/2024 =
+* New "tc_pdf_font_measure_divisor" filter hook. Allow developers to adjust the font space distance.
+* Critical error on Tickera > Tickets Template when running Tickera free version alongside a paid add-on. [Fixed]
+* Render the current checked-in date without converting to the local timezone.
+* New "Display Format" option in Tickera > Ticket Templates > Event Date & Time element.
 
 = 3.5.5.4 02/04/2025 =
 * Updated Braintree Server and Client Side SDK.

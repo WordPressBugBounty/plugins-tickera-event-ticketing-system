@@ -1,6 +1,12 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.5.5 23/04/2024 =
+* New "tc_pdf_font_measure_divisor" filter hook. Allow developers to adjust the font space distance.
+* Critical error on Tickera > Tickets Template when running Tickera free version alongside a paid add-on. [Fixed]
+* Render the current checked-in date without converting to the local timezone.
+* New "Display Format" option in Tickera > Ticket Templates > Event Date & Time element.
+
 = 3.5.5.4 02/04/2025 =
 * Updated Braintree Server and Client Side SDK.
 * Unable to checkin per calendar basis due to timestamp discrepancy. [Fixed]

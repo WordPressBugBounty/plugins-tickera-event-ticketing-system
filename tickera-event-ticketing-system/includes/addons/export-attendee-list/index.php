@@ -259,7 +259,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Export_Mix' ) ) {
                                         $api_key_title = '';
                                     }
 
-                                    $checkins_list[] = tickera_format_date( $checkin[ 'date_checked' ] ) . $api_key_title;
+                                    $checkins_list[] = tickera_format_date( $checkin[ 'date_checked' ], false, false ) . $api_key_title;
                                 }
 
                                 $checkins = implode( "\r\n", $checkins_list );

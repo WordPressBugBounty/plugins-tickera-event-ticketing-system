@@ -483,7 +483,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
 
                 if ( isset( $check_ins ) && is_array( $check_ins ) && count( $check_ins ) > 0 ) {
                     foreach ( $check_ins as $check_in ) {
-                        $r[ 'date_checked' ] = apply_filters( 'tc_check_in_date_checked', tickera_format_date( $check_in[ 'date_checked' ] ), $ticket_id, $this->get_api_key_id() );
+                        $r[ 'date_checked' ] = apply_filters( 'tc_check_in_date_checked', tickera_format_date( $check_in[ 'date_checked' ], false, false ), $ticket_id, $this->get_api_key_id() );
                         $r[ 'status' ] = apply_filters( 'tc_check_in_status_title', $check_in[ 'status' ], $ticket_id, $this->get_api_key_id() );
                         $rows[] = array( 'data' => $r );
                     }
@@ -885,7 +885,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
 
                     if ( ! empty( $check_ins ) ) {
                         foreach ( $check_ins as $check_in )
-                            $checkin_date = tickera_format_date( $check_in[ 'date_checked' ] );
+                            $checkin_date = tickera_format_date( $check_in[ 'date_checked' ], false, false );
                     }
 
                     $r[ 'date_checked' ] = $checkin_date;

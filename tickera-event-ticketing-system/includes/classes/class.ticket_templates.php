@@ -66,6 +66,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
             if ( $ticket_instance_id ) {
 
                 $ticket_instance_status = get_post_status( $ticket_instance_id );
+
                 if ( 'publish' == $ticket_instance_status ) {
 
                     $ticket_instance = new \Tickera\TC_Ticket( $ticket_instance_id );

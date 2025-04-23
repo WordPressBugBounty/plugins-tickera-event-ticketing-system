@@ -4806,15 +4806,14 @@ if ( ! function_exists( 'tickera_write_log' ) ) {
 if ( ! function_exists( 'tickera_iw_is_pr' ) ) {
 
     function tickera_iw_is_pr() {
+
         global $tc_gateway_plugins;
+
         if ( tickera_is_pr_only() ) {
             return true;
         }
-        if ( count( $tc_gateway_plugins ) < 10 ) {
-            return false;
-        } else {
-            return true;
-        }
+
+        return ( $tc_gateway_plugins && count( $tc_gateway_plugins ) < 10 ) ? false : true;
     }
 }
 
