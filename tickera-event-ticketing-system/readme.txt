@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.8
-Stable tag: 3.5.5.5
+Tested up to: 6.8.1
+Stable tag: 3.5.5.6
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,20 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.6 05/05/2025 =
+* New "tc_client_order_completed_email_subject" filter hook. Arguments: $subject
+* New "tc_attendee_order_completed_email_subject" filter hook. Arguments: $subject
+* New "tc_admin_order_completed_email_subject" filter hook. Arguments: $subject
+* New "tc_client_order_placed_email_subject" filter hook. Arguments: $subject
+* New "tc_admin_order_placed_email_subject" filter hook. Arguments: $subject
+* New "tc_admin_order_refunded_email_subject" filter hook. Arguments: $subject
+* "Event - Add to Cart" gutenberg block's html element for "dropdown" type is being stripped. [Fixed]
+* Remove Stripe Webhook registry if the option is disabled in Tickera > Settings > Payment Gateways > Stripe or Stripe 3D Secure.
+* Ability to send order refunded email notification to Buyers.
+* New ORDER_DETAILS, EVENT_NAME and EVENT_LOCATION placeholders for "Client Order Placed Email" Notification.
+* New ORDER_DETAILS placeholder for "Admin Order Placed Email" Notification
+
 
 = 3.5.5.5 23/04/2024 =
 * New "tc_pdf_font_measure_divisor" filter hook. Allow developers to adjust the font space distance.

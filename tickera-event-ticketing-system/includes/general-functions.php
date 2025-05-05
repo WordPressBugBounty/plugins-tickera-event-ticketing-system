@@ -1292,6 +1292,8 @@ if ( ! function_exists( 'tickera_order_paid_attendee_email' ) ) {
             add_filter( 'wp_mail_from_name', 'tickera_attendee_email_from_name', 999 );
 
             $subject = isset( $tc_email_settings[ 'attendee_order_subject' ] ) ? $tc_email_settings[ 'attendee_order_subject' ] : __( 'Your Ticket is here!', 'tickera-event-ticketing-system' );
+            $subject = apply_filters( 'tc_attendee_order_completed_email_subject', $subject, $order_id );
+
             $default_message = __( 'Hello, <br /><br />You can download ticket for EVENT_NAME here DOWNLOAD_URL', 'tickera-event-ticketing-system' );
             $order = new \Tickera\TC_Order( $order_id );
 
@@ -1322,8 +1324,8 @@ if ( ! function_exists( 'tickera_order_paid_attendee_email' ) ) {
                 $event_location = get_post_meta( $event_id, 'event_location', true );
 
                 $message = isset( $tc_attendee_order_message ) ? $tc_attendee_order_message : $default_message;
-                $placeholders = array( 'EVENT_NAME', 'DOWNLOAD_LINK', 'DOWNLOAD_URL', 'TICKET_TYPE', 'TICKET_CODE','FIRST_NAME', 'LAST_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $event->details->post_title, tickera_get_ticket_download_link( '', '', $order_attendee_id, true ), tickera_get_raw_ticket_download_link( '', '', $order_attendee_id, true ), $ticket_type_name, $ticket_code,$first_name, $last_name, $event_location );
+                $placeholders = array( 'DOWNLOAD_LINK', 'DOWNLOAD_URL', 'TICKET_TYPE', 'TICKET_CODE','FIRST_NAME', 'LAST_NAME', 'EVENT_NAME', 'EVENT_LOCATION' );
+                $placeholder_values = array( tickera_get_ticket_download_link( '', '', $order_attendee_id, true ), tickera_get_raw_ticket_download_link( '', '', $order_attendee_id, true ), $ticket_type_name, $ticket_code,$first_name, $last_name, $event->details->post_title, $event_location );
 
                 if ( ! empty( $owner_email ) ) {
 
@@ -1402,31 +1404,56 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
         global $tc;
 
+        add_filter( 'wp_mail_content_type', function( $content_type ) {
+            return 'text/html';
+        } );
+
         $tc_email_settings = get_option( 'tickera_email_setting', false );
         $email_send_type = isset( $tc_email_settings[ 'email_send_type' ] ) ? $tc_email_settings[ 'email_send_type' ] : 'wp_mail';
+
         $order_id = strtoupper( $order_id );
-        $order = tickera_get_order_id_by_name( $order_id );
+        $order = new \Tickera\TC_Order( ( tickera_get_order_id_by_name( $order_id ) )->ID );
+        $order_admin_url = admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' );
+        $order_status_url = $tc->tc_order_status_url( $order, $order->details->tc_order_date, '', false );
 
         if ( $cart_contents === false ) {
-            $cart_contents = get_post_meta( $order->ID, 'tc_cart_contents', true );
+            $cart_contents = get_post_meta( $order->details->ID, 'tc_cart_contents', true );
         }
 
         if ( $cart_info === false ) {
-            $cart_info = get_post_meta( $order->ID, 'tc_cart_info', true );
+            $cart_info = get_post_meta( $order->details->ID, 'tc_cart_info', true );
+        }
+
+        if ( $payment_info === false ) {
+            $payment_info = get_post_meta( $order->details->ID, 'tc_payment_info', true );
         }
 
         $buyer_data = $cart_info[ 'buyer_data' ];
         $buyer_name = $buyer_data[ 'first_name_post_meta' ] . ' ' . $buyer_data[ 'last_name_post_meta' ];
 
-        if ( $payment_info === false ) {
-            $payment_info = get_post_meta( $order->ID, 'tc_payment_info', true );
+        // Temporary storage for event details
+        $event_locations = [];
+        $event_titles = [];
+
+        $order_clients = \Tickera\TC_Orders::get_tickets_ids( $order->details->ID );
+        foreach ( $order_clients as $order_client_id ) {
+
+            $event_id = get_post_meta( $order_client_id, 'event_id', true );
+            $event_title = get_the_title( $event_id );
+            $event_location = get_post_meta( $event_id, 'event_location', true );
+
+            // Store event title in temporary storage for later use
+            if ( ! in_array( $event_title, $event_titles ) )
+                $event_titles[] = $event_title;
+
+            // Store event location in temporary storage for later use
+            if ( ! in_array( $event_location, $event_locations ) )
+                $event_locations[] = $event_location;
         }
 
-        add_filter( 'wp_mail_content_type', function( $content_type ) {
-            return 'text/html';
-        } );
-
         do_action( 'tc_before_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
+
+        apply_filters( 'custom_log_file', $status );
 
         if ( 'order_paid' == $status ) {
 
@@ -1439,32 +1466,11 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_client_email_from_name', 999 );
 
                 $subject = isset( $tc_email_settings[ 'client_order_subject' ] ) ? $tc_email_settings[ 'client_order_subject' ] : __( 'Order Completed', 'tickera-event-ticketing-system' );
+                $subject = apply_filters( 'tc_client_order_completed_email_subject', $subject, $order->details->ID );
+
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> is completed. <br /><br />You can download your tickets here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
-                $order = new \Tickera\TC_Order( $order->ID );
-                $order_status_url = $tc->tc_order_status_url( $order, $order->details->tc_order_date, '', false );
                 $tc_client_order_message = isset( $tc_email_settings[ 'client_order_message' ] ) ? $tc_email_settings[ 'client_order_message' ] : $default_message;
                 $tc_client_order_message = apply_filters( 'tc_client_order_message', $tc_client_order_message, $order );
-
-                // Temporary storage for event details
-                $event_locations = [];
-                $event_titles = [];
-
-                $order_clients = \Tickera\TC_Orders::get_tickets_ids( $order->details->ID );
-                foreach ( $order_clients as $order_client_id ) {
-
-                    $event_id = get_post_meta( $order_client_id, 'event_id', true );
-                    $event_title = get_the_title( $event_id );
-                    $event_location = get_post_meta( $event_id, 'event_location', true );
-
-                    // Store event title in temporary storage for later use
-                    if ( ! in_array( $event_title, $event_titles ) )
-                        $event_titles[] = $event_title;
-
-                    // Store event location in temporary storage for later use
-                    if ( ! in_array( $event_location, $event_locations ) )
-                        $event_locations[] = $event_location;
-
-                }
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
                 $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
@@ -1489,7 +1495,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
             /**
              * Send e-mail to the attendees
              */
-            tickera_order_paid_attendee_email( isset( $order->ID ) ? $order->ID : $order->details->ID );
+            tickera_order_paid_attendee_email( isset( $order->details->ID ) ? $order->details->ID : $order->details->ID );
 
             /**
              * Send e-mail to the admin
@@ -1500,13 +1506,10 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_admin_email_from_name', 999 );
 
                 $subject = isset( $tc_email_settings[ 'admin_order_subject' ] ) ? $tc_email_settings[ 'admin_order_subject' ] : __( 'New Order Completed', 'tickera-event-ticketing-system' );
-                $default_message = __( 'Hello, <br /><br />a new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
+                $subject = apply_filters( 'tc_admin_order_completed_email_subject', $subject, $order->details->ID );
+
+                $default_message = __( 'Hello, <br /><br />A new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $tc_email_settings[ 'admin_order_message' ] ) ? $tc_email_settings[ 'admin_order_message' ] : $default_message;
-
-                $order = tickera_get_order_id_by_name( $order_id );
-                $order = new \Tickera\TC_Order( $order->ID );
-
-                $order_admin_url = admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' );
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
                 $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
@@ -1580,13 +1583,13 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_client_email_from_placed_name', 999 );
 
                 $subject = isset( $tc_email_settings[ 'client_order_placed_subject' ] ) ? $tc_email_settings[ 'client_order_placed_subject' ] : __( 'Order Placed', 'tickera-event-ticketing-system' );
+                $subject = apply_filters( 'tc_client_order_placed_email_subject', $subject, $order->details->ID );
+
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> is placed. <br /><br />You can track your order status here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $tc_email_settings[ 'client_order_placed_message' ] ) ? $tc_email_settings[ 'client_order_placed_message' ] : $default_message;
 
-                $order = new \Tickera\TC_Order( $order->ID );
-                $order_status_url = $tc->tc_order_status_url( $order, $order->details->tc_order_date, '', false );
-                $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name );
+                $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
                 $message = str_replace( apply_filters( 'tc_order_placed_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_placed_client_email_placeholder_values', $placeholder_values ), $message );
@@ -1614,14 +1617,13 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_admin_email_from_placed_name', 999 );
 
                 $subject = isset( $tc_email_settings[ 'admin_order_placed_subject' ] ) ? $tc_email_settings[ 'admin_order_placed_subject' ] : __( 'New Order Placed', 'tickera-event-ticketing-system' );
-                $default_message = __( 'Hello, <br /><br />a new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
-                $message = isset( $tc_email_settings[ 'admin_order_placed_message' ] ) ? $tc_email_settings[ 'admin_order_placed_message' ] : $default_message;
-                $order = tickera_get_order_id_by_name( $order_id );
-                $order = new \Tickera\TC_Order( $order->ID );
-                $order_admin_url = admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' );
+                $subject = apply_filters( 'tc_admin_order_placed_email_subject', $subject, $order->details->ID );
 
-                $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name );
+                $default_message = __( 'Hello, <br /><br />A new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
+                $message = isset( $tc_email_settings[ 'admin_order_placed_message' ] ) ? $tc_email_settings[ 'admin_order_placed_message' ] : $default_message;
+
+                $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 if ( isset( $tc_email_settings[ 'admin_order_placed_to_email' ] )
                     && $tc_email_settings[ 'admin_order_placed_to_email' ] ) {
@@ -1683,18 +1685,54 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
         if ( 'order_refunded' == $status ) {
 
+            /**
+             * Send e-mail to the client when order is placed / pending
+             */
+            if ( ( isset( $tc_email_settings[ 'client_send_refunded_message' ] ) && 'yes' == $tc_email_settings[ 'client_send_refunded_message' ] ) ) {
+
+                apply_filters( 'custom_log_file', 'client send refunded' );
+
+                add_filter( 'wp_mail_from', 'tickera_client_email_from_placed_email', 999 );
+                add_filter( 'wp_mail_from_name', 'tickera_client_email_from_placed_name', 999 );
+
+                $subject = isset( $tc_email_settings[ 'client_order_refunded_subject' ] ) ? $tc_email_settings[ 'client_order_refunded_subject' ] : __( 'Order Refunded', 'tickera-event-ticketing-system' );
+                $subject = apply_filters( 'tc_client_order_refunded_email_subject', $subject, $order->details->ID );
+
+                $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been refunded. <br /><br />You can check your order details here DOWNLOAD_URL', 'tickera-event-ticketing-system' );
+                $message = isset( $tc_email_settings[ 'client_order_refunded_message' ] ) ? $tc_email_settings[ 'client_order_refunded_message' ] : $default_message;
+
+                $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+
+                $to = $buyer_data[ 'email_post_meta' ];
+                $message = str_replace( apply_filters( 'tc_order_refunded_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_refunded_client_email_placeholder_values', $placeholder_values ), $message );
+
+                apply_filters( 'custom_log_file', $email_send_type );
+
+                if ( 'wp_mail' == $email_send_type ) {
+                    @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_refunded_client_email_headers', '' ) );
+
+                } else {
+                    $headers = 'MIME-Version: 1.0' . "\r\n";
+                    $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
+                    $headers .= 'From: ' . tickera_client_email_from_placed_email() . "\r\n";
+                    $headers .= 'Reply-To: ' . tickera_client_email_from_placed_email() . "\r\n";
+                    $headers .= 'X-Mailer: PHP/' . phpversion();
+
+                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_refunded_client_email_headers', $headers ) );
+                }
+            }
+
             if ( ( isset( $tc_email_settings[ 'admin_send_refunded_message' ] ) && 'yes' == $tc_email_settings[ 'admin_send_refunded_message' ] ) ) {
 
                 add_filter( 'wp_mail_from', 'tickera_admin_email_from_refunded_email', 999 );
                 add_filter( 'wp_mail_from_name', 'tickera_admin_email_from_refunded_name', 999 );
 
                 $subject = isset( $tc_email_settings[ 'admin_order_refunded_subject' ] ) ? $tc_email_settings[ 'admin_order_refunded_subject' ] : __( 'Order Refunded', 'tickera-event-ticketing-system' );
+                $subject = apply_filters( 'tc_admin_order_refunded_email_subject', $subject, $order->details->ID );
+
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> was refunded. <br /><br />You can track your order status here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $tc_email_settings[ 'admin_order_refunded_message' ] ) ? $tc_email_settings[ 'admin_order_refunded_message' ] : $default_message;
-
-                $order = tickera_get_order_id_by_name( $order_id );
-                $order = new \Tickera\TC_Order( $order->ID );
-                $order_admin_url = admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' );
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
                 $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
