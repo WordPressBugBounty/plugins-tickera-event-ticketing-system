@@ -110,7 +110,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
             $title = sprintf(
                 /* translators: %s: Barcode Reader label */
                 __( '%s', 'tickera-event-ticketing-system' ),
-                $this->title
+                esc_html( $this->title )
             );
 
             add_submenu_page(

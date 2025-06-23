@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.6
+ * Version: 3.5.5.7
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( 'Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.6';
+        var $version = '3.5.5.7';
 
         var $title = 'Tickera';
 
@@ -140,9 +140,9 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             // Add plugin admin menu
             add_action( 'admin_menu', array($this, 'add_admin_menu') );
             // Load payment gateways
-            add_action( 'plugins_loaded', array($this, 'load_payment_gateway_addons'), 8 );
+            add_action( 'wp_loaded', array($this, 'load_payment_gateway_addons'), 8 );
             // Load add-ons
-            add_action( 'plugins_loaded', array($this, 'load_addons'), 9 );
+            add_action( 'wp_loaded', array($this, 'load_addons'), 9 );
             // Add plugin newtork admin menu
             add_action( 'network_admin_menu', array($this, 'add_network_admin_menu') );
             // Add plugin Settings link
@@ -234,7 +234,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             require_once $this->plugin_dir . 'includes/widgets/cart-widget.php';
             require_once $this->plugin_dir . 'includes/widgets/upcoming-events-widget.php';
             add_action( 'admin_init', array($this, 'generate_pdf_ticket'), 0 );
-            add_action( 'init', array($this, 'generate_pdf_ticket_front'), 11 );
+            add_action( 'wp_loaded', array($this, 'generate_pdf_ticket_front'), 11 );
             add_action( 'admin_print_styles', array($this, 'add_notices') );
             add_action( 'admin_init', array($this, 'install_actions') );
             add_filter( 'wp_get_nav_menu_items', array($this, 'remove_unnecessary_plugin_menu_items') );
@@ -336,6 +336,11 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             return $slug;
         }
 
+        /**
+         * Remove Notification
+         * Sets a cookie to store the notification state and stops further script execution.
+         * @return void
+         */
         function tc_remove_notification() {
             setcookie(
                 'tc_bridge_notifications',
@@ -346,6 +351,10 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             exit;
         }
 
+        /**
+         * Remove Notification Theme via AJAX
+         * @return void
+         */
         function tc_remove_notification_theme_ajax() {
             setcookie(
                 'tc_themes_notifications',
@@ -357,8 +366,13 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         }
 
         /**
+         * Remove Notification for Specific Themes
          *
-         * @since 3.5.4.4
+         * This function checks if the current theme matches a specific author or author URI.
+         * If matched, it sets a cookie to indicate notifications status for the theme.
+         * Otherwise, it clears the notification-related cookie.
+         *
+         * @return void
          */
         function tc_remove_notification_theme() {
             global $pagenow;
@@ -4424,6 +4438,9 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         }
 
         function register_custom_posts() {
+            $tc_general_settings = get_option( 'tickera_general_setting', false );
+            $event_slug = ( isset( $tc_general_settings['tc_event_slug'] ) && !empty( $tc_general_settings['tc_event_slug'] ) ? $tc_general_settings['tc_event_slug'] : 'tc-events' );
+            $event_category_slug = ( isset( $tc_general_settings['tc_event_category_slug'] ) && !empty( $tc_general_settings['tc_event_category_slug'] ) ? $tc_general_settings['tc_event_category_slug'] : 'tc-event-category' );
             register_post_type( 'tc_events', apply_filters( 'tc_events_post_type_args', array(
                 'labels'             => array(
                     'name'               => __( 'Events', 'tickera-event-ticketing-system' ),
@@ -4440,7 +4457,9 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'view'               => __( 'View Event', 'tickera-event-ticketing-system' ),
                 ),
                 'public'             => true,
-                'show_ui'            => false,
+                'menu_position'      => $this->admin_menu_position,
+                'show_ui'            => ( current_user_can( 'manage_events_cap' ) ? true : false ),
+                'has_archive'        => true,
                 'publicly_queryable' => true,
                 'capability_type'    => 'tc_events',
                 'map_meta_cap'       => true,
@@ -4463,7 +4482,45 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 'hierarchical'       => false,
                 'query_var'          => true,
                 'show_in_rest'       => true,
+                'rewrite'            => [
+                    'slug'       => $event_slug,
+                    'with_front' => false,
+                ],
+                'supports'           => ['title', 'editor', 'thumbnail'],
             ) ) );
+            register_taxonomy( 'event_category', apply_filters( 'tc_events_category_availability', 'tc_events' ), apply_filters( 'tc_register_event_category', [
+                'hierarchical'      => true,
+                'labels'            => [
+                    'name'                       => _x( 'Event Categories', 'event_category', 'tickera-event-ticketing-system' ),
+                    'singular_name'              => _x( 'Event Category', 'event_category', 'tickera-event-ticketing-system' ),
+                    'all_items'                  => __( 'All Event Categories', 'tickera-event-ticketing-system' ),
+                    'edit_item'                  => __( 'Edit Event Category', 'tickera-event-ticketing-system' ),
+                    'view_item'                  => __( 'View Event Category', 'tickera-event-ticketing-system' ),
+                    'update_item'                => __( 'Update Event Category', 'tickera-event-ticketing-system' ),
+                    'add_new_item'               => __( 'Add New Event Category', 'tickera-event-ticketing-system' ),
+                    'new_item_name'              => __( 'New Event Category Name', 'tickera-event-ticketing-system' ),
+                    'parent_item'                => __( 'Parent Event Category', 'tickera-event-ticketing-system' ),
+                    'parent_item_colon'          => __( 'Parent Event Category:', 'tickera-event-ticketing-system' ),
+                    'search_items'               => __( 'Search Event Categories', 'tickera-event-ticketing-system' ),
+                    'separate_items_with_commas' => __( 'Separate event categories with commas', 'tickera-event-ticketing-system' ),
+                    'add_or_remove_items'        => __( 'Add or remove event categories', 'tickera-event-ticketing-system' ),
+                    'choose_from_most_used'      => __( 'Choose from the most used event categories', 'tickera-event-ticketing-system' ),
+                    'not_found'                  => __( 'No event categories found', 'tickera-event-ticketing-system' ),
+                ],
+                'capabilities'      => [
+                    'manage_categories' => 'manage_options',
+                    'edit_categories'   => 'manage_options',
+                    'delete_categories' => 'manage_options',
+                    'assign_categories' => 'manage_options',
+                ],
+                'show_ui'           => true,
+                'show_in_rest'      => true,
+                'show_admin_column' => true,
+                'rewrite'           => [
+                    'with_front' => false,
+                    'slug'       => $event_category_slug,
+                ],
+            ] ) );
             register_post_type( 'tc_tickets', apply_filters( 'tc_ticket_type_post_type_args', array(
                 'labels'             => array(
                     'name'               => __( 'Ticket Types', 'tickera-event-ticketing-system' ),
@@ -4480,7 +4537,10 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'view'               => __( 'View Ticket', 'tickera-event-ticketing-system' ),
                 ),
                 'public'             => false,
-                'show_ui'            => false,
+                'show_ui'            => true,
+                'show_in_menu'       => 'edit.php?post_type=tc_events',
+                'has_archive'        => false,
+                'supports'           => ['title', 'editor'],
                 'publicly_queryable' => true,
                 'capability_type'    => 'tc_tickets',
                 'map_meta_cap'       => true,
@@ -4541,7 +4601,9 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'view'               => __( 'View attendee', 'tickera-event-ticketing-system' ),
                 ),
                 'public'             => false,
-                'show_ui'            => false,
+                'show_ui'            => true,
+                'show_in_menu'       => 'edit.php?post_type=tc_events',
+                'has_archive'        => false,
                 'publicly_queryable' => true,
                 'capability_type'    => 'tc_tickets_instances',
                 'map_meta_cap'       => true,
@@ -4564,6 +4626,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 ),
                 'hierarchical'       => true,
                 'query_var'          => true,
+                'supports'           => ['title'],
             ) ) );
             register_post_type( 'tc_orders', apply_filters( 'tc_orders_post_type_args', array(
                 'labels'          => array(
@@ -4575,11 +4638,12 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'not_found'     => __( 'No orders found', 'tickera-event-ticketing-system' ),
                 ),
                 'public'          => false,
-                'show_ui'         => false,
+                'show_ui'         => true,
+                'has_archive'     => false,
                 'hierarchical'    => false,
                 'rewrite'         => false,
                 'query_var'       => false,
-                'supports'        => array(),
+                'supports'        => ['title'],
                 'capability_type' => 'tc_orders',
                 'map_meta_cap'    => true,
                 'capabilities'    => array(
@@ -4599,6 +4663,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'edit_private_posts'     => 'edit_private_tc_orders',
                     'edit_published_posts'   => 'edit_published_tc_orders',
                 ),
+                'show_in_menu'    => 'edit.php?post_type=tc_events',
             ) ) );
             register_post_status( 'order_received', array(
                 'label'       => __( 'Received', 'tickera-event-ticketing-system' ),

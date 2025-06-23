@@ -31,7 +31,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 ? apply_filters( 'tc_checkin_eligible_order_statuses', tickera_get_order_statuses() )
                 : apply_filters( 'tc_checkin_eligible_order_statuses', [ 'order_paid' => ( tickera_get_order_statuses() )[ 'order_paid' ] ] );
 
-            add_filter( 'tc_tickets_instances_post_type_args', array( $this, 'tc_tickets_instances_post_type_args' ) );
             add_filter( 'manage_tc_tickets_instances_posts_columns', array( $this, 'manage_tc_tickets_instances_columns' ) );
             add_action( 'manage_tc_tickets_instances_posts_custom_column', array( $this, 'manage_tc_tickets_instances_posts_custom_column' ), 10, 2 );
             add_filter( 'manage_edit-tc_tickets_instances_sortable_columns', array( $this, 'manage_tc_tickets_instances_sortable_columns' ) );
@@ -546,20 +545,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
             if ( 'tc_tickets_instances' == $post_type ) {
                 wp_enqueue_style( 'tc-better-attendees-and-tickets', plugins_url( 'css/admin.css', __FILE__ ) );
             }
-        }
-
-        /**
-         * Change tickets instances post type arguments
-         * @param $args
-         * @return mixed|void
-         */
-        function tc_tickets_instances_post_type_args( $args ) {
-            $args[ 'show_in_menu' ] = 'edit.php?post_type=tc_events';
-            $args[ 'show_ui' ] = true;
-            $args[ 'has_archive' ] = false;
-            $args[ 'public' ] = false;
-            $args[ 'supports' ] = [ 'title' ];
-            return apply_filters( 'tc_tickets_instances_post_type_args_val', $args );
         }
 
         /**

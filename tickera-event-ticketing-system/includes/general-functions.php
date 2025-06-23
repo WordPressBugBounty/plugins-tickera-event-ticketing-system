@@ -1453,8 +1453,6 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
         do_action( 'tc_before_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
 
-        apply_filters( 'custom_log_file', $status );
-
         if ( 'order_paid' == $status ) {
 
             /**
@@ -1690,8 +1688,6 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
              */
             if ( ( isset( $tc_email_settings[ 'client_send_refunded_message' ] ) && 'yes' == $tc_email_settings[ 'client_send_refunded_message' ] ) ) {
 
-                apply_filters( 'custom_log_file', 'client send refunded' );
-
                 add_filter( 'wp_mail_from', 'tickera_client_email_from_placed_email', 999 );
                 add_filter( 'wp_mail_from_name', 'tickera_client_email_from_placed_name', 999 );
 
@@ -1706,8 +1702,6 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
                 $to = $buyer_data[ 'email_post_meta' ];
                 $message = str_replace( apply_filters( 'tc_order_refunded_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_refunded_client_email_placeholder_values', $placeholder_values ), $message );
-
-                apply_filters( 'custom_log_file', $email_send_type );
 
                 if ( 'wp_mail' == $email_send_type ) {
                     @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_refunded_client_email_headers', '' ) );

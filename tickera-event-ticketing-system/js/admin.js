@@ -288,6 +288,7 @@
             var target_url_field = $( this ).prevAll( ".file_url:first" );
             wp.media.editor.send.attachment = function( props, attachment ) {
                 $( target_url_field ).val( attachment.url );
+                $( target_url_field ).trigger( 'change' );
             };
             wp.media.editor.open( this );
             return false;

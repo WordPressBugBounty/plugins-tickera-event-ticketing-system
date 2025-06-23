@@ -101,8 +101,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
                 <th></th>
                 <td>
                     <?php
-                    $user_orders = \Tickera\TC_Orders::get_user_orders( $user->ID );
-
+                    $user_orders = \Tickera\TC_Orders::get_user_orders( $user );
                     if ( count( $user_orders ) == 0 ) {
                         esc_html_e( 'No Orders Found', 'tickera-event-ticketing-system' );
 

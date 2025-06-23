@@ -26,7 +26,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
             }
 
             $this->api_key = $api_key;
-            $checksum = isset( $wp->query_vars[ 'checksum' ] ) ? sanitize_key( $wp->query_vars[ 'checksum' ] ) : ( isset( $_REQUEST[ 'checksum' ] ) ? sanitize_key( $_REQUEST[ 'checksum' ] ) : '' );
+            $checksum = isset( $wp->query_vars[ 'checksum' ] ) ? sanitize_text_field( $wp->query_vars[ 'checksum' ] ) : ( isset( $_REQUEST[ 'checksum' ] ) ? sanitize_text_field( $_REQUEST[ 'checksum' ] ) : '' );
             $page_number = isset( $wp->query_vars[ 'page_number' ] ) ? (int) $wp->query_vars[ 'page_number' ] : ( isset( $_REQUEST[ 'page_number' ] ) ? (int) $_REQUEST[ 'page_number' ] : apply_filters( 'tc_ticket_info_default_page_number', 1 ) );
             $results_per_page = isset( $wp->query_vars[ 'results_per_page' ] ) ? (int) $wp->query_vars[ 'results_per_page' ] : ( isset( $_REQUEST[ 'results_per_page' ] ) ? (int) $_REQUEST[ 'results_per_page' ] : apply_filters( 'tc_ticket_info_default_results_per_page', 50 ) );
             $keyword = isset( $wp->query_vars[ 'keyword' ] ) ? sanitize_text_field( $wp->query_vars[ 'keyword' ] ) : ( isset( $_REQUEST[ 'keyword' ] ) ? sanitize_text_field( $_REQUEST[ 'keyword' ] ) : '' );

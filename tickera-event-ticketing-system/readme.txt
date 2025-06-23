@@ -3,7 +3,7 @@ Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
 Tested up to: 6.8.1
-Stable tag: 3.5.5.6
+Stable tag: 3.5.5.7
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,11 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.7 23/06/2025 =
+* Persistent error code when a ticket code contains a slash "/" during check-in. [Fixed]
+* Cleared PHP Notice related to the _load_textdomain_just_in_time function.
+* New "tc_ticket_order_history_list_by_user_email" filter hook to list "Users > Ticket Order History" by user's email address.
 
 = 3.5.5.6 05/05/2025 =
 * New "tc_client_order_completed_email_subject" filter hook. Arguments: $subject

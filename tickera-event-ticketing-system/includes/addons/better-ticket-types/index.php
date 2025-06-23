@@ -32,7 +32,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
             }
 
-            add_filter( 'tc_ticket_type_post_type_args', array( $this, 'tc_ticket_type_post_type_args' ) );
             add_filter( 'manage_tc_tickets_posts_columns', array( $this, 'manage_tc_tickets_columns' ) );
             add_action( 'manage_tc_tickets_posts_custom_column', array( $this, 'manage_tc_tickets_posts_custom_column' ) );
             add_filter( "manage_edit-tc_tickets_sortable_columns", array( $this, 'manage_edit_tc_tickets_sortable_columns' ) );
@@ -268,22 +267,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             if ( 'tc_tickets' == $post_type ) {
                 wp_enqueue_style( 'tc-better-ticket-types', plugins_url( 'css/admin.css', __FILE__ ) );
             }
-        }
-
-        /**
-         * Change Events post type arguments
-         *
-         * @param $args
-         * @return mixed|void
-         */
-        function tc_ticket_type_post_type_args( $args ) {
-            $args[ 'show_in_menu' ] = 'edit.php?post_type=tc_events';
-            $args[ 'show_ui' ] = true;
-            $args[ 'has_archive' ] = false;
-            $args[ 'public' ] = false;
-
-            $args[ 'supports' ] = [ 'title', 'editor' ];
-            return apply_filters( 'tc_ticket_type_post_type_args_val', $args );
         }
 
         /**

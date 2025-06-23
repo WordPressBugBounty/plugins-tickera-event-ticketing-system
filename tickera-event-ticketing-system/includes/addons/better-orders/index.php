@@ -37,7 +37,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
             add_action( 'delete_post', array( $this, 'delete_post' ) );
             add_action( 'untrash_post', array( $this, 'untrash_post' ) );
 
-            add_filter( 'tc_orders_post_type_args', array( $this, 'tc_orders_post_type_args' ), 99, 1 );
             add_filter( 'manage_tc_orders_posts_columns', array( $this, 'manage_tc_orders_columns' ) );
             add_action( 'manage_tc_orders_posts_custom_column', array( $this, 'manage_tc_orders_posts_custom_column' ), 10, 2 );
             add_action( 'add_meta_boxes', array( $this, 'add_orders_metaboxes' ) );
@@ -380,25 +379,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
             if ( $post_type == 'tc_orders' ) {
                 wp_enqueue_style( 'tc-orders', plugins_url( 'css/admin.css', __FILE__ ) );
             }
-        }
-
-        /**
-         * Change tickets intances post type arguments
-         *
-         * @param $args
-         * @return mixed|void
-         */
-        function tc_orders_post_type_args( $args ) {
-            $args[ 'show_in_menu' ] = 'edit.php?post_type=tc_events';
-            $args[ 'show_ui' ] = true;
-            $args[ 'has_archive' ] = false;
-            $args[ 'public' ] = false;
-
-            $args[ 'supports' ] = array(
-                'title'
-            );
-
-            return apply_filters( 'tc_orders_post_type_args_val', $args );
         }
 
         /**

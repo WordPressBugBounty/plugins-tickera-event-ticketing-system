@@ -25,7 +25,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_tc_gutentick' ) ) {
             global $pagenow;
 
             if ( function_exists( 'register_block_type' ) && 'widgets.php' != $pagenow ) {
-                add_action( 'init', array( $this, 'register_gutenberg_blocks' ) );
+                $this->register_gutenberg_blocks();
                 add_action( 'enqueue_block_editor_assets', array( $this, 'register_extra_scripts' ) );
             }
 

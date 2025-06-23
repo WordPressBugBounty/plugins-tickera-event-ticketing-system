@@ -33,10 +33,8 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
                 $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
             }
 
-            add_action( 'init', array( $this, 'register_event_category' ), 1 );
             add_filter( 'tc_settings_general_sections', array( $this, 'tc_settings_general_sections' ) );
             add_filter( 'tc_general_settings_page_fields', array( $this, 'tc_general_settings_page_fields' ) );
-            add_filter( 'tc_events_post_type_args', array( $this, 'tc_events_post_type_args' ) );
             add_filter( 'manage_tc_events_posts_columns', array( $this, 'manage_tc_events_columns' ) );
             add_action( 'manage_tc_events_posts_custom_column', array( $this, 'manage_tc_events_posts_custom_column' ) );
             add_filter( 'manage_edit-tc_events_sortable_columns', array( $this, 'manage_edit_tc_events_sortable_columns' ) );
@@ -383,48 +381,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
         }
 
         /**
-         * Add Events Categories
-         */
-        public function register_event_category() {
-
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $event_category_slug = isset( $tc_general_settings[ 'tc_event_category_slug' ] ) && ! empty( $tc_general_settings[ 'tc_event_category_slug' ] ) ? $tc_general_settings[ 'tc_event_category_slug' ] : 'tc-event-category';
-            register_taxonomy( 'event_category', apply_filters( 'tc_events_category_availability', 'tc_events' ), apply_filters( 'tc_register_event_category', [
-                'hierarchical' => true,
-                'labels' => [
-                    'name' => _x( 'Event Categories', 'event_category', 'tickera-event-ticketing-system' ),
-                    'singular_name' => _x( 'Event Category', 'event_category', 'tickera-event-ticketing-system' ),
-                    'all_items' => __( 'All Event Categories', 'tickera-event-ticketing-system' ),
-                    'edit_item' => __( 'Edit Event Category', 'tickera-event-ticketing-system' ),
-                    'view_item' => __( 'View Event Category', 'tickera-event-ticketing-system' ),
-                    'update_item' => __( 'Update Event Category', 'tickera-event-ticketing-system' ),
-                    'add_new_item' => __( 'Add New Event Category', 'tickera-event-ticketing-system' ),
-                    'new_item_name' => __( 'New Event Category Name', 'tickera-event-ticketing-system' ),
-                    'parent_item' => __( 'Parent Event Category', 'tickera-event-ticketing-system' ),
-                    'parent_item_colon' => __( 'Parent Event Category:', 'tickera-event-ticketing-system' ),
-                    'search_items' => __( 'Search Event Categories', 'tickera-event-ticketing-system' ),
-                    'separate_items_with_commas' => __( 'Separate event categories with commas', 'tickera-event-ticketing-system' ),
-                    'add_or_remove_items' => __( 'Add or remove event categories', 'tickera-event-ticketing-system' ),
-                    'choose_from_most_used' => __( 'Choose from the most used event categories', 'tickera-event-ticketing-system' ),
-                    'not_found' => __( 'No event categories found', 'tickera-event-ticketing-system' ),
-                ],
-                'capabilities' => [
-                    'manage_categories' => 'manage_options',
-                    'edit_categories' => 'manage_options',
-                    'delete_categories' => 'manage_options',
-                    'assign_categories' => 'manage_options'
-                ],
-                'show_ui' => true,
-                'show_in_rest' => true,
-                'show_admin_column' => true,
-                'rewrite' => [
-                    'with_front' => false,
-                    'slug' => $event_category_slug,
-                ],
-            ] ) );
-        }
-
-        /**
          * Modify event post title
          *
          * Additional tc_lock_event_single_content to disable specific event information (e.g event date and location) from rendering.
@@ -715,10 +671,9 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
         function rename_events_menu_item() {
 
             global $menu, $tc;
-
             $menu_position = $tc->admin_menu_position;
 
-            if ( $menu[ $menu_position ][ 2 ] = 'edit.php?post_type=tc_events' ) {
+            if ( $menu[ $menu_position ][ 2 ] == 'edit.php?post_type=tc_events' ) {
                 $menu[ $menu_position ][ 0 ] = $tc->title;
             }
         }
@@ -846,36 +801,6 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
             ];
 
             return $pages_settings_default_fields;
-        }
-
-        /**
-         * Change Events post type arguments
-         *
-         * @param $args
-         * @return mixed
-         */
-        function tc_events_post_type_args( $args ) {
-
-            global $tc;
-
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $event_slug = isset( $tc_general_settings[ 'tc_event_slug' ] ) && ! empty( $tc_general_settings[ 'tc_event_slug' ] ) ? $tc_general_settings[ 'tc_event_slug' ] : 'tc-events';
-
-            $args[ 'menu_position' ] = $tc->admin_menu_position;
-            $args[ 'show_ui' ] = true;
-            $args[ 'has_archive' ] = true;
-            $args[ 'rewrite' ] = [
-                'slug' => $event_slug,
-                'with_front' => false
-            ];
-
-            $args[ 'supports' ] = [
-                'title',
-                'editor',
-                'thumbnail',
-            ];
-
-            return $args;
         }
 
         /**

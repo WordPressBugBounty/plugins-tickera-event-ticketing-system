@@ -346,6 +346,12 @@ if ( ! class_exists( 'Tickera\TC_Orders' ) ) {
             return apply_filters( 'tc_owner_info_orders_table_fields_front', $default_fields );
         }
 
+        /**
+         * Retrieves the columns to be displayed based on order field visibility.
+         *
+         * @return array An array of columns, where each column contains the 'id', 'field_name',
+         *               and 'field_title' for visible fields, along with additional columns for 'details' and 'delete'.
+         */
         function get_columns() {
             $fields = \Tickera\TC_Orders::get_order_fields();
             $results = tickera_search_array( $fields, 'table_visibility', true );
@@ -379,31 +385,81 @@ if ( ! class_exists( 'Tickera\TC_Orders' ) ) {
             return $columns;
         }
 
-        public static function get_user_orders( $user_id = false ) {
-            $user_id = $user_id ? $user_id : get_current_user_id();
-            $args = array(
-                'author__in' => ( array( $user_id ) ),
+        /**
+         * Retrieves the list of user orders based on the given user object or current user.
+         *
+         * @param object $user The user object containing user details. If null, the current user is used.
+         * @return array An array of WP_Post objects representing the user's orders.
+         */
+        public static function get_user_orders( $user ) {
+
+            $user_id = ( $user && isset( $user->ID ) ) ? $user->ID : get_current_user_id();
+            $email = apply_filters( 'tc_ticket_order_history_list_by_user_email', false ) ? $user->user_email : '';
+
+            $args = [
                 'posts_per_page' => -1,
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'post_type' => 'tc_orders',
                 'post_status' => array_keys( tickera_get_order_statuses() )
-            );
-            return get_posts( $args );
+            ];
+
+            if ( $email ) {
+
+                $args[ 'meta_query' ] = [ [ 'key' => 'tc_cart_info', 'value' => $email, 'compare' => 'LIKE' ] ];
+                $posts = get_posts( $args );
+
+                foreach ( $posts as $key => $post ) {
+                    $cart_info = get_post_meta( $post->ID, 'tc_cart_info', true );
+                    $buyer_data = isset( $cart_info[ 'buyer_data' ] ) ? $cart_info[ 'buyer_data' ] : [];
+                    $buyer_email = isset( $buyer_data[ 'email_post_meta' ] ) ? $buyer_data[ 'email_post_meta' ] : '';
+
+                    if ( $buyer_email != $email ) {
+                        unset( $posts[ $key ] );
+                    }
+                }
+
+            } else {
+                $args[ 'author__in' ] = [ $user_id ];
+                $posts = get_posts( $args );
+            }
+
+            return $posts;
         }
 
+        /**
+         * Retrieves the ID of a field based on the provided field name and property.
+         *
+         * @param string $field_name The name of the field to search for.
+         * @param mixed $property The property used for the operation (unused in this method).
+         *
+         * @return mixed The ID of the matching field.
+         */
         function get_field_id( $field_name, $property ) {
             $fields = $this->get_order_fields();
             $result = tickera_search_array( $fields, 'field_name', $field_name );
             return $result[ 0 ][ 'id' ];
         }
 
+        /**
+         * Retrieves the property of a specific field based on the field name.
+         *
+         * @param string $field_name The name of the field to be checked.
+         * @param string $property The property to retrieve from the field.
+         * @return mixed Returns the value of the specified property for the given field.
+         */
         public static function check_field_property( $field_name, $property ) {
             $fields = \Tickera\TC_Orders::get_order_fields();
             $result = tickera_search_array( $fields, 'field_name', $field_name );
             return $result[ 0 ][ 'post_field_type' ];
         }
 
+        /**
+         * Validates if the provided field type is a valid order field type.
+         *
+         * @param string $field_type The field type to be validated.
+         * @return bool Returns true if the field type is valid, false otherwise.
+         */
         function is_valid_order_field_type( $field_type ) {
             if ( in_array( $field_type, array( 'ID', 'text', 'textarea', 'image', 'function', 'separator' ) ) ) {
                 return true;
@@ -412,6 +468,16 @@ if ( ! class_exists( 'Tickera\TC_Orders' ) ) {
             }
         }
 
+        /**
+         * Adds a new order or updates an existing order record.
+         *
+         * Processes form data submitted via a POST request, sanitizes the input, and either creates
+         * a new order or updates an existing one. Order metadata is also stored for the given order.
+         *
+         * @return int|WP_Error The ID of the created or updated post on success, or a WP_Error object on failure.
+         * @global int $user_id The user ID of the logged-in user.
+         *
+         */
         function add_new_order() {
 
             global $user_id;

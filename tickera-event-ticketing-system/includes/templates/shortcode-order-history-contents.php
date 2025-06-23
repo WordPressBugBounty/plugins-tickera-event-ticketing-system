@@ -10,8 +10,7 @@ if ( ! is_user_logged_in() ) {
     ) );
 
 } else {
-    $user_orders = \Tickera\TC_Orders::get_user_orders();
-    ?>
+    $user_orders = \Tickera\TC_Orders::get_user_orders( wp_get_current_user() ); ?>
     <div class="tc-container">
     <?php
     if ( count( $user_orders ) == 0 ) {
