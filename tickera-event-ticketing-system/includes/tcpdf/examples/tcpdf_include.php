@@ -30,7 +30,7 @@ namespace Tickera;
 require_once( 'config/tcpdf_config_alt.php' );
 
 global $tc;
-if ( !class_exists( 'Tickera\TCPDF' ) ) {
+if ( !class_exists( '\Tickera\TCPDF' ) ) {
     require_once( $tc->plugin_dir . 'includes/tcpdf/tcpdf.php' );
     require_once( $tc->plugin_dir . 'includes/tcpdf/extensions/tcpdf_ext.php' );
 }

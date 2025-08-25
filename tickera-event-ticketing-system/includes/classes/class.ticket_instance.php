@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Ticket_Instance' ) ) {
+if ( ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
 
     class TC_Ticket_Instance {
 
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Instance' ) ) {
             $this->output = $output;
             $this->details = get_post( $this->id, $this->output );
 
-            $fields = \Tickera\TC_Tickets_Instances::get_tickets_instances_fields();
+            $fields = TC_Tickets_Instances::get_tickets_instances_fields();
 
             foreach ( $fields as $field ) {
 

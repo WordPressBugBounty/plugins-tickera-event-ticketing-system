@@ -233,10 +233,15 @@
     border-color: unset;
 }
 
-.tc-event-add-to-cart-group-wrap tr:empty, .tc-event-add-to-cart-group-wrap div:empty { display: none; }
+.tc-event-add-to-cart-group-wrap tr:empty,
+.tc-event-add-to-cart-group-wrap div:empty {
+    display: none;
+}
+
 .tc-event-add-to-cart-group-wrap,
 .tc-event-add-to-cart-group-wrap table {
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: 0;
     margin-block: 0 !important;
 }
 

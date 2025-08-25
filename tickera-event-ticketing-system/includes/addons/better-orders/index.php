@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
     class TC_Better_Orders {
 
@@ -449,7 +449,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
 
         function add_orders_metaboxes() {
             global $pagenow, $typenow, $post;
-            add_meta_box( 'order-details-tc-metabox-wrapper', __( 'Order Details', 'tickera-event-ticketing-system' ), 'Tickera\Addons\tickera_order_details_metabox', 'tc_orders', 'normal' );
+            add_meta_box( 'order-details-tc-metabox-wrapper', __( 'Order Details', 'tickera-event-ticketing-system' ), '\Tickera\Addons\tickera_order_details_metabox', 'tc_orders', 'normal' );
         }
 
     }
@@ -482,7 +482,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Orders' ) ) {
  * Deprecated function "tc_order_details_metabox".
  * @since 3.5.3.0
  */
-if ( ! function_exists( 'Tickera\Addons\tickera_order_details_metabox' ) ) {
+if ( ! function_exists( '\Tickera\Addons\tickera_order_details_metabox' ) ) {
 
     function tickera_order_details_metabox() {
         $orders = new \Tickera\TC_Orders();

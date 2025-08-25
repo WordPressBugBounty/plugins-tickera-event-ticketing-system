@@ -5,7 +5,7 @@ use Tickera\TC_Ticket_Template_Elements;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Ticket\Element\tc_ticket_buyer_name_element' ) ) {
+if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_buyer_name_element' ) ) {
 
     class tc_ticket_buyer_name_element extends TC_Ticket_Template_Elements {
 

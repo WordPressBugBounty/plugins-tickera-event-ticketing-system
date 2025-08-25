@@ -121,8 +121,10 @@
         };
 
         /**
+         * =======================================================================
          * Check age restriction.
          * Woocommerce + Bridge for Woocommerce
+         * =======================================================================
          */
         $( 'form.checkout' ).on( 'checkout_place_order', function( event ) {
             if ( $( '#tc_age_check' ).length !== 0 ) {
@@ -162,7 +164,9 @@
         } );
 
         /**
-         * Increase the quantity
+         * =======================================================================
+         * Handles cart page's quantity field.
+         * =======================================================================
          */
         $( 'body' ).on( 'click', 'input.tickera_button.plus', function() {
             let parentContainer = $( this ).closest( 'td' ),
@@ -170,9 +174,6 @@
             parentContainer.find( '.quantity' ).val( parseInt( quantity ) + 1 );
         } );
 
-        /**
-         * Decrease the quantity
-         */
         $( 'body' ).on( 'click', 'input.tickera_button.minus', function() {
             let parentContainer = $( this ).closest( 'td' ),
                 quantity = parentContainer.find( '.quantity' ).val();
@@ -181,8 +182,46 @@
             }
         } );
 
+        $( 'body' ).on( 'input', 'form#tickera_cart .tc_quantity_selector, form#tickera_cart .tickera-input-field[inputmode="numeric"]', function() {
+            this.value = this.value.replace(/\D/g, '');
+        } );
+
+        $( 'body' ).on( 'keydown', 'form#tickera_cart .tc_quantity_selector, form#tickera_cart .tickera-input-field[inputmode="numeric"], .event_tickets.tickera .tc_quantity_selector', function( e ) {
+
+            let min = typeof $( this ).attr( 'min' ) !== 'undefined' ? parseInt( $( this ).attr( 'min' ) ) : 1,
+                max = typeof $( this ).attr( 'max' ) !== 'undefined' ? parseInt( $( this ).attr( 'max' ) ) : 9999,
+                step = typeof $( this ).attr( 'step' ) !== 'undefined' ? parseInt( $( this ).attr( 'step' ) ) : 1;
+
+            this.value = ( isNaN( this.value ) || this.value === '' ) ? min : parseInt( this.value );
+
+            switch( e.keyCode ) {
+
+                case 38: // Arrow key up
+                    e.preventDefault();
+                    this.value = parseInt( this.value ) + step;
+                    break;
+
+                case 40: // Arrow key down
+                    e.preventDefault();
+                    this.value = parseInt( this.value ) - step;
+                    break;
+            }
+
+            if ( this.value < min ) {
+                this.value = min;
+
+            } else if ( this.value > max ) {
+                this.value = max;
+
+            } else if ( this.value < 1) {
+                this.value = 1
+            }
+        } );
+
         /**
+         * =======================================================================
          * When user clicks on the empty cart button
+         * =======================================================================
          */
         $( 'body' ).on( 'click', '#empty_cart', function( event ) {
 
@@ -197,14 +236,18 @@
         } );
 
         /**
+         * =======================================================================
          * When user clicks on the update button
+         * =======================================================================
          */
         $( 'body' ).on( 'click', '#update_cart', function() {
             $( 'input[name="cart_action"]' ).val( 'update_cart' );
         } );
 
         /**
+         * =======================================================================
          * Toggle Customer Age Checkbox
+         * =======================================================================
          */
         $( document ).on( 'change', '#tc_age_check', function() {
 
@@ -220,8 +263,10 @@
         } );
 
         /**
+         * =======================================================================
          * Tickera Standalone
-         * When user click on the proceed to checkout button,
+         * When user click on the proceed to checkout button
+         * =======================================================================
          */
         var current_quantity = tc_cart.quantity();
         $( document ).on( 'click', '#proceed_to_checkout', function( event ) {
@@ -261,36 +306,47 @@
         } );
 
         /**
+         * =======================================================================
          * When user click on the proceed to checkout button
+         * =======================================================================
          */
         $( 'body' ).on( 'click', '#apply_coupon', function() {
             $( 'input[name="cart_action"]' ).val( 'apply_coupon' );
         } );
 
         /**
+         * =======================================================================
          * Add to cart button
+         * =======================================================================
          */
         $( 'body' ).on( 'click', 'a.add_to_cart', function( event ) {
 
             event.preventDefault();
 
-            $( this ).fadeOut( 'fast' ).fadeIn( 'fast' );
+            let btn = $( this );
+            btn.fadeOut( 'fast' ).fadeIn( 'fast' );
 
-            var button_type = $( this ).attr( 'data-button-type' ),
-                open_method = $( this ).attr( 'data-open-method' ),
-                current_form = $( this ).parents( 'form.cart_form' ),
+            var button_type = btn.attr( 'data-button-type' ),
+                open_method = btn.attr( 'data-open-method' ),
+                current_form = btn.closest( 'form.cart_form' ),
                 parent_container = current_form.parent(),
                 ticket_id = current_form.find( '.ticket_id' ).val(),
-                qty = $( this ).closest( 'tr' ).find( '.tc_quantity_selector' ).val(),
-                nonce = $( this ).closest( 'form.cart_form' ).find( '[name="nonce"]' ).val();
+                qtySelector = btn.closest( 'tr' ).find( '.tc_quantity_selector' ),
+                qty = qtySelector.val(),
+                nonce = btn.closest( 'form.cart_form' ).find( '[name="nonce"]' ).val();
 
-            qty = ( typeof qty === 'undefined' ) ? $( this ).closest( '.cart_form' ).find( '.tc_quantity_selector' ).val() : qty;
+            qty = ( typeof qty === 'undefined' ) ? btn.closest( '.cart_form' ).find( '.tc_quantity_selector' ).val() : qty;
 
             $.post( tc_ajax.ajaxUrl, { action: 'add_to_cart', ticket_id: ticket_id, tc_qty: qty, nonce: nonce }, function( data ) {
+
+                // btn.tc_tooltip( { 'detach': true } );
 
                 if ( 'error' != data ) {
 
                     parent_container.html( data );
+
+                    let cart = parent_container.find( '.tc_in_cart a');
+                    // cart.tc_tooltip();
 
                     if ( $( '.tc_cart_contents' ).length > 0 ) {
                         $.post( tc_ajax.ajaxUrl, { action: 'update_cart_widget', nonce: nonce }, function( widget_data ) {
@@ -313,21 +369,27 @@
         } );
 
         /**
+         * =======================================================================
          * Cart Widget
+         * =======================================================================
          */
         $( 'body' ).on( 'click', '.tc_widget_cart_button', function() {
             window.location.href = $( this ).data( 'url' );
         } );
 
         /**
+         * =======================================================================
          * Proceed to checkout button
+         * =======================================================================
          */
         $( 'body' ).on( 'click', '#proceed_to_checkout', function() {
             $( 'input[name="cart_action"]' ).val( 'proceed_to_checkout' );
         } );
 
         /**
+         * =======================================================================
          * Check email-verification for owner field with Woocommerce
+         * =======================================================================
          */
         $( 'form.checkout' ).on( 'click', 'button[type="submit"][name="woocommerce_checkout_place_order"]', function() {
 
@@ -347,8 +409,10 @@
         } );
 
         /**
+         * =======================================================================
          * Payment Method selection.
          * Accordion effect in Payment Page.
+         * =======================================================================
          */
         $( document ).on( 'change', '.tickera-payment-gateways input.tc_choose_gateway', function() {
 
@@ -364,17 +428,195 @@
         });
 
         /**
-         * Tickera Cart: Preventing Default button to trigger on Enter Key
+         * =======================================================================
+         * Handles keypress 'enter' key in cart page.
+         * =======================================================================
          */
         $( document ).on( 'keypress', '#tickera_cart input', function( e ) {
+
             if ( 13 === e.keyCode ) {
+
                 e.preventDefault();
-                $( '#proceed_to_checkout' ).trigger( 'click' );
+
+                if ( $( this ).hasClass( 'quantity' ) ) {
+                    $( '#update_cart' ).trigger( 'click' );
+
+                } else if ( $( this ).hasClass( 'coupon_code' ) ) {
+                    $( '#apply_coupon' ).trigger( 'click' );
+
+                } else if ( $( this ).hasClass( 'tickera_empty' ) ) {
+                    $( '#empty_cart' ).trigger( 'click' );
+                }
             }
         } );
 
         /**
+         * =======================================================================
+         * Handles keypress 'enter' key in event add-to-cart table.
+         * =======================================================================
+         */
+        $( document ).on( 'keypress', '.event_tickets.tickera .tc_quantity_selector', function( e ) {
+
+            if ( 13 === e.keyCode ) {
+
+                e.preventDefault();
+
+                let ticketRow = $( this ).closest( 'tr' ),
+                    addToCart = ticketRow.find( '.add_to_cart' );
+
+                addToCart.trigger( 'click' );
+            }
+        } );
+
+        /**
+         * =======================================================================
+         * Handles left and right arrow keys to move within the cart form fields.
+         * =======================================================================
+         */
+        $( document ).on( 'keydown', 'form#tickera_cart, .tc-event-add-to-cart-group-wrap', function( e ) {
+
+            let fields = $( this ).find('input, select, textarea, a').filter(':visible:not([disabled]):not([type="hidden"]):not(.tc-hidden-important)'),
+                currentField = $( this ).find( ':focus' ),
+                currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
+                currentFieldType = $( currentField ).attr( 'type' ),
+                index = $( fields ).index( currentField );
+
+            if ( ( currentFieldElementType === 'input' && currentFieldType.includes( 'text' ) ) || currentFieldElementType === 'textarea' ) {
+
+                let caretPlacement = $(currentField).prop('selectionStart'),
+                    fieldValueLength = $(currentField).val().length;
+
+                if (e.keyCode == 37 && caretPlacement === 0) {
+                    $(fields[index - 1]).focus();
+
+                } else if (e.keyCode == 39 && caretPlacement === fieldValueLength) {
+                    $(fields[index + 1]).focus();
+
+                } else if (e.keyCode == 13) {
+                    $('#proceed_to_checkout').trigger('click');
+                }
+
+            } else if ( currentFieldElementType === 'input' && currentFieldType.includes( 'checkbox' ) && e.keyCode == 13 ) {
+
+                if (currentField.prop('checked')) {
+                    currentField.prop('checked', false).trigger('change');
+
+                } else {
+                    currentField.prop('checked', true).trigger('change');
+                }
+
+            } else if ( currentFieldElementType === 'input' && currentFieldType.includes( 'radio' ) ) {
+
+                e.preventDefault();
+
+                switch ( e.keyCode ) {
+
+                    case 37: // Left arrow key
+                        $( fields[ index - 1 ] ).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                        $( fields[ index + 1 ] ).focus();
+                        break;
+
+                    case 13: // Enter key
+                        if (currentField.prop('checked')) {
+                            currentField.prop('checked', false).trigger('change');
+                        } else {
+                            currentField.prop('checked', true).trigger('change');
+                        }
+                        break;
+                }
+
+            } else {
+
+                switch ( e.keyCode ) {
+
+                    case 37: // Left arrow key
+                        $( fields[ index - 1 ] ).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                        $( fields[ index + 1 ] ).focus();
+                        break;
+                }
+            }
+        } );
+
+        /**
+         * =======================================================================
+         * Handles payment page's gateway selection.
+         * =======================================================================
+         */
+        $( document ).on( 'keydown', 'form#tc_payment_form .tickera-payment-gateways.active', function( e ) {
+
+            let fields = $( this ).find('input, select, textarea').filter(':visible:not([disabled])'),
+                currentField = $( this ).find( ':focus' ),
+                currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
+                currentFieldType = $( currentField ).attr( 'type' ),
+                index = $( fields ).index( currentField );
+
+            if ( currentFieldElementType === 'input' && currentFieldType.includes( 'text' ) ) {
+
+                let caretPlacement = $( currentField ).prop( 'selectionStart' ),
+                    fieldValueLength = $( currentField ).val().length;
+
+                if ( e.keyCode == 37 && caretPlacement === 0 ) {
+                    $( fields[ index - 1 ] ).focus();
+
+                } else if ( e.keyCode == 39 && caretPlacement === fieldValueLength ) {
+                    $( fields[ index + 1 ] ).focus();
+                }
+
+
+            } else {
+
+                switch ( e.keyCode ) {
+
+                    case 37: // Left arrow key
+                        $( fields[ index - 1 ] ).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                        $( fields[ index + 1 ] ).focus();
+                        break;
+
+                    case 9:
+                        if ( ! $( fields[ index + 1 ] ).length ) {
+                            $( this ).removeClass( 'active' );
+                            $( this ).find( '.tc_gateway_form' ).css( 'max-height', '0' );
+
+                            let nextGateway = $( this ).next();
+                            nextGateway.addClass( 'active' ).find( '.tc_choose_gateway' ).prop( 'checked', true );
+                            nextGateway.find( '.tc_gateway_form' ).css( 'max-height', nextGateway.find( '.inner-wrapper' ).outerHeight() + 'px' );
+                        }
+                        break;
+                }
+            }
+        } );
+
+        /**
+         * =======================================================================
+         * Handles cart page's discount field.
+         * =======================================================================
+         */
+        let coupon_code_value = $( '.tickera-checkout .coupon_code' ).val();
+        $( document ).on( 'keyup', '.tickera-checkout .coupon_code', function() {
+
+            if ( coupon_code_value !== $( this ).val() || ! $( this ).val() ) {
+                $( this ).parent().find( '.message').hide();
+                $( this ).parent().find( '.apply_coupon').show();
+
+            } else {
+                $( this ).parent().find( '.message').show();
+                $( this ).parent().find( '.apply_coupon').hide();
+            }
+        });
+
+        /**
+         * =======================================================================
          * Payment Gateway Page - Frontend
+         * =======================================================================
          */
         $( document ).on( 'keypress', '.tc-numbers-only', function( e ) {
             if ( e.which != 8 && e.which != 0 && ( e.which < 48 || e.which > 57 ) ) {
@@ -383,9 +625,11 @@
         } );
 
         /**
+         * =======================================================================
          * Update add to cart link value/ticket type id
          * Event Tickets - Shortcode
          * Display Type: Dropdown
+         * =======================================================================
          */
         $( document ).on( 'change', '.tc-event-dropdown-wrap select.ticket-type-id', function() {
 
@@ -417,6 +661,7 @@
 
             $( 'form#tickera_cart, form.checkout' ).validate( {
                 debug: false,
+                ignore: ".tc_quantity_selector",
                 errorClass: 'has-error',
                 validClass: 'valid',
                 highlight: function( element, errorClass, validClass ) {
@@ -510,7 +755,9 @@
             } );
 
             /**
+             * =======================================================================
              * Update checkbox values on field change.
+             * =======================================================================
              */
             $( document ).on( 'change', '.buyer-field-checkbox, .owner-field-checkbox', function( e ) {
 
@@ -532,7 +779,9 @@
             } );
 
             /**
+             * =======================================================================
              * Update radio validation field
+             * =======================================================================
              */
             $( document ).on( 'change', '.buyer-field-radio, .owner-field-radio', function( e ) {
 

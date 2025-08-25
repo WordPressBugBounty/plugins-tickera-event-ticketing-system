@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'Tickera\TC_Form_Fields_API' ) ) {
+if ( ! class_exists( '\Tickera\TC_Form_Fields_API' ) ) {
 
     class TC_Form_Fields_API {
 
@@ -118,7 +118,7 @@ if ( ! class_exists( 'Tickera\TC_Form_Fields_API' ) ) {
             $data = wp_parse_args( $data, $defaults );
             ob_start();
             ?>
-            <tr valign="top" <?php echo wp_kses_post( ( 'hidden' == $data[ 'type' ] ) ? 'style="display:none;"' : '' ); ?> <?php echo wp_kses_post( \Tickera\TC_Fields::conditionals( $data, false ) ); ?>>
+            <tr valign="top" <?php echo wp_kses_post( ( 'hidden' == $data[ 'type' ] ) ? 'style="display:none;"' : '' ); ?> <?php echo wp_kses_post( TC_Fields::conditionals( $data, false ) ); ?>>
                 <th scope="row" class="titledesc">
                     <label for="<?php echo esc_attr( $field ); ?>"><?php echo wp_kses_post( $data[ 'title' ] ); ?></label>
                 </th>
@@ -360,7 +360,7 @@ if ( ! class_exists( 'Tickera\TC_Form_Fields_API' ) ) {
             $data = wp_parse_args( $data, $defaults );
             ob_start();
             ?>
-            <tr valign="top" <?php echo wp_kses_post( \Tickera\TC_Fields::conditionals( $data, false ) ); ?>>
+            <tr valign="top" <?php echo wp_kses_post( TC_Fields::conditionals( $data, false ) ); ?>>
                 <th scope="row" class="titledesc">
                     <label for="<?php echo esc_attr( $field ); ?>"><?php echo wp_kses_post( $data[ 'title' ] ); ?></label>
                 </th>

@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Event' ) ) {
+if ( ! class_exists( '\Tickera\TC_Event' ) ) {
 
     class TC_Event {
 
@@ -19,7 +19,7 @@ if ( ! class_exists( 'Tickera\TC_Event' ) ) {
             $this->output = $output;
             $this->details = get_post( $this->id, $this->output );
 
-            $events = new \Tickera\TC_Events();
+            $events = new TC_Events();
             $fields = $events->get_event_fields();
 
             if ( ! isset( $this->details ) ) {
@@ -107,7 +107,7 @@ if ( ! class_exists( 'Tickera\TC_Event' ) ) {
             $ticket_types = get_posts( $args );
 
             foreach ( $ticket_types as $ticket_type ) {
-                $ticket_type_instance = new \Tickera\TC_Ticket( $ticket_type->ID );
+                $ticket_type_instance = new TC_Ticket( $ticket_type->ID );
                 $ticket_type_instance->delete_ticket();
             }
         }

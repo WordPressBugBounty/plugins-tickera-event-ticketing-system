@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Settings_General' ) ) {
+if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
 
     class TC_Settings_General {
 
@@ -355,6 +355,60 @@ if ( ! class_exists( 'Tickera\TC_Settings_General' ) ) {
                     'tooltip' => __( 'Globally allow ticket check-out. When an attendee initially scans a ticket, it will be recorded as check-in. Scanning the ticket for the second time will mark the ticket as check-out. Useful if you need to keep track on number of attendees currently in the venue in Checkinera apps', 'tickera-event-ticketing-system' ),
                     'section' => 'store_settings'
                 ),
+                /*
+                 * =============== Frontend Tooltip ================
+                array(
+                    'field_name' => 'frontend_tooltip',
+                    'field_title' => __( 'Show Frontend Tooltip', 'tickera-event-ticketing-system' ),
+                    'field_type' => 'function',
+                    'function' => 'tickera_yes_no',
+                    'default_value' => 'yes',
+                    'tooltip' => __( 'Enable this option to display helpful tooltips when users hover over certain elements on the frontend of your website. Tooltips provide brief, contextual information to improve user experience and guide interaction.', 'tickera-event-ticketing-system' ),
+                    'section' => 'store_settings'
+                ),
+                array(
+                    'field_name' => 'frontend_tooltip_add_to_cart',
+                    'field_title' => __( 'Add to Cart', 'tickera-event-ticketing-system' ),
+                    'field_type' => 'text',
+                    'default_value' => __( 'Press enter key to add this ticket to cart.', 'tickera-event-ticketing-system' ),
+                    'tooltip' => __( 'An add to cart button/link within the event ticket types table.', 'tickera-event-ticketing-system' ),
+                    'section' => 'store_settings',
+                    'conditional' => array(
+                        'field_name' => 'frontend_tooltip',
+                        'field_type' => 'radio',
+                        'value' => 'yes',
+                        'action' => 'show'
+                    )
+                ),
+                array(
+                    'field_name' => 'frontend_tooltip_cart',
+                    'field_title' => __( 'Ticket added to cart', 'tickera-event-ticketing-system' ),
+                    'field_type' => 'text',
+                    'default_value' => __( 'Select the quantity of the ticket type.', 'tickera-event-ticketing-system' ),
+                    'tooltip' => __( 'A cart button/link within the event ticket types table that appears upon adding ticket to cart.', 'tickera-event-ticketing-system' ),
+                    'section' => 'store_settings',
+                    'conditional' => array(
+                        'field_name' => 'frontend_tooltip',
+                        'field_type' => 'radio',
+                        'value' => 'yes',
+                        'action' => 'show'
+                    )
+                ),
+                array(
+                    'field_name' => 'frontend_tooltip_quantity_selector',
+                    'field_title' => __( 'Quantity selector', 'tickera-event-ticketing-system' ),
+                    'field_type' => 'text',
+                    'default_value' => __( 'Press enter key to view cart.', 'tickera-event-ticketing-system' ),
+                    'tooltip' => __( 'A quantity select field within the event ticket types table.', 'tickera-event-ticketing-system' ),
+                    'section' => 'store_settings',
+                    'conditional' => array(
+                        'field_name' => 'frontend_tooltip',
+                        'field_type' => 'radio',
+                        'value' => 'yes',
+                        'action' => 'show'
+                    )
+                ),
+                */
             );
 
             $store_settings_default_fields = apply_filters( 'tc_general_settings_store_fields', $store_settings_default_fields );

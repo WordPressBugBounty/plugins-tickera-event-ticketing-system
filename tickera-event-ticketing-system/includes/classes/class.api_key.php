@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_API_Key' ) ) {
+if ( ! class_exists( '\Tickera\TC_API_Key' ) ) {
 
     class TC_API_Key {
 
@@ -20,7 +20,7 @@ if ( ! class_exists( 'Tickera\TC_API_Key' ) ) {
             $this->output = $output;
             $this->details = get_post( $this->id, $this->output );
 
-            $api_keys = new \Tickera\TC_API_Keys();
+            $api_keys = new TC_API_Keys();
             $fields = $api_keys->get_api_keys_fields();
 
             if ( ! isset( $this->details ) ) {

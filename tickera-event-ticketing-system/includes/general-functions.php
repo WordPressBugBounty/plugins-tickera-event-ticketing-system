@@ -741,30 +741,34 @@ if ( ! function_exists( 'ticker_timestamp_to_local' ) ) {
 if ( ! function_exists( 'tickera_quantity_selector' ) ) {
 
     function tickera_quantity_selector( $ticket_id, $return = false, $value = false ) {
-        $quantity = (int) apply_filters( 'tc_quantity_selector_quantity', 25 );
+
+        global $tc;
+
+        $cart_contents = $tc->get_cart_cookie();
+        $quantity = ( $cart_contents && isset( $cart_contents[ $ticket_id ] ) ) ? $cart_contents[ $ticket_id ] : null;
+
+        $general_settings = get_option( 'tickera_general_setting', [] );
+        $frontend_tooltip = isset( $general_settings[ 'frontend_tooltip' ] ) ? ( 'yes' == $general_settings[ 'frontend_tooltip' ] ? true : false ) : false; // Default true
+        $frontend_tooltip_quantity_selector = isset( $general_settings[ 'frontend_tooltip_quantity_selector' ] ) ? $general_settings[ 'frontend_tooltip_quantity_selector' ] : __( 'Select the quantity of the ticket type.', 'tickera-event-ticketing-system' );
+
         $ticket = new \Tickera\TC_Ticket( $ticket_id );
-        $quantity_left = $ticket->get_tickets_quantity_left();
-        $max_quantity = get_post_meta( $ticket_id, 'max_tickets_per_order', true );
+        $quantity_left = (int) $ticket->get_tickets_quantity_left();
+        $min_quantity = $ticket->details->min_tickets_per_order;
+        $max_quantity = $ticket->details->max_tickets_per_order;
+        $max_quantity = ( $max_quantity && is_numeric( $max_quantity ) && $quantity_left > $max_quantity ) ? $max_quantity : $quantity_left;
 
-        $quantity = ( isset( $max_quantity ) && is_numeric( $max_quantity ) ) ? $max_quantity : $quantity;
-        $quantity = ( $quantity_left <= $quantity ) ? $quantity_left : $quantity;
-
-        $min_quantity = get_post_meta( $ticket_id, 'min_tickets_per_order', true );
-        $i_val = ( isset( $min_quantity ) && is_numeric( $min_quantity ) && $min_quantity <= $quantity ) ? $min_quantity : 1;
+        if ( $return ) ob_start();
 
         if ( $quantity_left > 0 ) {
-            if ( $return ) ob_start(); ?>
-            <select class="tc_quantity_selector">
-            <?php for ( $i = $i_val; $i <= $quantity; $i++ ) { ?>
-                <option value="<?php echo esc_attr( $i ); ?>" <?php selected( $value, (int) $i, true ); ?>><?php echo esc_html( $i ); ?></option>
-            <?php } ?>
-            <?php if ( $value > $quantity ) : ?>
-                <option value="<?php echo esc_attr( $value ); ?>" <?php echo esc_html( 'selected' ) ?>><?php echo esc_html( $value ); ?></option>
+            if ( $quantity_left ) : ?>
+                <input type="text" inputmode="numeric" pattern="[0-9]*" class="tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) apply_filters( 'tc_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>">
+            <?php else : ?>
+                <span><?php _e( 'Sold out', 'tickera-event-ticketing-system' ); ?></span>
             <?php endif; ?>
-            </select><?php
-
-            if ( $return ) { return ob_get_clean(); }
+            <?php if ( $return ) { return ob_get_clean(); }
         }
+
+        if ( $return ) return ob_get_clean();
     }
 }
 
@@ -4884,6 +4888,82 @@ if ( ! function_exists( 'tickera_get_order_statuses' ) ) {
         ];
 
         return apply_filters( 'tickera_order_statuses', $order_statuses );
+    }
+}
+
+/**
+ * Retrieves posts based on the specified criteria.
+ *
+ * This function allows fetching posts from the database using specified arguments,
+ * including post type, status, sorting options, and metadata filtering.
+ *
+ * @param array $args {
+ *     Optional. Arguments to filter the posts retrieval. Default values are used if not set.
+ *
+ * @type string $post_status The status of the posts to retrieve. Default 'publish'.
+ * @type string $post_type The type of the posts to retrieve. Default 'post'.
+ * @type string $order_by The column by which to order the results. Default 'post_date'.
+ * @type string $order The order direction ('ASC' or 'DESC'). Default 'DESC'.
+ * @type string|array $fields The specific fields to select. Default '*'.
+ * @type bool $meta Whether to include metadata in the query. Default false.
+ * @type int $post_parent Optional post parent ID to filter by. Default not set.
+ * }
+ * @return array An array of resulting posts satisfying the query conditions.
+ */
+if ( ! function_exists( 'tickera_get_posts' ) ) {
+
+    function tickera_get_posts( $args = [] ) {
+
+        global $wpdb;
+
+        $default = [
+            'post_status' => 'publish',
+            'post_type' => 'post',
+            'order_by' => 'post_date',
+            'order' => 'DESC',
+            'fields' => '*',
+            'meta' => false
+        ];
+
+        // Initialization of required arguments
+        $args = array_merge( $default, $args );
+
+        // Sanitization
+        $order_by = sanitize_key( $args['order_by'] );
+        $order = sanitize_key( $args['order'] );
+
+        // Fields
+        if ( is_array( $args['fields'] ) ) {
+            $fields_query = implode( ',', array_map( 'sanitize_key', $args['fields'] ) );
+
+        } else {
+            $fields_query = sanitize_key( $args['fields'] );
+        }
+
+        // Post Parent
+        $post_parent_query = '';
+        if ( isset( $args[ 'post_parent' ] ) ) {
+            $post_parent_query= "AND p.post_parent=" . (int) $args[ 'post_parent' ];
+        }
+
+        $meta_query = '';
+        if ( $args[ 'meta' ] ) {
+            $meta_query = "INNER JOIN {$wpdb->postmeta} pm ON p.ID=pm.post_id";
+        }
+
+        $query = $wpdb->prepare( "
+            SELECT {$fields_query} 
+            FROM {$wpdb->posts} p 
+            {$meta_query}
+            WHERE post_type=%s
+            AND post_status=%s
+            {$post_parent_query}
+            ORDER BY {$order_by} $order",
+            sanitize_text_field( $args['post_type'] ),
+            sanitize_key( $args['post_status'] )
+        );
+
+        return $wpdb->get_results( $query );
     }
 }
 

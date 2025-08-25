@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Order' ) ) {
+if ( ! class_exists( '\Tickera\TC_Order' ) ) {
 
     class TC_Order {
 
@@ -20,8 +20,8 @@ if ( ! class_exists( 'Tickera\TC_Order' ) ) {
             $this->output = $output;
             $this->details = get_post( $this->id, $this->output );
 
-            $tickets = new \Tickera\TC_Orders();
-            $fields = \Tickera\TC_Orders::get_order_fields();
+            $tickets = new TC_Orders();
+            $fields = TC_Orders::get_order_fields();
 
             foreach ( $fields as $field ) {
 
@@ -65,7 +65,7 @@ if ( ! class_exists( 'Tickera\TC_Order' ) ) {
             $ticket_instances = get_posts( $args );
 
             foreach ( $ticket_instances as $ticket_instance ) {
-                $ticket_instance_instance = new \Tickera\TC_Ticket_Instance( $ticket_instance->ID );
+                $ticket_instance_instance = new TC_Ticket_Instance( $ticket_instance->ID );
                 $ticket_instance_instance->delete_ticket_instance( $force_delete );
             }
         }
@@ -94,7 +94,7 @@ if ( ! class_exists( 'Tickera\TC_Order' ) ) {
             global $tc;
 
             if ( ! defined( 'TC_TURN_OFF_NOTES' ) ) {
-                if ( ! \Tickera\TC_Order::same_order_note_exist( $order_id, $note ) ) {
+                if ( ! TC_Order::same_order_note_exist( $order_id, $note ) ) {
                     $comment_author = $tc->title;
                     $comment_author_email = strtolower( $tc->title ) . '@';
                     $comment_author_email .= isset( $_SERVER[ 'HTTP_HOST' ] ) ? str_replace( 'www.', '', sanitize_text_field( $_SERVER[ 'HTTP_HOST' ] ) ) : 'noreply.com';

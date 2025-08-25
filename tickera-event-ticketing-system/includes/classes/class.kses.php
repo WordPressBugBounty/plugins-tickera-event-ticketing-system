@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
+if ( ! class_exists( '\Tickera\TC_Kses' ) ) {
 
     class TC_Kses {
 
@@ -26,8 +26,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'disabled'              => [],
                 'style'                 => [],
                 'data-column'           => [],
-                'data-tc-check-value'   => [],
-                '$default_attributes'   => []
+                'data-tc-check-value'   => []
             ];
 
             $default_form_attributes = [
@@ -99,7 +98,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                 'ol'            => $default_attributes,
                 'span'          => $default_attributes,
                 'select'        => array_merge( $default_attributes, $default_form_attributes ),
-                'input'         => array_merge( $default_attributes, $default_form_attributes, $default_conditional_attributes ),
+                'input'         => array_merge( $default_attributes, $default_form_attributes, $default_conditional_attributes, [ 'data-min' => [], 'data-max' => [], 'data-step' => [] ] ),
                 'textarea'      => array_merge( $default_attributes, $default_form_attributes, [ 'rows' => [], 'cols' => [], 'aria-hidden' => [] ] ),
                 'option'        => [ 'value' => [], 'selected' => [] ],
                 'table'         => array_merge( $default_attributes, $default_table_attributes ),
@@ -125,7 +124,7 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                         'div' => [ 'id' => [], 'class' => [], 'style' => [] ],
                         'form' => [ 'class' => [] ],
                         'span' => [ 'id' => [], 'class' => [] ],
-                        'a' => [ 'id' => [], 'class' => [], 'href' => [], 'data-button-type' => [], 'data-open-method' => [], 'aria-describedby' => [], 'data-quantity' => [], 'data-product_id' => [], 'data-product_sku' => [], 'aria-label' => [], 'rel' => [], 'data-success_message' => [] ],
+                        'a' => [ 'id' => [], 'class' => [], 'href' => [], 'data-button-type' => [], 'data-open-method' => [], 'aria-describedby' => [], 'data-quantity' => [], 'data-product_id' => [], 'data-product_sku' => [], 'aria-label' => [], 'rel' => [], 'data-success_message' => [], 'data-tooltip' => [] ],
                         'input' => [ 'type' => [], 'name' => [], 'id' => [], 'class' => [], 'value' => [], 'aria-label' => [], 'min' => [], 'max' => [], 'step' => [], 'placeholder' => [], 'inputmode' => [], 'autocomplete' => [] ],
                         'select' => [ 'class' => [] ],
                         'option' => [ 'value' => [], 'selected' => [] ]
@@ -150,7 +149,9 @@ if ( ! class_exists( 'Tickera\TC_Kses' ) ) {
                             'step'          => [],
                             'placeholder'   => [],
                             'inputmode'     => [],
-                            'autocomplete'  => []
+                            'pattern'       => [],
+                            'autocomplete'  => [],
+                            'data-tooltip'  => []
                         ],
                         'select' => [ 'class' => [] ],
                         'option' => [ 'value' => [], 'selected' => [] ]

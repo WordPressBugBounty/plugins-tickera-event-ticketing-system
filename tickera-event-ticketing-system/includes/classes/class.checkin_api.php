@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
+if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
 
     class TC_Checkin_API {
 
@@ -890,7 +890,7 @@ if ( ! class_exists( 'Tickera\TC_Checkin_API' ) ) {
 
                     $r[ 'date_checked' ] = $checkin_date;
 
-                    if ( 'shop_order' == $order->details->post_type ) {
+                    if ( in_array( $order->details->post_type, [ 'shop_order', 'shop_order_placehold' ] ) ) {
                         $format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );
                         $r[ 'payment_date' ] = get_the_date( $format, $result_id );
 

@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Tickets_Instances' ) ) {
+if ( ! class_exists( '\Tickera\TC_Tickets_Instances' ) ) {
 
     class TC_Tickets_Instances {
 
@@ -112,7 +112,7 @@ if ( ! class_exists( 'Tickera\TC_Tickets_Instances' ) ) {
         }
 
         function get_columns() {
-            $fields = \Tickera\TC_Tickets_Instances::get_tickets_instances_fields();
+            $fields = TC_Tickets_Instances::get_tickets_instances_fields();
             $results = tickera_search_array( $fields, 'table_visibility', true );
 
             $columns = array();
@@ -143,7 +143,7 @@ if ( ! class_exists( 'Tickera\TC_Tickets_Instances' ) ) {
         }
 
         public static function check_field_property( $field_name, $property ) {
-            $fields = \Tickera\TC_Tickets_Instances::get_tickets_instances_fields();
+            $fields = TC_Tickets_Instances::get_tickets_instances_fields();
             $result = tickera_search_array( $fields, 'field_name', $field_name );
             return $result[ 0 ][ 'post_field_type' ];
         }

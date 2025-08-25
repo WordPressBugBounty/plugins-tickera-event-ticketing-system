@@ -5,7 +5,7 @@ namespace Tickera;
 if ( !defined( 'ABSPATH' ) )
 	exit; // Exit if accessed directly
 
-if ( !class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
+if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 
 	class TC_Ticket_Templates {
 
@@ -110,7 +110,7 @@ if ( !class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
 			}
 
 			// Initialize TCPDF Libraries
-			if ( !class_exists( 'Tickera\TCPDF' ) )
+			if ( !class_exists( '\Tickera\TCPDF' ) )
 				require_once( $tc->plugin_dir . 'includes/tcpdf/examples/tcpdf_include.php' );
 
 			ob_start();
@@ -156,7 +156,7 @@ if ( !class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
 			$tc_document_paper_size	 = ( is_array( $tc_document_paper_size ) ) ? array_map( 'intval', array_values( array_filter( $tc_document_paper_size ) ) ) : $tc_document_paper_size;
 
 			// Create new PDF document
-			$pdf = new Tickera\TCPDF( $tc_document_orientation, TC_PDF_UNIT, apply_filters( 'tc_additional_ticket_document_size_output', $tc_document_paper_size ), true, apply_filters( 'tc_ticket_document_encoding', 'UTF-8' ), false );
+			$pdf = new \Tickera\TCPDF( $tc_document_orientation, TC_PDF_UNIT, apply_filters( 'tc_additional_ticket_document_size_output', $tc_document_paper_size ), true, apply_filters( 'tc_ticket_document_encoding', 'UTF-8' ), false );
 
 			// Set TCPDF Defaults
 			$pdf->SetCompression( true );
@@ -448,7 +448,7 @@ if ( !class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
 			$columns[ 'delete' ] = __( 'Delete', 'tickera-event-ticketing-system' );
 
 			// Add duplicate field
-			if ( tickera_iw_is_pr() && !tets_fs()->is_free_plan() ) {
+			if ( tickera_iw_is_pr() && !\Tickera\tets_fs()->is_free_plan() ) {
 				$columns[ 'tc_duplicate' ] = __( 'Action', 'tickera-event-ticketing-system' );
 			}
 

@@ -13,7 +13,7 @@ if ( defined( 'TC_HIDE_STATS_WIDGET' ) ) {
     return;
 }
 
-if ( ! class_exists( 'Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
 
     class TC_Stats_Dashboard_Widget {
 

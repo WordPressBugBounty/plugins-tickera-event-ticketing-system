@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.7
+ * Version: 3.5.5.8
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -18,9 +18,9 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 // Exit if accessed directly
-if ( !class_exists( 'Tickera\\TC' ) ) {
+if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.7';
+        var $version = '3.5.5.8';
 
         var $title = 'Tickera';
 
@@ -190,7 +190,12 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             add_action( 'wp_ajax_save_attendee_info', array($this, 'save_attendee_info') );
             add_action( 'wp_ajax_tc_update_widget_cart', 'tickera_update_widget_cart' );
             add_action( 'wp_ajax_nopriv_tc_update_widget_cart', 'tickera_update_widget_cart' );
-            add_filter( 'tc_cart_currency_and_format', array($this, 'get_cart_currency_and_format') );
+            add_filter(
+                'tc_cart_currency_and_format',
+                array($this, 'get_cart_currency_and_format'),
+                10,
+                2
+            );
             // Common Scripts and Styles
             add_action( 'wp_enqueue_scripts', array($this, 'common_scripts_styles') );
             add_action( 'admin_enqueue_scripts', array($this, 'common_scripts_styles') );
@@ -555,16 +560,16 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             }
             // Collect Order Objects
             if ( !is_object( $order ) ) {
-                $order = new \Tickera\TC_Order($order);
+                $order = new TC_Order($order);
             }
             // Collect Discount Object and Metas
-            $discounts = new \Tickera\TC_Discounts();
+            $discounts = new TC_Discounts();
             $discount_code = $order->details->tc_discount_code;
-            $discount = new \Tickera\TC_Discount();
+            $discount = new TC_Discount();
             $discount_object = $discount->get_discount_by_code( $discount_code );
             $discount_values = false;
             if ( $discount_object ) {
-                $discount_details = new \Tickera\TC_Discount($discount_object->ID);
+                $discount_details = new TC_Discount($discount_object->ID);
                 $discount_values = $discounts->calculate_tickets_discount( $cart_contents, $discount_details, $tc_ticket_discount );
             }
             // Identify if tax inclusive
@@ -578,7 +583,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $overall_ordered_count = array_sum( $cart_contents );
             $data = [];
             foreach ( $cart_contents as $ticket_type_id => $ordered_count ) {
-                $ticket = new \Tickera\TC_Ticket($ticket_type_id);
+                $ticket = new TC_Ticket($ticket_type_id);
                 for ($x = 0; $x < $ordered_count; $x++) {
                     // Ticket Subtotal
                     $ticket_subtotal = tickera_get_ticket_price( $ticket_type_id );
@@ -635,7 +640,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $total_fees = 0;
             $tax_value = 0;
             $subtotal_value = 0;
-            $discount = new \Tickera\TC_Discounts();
+            $discount = new TC_Discounts();
             $tc_general_settings = get_option( 'tickera_general_setting', false );
             $session = $this->session->get();
             if ( isset( $session['tc_cart_subtotal'] ) && isset( $session['tc_discount_code'] ) ) {
@@ -686,7 +691,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                         <?php 
                 $cart_subtotal = 0;
                 foreach ( $cart_contents as $ticket_type => $ordered_count ) {
-                    $ticket = new \Tickera\TC_Ticket($ticket_type);
+                    $ticket = new TC_Ticket($ticket_type);
                     if ( !empty( $ticket->details->post_title ) && ('tc_tickets' == get_post_type( $ticket_type ) || 'product' == get_post_type( $ticket_type )) ) {
                         // Sum of cart's tickets subtotal
                         $cart_subtotal = $cart_subtotal + tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count;
@@ -817,15 +822,14 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                                 <?php 
                 if ( !isset( $tc_general_settings['show_discount_field'] ) || isset( $tc_general_settings['show_discount_field'] ) && 'yes' == $tc_general_settings['show_discount_field'] ) {
                     ?>
-                                <div>
                                     <span class="total_item_title"><?php 
                     esc_html_e( 'DISCOUNT: ', 'tickera-event-ticketing-system' );
                     ?></span><span class="total_item_amount"><?php 
                     echo esc_html( apply_filters( 'tc_cart_currency_and_format', apply_filters( 'tc_cart_discount', 0 ) ) );
-                    ?></span><?php 
+                    ?></span>
+                                <?php 
                 }
                 ?>
-                                </div>
                                 <?php 
                 do_action( 'tc_cart_col_value_before_total_price_total', apply_filters( 'tc_cart_total', $cart_subtotal ) );
                 ?>
@@ -923,7 +927,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     // Collection of Attendee's Tickets
                     $ticket_instances = get_posts( [
                         'post_type'      => 'tc_tickets_instances',
-                        'post_status'    => 'any',
+                        'post_status'    => get_post_stati(),
                         'meta_query'     => [
                             'relation' => 'AND',
                             [
@@ -939,17 +943,19 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     if ( $ticket_instances ) {
                         // Delete Attendee's Tickets
                         foreach ( $ticket_instances as $ticket_instance_id ) {
-                            $order_id = wp_get_post_parent_id( $ticket_instance_id );
                             if ( 'yes' == $delete_orders ) {
+                                $order_id = wp_get_post_parent_id( $ticket_instance_id );
                                 if ( $order_id && get_post( $order_id ) ) {
                                     $associated_tickets = get_posts( [
                                         'post_type'      => 'tc_tickets_instances',
+                                        'post_status'    => get_post_stati(),
                                         'post_parent'    => $order_id,
                                         'fields'         => 'ids',
                                         'posts_per_page' => -1,
                                     ] );
                                     $prev_deleted = $prev_deleted + count( $associated_tickets );
                                     wp_delete_post( $order_id );
+                                    do_action( 'tc_after_bulk_delete_ticket_order', $order_id );
                                 } else {
                                     if ( get_post( $ticket_instance_id ) ) {
                                         $prev_deleted++;
@@ -1128,7 +1134,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 'post_content' => serialize( $cart_contents ),
             ) );
             // Order Object
-            $order = new \Tickera\TC_Order($order_id);
+            $order = new TC_Order($order_id);
             // Collect Individual Ticket Totals
             $cart_totals = $this->tc_calculate_individual_ticket_totals( $order, $cart_contents, $tc_ticket_discount );
             $order_payment_info = $order->details->tc_payment_info;
@@ -1208,7 +1214,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 foreach ( get_posts( $args ) as $key => $val ) {
                     if ( $val->ID != $ticket_type_id ) {
                         // Validate Ticket type availability
-                        $ticket = new \Tickera\TC_Ticket($val->ID);
+                        $ticket = new TC_Ticket($val->ID);
                         if ( !$ticket->is_sold_ticket_exceeded_limit_level() ) {
                             $collection[$key + 1]['id'] = $val->ID;
                             $collection[$key + 1]['text'] = $val->post_title;
@@ -1373,7 +1379,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                                 exit;
                             }
                         }
-                        $order = new \Tickera\TC_Order($order_id);
+                        $order = new TC_Order($order_id);
                         $order_status = apply_filters( 'tc_order_details_post_status', $order->details->post_status, $order );
                         $order_date = strtotime( $order->details->post_date );
                         $order_modified = strtotime( $order->details->post_modified );
@@ -1383,7 +1389,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                         if ( in_array( $order_status, $valid_order_statuses ) ) {
                             if ( $order_key == $order_date || $order_key == $order_modified || $order_key == $tc_order_date || $alt_paid_date == $order_key ) {
                                 $template_id = ( isset( $_GET['template_id'] ) ? (int) $_GET['template_id'] : false );
-                                $templates = new \Tickera\TC_Ticket_Templates();
+                                $templates = new TC_Ticket_Templates();
                                 $templates->generate_preview( (int) $_GET['download_ticket'], true, $template_id );
                             } else {
                                 $order_details_page = $this->tc_order_status_url(
@@ -1406,11 +1412,11 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         function generate_pdf_ticket() {
             if ( isset( $_GET['action'] ) && 'preview' == $_GET['action'] && isset( $_GET['page'] ) && 'tc_ticket_templates' == $_GET['page'] ) {
                 if ( isset( $_GET['ID'] ) ) {
-                    $templates = new \Tickera\TC_Ticket_Templates();
+                    $templates = new TC_Ticket_Templates();
                     $templates->generate_preview( false, false, (int) $_GET['ID'] );
                 }
                 if ( isset( $_GET['ticket_type_id'] ) ) {
-                    $templates = new \Tickera\TC_Ticket_Templates();
+                    $templates = new TC_Ticket_Templates();
                     $templates->generate_preview(
                         false,
                         false,
@@ -1607,7 +1613,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 ] );
                 $post_id = wp_insert_post( tickera_sanitize_array( $post ) );
                 // Add post metas for the API Key
-                $api_keys = new \Tickera\TC_API_Keys();
+                $api_keys = new TC_API_Keys();
                 if ( $post_id != 0 ) {
                     update_post_meta( $post_id, 'event_name', 'all' );
                     update_post_meta( $post_id, 'api_key_name', 'Default - All Events' );
@@ -1965,7 +1971,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
 
         function generate_ticket_preview() {
             if ( (current_user_can( 'manage_options' ) || current_user_can( 'edit_tc_tickets_instances' )) && (isset( $_GET['tc_preview'] ) || isset( $_GET['tc_download'] )) ) {
-                $templates = new \Tickera\TC_Ticket_Templates();
+                $templates = new TC_Ticket_Templates();
                 $templates->generate_preview( (int) $_GET['ticket_instance_id'], ( isset( $_GET['tc_download'] ) ? true : false ) );
             }
         }
@@ -1997,7 +2003,6 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
 
         /**
          * Get currency and set amount format in cart form
-         *
          * @param $amount
          * @return string
          */
@@ -2011,6 +2016,9 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $decimals = (int) apply_filters( 'tc_cart_amount_decimals', $int_decimals );
             $price_format = ( isset( $tc_general_settings['price_format'] ) ? $tc_general_settings['price_format'] : 'us' );
             $currency_position = ( isset( $tc_general_settings['currency_position'] ) ? $tc_general_settings['currency_position'] : 'pre_nospace' );
+            if ( !apply_filters( 'tc_round_cart_total_value', true ) ) {
+                $amount = floor( $amount * 100 ) / 100;
+            }
             switch ( $price_format ) {
                 case 'us':
                     $price = number_format(
@@ -2103,7 +2111,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $content = '<div class="tickera"><form id="tc_payment_form" method="post" action="' . sanitize_text_field( $this->get_process_payment_slug( true ) ) . '">';
             if ( 0 == $cart_total ) {
                 $tc_gateway_active_plugins = array();
-                $free_orders = new \Tickera\Gateway\TC_Gateway_Free_Orders();
+                $free_orders = new Gateway\TC_Gateway_Free_Orders();
                 $tc_gateway_active_plugins[0] = $free_orders;
             }
             if ( !is_null( $session_discounted_total ) && !is_null( $session_cart_total ) && round( $session_discounted_total, 2 ) == round( $session_cart_total, 2 ) ) {
@@ -2562,7 +2570,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 $skip_add_to_cart = ( isset( $_POST['tc_skip_add_to_cart'] ) ? (bool) $_POST['tc_skip_add_to_cart'] : false );
                 $cart = [];
                 if ( !$skip_add_to_cart ) {
-                    $prev_cart = $this->get_cart_cookie( true );
+                    $prev_cart = $this->get_cart_cookie();
                     foreach ( $prev_cart as $id => $qty ) {
                         $cart[$id] = (int) $qty;
                     }
@@ -2603,7 +2611,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     foreach ( $cart_contents as $ticket_type => $ordered_count ) {
                         ?>
                             <?php 
-                        $ticket = new \Tickera\TC_Ticket($ticket_type);
+                        $ticket = new TC_Ticket($ticket_type);
                         ?>
                             <li id='tc_ticket_type_<?php 
                         echo esc_attr( (int) $ticket_type );
@@ -2682,14 +2690,14 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                         $updated_cart_contents[(int) $ticket_type_id] = (int) $ticket_cart_quantities[$key];
                     }
                     foreach ( $updated_cart_contents as $ticket_type_id => $qty_count ) {
-                        $ticket = new \Tickera\TC_Ticket($ticket_type_id);
+                        $ticket = new TC_Ticket($ticket_type_id);
                         if ( $qty_count <= 0 ) {
                             /**
                              * Remove cart item if quantity is zero
                              */
                             unset($cart[$ticket_type_id]);
                             $tc_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 103;
-                        } elseif ( !\Tickera\TC_Ticket::is_sales_available( $ticket_type_id ) ) {
+                        } elseif ( !TC_Ticket::is_sales_available( $ticket_type_id ) ) {
                             /**
                              * Mark the item as sold out if not saleable.
                              *
@@ -2823,7 +2831,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     }
                     $cart_error_number = apply_filters( 'tc_cart_error_number', $cart_error_number );
                     $this->update_cart_cookie( $cart );
-                    $discount = new \Tickera\TC_Discounts();
+                    $discount = new TC_Discounts();
                     /**
                      * @var float $total value is not necessary in the following discount process.
                      * @var string $session_discount_code pass to param to calculate discounted_total correctly.
@@ -2836,7 +2844,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 } elseif ( 'empty_cart' == $cart_action ) {
                     $this->remove_order_session_data( false );
                 } elseif ( 'apply_coupon' == $cart_action ) {
-                    ( new \Tickera\TC_Discounts() )->discounted_cart_total();
+                    ( new TC_Discounts() )->discounted_cart_total();
                 }
                 /*
                  * Additional validation when proceeding to checkout.
@@ -3078,7 +3086,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             // Set cookie
             $expire = time() + apply_filters( 'tc_cart_cookie_expiration', 172800 );
             //72 hrs expire by default
-            setcookie(
+            @setcookie(
                 $cookie_id,
                 json_encode( $cart ),
                 $expire,
@@ -3440,7 +3448,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             if ( defined( 'FS_ACTIVATION' ) && !FS_ACTIVATION ) {
                 // Do nothing if freemius activation is disabled
             } else {
-                if ( !tets_fs()->is_free_plan() ) {
+                if ( !\Tickera\tets_fs()->is_free_plan() ) {
                     return true;
                 } else {
                     return ( in_array( $plugin, $premium_gateways ) ? false : true );
@@ -3634,7 +3642,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
         function get_cart_events( $cart_contents ) {
             $event_ids = array();
             foreach ( $cart_contents as $ticket_type => $ordered_count ) {
-                $ticket = new \Tickera\TC_Ticket($ticket_type);
+                $ticket = new TC_Ticket($ticket_type);
                 $event_id = $ticket->get_ticket_event( $ticket_type );
                 if ( !in_array( $event_id, $event_ids ) ) {
                     $event_ids[] = $event_id;
@@ -3647,7 +3655,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             $event_ids = $this->get_cart_events( $cart_contents );
             $promoter_ids = [];
             foreach ( $event_ids as $event_id ) {
-                $event = new \Tickera\TC_Event($event_id);
+                $event = new TC_Event($event_id);
                 $promoter_ids[] = $event->details->post_author;
             }
             return $promoter_ids;
@@ -3819,7 +3827,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     if ( $ticket_type_id == 0 || empty( $ticket_type_id ) ) {
                         $ticket_type_id = get_post_meta( $owner_record_id, 'ticket_type_id', true );
                     }
-                    $ticket_type = new \Tickera\TC_Ticket($ticket_type_id);
+                    $ticket_type = new TC_Ticket($ticket_type_id);
                     $event_id = $ticket_type->get_ticket_event( $ticket_type_id );
                     update_post_meta( $owner_record_id, 'event_id', (int) $event_id );
                     $owner_record_num++;
@@ -3873,7 +3881,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
             if ( isset( $_POST['event_term_category'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
                 $event_ids = [];
                 $current_term_category = (int) $_POST['event_term_category'];
-                $wp_events_search = new \Tickera\TC_Events_Search('', '', -1);
+                $wp_events_search = new TC_Events_Search('', '', -1);
                 foreach ( $wp_events_search->get_results() as $event ) {
                     $event_name = get_the_title( $event->ID );
                     $event_terms = get_the_terms( $event->ID, 'event_category' );
@@ -3916,7 +3924,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     'ID'          => $order_id,
                     'post_status' => sanitize_key( $post_status ),
                 );
-                $order = new \Tickera\TC_Order($order_id);
+                $order = new TC_Order($order_id);
                 $old_post_status = $order->details->post_status;
                 if ( 'trash' == $post_status ) {
                     $order->delete_order( false );
@@ -4241,7 +4249,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 'ID'          => (int) $order_id,
                 'post_status' => sanitize_key( $new_status ),
             );
-            $order_object = new \Tickera\TC_Order($order_id);
+            $order_object = new TC_Order($order_id);
             $old_post_status = $order_object->details->post_status;
             // Untrash order if it's in trash
             if ( 'trash' == $old_post_status ) {
@@ -4391,7 +4399,7 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                 if ( 'order_received' == $order_status ) {
                     // Cancel order if it's received / pending only (administrator can cancel other order statuses as well)
                     $this->update_order_status( $order->ID, 'order_cancelled' );
-                    \Tickera\TC_Order::add_order_note( $order->ID, __( 'Order cancelled by client.', 'tickera-event-ticketing-system' ) );
+                    TC_Order::add_order_note( $order->ID, __( 'Order cancelled by client.', 'tickera-event-ticketing-system' ) );
                     if ( $redirect !== false ) {
                         ob_start();
                         $this->session->set( 'tc_gateway_error', __( 'Your transaction has been canceled.', 'tickera-event-ticketing-system' ) );
@@ -5037,6 +5045,10 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
                     );
                 }
             }
+            // wp_enqueue_script( $this->name . '-front', $this->plugin_url . 'js/tooltip.js', array( 'jquery' ), $this->version );
+            wp_localize_script( $this->name . '-front', 'tc_tooltip', array(
+                'frontend_tooltip' => ( isset( $general_settings['frontend_tooltip'] ) ? ( 'yes' == $general_settings['frontend_tooltip'] ? true : false ) : false ),
+            ) );
         }
 
         /**
@@ -5084,12 +5096,12 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
 
         function load_cart_scripts() {
             if ( true == apply_filters( 'tc_use_cart_scripts', true ) ) {
-                $tc_general_settings = get_option( 'tickera_general_setting', false );
-                $tc_error_message = ( isset( $tc_general_settings['age_error_text'] ) ? $tc_general_settings['age_error_text'] : __( 'Only customers aged 16 or older are permitted for purchase on this website', 'tickera-event-ticketing-system' ) );
-                $tc_collection_data_text = ( isset( $tc_general_settings['tc_collection_data_text'] ) ? $tc_general_settings['tc_collection_data_text'] : '' );
-                $tc_gateway_collection_data = ( isset( $tc_general_settings['tc_gateway_collection_data'] ) ? $tc_general_settings['tc_gateway_collection_data'] : '' );
-                $show_owner_fields = ( isset( $tc_general_settings['show_owner_fields'] ) ? $tc_general_settings['show_owner_fields'] : 'no' );
-                $tc_age_checkbox = ( 'yes' == $show_owner_fields ? ( isset( $tc_general_settings['show_age_check'] ) ? $tc_general_settings['show_age_check'] : 'no' ) : 'no' );
+                $general_settings = get_option( 'tickera_general_setting', false );
+                $tc_error_message = ( isset( $general_settings['age_error_text'] ) ? $general_settings['age_error_text'] : __( 'Only customers aged 16 or older are permitted for purchase on this website', 'tickera-event-ticketing-system' ) );
+                $tc_collection_data_text = ( isset( $general_settings['tc_collection_data_text'] ) ? $general_settings['tc_collection_data_text'] : '' );
+                $tc_gateway_collection_data = ( isset( $general_settings['tc_gateway_collection_data'] ) ? $general_settings['tc_gateway_collection_data'] : '' );
+                $show_owner_fields = ( isset( $general_settings['show_owner_fields'] ) ? $general_settings['show_owner_fields'] : 'no' );
+                $tc_age_checkbox = ( 'yes' == $show_owner_fields ? ( isset( $general_settings['show_age_check'] ) ? $general_settings['show_age_check'] : 'no' ) : 'no' );
                 if ( empty( $tc_collection_data_text ) ) {
                     $tc_collection_data_text = __( 'In order to continue you need to agree to provide your details.', 'tickera-event-ticketing-system' );
                 }
@@ -5131,8 +5143,8 @@ if ( !class_exists( 'Tickera\\TC' ) ) {
  *
  * @since 3.5.3.0
  */
-add_action( 'admin_notices', 'Tickera\\tickera_multiple_plugin_versions_active_check' );
-if ( !function_exists( 'Tickera\\tickera_multiple_plugin_versions_active_check' ) ) {
+add_action( 'admin_notices', '\\Tickera\\tickera_multiple_plugin_versions_active_check' );
+if ( !function_exists( '\\Tickera\\tickera_multiple_plugin_versions_active_check' ) ) {
     function tickera_multiple_plugin_versions_active_check() {
         if ( current_user_can( 'manage_options' ) ) {
             // Show warning to the admin only

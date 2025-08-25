@@ -10,7 +10,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Session' ) ) {
+if ( ! class_exists( '\Tickera\TC_Session' ) ) {
 
     class TC_Session {
 

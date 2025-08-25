@@ -5,7 +5,7 @@ use Tickera\TC_Ticket_Template_Elements;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) ) {
+if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) ) {
 
     class tc_ticket_barcode_element_core extends TC_Ticket_Template_Elements {
 

@@ -4,7 +4,7 @@ if ( !defined( 'ABSPATH' ) ) {
     exit;
 }
 // Exit if accessed directly
-Tickera\tets_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' );
+\Tickera\tets_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' );
 /**
  * Deprecated function "tc_get_license_key".
  * @since 3.5.3.0
@@ -37,7 +37,7 @@ if ( !function_exists( 'tickera_get_license_email' ) ) {
     }
 
 }
-Tickera\tets_fs()->add_action( 'addons/after_title', 'tickera_add_fs_templates_addons_poststuff_before_bundle_message_and_link' );
+\Tickera\tets_fs()->add_action( 'addons/after_title', 'tickera_add_fs_templates_addons_poststuff_before_bundle_message_and_link' );
 /**
  * Deprecated function "tc_add_fs_templates_addons_poststuff_before_bundle_message_and_link".
  * @since 3.5.3.0
@@ -64,7 +64,7 @@ if ( !function_exists( 'tickera_members_account_url' ) ) {
     }
 
 }
-Tickera\tets_fs()->add_filter( 'pricing_url', 'tickera_members_account_url' );
+\Tickera\tets_fs()->add_filter( 'pricing_url', 'tickera_members_account_url' );
 /**
  * Deprecated function "tc_is_pr_only".
  * @since 3.5.3.0

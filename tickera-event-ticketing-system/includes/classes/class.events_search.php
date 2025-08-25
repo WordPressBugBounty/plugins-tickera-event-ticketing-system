@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Events_Search' ) ) {
+if ( ! class_exists( '\Tickera\TC_Events_Search' ) ) {
 
     class TC_Events_Search {
 
@@ -98,7 +98,7 @@ if ( ! class_exists( 'Tickera\TC_Events_Search' ) ) {
 
         function page_links() {
 
-            $pagination = new \Tickera\TC_Pagination();
+            $pagination = new TC_Pagination();
             $pagination->Items( $this->get_count_of_all() );
             $pagination->limit( $this->per_page );
             $pagination->parameterName = 'page_num';

@@ -10,7 +10,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
 
     class TC_Cancel_Pending_Orders {
 

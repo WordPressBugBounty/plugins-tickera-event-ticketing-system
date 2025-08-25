@@ -4,7 +4,7 @@ namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Divi_Shortcode_Builder' ) ) {
+if ( ! class_exists( '\Tickera\TC_Divi_Shortcode_Builder' ) ) {
 
     class TC_Divi_Shortcode_Builder {
 

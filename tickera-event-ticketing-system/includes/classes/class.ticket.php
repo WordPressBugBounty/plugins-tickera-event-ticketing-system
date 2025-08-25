@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Ticket' ) ) {
+if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
 
     class TC_Ticket {
 
@@ -127,7 +127,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket' ) ) {
 
                     $total_seconds = (int) ( $days_selected * 24 * 60 * 60 ) + ( $hours_selected * 60 * 60 ) + ( $minutes_selected * 60 );
 
-                    $ticket_instance = new \Tickera\TC_Ticket_Instance( (int) $ticket_id );
+                    $ticket_instance = new TC_Ticket_Instance( (int) $ticket_id );
                     $ticket_checkins = $ticket_instance->get_ticket_checkins();
 
                     if ( $ticket_checkins ) {
@@ -156,7 +156,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket' ) ) {
 
                 } elseif ( 'upon_event_starts' == $ticket_checkin_availability ) {
 
-                    $ticket_type = new \Tickera\TC_Ticket( $ticket_type_id );
+                    $ticket_type = new TC_Ticket( $ticket_type_id );
                     $event_id = $ticket_type->get_ticket_event();
                     $event_date = get_post_meta( $event_id, 'event_date_time', true );
 
@@ -181,7 +181,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket' ) ) {
          * @return int
          */
         function get_number_of_sold_tickets() {
-            $ticket_search = new \Tickera\TC_Tickets_Instances_Search( '', '', -1, false, false, 'ticket_type_id', $this->id );
+            $ticket_search = new TC_Tickets_Instances_Search( '', '', -1, false, false, 'ticket_type_id', $this->id );
             return ( is_array( $ticket_search->get_results() ) ) ? count( $ticket_search->get_results() ) : 0;
         }
 

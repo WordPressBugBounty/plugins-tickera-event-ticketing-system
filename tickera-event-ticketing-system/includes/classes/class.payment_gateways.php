@@ -8,7 +8,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Gateway_API' ) ) {
+if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
 
     class TC_Gateway_API {
 
@@ -265,9 +265,22 @@ if ( ! class_exists( 'Tickera\TC_Gateway_API' ) ) {
             $session_discounted_total = $tc->session->get( 'discounted_total' );
             $discounted_total = !is_null( $session_discounted_total ) ? (float) $session_discounted_total : '';
 
-            return ( isset( $discounted_total ) && is_numeric( $discounted_total ) )
-                ? round( $discounted_total, 2 )
-                : round( $cart_total, 2 );;
+            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+
+                $total = ( isset( $discounted_total ) && is_numeric( $discounted_total ) )
+                    ? round( $discounted_total, 2 )
+                    : round( $cart_total, 2 );
+
+            } else {
+
+                $total = ( isset( $discounted_total ) && is_numeric( $discounted_total ) )
+                    ? floor( $discounted_total * 100 ) / 100
+                    : floor( $cart_total * 100 ) / 100;
+
+                $total = number_format( $total, 2 );
+            }
+
+            return $total;
         }
 
         function discount() {

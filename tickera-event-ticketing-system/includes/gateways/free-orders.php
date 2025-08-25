@@ -8,7 +8,7 @@ use Tickera\TC_Gateway_API;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Free_Orders' ) ) {
+if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Free_Orders' ) ) {
 
     class TC_Gateway_Free_Orders extends TC_Gateway_API {
 
@@ -185,5 +185,5 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Free_Orders' ) ) {
         }
     }
 
-    \Tickera\tickera_register_gateway_plugin( 'Tickera\Gateway\TC_Gateway_Free_Orders', 'free_orders', __( 'Free Orders', 'tickera-event-ticketing-system' ) );
+    \Tickera\tickera_register_gateway_plugin( '\Tickera\Gateway\TC_Gateway_Free_Orders', 'free_orders', __( 'Free Orders', 'tickera-event-ticketing-system' ) );
 }

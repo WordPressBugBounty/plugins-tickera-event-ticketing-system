@@ -16,6 +16,10 @@ a[href="edit.php?post_type=tc_events&page=tickera-event-ticketing-system-pricing
     display: none !important;
 }
 
+.tc_wrap #tc-general-settings input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]) {
+    width: 23.15em;
+}
+
 .tc_wrap label.error {
     color: red !important;
     padding-left: 10px;

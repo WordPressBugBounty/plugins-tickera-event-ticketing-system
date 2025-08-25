@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_tc_gutentick' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
     class TC_tc_gutentick {
 

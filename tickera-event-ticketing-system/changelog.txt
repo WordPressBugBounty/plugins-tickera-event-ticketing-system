@@ -1,6 +1,19 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.5.8 25/08/2025 =
+* Inclusion of trashed tickets in Tickera > Settings > Delete Info > Bulk Delete Tickets process.
+* New "tc_after_bulk_delete_ticket_order" action hook. Argument: $order_id
+* New "tc_round_cart_total_value" filter hook to allow developers to disable rounding up of cart total values.
+* Namespacing refinements.
+* Cleared PHP Deprecated Notice related to quantity selector.
+* Translation strings for "Order Status" in Attendees & Tickets page.
+* Additional updates for Woocommerce High-Performance Order Storage Integration.
+* Additional security patch for Barcode Reader. Tickera > Barcode Reader.
+* Stripe Payment Gateway "Invalid Integer" error. [Fixed]
+* Adjustment on Tickera gutenberg blocks styles.
+* Keyboard navigation improvements
+
 = 3.5.5.7 23/06/2025 =
 * Persistent error code when a ticket code contains a slash "/" during check-in. [Fixed]
 * Cleared PHP Notice related to the _load_textdomain_just_in_time function.

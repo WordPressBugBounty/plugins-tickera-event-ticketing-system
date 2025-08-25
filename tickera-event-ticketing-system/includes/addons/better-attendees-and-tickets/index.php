@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
     class TC_Better_Attendees_and_Tickets {
 
@@ -652,7 +652,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
  * Deprecated function "tc_attendees_check_in_details_metabox".
  * @since 3.5.3.0
  */
-if ( ! function_exists( 'Tickera\Addons\tickera_attendees_check_in_details_metabox' ) ) {
+if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_metabox' ) ) {
 
     function tickera_attendees_check_in_details_metabox() {
 

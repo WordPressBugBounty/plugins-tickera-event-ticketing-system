@@ -80,13 +80,13 @@ form.checkout label.has-error /* Woocommerce + Bridge for Woocommerce */
 form#tickera_cart .tickera-input-field.has-error:not( .buyer-field-checkbox ):not( .owner-field-checkbox ), /* Tickera Standalone */
 form.checkout .tickera-input-field.has-error:not( .buyer-field-checkbox ):not( .owner-field-checkbox ) /* Woocommerce + Bridge for Woocommerce */
 {
-    border-left: 2px solid #ff0000;
+    border-left: 3px solid #ff0000;
 }
 
-form#tickera_cart .tickera-input-field.valid, /* Tickera Standalone */
-form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce */
+form#tickera_cart .tickera-input-field.valid:not(.coupon_code), /* Tickera Standalone */
+form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Bridge for Woocommerce */
 {
-    border-left: 2px solid #09a10f;
+    border-left: 3px solid #09a10f;
 }
 
 .tickera-payment-gateways {
@@ -182,7 +182,6 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
 }
 
 .tc_cart_payment_methods {
-    /*padding: 15px;*/
     width: 100%;
 }
 
@@ -251,6 +250,19 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
     margin: 0 auto 0 auto;
 }
 
+.event_tickets.tickera input[type="number"]::-webkit-inner-spin-button,
+.event_tickets.tickera input[type="number"]::-webkit-outer-spin-button,
+.tickera-checkout input[type="number"]::-webkit-inner-spin-button,
+.tickera-checkout input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.event_tickets.tickera input[type="number"],
+.tickera-checkout input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 .tickera-checkout {
     font-family: Helvetica, Arial, sans-serif;
     color: #555;
@@ -264,14 +276,12 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
     text-align: center;
 }
 
-.ticket-quantity .quantity {
-    width: 35px;
-    height: 30px;
-    border: none;
+.ticket-quantity .quantity,
+.event_tickets.tickera .tc_quantity_selector {
+    width: 75px;
     text-align: center;
     border: 1px solid #e7e7e7;
-    margin: 0 3px;
-    padding: 0 5px;
+    margin: auto;
 }
 
 .ticket-quantity .plus {
@@ -328,17 +338,7 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
 }
 
 .tickera-checkout tbody tr td {
-    padding: 14px 10px;
-    vertical-align: top;
-    line-height: 18px;
-}
-
-.tickera-checkout .tickera_update {
-    float: right;
-    transition: all linear 0.2s;
-    margin-left: 5px;
-    -webkit-transition: all linear 0.2s;
-    -moz-transition: all linear 0.2s;
+    vertical-align: middle;
 }
 
 .tickera-button {
@@ -349,24 +349,37 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
     border: none;
 }
 
-.tickera-button:hover {
+#tc_payment_form .tc_payment_confirm {
+    text-decoration: none;
+}
+
+#tc_payment_form .tc_payment_confirm:hover,
+#tc_payment_form .tc_payment_confirm:focus,
+#tc_payment_form .tc_payment_confirm:focus-visible {
+    outline: none;
+}
+
+.tickera-button:not(.tickera_checkout):hover,
+.tickera-button:not(.tickera_checkout):focus,
+.tickera-button:not(.tickera_checkout):focus-visible {
     background-color: #285F96;
 }
 
 .tickera_checkout{
     margin: 30px 0 0 0;
+    cursor: pointer;
 }
 
-.tickera_checkout:hover {
+.tickera_checkout:hover,
+.tickera_checkout:focus,
+.tickera_checkout:focus-visible {
     background-color: #7cc576;
     color: #fff;
-    cursor: pointer;
 }
 
 .coupon-code {
     font-size: 15px;
     border: 1px solid #e7e7e7;
-    height: 34px;
     margin-bottom: 10px;
 }
 
@@ -383,13 +396,45 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
     padding: 20px 10px;
 }
 
+.tickera-checkout .action-wrap {
+    display: flex;
+    gap: 10px;
+}
+
+.tickera-checkout .discount-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tickera-checkout .coupon_code {
+    width: 50%;
+    height: 100%;
+    min-width: 150px;
+}
+
+.tickera-checkout .update-wrap {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    justify-content: right;
+}
+
+.tickera-checkout .apply_coupon.tc-hidden {
+    display: none;
+}
+
+#tickera_cart input[type="submit"],
+#tickera_cart input[type="submit"]:hover,
+#tickera_cart input[type="submit"]:focus {
+    text-decoration: none;
+    outline: none;
+}
+
 .ticket-info-wrap p {
     line-height: 0;
     margin: 0;
-}
-
-#coupon_code {
-    margin-bottom: 0;
 }
 
 #tickera_cart .tickera_buyer_info {
@@ -403,10 +448,6 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
 .tickera_buyer_info h5 {
     float: left;
     width: 100%;
-}
-
-.tickera_additional_info label input {
-    margin-left: 5px;
 }
 
 .tickera_additional_info select {
@@ -437,7 +478,6 @@ form.checkout .tickera-input-field.valid /* Woocommerce + Bridge for Woocommerce
 
 span.total_item_title {
     display: inline-block;
-    margin-right: 5px;
     font-weight: normal;
 }
 
@@ -538,6 +578,20 @@ html[xmlns] .tc-clearfix {
     color: red;
 }
 
+.tc-tooltip-content {
+    display: block;
+    padding: 10px 20px;
+    margin: 0;
+    border: 2px solid var( --wp--preset--color--foreground, #ccc );
+    border-radius: 20px;
+    border-bottom-left-radius: 0;
+    font-size: 0.8em;
+    max-width: 200px;
+    line-height: 1.5;
+    color: var( --wp--preset--color--foreground, #000 );
+    background: var( --wp--preset--color--background, #fff );
+}
+
 .tc-event-dropdown-wrap .inner-wrap,
 .tc-event-dropdown-wrap .cart_form {
     display: inline-flex;
@@ -557,6 +611,13 @@ html[xmlns] .tc-clearfix {
 
 .tc-event-dropdown-wrap .actions .add-to-cart:first-child {
     display: inline-block;
+}
+
+.event_tickets.tickera a:focus,
+.event_tickets.tickera a:focus-visible,
+.event_tickets.tickera form:focus,
+.event_tickets.tickera form:focus-visible {
+    outline: none;
 }
 
 /* Email Verification */
@@ -636,6 +697,29 @@ html[xmlns] .tc-clearfix {
     .payment-option-wrap {
         width: 50%;
     }
+
+    .tickera-checkout .action-wrap {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tickera-checkout .discount-wrap {
+        flex-direction: column;
+    }
+
+    .tickera-checkout .coupon_code,
+    .tickera-checkout .apply_coupon {
+        width: 100%;
+        text-align: center;
+    }
+
+    .tickera-checkout .discount-wrap .message {
+        margin-bottom: 20px;
+    }
+
+    .tickera-checkout .update-wrap > * {
+        flex: 1;
+    }
 }
 
 @media only screen and ( max-width: 470px ) {
@@ -662,7 +746,6 @@ html[xmlns] .tc-clearfix {
 
     .tickera-checkout .tickera_update,
     .tickera_checkout {
-        margin: 8px 0 10px 0;
         width: 100%;
     }
 }
@@ -676,10 +759,6 @@ html[xmlns] .tc-clearfix {
     .ticket-quantity .tickera_button {
         width: 100%;
         margin: 0;
-    }
-
-    .ticket-quantity .quantity {
-        height: 23px;
     }
 
     .coupon-code {

@@ -17,7 +17,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
     return;
 }
 
-if ( ! class_exists( 'Tickera\Addons\TC_System_Info' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_System_Info' ) ) {
 
     class TC_System_Info {
 

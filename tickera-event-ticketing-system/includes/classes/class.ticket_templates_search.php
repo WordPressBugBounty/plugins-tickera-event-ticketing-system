@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Templates_Search' ) ) {
+if ( ! class_exists( '\Tickera\TC_Templates_Search' ) ) {
 
     class TC_Templates_Search {
 

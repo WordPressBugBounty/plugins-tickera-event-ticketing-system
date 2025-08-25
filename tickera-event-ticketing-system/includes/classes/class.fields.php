@@ -4,7 +4,7 @@ namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Fields' ) ) {
+if ( ! class_exists( '\Tickera\TC_Fields' ) ) {
 
     class TC_Fields {
 
@@ -23,59 +23,59 @@ if ( ! class_exists( 'Tickera\TC_Fields' ) ) {
             switch ( $field[ 'field_type' ] ) {
 
                 case 'function':
-                    \Tickera\TC_Fields::field_function( $field, $key );
+                    TC_Fields::field_function( $field, $key );
                     break;
 
                 case 'text':
-                    \Tickera\TC_Fields::field_text( $field, $key );
+                    TC_Fields::field_text( $field, $key );
                     break;
 
                 case 'option'://depricated, same as text
-                    \Tickera\TC_Fields::field_text( $field, $key );
+                    TC_Fields::field_text( $field, $key );
                     break;
 
                 case 'textarea':
-                    \Tickera\TC_Fields::field_textarea( $field, $key );
+                    TC_Fields::field_textarea( $field, $key );
                     break;
 
                 case 'wp_editor':
-                    \Tickera\TC_Fields::field_wp_editor( $field, $key );
+                    TC_Fields::field_wp_editor( $field, $key );
                     break;
 
                 case 'radio':
-                    \Tickera\TC_Fields::field_radio( $field, $key );
+                    TC_Fields::field_radio( $field, $key );
                     break;
 
                 case 'select':
-                    \Tickera\TC_Fields::field_select( $field, $key );
+                    TC_Fields::field_select( $field, $key );
                     break;
 
                 case 'color_field':
-                    \Tickera\TC_Fields::color_field( $field, $key );
+                    TC_Fields::color_field( $field, $key );
                     break;
 
                 case 'file':
-                    \Tickera\TC_Fields::field_file( $field, $key );
+                    TC_Fields::field_file( $field, $key );
                     break;
 
                 case 'date':
-                    \Tickera\TC_Fields::field_date( $field, $key );
+                    TC_Fields::field_date( $field, $key );
                     break;
 
                 case 'field_extended_text':
-                    \Tickera\TC_Fields::field_extended_text( $field, $key, $current_value );
+                    TC_Fields::field_extended_text( $field, $key, $current_value );
                     break;
 
                 case 'field_extended_radio':
-                    \Tickera\TC_Fields::field_extended_radio( $field, $key, $current_value );
+                    TC_Fields::field_extended_radio( $field, $key, $current_value );
                     break;
 
                 case 'field_select_multiple':
-                    \Tickera\TC_Fields::field_select_multiple( $field, $key, $current_value );
+                    TC_Fields::field_select_multiple( $field, $key, $current_value );
                     break;
 
                 default:
-                    \Tickera\TC_Fields::field_text( $field, $key );
+                    TC_Fields::field_text( $field, $key );
             }
 
             return ob_get_clean();

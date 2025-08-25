@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Better_Ticket_Types' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
 
     class TC_Better_Ticket_Types {
 

@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
+if ( ! class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 
     class TC_Ticket_Templates {
 
@@ -48,7 +48,7 @@ if ( ! class_exists( 'Tickera\TC_Ticket_Templates' ) ) {
             }
 
             // Initialize TCPDF Libraries
-            if ( ! class_exists( 'Tickera\TCPDF' ) ) {
+            if ( ! class_exists( '\Tickera\TCPDF' ) ) {
                 require_once( $tc->plugin_dir . 'includes/tcpdf/examples/tcpdf_include.php' );
             }
 

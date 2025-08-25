@@ -2,8 +2,8 @@
 Contributors: tickera
 Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
 Requires at least: 4.1
-Tested up to: 6.8.1
-Stable tag: 3.5.5.7
+Tested up to: 6.8.2
+Stable tag: 3.5.5.8
 License: GPLv2 or later
 Requires PHP: 5.6
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -156,6 +156,19 @@ You can find [setup instructions here  ](http://tickera.com/documentation-catego
 == Screenshots ==
 
   == Changelog ==
+
+= 3.5.5.8 25/08/2025 =
+* Inclusion of trashed tickets in Tickera > Settings > Delete Info > Bulk Delete Tickets process.
+* New "tc_after_bulk_delete_ticket_order" action hook. Argument: $order_id
+* New "tc_round_cart_total_value" filter hook to allow developers to disable rounding up of cart total values.
+* Namespacing refinements.
+* Cleared PHP Deprecated Notice related to quantity selector.
+* Translation strings for "Order Status" in Attendees & Tickets page.
+* Additional updates for Woocommerce High-Performance Order Storage Integration.
+* Additional security patch for Barcode Reader. Tickera > Barcode Reader.
+* Stripe Payment Gateway "Invalid Integer" error. [Fixed]
+* Adjustment on Tickera gutenberg blocks styles.
+* Keyboard navigation improvements
 
 = 3.5.5.7 23/06/2025 =
 * Persistent error code when a ticket code contains a slash "/" during check-in. [Fixed]

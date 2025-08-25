@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Cart_Form' ) ) {
+if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
 
     class TC_Cart_Form {
 

@@ -78,7 +78,7 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
                             </td>
                         </tr>
                     </table>
-                    <?php if ( ! tickera_iw_is_pr() || Tickera\tets_fs()->is_free_plan() ) : ?>
+                    <?php if ( ! tickera_iw_is_pr() || \Tickera\tets_fs()->is_free_plan() ) : ?>
                         <a class="tc_link" target="_blank" href="https://tickera.com/?utm_source=plugin&utm_medium=upsell&utm_campaign=gateways"><?php esc_html_e( 'Get premium support, more payment gateways and unlock additional features', 'tickera-event-ticketing-system' ); ?></a>
                     <?php endif; ?>
                 </div>

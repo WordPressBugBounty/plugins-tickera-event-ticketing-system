@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
 
     class TC_Barcode_Reader_Core {
 
@@ -24,7 +24,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
         function __construct() {
 
             // Check if Tickera plugin is active / main Tickera class exists
-            if ( class_exists( 'Tickera\TC' ) ) {
+            if ( class_exists( '\Tickera\TC' ) ) {
 
                 global $tc;
                 $this->plugin_dir = $tc->plugin_dir . 'includes/addons/' . $this->dir_name . '/';
@@ -42,7 +42,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
          */
         function check_in_barcode() {
 
-            if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+            if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
 
                 $api_key = sanitize_text_field( $_POST[ 'api_key' ] );
                 $barcode = sanitize_text_field( $_POST[ 'barcode' ] );
@@ -132,6 +132,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
             wp_enqueue_script( $this->name . '-admin', $this->plugin_url . 'js/admin.js', array( 'jquery' ), false, false );
             wp_localize_script( $this->name . '-admin', 'tc_barcode_reader_vars', array(
                 'admin_ajax_url' => admin_url( 'admin-ajax.php' ),
+                'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
                 'message_barcode_default' => __( 'Select input field and scan a barcode located on the ticket.', 'tickera-event-ticketing-system' ),
                 'message_checking_in' => __( 'Checking in...', 'tickera-event-ticketing-system' ),
                 'message_insufficient_permissions' => __( 'Insufficient permissions. This API key cannot check in this ticket.', 'tickera-event-ticketing-system' ),

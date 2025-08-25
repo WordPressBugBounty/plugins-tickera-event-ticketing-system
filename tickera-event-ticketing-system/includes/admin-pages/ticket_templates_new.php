@@ -173,7 +173,7 @@ $templates_add_new_url = add_query_arg( array(
         <?php if ( isset( $_GET[ 'action' ] ) && ( $_GET[ 'action' ] == 'edit' || $_GET[ 'action' ] == 'add_new' ) ) : ?>
             <a href="<?php echo esc_url( $templates_url ); ?>"
                class="add-new-h2"><?php esc_html_e( 'Back', 'tickera-event-ticketing-system' ); ?></a>
-        <?php elseif ( tickera_iw_is_pr() && !tets_fs()->is_free_plan() ) : ?>
+        <?php elseif ( tickera_iw_is_pr() && !\Tickera\tets_fs()->is_free_plan() ) : ?>
             <a href="<?php echo esc_url( $templates_add_new_url ); ?>"
                class="add-new-h2"><?php esc_html_e( 'Add New', 'tickera-event-ticketing-system' ); ?></a>
         <?php endif; ?>

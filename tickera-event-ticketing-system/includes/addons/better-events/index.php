@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
 
     class TC_Better_Events {
 
@@ -55,8 +55,8 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
 
             add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
             add_filter( 'post_row_actions', array( $this, 'duplicate_event_action' ), 10, 2 );
-            add_action( 'admin_action_tc_duplicate_event_as_draft', 'Tickera\Addons\TC_Better_Events::tc_duplicate_event_as_draft' );
-            add_action( 'pre_get_posts', 'Tickera\Addons\TC_Better_Events::tc_maybe_hide_events' );
+            add_action( 'admin_action_tc_duplicate_event_as_draft', '\Tickera\Addons\TC_Better_Events::tc_duplicate_event_as_draft' );
+            add_action( 'pre_get_posts', '\Tickera\Addons\TC_Better_Events::tc_maybe_hide_events' );
             add_action( 'pre_get_posts', array( $this, 'tc_sort_end_start_date_columns' ) );
         }
 
@@ -673,7 +673,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Better_Events' ) ) {
             global $menu, $tc;
             $menu_position = $tc->admin_menu_position;
 
-            if ( $menu[ $menu_position ][ 2 ] == 'edit.php?post_type=tc_events' ) {
+            if ( isset( $menu[ $menu_position ] ) && $menu[ $menu_position ][ 2 ] == 'edit.php?post_type=tc_events' ) {
                 $menu[ $menu_position ][ 0 ] = $tc->title;
             }
         }

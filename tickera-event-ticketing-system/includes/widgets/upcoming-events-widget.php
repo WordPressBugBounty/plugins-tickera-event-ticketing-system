@@ -4,7 +4,7 @@ namespace Tickera\Widget;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
+if ( ! class_exists( '\Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
 
     class TC_Upcoming_Events_Widget extends \WP_Widget {
 
@@ -86,6 +86,6 @@ if ( ! class_exists( 'Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
     }
 
     add_action( 'widgets_init', function () {
-        register_widget( 'Tickera\Widget\TC_Upcoming_Events_Widget' );
+        register_widget( '\Tickera\Widget\TC_Upcoming_Events_Widget' );
     } );
 }

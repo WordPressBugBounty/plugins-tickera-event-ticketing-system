@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
+if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
     class TC_Discounts {
 
@@ -456,7 +456,12 @@ if ( ! class_exists( 'Tickera\TC_Discounts' ) ) {
                 }
             }
 
-            $discount_value_total = round( $discount_value, 2 );
+            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+                $discount_value_total = round( $discount_value, 2 );
+
+            } else {
+                $discount_value_total = $discount_value;
+            }
 
             add_filter( 'tc_cart_discount', function() {
                 global $tc, $discount_value_total;

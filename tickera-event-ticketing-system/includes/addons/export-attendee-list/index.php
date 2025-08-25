@@ -9,7 +9,7 @@ namespace Tickera\Addons;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Addons\TC_Export_Mix' ) ) {
+if ( ! class_exists( '\Tickera\Addons\TC_Export_Mix' ) ) {
 
     class TC_Export_Mix {
 
@@ -109,7 +109,7 @@ if ( ! class_exists( 'Tickera\Addons\TC_Export_Mix' ) ) {
                     @ini_set( 'display_errors', 'On' );
                 }
 
-                if ( ! class_exists( 'Tickera\TCPDF' ) ) {
+                if ( ! class_exists( '\Tickera\TCPDF' ) ) {
                     require_once( $tc->plugin_dir . 'includes/tcpdf/tcpdf.php' );
                     require_once( $tc->plugin_dir . 'includes/tcpdf/extensions/tcpdf_ext.php' );
                 }

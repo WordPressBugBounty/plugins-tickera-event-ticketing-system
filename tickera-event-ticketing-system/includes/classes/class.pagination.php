@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_Pagination' ) ) {
+if ( ! class_exists( '\Tickera\TC_Pagination' ) ) {
 
     class TC_Pagination {
 

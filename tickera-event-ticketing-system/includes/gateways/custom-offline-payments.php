@@ -8,7 +8,7 @@ use Tickera\TC_Gateway_API;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
+if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
 
     class TC_Gateway_Custom_Offline_Payments extends TC_Gateway_API {
 
@@ -273,5 +273,5 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
         }
     }
 
-    \Tickera\tickera_register_gateway_plugin( 'Tickera\Gateway\TC_Gateway_Custom_Offline_Payments', 'custom_offline_payments', __( 'Offline Payments', 'tickera-event-ticketing-system' ) );
+    \Tickera\tickera_register_gateway_plugin( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments', 'custom_offline_payments', __( 'Offline Payments', 'tickera-event-ticketing-system' ) );
 }

@@ -9,7 +9,7 @@ if ( isset( $_REQUEST[ 'ct_json' ] ) ) {
     header( 'Content-Type: application/json' );
 }
 
-if ( ! class_exists( 'Tickera\TC_Sales_API' ) ) {
+if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
 
     class TC_Sales_API {
 
@@ -133,10 +133,10 @@ if ( ! class_exists( 'Tickera\TC_Sales_API' ) ) {
                 if ( false === $revenue || false === $number_of_orders ) {
                     $number_of_orders = 0;
                     $total_revenue = 0;
-                    $wp_orders_search = new \Tickera\TC_Orders_Search( '', '', -1, array( 'order_paid', 'order_received' ), $this->period, $this->period_compare );
+                    $wp_orders_search = new TC_Orders_Search( '', '', -1, array( 'order_paid', 'order_received' ), $this->period, $this->period_compare );
 
                     foreach ( $wp_orders_search->get_results() as $order ) {
-                        $order_object = new \Tickera\TC_Order( $order->ID );
+                        $order_object = new TC_Order( $order->ID );
                         $total_revenue = $total_revenue + $order_object->details->tc_payment_info[ 'total' ];
                         $number_of_orders++;
                     }

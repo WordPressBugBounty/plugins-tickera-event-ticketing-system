@@ -7,6 +7,7 @@ if ( isset( $_POST[ 'save_tc_settings' ] ) ) {
     if ( check_admin_referer( 'save_settings' ) ) {
 
         if ( current_user_can( 'manage_options' ) || current_user_can( 'save_settings_cap' ) ) {
+
             update_option( 'tickera_general_setting', tickera_sanitize_array( $_POST[ 'tickera_general_setting' ] ) );
             do_action( 'tc_save_tc_general_settings' );
             tickera_save_page_ids();

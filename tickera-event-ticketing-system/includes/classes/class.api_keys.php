@@ -5,7 +5,7 @@ namespace Tickera;
 if ( ! defined( 'ABSPATH' ) )
     exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\TC_API_Keys' ) ) {
+if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
 
     class TC_API_Keys {
 

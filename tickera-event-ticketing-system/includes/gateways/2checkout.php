@@ -8,7 +8,7 @@ use Tickera\TC_Gateway_API;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
+if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
 
     class TC_Gateway_2Checkout extends TC_Gateway_API {
 
@@ -326,5 +326,5 @@ if ( ! class_exists( 'Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
 
     }
 
-    \Tickera\tickera_register_gateway_plugin( 'Tickera\Gateway\TC_Gateway_2Checkout', 'checkout', __( '2Checkout', 'tickera-event-ticketing-system' ) );
+    \Tickera\tickera_register_gateway_plugin( '\Tickera\Gateway\TC_Gateway_2Checkout', 'checkout', __( '2Checkout', 'tickera-event-ticketing-system' ) );
 }

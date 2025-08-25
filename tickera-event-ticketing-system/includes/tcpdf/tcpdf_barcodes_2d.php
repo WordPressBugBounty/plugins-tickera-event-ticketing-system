@@ -49,7 +49,7 @@ namespace Tickera;
  * @version 1.0.015
  * @author Nicola Asuni
  */
-if (!class_exists('Tickera\TCPDF2DBarcode')) {
+if (!class_exists('\Tickera\TCPDF2DBarcode')) {
 
     class TCPDF2DBarcode {
 

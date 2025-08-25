@@ -54,6 +54,7 @@ jQuery( document ).ready( function() {
                                 action: 'check_in_barcode', //action
                                 api_key: jQuery( '#api_key' ).val(), //api key field value
                                 barcode: barcode_input_field.val(), //barcode input value
+                                nonce: tc_barcode_reader_vars.ajaxNonce
                             },
                             function( data, textStatus, jqXHR )
                             {

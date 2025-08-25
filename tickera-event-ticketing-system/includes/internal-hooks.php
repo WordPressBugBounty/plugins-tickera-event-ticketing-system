@@ -286,9 +286,17 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
 
         } else {
 
-            $fee = ( 'fixed' == $fee_type )
-                ? round( ( $ordered_count * $fee ), 2 )
-                : round( ( ( $ticket_price * $ordered_count ) / 100 ) * $fee, 2 );
+            // Calculate cart fee value
+            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+                $fee = ( 'fixed' == $fee_type )
+                    ? round( ( $ordered_count * $fee ), 2 )
+                    : round( ( ( $ticket_price * $ordered_count ) / 100 ) * $fee, 2 );
+
+            } else {
+                $fee = ( 'fixed' == $fee_type )
+                    ? ( $ordered_count * $fee )
+                    : ( ( $ticket_price * $ordered_count ) / 100 ) * $fee;
+            }
         }
 
         if ( 'yes' == $use_global_fees ) {
@@ -305,9 +313,17 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
 
             } else {
 
-                $fee = ( 'fixed' == $global_fee_type )
-                    ? apply_filters( 'tc_global_fixed_fee_value', round( ( $ordered_count * $global_fee_value ), 2 ), $ordered_count, $global_fee_value )
-                    : apply_filters( 'tc_global_percentage_fee_value', round( ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, 2 ), $ticket_price, $ordered_count, $global_fee_value );
+                // Calculate cart fee value
+                if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+                    $fee = ( 'fixed' == $global_fee_type )
+                        ? apply_filters( 'tc_global_fixed_fee_value', round( ( $ordered_count * $global_fee_value ), 2 ), $ordered_count, $global_fee_value )
+                        : apply_filters( 'tc_global_percentage_fee_value', round( ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, 2 ), $ticket_price, $ordered_count, $global_fee_value );
+
+                } else {
+                    $fee = ( 'fixed' == $global_fee_type )
+                        ? apply_filters( 'tc_global_fixed_fee_value',  ( $ordered_count * $global_fee_value ), $ordered_count, $global_fee_value )
+                        : apply_filters( 'tc_global_percentage_fee_value', ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, $ticket_price, $ordered_count, $global_fee_value );
+                }
             }
         }
 
@@ -317,9 +333,9 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
 
         $tc_general_settings = get_option( 'tickera_general_setting', false );
         if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || ( isset( $tc_general_settings[ 'show_fees' ] ) && $tc_general_settings[ 'show_fees' ] == 'yes' ) ) {
-            if ( ! $disabled ) { ?>
+            if ( ! $disabled ) : ?>
                 <td class="ticket-fee" class="ticket_fee"><?php echo wp_kses_post( apply_filters( 'tc_cart_currency_and_format', $fee ) ); ?></td>
-            <?php }
+            <?php endif;
         }
     }
 }
@@ -408,13 +424,27 @@ if ( ! function_exists( 'tickera_cart_tax' ) ) {
         $tax_before_fees = ( isset( $tc_general_settings[ 'tax_before_fees' ] ) && $tc_general_settings[ 'tax_before_fees' ] ) ? $tc_general_settings[ 'tax_before_fees' ] : 'no';
         $tax_inclusive = tickera_is_tax_inclusive();
 
-        $total_cart = ( 'no' == $tax_before_fees )
-            ? round( $subtotal_value + $total_fees, 2 )
-            : round( $subtotal_value, 2 );
+        // Calculate cart tax value
+        if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
 
-        $tax_value = ( $tax_inclusive )
-            ? round( $total_cart - ( $total_cart / ( ( $tc->get_tax_value() / 100 ) + 1 ) ), 2 )
-            : round( $total_cart * ( $tc->get_tax_value() / 100 ), 2 );
+            $total_cart = ( 'no' == $tax_before_fees )
+                ? round( $subtotal_value + $total_fees, 2 )
+                : round( $subtotal_value, 2 );
+
+            $tax_value = ( $tax_inclusive )
+                ? round( $total_cart - ( $total_cart / ( ( $tc->get_tax_value() / 100 ) + 1 ) ), 2 )
+                : round( $total_cart * ( $tc->get_tax_value() / 100 ), 2 );
+
+        } else {
+
+            $total_cart = ( 'no' == $tax_before_fees )
+                ? $subtotal_value + $total_fees
+                : $subtotal_value;
+
+            $tax_value = ( $tax_inclusive )
+                ? $total_cart - ( $total_cart / ( ( $tc->get_tax_value() / 100 ) + 1 ) )
+                : $total_cart * ( $tc->get_tax_value() / 100 );
+        }
 
         $tax_label = isset( $tc_general_settings[ 'tax_label' ] ) ? $tc_general_settings[ 'tax_label' ] : 'TAX';
         $tc->session->set( 'tc_tax_value', $tax_value );
@@ -459,9 +489,16 @@ if ( ! function_exists( 'tickera_discounted_total' ) ) {
         $tax_value = isset( $session[ 'tc_tax_value' ] ) ? (float) $session[ 'tc_tax_value' ] : 0;
         $total_fees = isset( $session[ 'tc_total_fees' ] ) ? (float) $session[ 'tc_total_fees' ] : 0;
 
-        return ( tickera_is_tax_inclusive() )
-            ? round( $total + $total_fees, 2 )
-            : round( $total + $total_fees + $tax_value, 2 );
+        if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+            return ( tickera_is_tax_inclusive() )
+                ? round( $total + $total_fees, 2 )
+                : round( $total + $total_fees + $tax_value, 2 );
+
+        } else {
+            return ( tickera_is_tax_inclusive() )
+                ? $total + $total_fees
+                : $total + $total_fees + $tax_value;
+        }
     }
 }
 
@@ -894,12 +931,30 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
 
                 $color = isset( $tc_post_status_color[ $order_status->post_status ] ) ? $tc_post_status_color[ $order_status->post_status ] : 'tc_order_received';
 
-                $value = sprintf(
-                    /* translators: 1: Order status color identifier 2: Order status name */
-                    __( '<span class="%1$s">%2$s</span>', 'tickera-event-ticketing-system' ),
-                    esc_attr( $color ),
-                    esc_html( ucwords( $value ) )
-                );
+                switch( $value ) {
+
+                    case 'order received':
+                        $value = __( 'Order Received', 'tickera-event-ticketing-system' );
+                        break;
+
+                    case 'order paid':
+                        $value = __( 'Order Paid', 'tickera-event-ticketing-system' );
+                        break;
+
+                    case 'order cancelled':
+                        $value = __( 'Order Cancelled', 'tickera-event-ticketing-system' );
+                        break;
+
+                    case 'order fraud':
+                        $value = __( 'Order Fraud', 'tickera-event-ticketing-system' );
+                        break;
+
+                    case 'order refunded':
+                        $value = __( 'Order Refunded', 'tickera-event-ticketing-system' );
+                        break;
+                }
+
+                $value = sprintf( '<span class="%1$s">%2$s</span>', esc_attr( $color ), esc_html( $value ) );
             }
         }
 
