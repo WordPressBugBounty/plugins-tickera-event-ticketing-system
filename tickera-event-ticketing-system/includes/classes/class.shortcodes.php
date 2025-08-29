@@ -239,7 +239,6 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                             $button = '<form class="cart_form">' . $nonce . ( 'before' == $price_position ? $with_price_content : '' ) . '<a href="' . esc_url( apply_filters( 'tc_force_login_url', wp_login_url( get_permalink() ), get_permalink() ) ) . '" class="add_to_cart_force_login" id="ticket_' . (int) $id . '"><span class="title">' . esc_html( $title ) . '</span></a>' . wp_kses_post( 'after' == $price_position ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
 
                         } else {
-
                             $button = '<form class="cart_form">' . $nonce . wp_kses(( true == $quantity ? tickera_quantity_selector( $id, true, false ) : '' ), wp_kses_allowed_html( 'tickera_quantity_selector' ) ) . ( ( 'before' == $price_position ) ? $with_price_content : '' ) . '<a href="#" class="add_to_cart' . ( $frontend_tooltip ? ' tc-tooltip' : '' ) . '" data-button-type="' . esc_attr( $type ) . '" data-open-method="' . esc_attr( $open_method ) . '" id="ticket_' . esc_attr( $id ) . '"' . ( $frontend_tooltip ? ' data-tooltip="' . esc_attr( $frontend_tooltip_add_to_cart ) . '"' : '' ) . '><span class="title">' . esc_html( $title ) . '</span></a>' . ( ( 'after' == $price_position ) ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
                         }
 

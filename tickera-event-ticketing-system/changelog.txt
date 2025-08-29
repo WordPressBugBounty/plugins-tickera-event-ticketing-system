@@ -1,6 +1,9 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.5.9 25/08/2025 =
+* Fixed missing cart quantity field 
+
 = 3.5.5.8 25/08/2025 =
 * Inclusion of trashed tickets in Tickera > Settings > Delete Info > Bulk Delete Tickets process.
 * New "tc_after_bulk_delete_ticket_order" action hook. Argument: $order_id

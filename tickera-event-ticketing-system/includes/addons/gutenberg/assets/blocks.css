@@ -11,6 +11,16 @@
     width: initial !important;
 }
 
+.tc-add-to-cart-group-wrap ~ .tc-add-to-cart-wrap form.cart_form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tc-add-to-cart-group-wrap ~ .tc-add-to-cart-wrap p {
+    margin: 0;
+}
+
 /*
  * =====================================
  * tickera/add-to-cart
@@ -45,7 +55,7 @@
     border-width: 0;
     transition: 0.15s linear;
     line-height: normal;
-    margin: 0 10px 0 0;
+    margin: 0;
 }
 
 .tc-add-to-cart-wrap a.add_to_cart, .tc-add-to-cart-wrap select,
@@ -300,8 +310,28 @@
 }
 
 .tc-event-add-to-cart-dropdown select {
-    width: auto;
-    max-width: unset;
+    min-width: 250px;
+    max-width: 0;
+    margin: 0;
+}
+
+.tc-event-dropdown-wrap .actions {
+    display: inline-flex;
+}
+
+.tc-event-dropdown-wrap .ticket-quantity,
+.tc-event-dropdown-wrap a.add_to_cart {
+    margin-left: 10px;
+}
+
+.tc-event-add-to-cart-dropdown .tc-event-dropdown-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tc-event-add-to-cart-dropdown .tc-event-dropdown-wrap h3 {
+    margin: 0;
 }
 
 .tc-event-add-to-cart-dropdown.tc-has-text-color select {
@@ -318,7 +348,7 @@
 }
 
 .tc-event-add-to-cart-dropdown.tc-has-border-radius-topleft a {
-    -webkit-border-top-left-radius: var(--tc-block-border-radius-topleft);
+    -webkit-border-top-left-ra<div class="tc_the_content_pre">…</div>dius: var(--tc-block-border-radius-topleft);
     -moz-border-top-left-radius: var(--tc-block-border-radius-topleft);
     border-top-left-radius: var(--tc-block-border-radius-topleft);
 }

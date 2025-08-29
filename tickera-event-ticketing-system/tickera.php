@@ -6,7 +6,7 @@
  * Description: Simple event ticketing system.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.8
+ * Version: 3.5.5.9
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.8';
+        var $version = '3.5.5.9';
 
         var $title = 'Tickera';
 
@@ -5045,10 +5045,6 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     );
                 }
             }
-            // wp_enqueue_script( $this->name . '-front', $this->plugin_url . 'js/tooltip.js', array( 'jquery' ), $this->version );
-            wp_localize_script( $this->name . '-front', 'tc_tooltip', array(
-                'frontend_tooltip' => ( isset( $general_settings['frontend_tooltip'] ) ? ( 'yes' == $general_settings['frontend_tooltip'] ? true : false ) : false ),
-            ) );
         }
 
         /**

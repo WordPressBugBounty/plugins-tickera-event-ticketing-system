@@ -165,57 +165,118 @@
 
         /**
          * =======================================================================
-         * Handles cart page's quantity field.
+         * Handles cart page and Events - Add to cart quantity field incrementation.
          * =======================================================================
          */
         $( 'body' ).on( 'click', 'input.tickera_button.plus', function() {
-            let parentContainer = $( this ).closest( 'td' ),
-                quantity = parentContainer.find( '.quantity' ).val();
-            parentContainer.find( '.quantity' ).val( parseInt( quantity ) + 1 );
+
+            let parentContainer = $( this ).parent(),
+                quantitySelector = parentContainer.find( '.tc_quantity_selector' ),
+                quantity = parseInt( quantitySelector.val() );
+
+            let min = typeof quantitySelector.attr( 'min' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'min' ) ) : 1,
+                max = typeof quantitySelector.attr( 'max' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'max' ) ) : 999,
+                step = typeof quantitySelector.attr( 'step' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'step' ) ) : 1;
+
+            quantity += step;
+
+            if ( quantity < min ) {
+                quantity = min;
+
+            } else if ( quantity > max ) {
+                quantity = max;
+
+            } else if ( quantity < 0) {
+                quantity = 0
+            }
+
+            parentContainer.find( '.tc_quantity_selector' ).val( quantity );
         } );
 
+        /**
+         * =======================================================================
+         * Handles cart page and Events - Add to cart quantity field decrementation.
+         * =======================================================================
+         */
         $( 'body' ).on( 'click', 'input.tickera_button.minus', function() {
-            let parentContainer = $( this ).closest( 'td' ),
-                quantity = parentContainer.find( '.quantity' ).val();
-            if ( quantity >= 1 ) {
-                parentContainer.find( '.quantity' ).val( parseInt( quantity ) - 1 );
+
+            let parentContainer = $( this ).parent(),
+                quantitySelector = parentContainer.find( '.tc_quantity_selector' ),
+                quantity = parseInt( quantitySelector.val() );
+
+            let min = typeof quantitySelector.attr( 'min' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'min' ) ) : 1,
+                max = typeof quantitySelector.attr( 'max' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'max' ) ) : 999,
+                step = typeof quantitySelector.attr( 'step' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'step' ) ) : 1;
+
+            quantity -= step;
+
+            if ( quantity < min ) {
+                quantity = min;
+
+            } else if ( quantity > max ) {
+                quantity = max;
+
+            } else if ( quantity < 0) {
+                quantity = 0
             }
+
+            parentContainer.find( '.tc_quantity_selector' ).val( quantity );
         } );
 
         $( 'body' ).on( 'input', 'form#tickera_cart .tc_quantity_selector, form#tickera_cart .tickera-input-field[inputmode="numeric"]', function() {
             this.value = this.value.replace(/\D/g, '');
         } );
 
-        $( 'body' ).on( 'keydown', 'form#tickera_cart .tc_quantity_selector, form#tickera_cart .tickera-input-field[inputmode="numeric"], .event_tickets.tickera .tc_quantity_selector', function( e ) {
 
-            let min = typeof $( this ).attr( 'min' ) !== 'undefined' ? parseInt( $( this ).attr( 'min' ) ) : 1,
-                max = typeof $( this ).attr( 'max' ) !== 'undefined' ? parseInt( $( this ).attr( 'max' ) ) : 9999,
-                step = typeof $( this ).attr( 'step' ) !== 'undefined' ? parseInt( $( this ).attr( 'step' ) ) : 1;
+        /**
+         * =======================================================================
+         * Handles quantity field incrementation/decrementation on focus.
+         * =======================================================================
+         */
+        $( 'body' ).on( 'keydown', 'form#tickera_cart .tickera-input-field[inputmode="numeric"], .tc_quantity_selector', function( e ) {
 
-            this.value = ( isNaN( this.value ) || this.value === '' ) ? min : parseInt( this.value );
+            if ( e.keyCode === 38 || e.keyCode === 40 ) {
 
-            switch( e.keyCode ) {
+                e.preventDefault();
 
-                case 38: // Arrow key up
-                    e.preventDefault();
-                    this.value = parseInt( this.value ) + step;
-                    break;
+                let min = typeof $( this ).attr( 'min' ) !== 'undefined' ? parseInt( $( this ).attr( 'min' ) ) : 1,
+                    max = typeof $( this ).attr( 'max' ) !== 'undefined' ? parseInt( $( this ).attr( 'max' ) ) : 999,
+                    step = typeof $( this ).attr( 'step' ) !== 'undefined' ? parseInt( $( this ).attr( 'step' ) ) : 1;
 
-                case 40: // Arrow key down
-                    e.preventDefault();
-                    this.value = parseInt( this.value ) - step;
-                    break;
+                this.value = ( isNaN( this.value ) || this.value === '' ) ? min : parseInt( this.value );
+
+                switch( e.keyCode ) {
+
+                    case 38: // Arrow key up
+                        e.preventDefault();
+                        this.value = parseInt( this.value ) + step;
+                        break;
+
+                    case 40: // Arrow key down
+                        e.preventDefault();
+                        this.value = parseInt( this.value ) - step;
+                        break;
+                }
+
+                if ( this.value < min ) {
+                    this.value = min;
+
+                } else if ( this.value > max ) {
+                    this.value = max;
+
+                } else if ( this.value < 0) {
+                    this.value = 0
+                }
             }
+        } );
 
-            if ( this.value < min ) {
-                this.value = min;
-
-            } else if ( this.value > max ) {
-                this.value = max;
-
-            } else if ( this.value < 1) {
-                this.value = 1
-            }
+        /**
+         * =======================================================================
+         * Handles quantity field value to trim leading zero value (e.g 01 to 1)
+         * =======================================================================
+         */
+        $( 'body' ).on( 'focusout', 'form#tickera_cart .tickera-input-field[inputmode="numeric"], .tc_quantity_selector', function( e ) {
+            this.value = Number( this.value );
         } );
 
         /**
@@ -331,8 +392,14 @@
                 current_form = btn.closest( 'form.cart_form' ),
                 parent_container = current_form.parent(),
                 ticket_id = current_form.find( '.ticket_id' ).val(),
-                qtySelector = btn.closest( 'tr' ).find( '.tc_quantity_selector' ),
-                qty = qtySelector.val(),
+                qtySelector = btn.closest( 'tr' ).find( '.tc_quantity_selector' );
+
+            // Dropdown quantity selector
+            if ( qtySelector.length === 0 ) {
+                qtySelector = current_form.find( '.tc_quantity_selector' );
+            }
+
+            let qty = qtySelector.val(),
                 nonce = btn.closest( 'form.cart_form' ).find( '[name="nonce"]' ).val();
 
             qty = ( typeof qty === 'undefined' ) ? btn.closest( '.cart_form' ).find( '.tc_quantity_selector' ).val() : qty;
@@ -456,14 +523,24 @@
          * =======================================================================
          */
         $( document ).on( 'keypress', '.event_tickets.tickera .tc_quantity_selector', function( e ) {
-
             if ( 13 === e.keyCode ) {
-
                 e.preventDefault();
-
                 let ticketRow = $( this ).closest( 'tr' ),
                     addToCart = ticketRow.find( '.add_to_cart' );
+                addToCart.trigger( 'click' );
+            }
+        } );
 
+        /**
+         * =======================================================================
+         * Handles keypress 'enter' key in event add-to-cart dropdown.
+         * =======================================================================
+         */
+        $( document ).on( 'keypress', '.tc-event-dropdown-wrap .tc_quantity_selector, .tc-add-to-cart-wrap .tc_quantity_selector', function( e ) {
+            if ( 13 === e.keyCode ) {
+                e.preventDefault();
+                let ticketRow = $( this ).closest( 'form.cart_form' ),
+                    addToCart = ticketRow.find( 'a.add_to_cart' );
                 addToCart.trigger( 'click' );
             }
         } );
@@ -473,7 +550,7 @@
          * Handles left and right arrow keys to move within the cart form fields.
          * =======================================================================
          */
-        $( document ).on( 'keydown', 'form#tickera_cart, .tc-event-add-to-cart-group-wrap', function( e ) {
+        $( document ).on( 'keydown', 'form#tickera_cart, table.event_tickets.tickera, .tc-event-dropdown-wrap, .tc-add-to-cart-group-wrap ~ .tc-add-to-cart-wrap', function( e ) {
 
             let fields = $( this ).find('input, select, textarea, a').filter(':visible:not([disabled]):not([type="hidden"]):not(.tc-hidden-important)'),
                 currentField = $( this ).find( ':focus' ),
@@ -509,14 +586,14 @@
 
                 e.preventDefault();
 
-                switch ( e.keyCode ) {
+                switch (e.keyCode) {
 
                     case 37: // Left arrow key
-                        $( fields[ index - 1 ] ).focus();
+                        $(fields[index - 1]).focus();
                         break;
 
                     case 39: // Right arrow key
-                        $( fields[ index + 1 ] ).focus();
+                        $(fields[index + 1]).focus();
                         break;
 
                     case 13: // Enter key
@@ -525,6 +602,51 @@
                         } else {
                             currentField.prop('checked', true).trigger('change');
                         }
+                        break;
+                }
+
+            } else if ( currentFieldElementType === 'input' && currentFieldType.includes( 'button' ) && currentField.hasClass( 'tickera_button' ) ) {
+
+                e.preventDefault();
+
+                let action = currentField.data( 'action' ),
+                    quantitySelector = currentField.parent().find( '.tc_quantity_selector' ),
+                    quantitySelectorValue = parseInt( quantitySelector.val() ),
+                    min = typeof quantitySelector.attr( 'min' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'min' ) ) : 1,
+                    max = typeof quantitySelector.attr( 'max' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'max' ) ) : 999,
+                    step = typeof quantitySelector.attr( 'step' ) !== 'undefined' ? parseInt( quantitySelector.attr( 'step' ) ) : 1;
+
+                switch ( e.keyCode ) {
+
+                    case 37: // Left arrow key
+                        $( fields[ index - 1 ] ).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                    case 9: // Since e.preventDefault(), this is to handle conflict between cart and event add to cart quantity selectors
+                        $( fields[ index + 1 ] ).focus();
+                        break;
+
+                    case 13: // Enter key
+
+                        if ( currentField.hasClass( 'plus' ) ) {
+                            quantitySelectorValue = quantitySelectorValue + step;
+
+                        } else {
+                            quantitySelectorValue = quantitySelectorValue - step;
+                        }
+
+                        if ( quantitySelectorValue < min ) {
+                            quantitySelectorValue = min;
+
+                        } else if ( quantitySelectorValue > max ) {
+                            quantitySelectorValue = max;
+
+                        } else if ( quantitySelectorValue < 1) {
+                            quantitySelectorValue = 1
+                        }
+
+                        quantitySelector.val( quantitySelectorValue );
                         break;
                 }
 

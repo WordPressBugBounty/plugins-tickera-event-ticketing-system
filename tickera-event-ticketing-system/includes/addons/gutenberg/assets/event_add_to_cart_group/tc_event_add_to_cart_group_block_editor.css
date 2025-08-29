@@ -19,9 +19,7 @@ div.components-tab-panel__tabs {
 }
 
 .tc-event-dropdown-wrap .tc_in_cart,
-.tc-event-dropdown-wrap .tc_tickets_sold,
-.tc-event-dropdown-wrap .tc_quantity_selector,
-.tc-event-dropdown-wrap .add_to_cart {
+.tc-event-dropdown-wrap .tc_tickets_sold {
     margin-left: 10px;
 }
 
@@ -48,4 +46,28 @@ div.components-tab-panel__tabs {
 .tc-gb-component.current-event > div,
 .tc-gb-component.current-event > div > span {
     margin-bottom: 0;
+}
+
+.tc-event-add-to-cart-rows .inner-wrap,
+.tc-event-add-to-cart-dropdown .inner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tc-event-add-to-cart-rows .inner-wrap {
+    gap: 10px;
+}
+
+.tc-event-add-to-cart-rows .tickera_button,
+.tc-event-add-to-cart-dropdown .tickera_button {
+    background: none;
+    border: none;
+}
+
+.tc-event-add-to-cart-rows .tc_quantity_selector,
+.tc-event-add-to-cart-dropdown .tc_quantity_selector {
+    width: 50px;
+    text-align: center;
+    padding: 0.5rem;
 }

@@ -6,6 +6,12 @@ div.components-tab-panel__tabs {
     pointer-events: none;
 }
 
+.wp-block-tc-add-to-cart-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .wp-block-tc-add-to-cart-group .wp-block {
     display: inline-block;
 }
@@ -22,4 +28,22 @@ div.components-tab-panel__tabs {
 
 .tc-add-to-cart-wrap .tc_quantity_selector {
     line-height: normal;
+}
+
+.tc-add-to-cart-wrap .ticket-quantity .inner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tc-add-to-cart-wrap .tickera_button {
+    background: none;
+    border: none;
+}
+
+.tc-add-to-cart-wrap .tc_quantity_selector {
+    width: 50px;
+    text-align: center;
+    padding: 0.75rem;
 }

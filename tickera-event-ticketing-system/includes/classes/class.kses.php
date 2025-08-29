@@ -151,7 +151,8 @@ if ( ! class_exists( '\Tickera\TC_Kses' ) ) {
                             'inputmode'     => [],
                             'pattern'       => [],
                             'autocomplete'  => [],
-                            'data-tooltip'  => []
+                            'data-tooltip'  => [],
+                            'data-action'   => []
                         ],
                         'select' => [ 'class' => [] ],
                         'option' => [ 'value' => [], 'selected' => [] ]

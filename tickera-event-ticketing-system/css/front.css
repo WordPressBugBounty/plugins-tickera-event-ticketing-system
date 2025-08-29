@@ -276,12 +276,20 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
     text-align: center;
 }
 
+.ticket-quantity .inner-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
 .ticket-quantity .quantity,
-.event_tickets.tickera .tc_quantity_selector {
+.event_tickets.tickera .tc_quantity_selector,
+.tc-event-add-to-cart-dropdown .tc_quantity_selector,
+.tc-add-to-cart-group-wrap ~ .tc-add-to-cart-wrap .tc_quantity_selector {
     width: 75px;
     text-align: center;
     border: 1px solid #e7e7e7;
-    margin: auto;
 }
 
 .ticket-quantity .plus {
@@ -592,6 +600,10 @@ html[xmlns] .tc-clearfix {
     background: var( --wp--preset--color--background, #fff );
 }
 
+.tc-event-dropdown-wrap .add-to-cart p {
+    margin: 0;
+}
+
 .tc-event-dropdown-wrap .inner-wrap,
 .tc-event-dropdown-wrap .cart_form {
     display: inline-flex;
@@ -599,9 +611,7 @@ html[xmlns] .tc-clearfix {
 }
 
 .tc-event-dropdown-wrap .tc_in_cart,
-.tc-event-dropdown-wrap .tc_tickets_sold,
-.tc-event-dropdown-wrap .tc_quantity_selector,
-.tc-event-dropdown-wrap .add_to_cart {
+.tc-event-dropdown-wrap .tc_tickets_sold {
     margin-left: 10px;
 }
 

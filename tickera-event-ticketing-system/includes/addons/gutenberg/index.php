@@ -1636,7 +1636,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             if ( isset( $attributes[ 'id' ] ) && $attributes[ 'id' ] ) {
                 $show_price = isset( $attributes[ 'show_price' ] ) ? $attributes[ 'show_price' ] : false;
                 $quantity = ( isset( $attributes[ 'quantity' ] ) && $attributes[ 'quantity' ] ) ? 'true' : 'false';
-                echo wp_kses_post( do_shortcode( '[add_to_cart id="' . (int) $attributes[ 'id' ] . '" ' . 'show_price="' . $show_price . '"' . ' quantity="' . $quantity .  '" style="border:none;"]' ) );
+                echo wp_kses( do_shortcode( '[add_to_cart id="' . (int) $attributes[ 'id' ] . '" ' . 'show_price="' . $show_price . '"' . ' quantity="' . $quantity .  '" style="border:none;"]' ), wp_kses_allowed_html( 'tickera_add_to_cart' ) );
             } else {
                 esc_html_e( 'Please select a ticket type (product) in the block settings box', 'tickera-event-ticketing-system' );
             }

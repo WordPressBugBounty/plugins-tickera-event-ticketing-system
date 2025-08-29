@@ -132,7 +132,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                     $subtotal_value = $cart_subtotal;
 
                                     $quantity_left = (int) $ticket->get_tickets_quantity_left();
-                                    $min_quantity = $ticket->details->min_tickets_per_order ? (int) $ticket->details->min_tickets_per_order : 1;
+                                    $min_quantity = (int) $ticket->details->min_tickets_per_order;
                                     $max_quantity = (int) $ticket->details->max_tickets_per_order;
                                     $max_quantity = ( $max_quantity && $quantity_left > $max_quantity ) ? $max_quantity : $quantity_left;
                                     ?>
@@ -147,16 +147,18 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                         </td>
                                         <?php do_action( 'tc_cart_col_value_before_quantity', $ticket_type, $ordered_count, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
                                         <td class="ticket-quantity ticket_quantity"><?php echo esc_html( $editable_qty ? '' : $ordered_count ); ?>
-                                            <?php if ( $editable_qty && false ) { /* Hidden - Remove false to show */ ?>
-                                                <input class="tickera_button minus" type="button" value="-">
-                                            <?php } ?>
-                                            <input type="<?php echo ( $editable_qty ? 'text' : 'hidden' ); ?>" inputmode="numeric" pattern="[0-9]*" name="ticket_quantity[]" min="<?php echo esc_attr( $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo esc_attr( (int) $ordered_count ); ?>" class="quantity tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" autocomplete="off">
-                                            <?php if ( ! $editable_qty ) : ?>
-                                                <span><?php esc_html( $ordered_count ); ?></span>
-                                            <?php endif; ?>
-                                            <?php if ( $editable_qty && false ) { /* Hidden - Remove false to show */ ?>
-                                                <input class="tickera_button plus" type="button" value="+"/>
-                                            <?php } ?></td>
+                                            <div class="inner-wrap">
+                                                <?php if ( $editable_qty ) { /* Hidden - Remove false to show */ ?>
+                                                    <input class="tickera_button minus" type="button" value="-" data-action="minus"/>
+                                                <?php } ?>
+                                                <input type="<?php echo ( $editable_qty ? 'text' : 'hidden' ); ?>" inputmode="numeric" pattern="[0-9]*" name="ticket_quantity[]" min="<?php echo esc_attr( $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo esc_attr( (int) $ordered_count ); ?>" class="quantity tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" autocomplete="off">
+                                                <?php if ( ! $editable_qty ) : ?>
+                                                    <span><?php esc_html( $ordered_count ); ?></span>
+                                                <?php endif; ?>
+                                                <?php if ( $editable_qty ) { /* Hidden - Remove false to show */ ?>
+                                                    <input class="tickera_button plus" type="button" value="+" data-action="plus"/>
+                                                <?php } ?></td>
+                                            </div>
                                         <?php do_action( 'tc_cart_col_value_before_total_price', $ticket_type, $ordered_count, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
                                         <td class="ticket-total"><span class="ticket_total"><?php echo esc_html( apply_filters( 'tc_cart_currency_and_format', apply_filters( 'tc_cart_price_per_ticket_and_quantity', ( tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ), $ticket_type, $ordered_count ) ) ); ?></span>
                                         </td>

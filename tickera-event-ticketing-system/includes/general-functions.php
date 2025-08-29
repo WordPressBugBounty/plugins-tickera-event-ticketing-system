@@ -746,28 +746,24 @@ if ( ! function_exists( 'tickera_quantity_selector' ) ) {
 
         $cart_contents = $tc->get_cart_cookie();
         $quantity = ( $cart_contents && isset( $cart_contents[ $ticket_id ] ) ) ? $cart_contents[ $ticket_id ] : null;
-
         $general_settings = get_option( 'tickera_general_setting', [] );
-        $frontend_tooltip = isset( $general_settings[ 'frontend_tooltip' ] ) ? ( 'yes' == $general_settings[ 'frontend_tooltip' ] ? true : false ) : false; // Default true
-        $frontend_tooltip_quantity_selector = isset( $general_settings[ 'frontend_tooltip_quantity_selector' ] ) ? $general_settings[ 'frontend_tooltip_quantity_selector' ] : __( 'Select the quantity of the ticket type.', 'tickera-event-ticketing-system' );
 
         $ticket = new \Tickera\TC_Ticket( $ticket_id );
         $quantity_left = (int) $ticket->get_tickets_quantity_left();
-        $min_quantity = $ticket->details->min_tickets_per_order;
-        $max_quantity = $ticket->details->max_tickets_per_order;
-        $max_quantity = ( $max_quantity && is_numeric( $max_quantity ) && $quantity_left > $max_quantity ) ? $max_quantity : $quantity_left;
+        $min_quantity = $ticket->details->min_tickets_per_order ? (int) $ticket->details->min_tickets_per_order : 1;
+        $max_quantity = (int) $ticket->details->max_tickets_per_order;
+        $max_quantity = ( $max_quantity && $quantity_left > $max_quantity ) ? $max_quantity : $quantity_left;
 
         if ( $return ) ob_start();
 
         if ( $quantity_left > 0 ) {
             if ( $quantity_left ) : ?>
-                <input type="text" inputmode="numeric" pattern="[0-9]*" class="tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) apply_filters( 'tc_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>">
+                <div class="ticket-quantity"><div class="inner-wrap"><input type="button" class="tickera_button minus" value="-" data-action="minus"/><input type="text" inputmode="numeric" pattern="[0-9]*" class="tc_quantity_selector" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) apply_filters( 'tc_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>"><input type="button" class="tickera_button plus" value="+" data-action="plus"/></div></div>
             <?php else : ?>
                 <span><?php _e( 'Sold out', 'tickera-event-ticketing-system' ); ?></span>
             <?php endif; ?>
             <?php if ( $return ) { return ob_get_clean(); }
         }
-
         if ( $return ) return ob_get_clean();
     }
 }
