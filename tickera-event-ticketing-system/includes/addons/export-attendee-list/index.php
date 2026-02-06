@@ -51,43 +51,42 @@ if ( ! class_exists( '\Tickera\Addons\TC_Export_Mix' ) ) {
          */
         function prepare_export_data() {
 
-            if ( isset( $_POST['nonce'] ) && isset( $_POST[ 'event_id' ] ) && (int) $_POST[ 'event_id' ] ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
 
-                if ( wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( current_user_can( 'manage_options' ) && isset( $_POST[ 'event_id' ] ) && (int) $_POST[ 'event_id' ] ) {
 
-                    global $tc;
-                    $page = isset( $_POST[ 'page' ] ) ? (int) $_POST[ 'page' ] : 1;
+                global $tc;
+                $page = isset( $_POST[ 'page' ] ) ? (int) $_POST[ 'page' ] : 1;
 
-                    $ticket_instances = get_posts( [
-                        'posts_per_page' => $this->per_page,
-                        'paged' => $page,
-                        'orderby' => 'ID',
-                        'meta_key' => 'event_id',
-                        'meta_value' => (int) $_POST[ 'event_id' ],
-                        'post_type' => 'tc_tickets_instances',
-                        'post_status' => 'publish',
-                        'fields' => 'ids'
-                    ] );
+                $ticket_instances = get_posts( [
+                    'posts_per_page' => $this->per_page,
+                    'paged' => $page,
+                    'orderby' => 'ID',
+                    'meta_key' => 'event_id',
+                    'meta_value' => (int) $_POST[ 'event_id' ],
+                    'post_type' => 'tc_tickets_instances',
+                    'post_status' => 'publish',
+                    'fields' => 'ids'
+                ] );
 
-                    $success = $ticket_instances ? true : false;
-                    $tc_export_pdf = $tc->session->get( 'tc_export_pdf' );
+                $success = $ticket_instances ? true : false;
+                $tc_export_pdf = $tc->session->get( 'tc_export_pdf' );
 
-                    if ( 1 == $page ) {
-                        $tc_export_pdf = [];
-                    }
-
-                    $progress = ( count( $tc_export_pdf ) > 0 )
-                        ? ( count( $tc_export_pdf ) / ( $this->per_page * $page ) ) * 100
-                        : 0;
-
-                    // Progress with offset
-                    $progress = ( $progress <= 80 ) ? ( $progress / 2 ) : $progress;
-
-                    $tc_export_pdf = array_merge( $tc_export_pdf, $ticket_instances );
-                    $tc->session->set( 'tc_export_pdf', $tc_export_pdf );
-
-                    wp_send_json( [ 'success' => $success, 'page' => ( $page + 1 ), 'progress' => $progress ] );
+                if ( 1 == $page ) {
+                    $tc_export_pdf = [];
                 }
+
+                $progress = ( count( $tc_export_pdf ) > 0 )
+                    ? ( count( $tc_export_pdf ) / ( $this->per_page * $page ) ) * 100
+                    : 0;
+
+                // Progress with offset
+                $progress = ( $progress <= 80 ) ? ( $progress / 2 ) : $progress;
+
+                $tc_export_pdf = array_merge( $tc_export_pdf, $ticket_instances );
+                $tc->session->set( 'tc_export_pdf', $tc_export_pdf );
+
+                wp_send_json( [ 'success' => $success, 'page' => ( $page + 1 ), 'progress' => $progress ] );
             }
         }
 

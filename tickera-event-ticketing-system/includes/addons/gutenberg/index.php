@@ -795,6 +795,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 $event_id = isset( $attributes[ 'event_id' ]  ) ? (int) $attributes[ 'event_id' ] : '';
             }
 
+            if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
+                return '<div class="tc-hidden"></div>';
+            }
+
             ob_start();
 
             // No event selected
@@ -905,13 +909,17 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
          */
         function render_event_add_to_cart_rows_content( $attributes ) {
 
-            global $post;
+            global $post, $screen;
 
             if ( $post && isset( $post->ID ) && isset( $post->post_type ) && 'tc_events' == $post->post_type ) {
                 $event_id = (int) $post->ID;
 
             } else {
                 $event_id = isset( $attributes[ 'event_id' ]  ) ? (int) $attributes[ 'event_id' ] : '';
+            }
+
+            if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
+                return '<div class="tc-hidden"></div>';
             }
 
             ob_start();
@@ -1703,6 +1711,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 $event_id = isset( $attributes[ 'id' ]  ) ? (int) $attributes[ 'id' ] : '';
             }
 
+            if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
+                return '<div class="tc-hidden"></div>';
+            }
+
             ob_start();
 
             // No event selected
@@ -1827,6 +1839,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             } else {
                 $event_id = isset( $attributes[ 'id' ]  ) ? (int) $attributes[ 'id' ] : '';
+            }
+
+            if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
+                return '<div class="tc-hidden"></div>';
             }
 
             ob_start();

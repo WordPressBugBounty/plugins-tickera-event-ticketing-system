@@ -1,3 +1,7 @@
+.tc-arrow-alt {
+    pointer-events: cursor;
+}
+
 .updated.success.fs-notice.fs-sticky.fs-has-title.fs-type-plugin[data-slug=tickera] {
     display: none !important;
 }
@@ -258,6 +262,10 @@ a[href="post-new.php?post_type=tc_events"] {
     transition: border 0.1s linear;
 }
 
+.ticket-elements-drop-area li:focus .close-this {
+    display: none;
+}
+
 .rows .sortables .ui-state-default {
     background: none;
     background-color: #fff;
@@ -394,11 +402,23 @@ a[href="post-new.php?post_type=tc_events"] {
     margin-left: 2%;
 }
 
+#ticket_element_padding,
+#ticket_element_field_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#ticket_element_padding label {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
 .ticket_element_padding {
     display: inline;
-    width: 13%;
-    margin-right: 2%;
-    margin-left: 2%;
+    width: 60px;
 }
 
 #template_document_settings .ticket_margin {
@@ -598,6 +618,14 @@ label[for=api_key] {
     margin-top: -102px;
 }
 
+.image-check-wrap:focus .check-image img {
+    margin-top: -196px;
+}
+
+.image-check-wrap.active-gateway:focus .check-image img {
+    margin-top: -289px;
+}
+
 .active-gateway.auto {
     pointer-events: none;
 }
@@ -780,7 +808,8 @@ a.tc_link:hover {
     padding: 18px 0;
 }
 
-.tc-shortcode-wrap select {
+.tc-shortcode-wrap select,
+.tc-shortcode-wrap select ~ .chosen-container .chosen-single {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -789,6 +818,16 @@ a.tc_link:hover {
     background: url('../images/arrow-select.png') no-repeat 96% 15px;
     padding: 0 30px 0 10px;
     width: 300px;
+}
+
+.tc-shortcode-wrap select ~ .chosen-container .chosen-single span {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.tc-shortcode-wrap select ~ .chosen-container .chosen-single div {
+    display: none;
 }
 
 .shortcode-table {
@@ -1234,7 +1273,8 @@ ul.tc_order_notes li p.meta .exact-date {
     overflow: hidden;
 }
 
-.tc_wrap .tc-tickera-secondary {
+.tc_wrap .tc-tickera-secondary,
+.tc-thickbox .tc-tickera-secondary {
     color: #9a9a9a;
     text-decoration: none;
     background-color: transparent;
@@ -1258,7 +1298,20 @@ ul.tc_order_notes li p.meta .exact-date {
     margin: 3px 0 0 5px;
 }
 
-.tc_wrap .tc-tickera-secondary:hover {
+.tc-thickbox .tc-tickera-secondary {
+    transition: unset;
+    -webkit-transition: unset;
+    -moz-transition: unset;
+    font-size: 14px;
+    font-weight: normal;
+    color: #2271b1;
+    margin: 0;
+}
+
+.tc_wrap .tc-tickera-secondary:hover,
+.tc_wrap .tc-tickera-secondary:focus,
+.tc-thickbox .tc-tickera-secondary:hover,
+.tc-thickbox .tc-tickera-secondary:focus {
     background-color: #ffdf3b;
     color: #5d5d5d;
     border: 1px solid #ffdf3b;
@@ -1361,11 +1414,11 @@ body.post-type-tc_tickets_instances .chosen-single {
  * Tickera > Attendees & Tickets
  * Event Filter
  */
-select[name="tc_event_filter"] ~ .chosen-container {
+select.tc-event-filter ~ .chosen-container {
     margin-right: 6px;
 }
 
-select[name="tc_event_filter"] ~ .chosen-container .tc-loader {
+select.tc-event-filter ~ .chosen-container .tc-loader {
     width: 17px;
     height: 100%;
     position: absolute;
@@ -1565,6 +1618,91 @@ select[name="tc_event_filter"] ~ .chosen-container .tc-loader {
 .themetick-adv.visible {
     opacity: 1;
     visibility: visible;
+}
+
+#TB_window.tc-thickbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    box-shadow: unset;
+    -webkit-box-shadow: unset;
+}
+
+.tc-thickbox #TB_ajaxContent {
+    width: initial !important;
+    height: initial !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 0;
+}
+
+.tc-thickbox .tc-tb-title {
+    padding: 5px 0px 5px 0px;
+    margin: 1em 0;
+}
+
+.tc-thickbox .tc-tb-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+.tc-thickbox .tc-tickera-tertiary,
+.tc-thickbox .tc-tickera-tertiary:focus {
+    border: unset;
+    background: unset;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    bottom: 0px;
+    text-decoration: none;
+    outline: 0;
+    box-shadow: none;
+}
+
+.tc-thickbox .element_title {
+    font-size: 20px;
+}
+
+.tc-thickbox .close-this,
+.tc-thickbox .element-icon {
+    display: none;
+}
+
+.tc-thickbox .inner-wrap {
+    display: inline-flex;
+    flex-direction: column;
+    margin: auto;
+    gap: 10px;
+    -webkit-box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    background: #fff;
+    padding: 25px;
+}
+
+.tc-thickbox #TB_title {
+    display: none;
+}
+
+@media only screen and (max-width: 480px) {
+    .tc-thickbox {
+        max-width: 400px !important;
+        margin-left: -200px !important;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .tc-thickbox {
+        width: 100% !important;
+        margin-left: 0 !important;
+        left: 0 !important;
+    }
 }
 
 @media only screen and (min-width: 1120px)  and (max-width: 1350px) {

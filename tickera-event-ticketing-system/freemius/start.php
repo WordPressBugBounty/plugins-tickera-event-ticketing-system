@@ -33,7 +33,7 @@
 
 	if ( ! function_exists( 'fs_find_caller_plugin_file' ) ) {
 		// Require SDK essentials.
-		require_once dirname( __FILE__ ) . '/includes/fs-essential-functions.php';
+		require_once dirname( __FILE__ ) . '/vendor/freemius/includes/fs-essential-functions.php';
 	}
 
     /**
@@ -54,7 +54,7 @@
 	 * @since  1.2.2.6
 	 */
 	$file_path    = fs_normalize_path( __FILE__ );
-	$fs_root_path = dirname( $file_path );
+	$fs_root_path = dirname( $file_path ) . '/vendor/freemius';
 
     // @todo: Remove this code after a few months when WP 6.3 usage is low enough.
     global $wp_version;
@@ -207,11 +207,11 @@
 	}
 
 	if ( ! function_exists( 'fs_find_direct_caller_plugin_file' ) ) {
-		require_once dirname( __FILE__ ) . '/includes/supplements/fs-essential-functions-1.1.7.1.php';
+		require_once dirname( __FILE__ ) . '/vendor/freemius/includes/supplements/fs-essential-functions-1.1.7.1.php';
 	}
 
 	if ( ! function_exists( 'fs_get_plugins' ) ) {
-		require_once dirname( __FILE__ ) . '/includes/supplements/fs-essential-functions-2.2.1.php';
+		require_once dirname( __FILE__ ) . '/vendor/freemius/includes/supplements/fs-essential-functions-2.2.1.php';
 	}
 
 	// Update current SDK info based on the SDK path.
@@ -573,7 +573,7 @@
 		}
 
 		// Load SDK files.
-		require_once dirname( __FILE__ ) . '/require.php';
+		require_once dirname( __FILE__ ) . '/vendor/freemius/require.php';
 
 		/**
 		 * Quick shortcut to get Freemius for specified plugin.

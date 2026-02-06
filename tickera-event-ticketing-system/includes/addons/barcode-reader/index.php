@@ -42,7 +42,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
          */
         function check_in_barcode() {
 
-            if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+
+            if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 
                 $api_key = sanitize_text_field( $_POST[ 'api_key' ] );
                 $barcode = sanitize_text_field( $_POST[ 'barcode' ] );
@@ -51,10 +53,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
                 $current_user = wp_get_current_user();
                 $current_username = $current_user->user_login;
 
-                if (
-                    current_user_can( 'manage_options' )
-                    || ( ! current_user_can( 'manage_options' ) && strtolower( $api->details->api_username ) == strtolower( $current_username ) )
-                ) {
+                if ( current_user_can( 'manage_options' ) || strtolower( $api->details->api_username ) == strtolower( $current_username ) ) {
 
                     $checkin = new \Tickera\TC_Checkin_API( $api->details->api_key, apply_filters( 'tc_checkin_request_name', 'tickera_scan' ), 'return', $barcode, false );
                     $checkin_result = $checkin->ticket_checkin( false );
@@ -129,24 +128,28 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
          * Add scripts and CSS for the plugin
          */
         function admin_header() {
-            wp_enqueue_script( $this->name . '-admin', $this->plugin_url . 'js/admin.js', array( 'jquery' ), false, false );
-            wp_localize_script( $this->name . '-admin', 'tc_barcode_reader_vars', array(
-                'admin_ajax_url' => admin_url( 'admin-ajax.php' ),
-                'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
-                'message_barcode_default' => __( 'Select input field and scan a barcode located on the ticket.', 'tickera-event-ticketing-system' ),
-                'message_checking_in' => __( 'Checking in...', 'tickera-event-ticketing-system' ),
-                'message_insufficient_permissions' => __( 'Insufficient permissions. This API key cannot check in this ticket.', 'tickera-event-ticketing-system' ),
-                'message_barcode_status_error' => __( 'Ticket code is wrong or expired.', 'tickera-event-ticketing-system' ),
-                'message_barcode_status_success' => __( 'Ticket has been successfully checked in.', 'tickera-event-ticketing-system' ),
-                'message_barcode_status_error_exists' => __( 'Ticket does not exist.', 'tickera-event-ticketing-system' ),
-                'message_barcode_api_key_not_selected' => sprintf(
+
+            if ( $_GET && isset( $_GET[ 'page' ] ) && isset( $_GET[ 'post_type' ] ) && $this->name == $_GET[ 'page' ] && 'tc_events' == $_GET[ 'post_type' ] ) {
+
+                wp_enqueue_script( $this->name . '-admin', $this->plugin_url . 'js/admin.js', array( 'jquery' ), false, false );
+                wp_localize_script( $this->name . '-admin', 'tc_barcode_reader_vars', array(
+                    'admin_ajax_url' => admin_url( 'admin-ajax.php' ),
+                    'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
+                    'message_barcode_default' => __( 'Select input field and scan a barcode located on the ticket.', 'tickera-event-ticketing-system' ),
+                    'message_checking_in' => __( 'Checking in...', 'tickera-event-ticketing-system' ),
+                    'message_insufficient_permissions' => __( 'Insufficient permissions. This API key cannot check in this ticket.', 'tickera-event-ticketing-system' ),
+                    'message_barcode_status_error' => __( 'Ticket code is wrong or expired.', 'tickera-event-ticketing-system' ),
+                    'message_barcode_status_success' => __( 'Ticket has been successfully checked in.', 'tickera-event-ticketing-system' ),
+                    'message_barcode_status_error_exists' => __( 'Ticket does not exist.', 'tickera-event-ticketing-system' ),
+                    'message_barcode_api_key_not_selected' => sprintf(
                     /* translators: %s: A link to the Tickera > Setings > API Access */
-                    __( 'Please create and select an <a href="%s">API Key</a> in order to check in the ticket.', 'tickera-event-ticketing-system' ),
-                    esc_url( admin_url( 'admin.php?page=tc_settings&tab=api' ) ),
-                ),
-                'message_barcode_cannot_be_empty' => __( 'Ticket code cannot be empty', 'tickera-event-ticketing-system' ),
-            ) );
-            wp_enqueue_style( $this->name . '-admin', $this->plugin_url . 'css/admin.css', array(), $this->version );
+                        __( 'Please create and select an <a href="%s">API Key</a> in order to check in the ticket.', 'tickera-event-ticketing-system' ),
+                        esc_url( admin_url( 'admin.php?page=tc_settings&tab=api' ) ),
+                    ),
+                    'message_barcode_cannot_be_empty' => __( 'Ticket code cannot be empty', 'tickera-event-ticketing-system' ),
+                ) );
+                wp_enqueue_style( $this->name . '-admin', $this->plugin_url . 'css/admin.css', array(), $this->version );
+            }
         }
     }
 }

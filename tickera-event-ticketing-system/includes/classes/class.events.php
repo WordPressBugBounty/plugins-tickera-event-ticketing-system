@@ -234,21 +234,30 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
          *
          * @return array
          */
-        public static function get_hidden_events_ids() {
+        public static function get_hidden_events_ids( $event_id = false ) {
 
             global $wpdb;
 
-            $query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID as ID FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id AND {$wpdb->posts}.post_type = 'tc_events' AND ({$wpdb->postmeta}.meta_key = 'hide_event_after_expiration') AND ({$wpdb->postmeta}.meta_value = %d)", 1 );
-            $results = $wpdb->get_results( $query, ARRAY_A );
+            if ( $event_id ) {
+                $query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID as ID FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id AND {$wpdb->posts}.post_type = 'tc_events' AND ({$wpdb->postmeta}.meta_key = 'hide_event_after_expiration') AND ({$wpdb->postmeta}.meta_value = %d) AND {$wpdb->posts}.ID = %d", 1, (int) $event_id );
 
+            } else {
+                $query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID as ID FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id AND {$wpdb->posts}.post_type = 'tc_events' AND ({$wpdb->postmeta}.meta_key = 'hide_event_after_expiration') AND ({$wpdb->postmeta}.meta_value = %d)", 1 );
+            }
+
+            $results = $wpdb->get_results( $query, ARRAY_A );
             $hidden_events_ids = [];
 
             foreach ( $results as $maybe_hidden_event_id ) {
                 $maybe_hidden_event_id = (int) $maybe_hidden_event_id[ 'ID' ];
                 $event_end_date_time = get_post_meta( $maybe_hidden_event_id, 'event_end_date_time', true );
 
-                if ( ( date_i18n( 'U', current_time( 'timestamp' ) ) > date_i18n( 'U', strtotime( $event_end_date_time ) ) ) )
+                if (
+                    ( date_i18n( 'U', current_time( 'timestamp' ) ) > date_i18n( 'U', strtotime( $event_end_date_time ) ) )
+                    && ! apply_filters( 'tc_bypass_hide_event_after_expiration', false, $maybe_hidden_event_id )
+                ) {
                     $hidden_events_ids[] = $maybe_hidden_event_id;
+                }
             }
             return $hidden_events_ids;
         }

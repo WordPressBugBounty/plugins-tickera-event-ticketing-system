@@ -410,7 +410,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                 $posts = get_posts( $args );
 
                 foreach ( $posts as $key => $post ) {
-                    $cart_info = get_post_meta( $post->ID, 'tc_cart_info', true );
+                    $cart_info = apply_filters( 'tc_order_cart_info', get_post_meta( $post->ID, 'tc_cart_info', true ), $post->ID );
                     $buyer_data = isset( $cart_info[ 'buyer_data' ] ) ? $cart_info[ 'buyer_data' ] : [];
                     $buyer_email = isset( $buyer_data[ 'email_post_meta' ] ) ? $buyer_data[ 'email_post_meta' ] : '';
 

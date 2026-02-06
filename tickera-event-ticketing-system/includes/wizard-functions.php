@@ -275,7 +275,9 @@ if ( ! function_exists( 'tickera_ajax_installation_wizard_save_step_data' ) ) {
 
     function tickera_ajax_installation_wizard_save_step_data() {
 
-        if ( isset( $_POST[ 'nonce' ] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+        check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+
+        if ( current_user_can( 'manage_options' ) ) {
 
             global $tc;
             $step = isset( $_POST[ 'data' ][ 'step' ] ) ? sanitize_key( $_POST[ 'data' ][ 'step' ] ) : 'start';

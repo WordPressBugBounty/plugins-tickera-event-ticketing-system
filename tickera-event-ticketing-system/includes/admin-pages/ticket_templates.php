@@ -160,7 +160,7 @@ $templates_add_new_url = add_query_arg( array(
     'page' => $page,
     'action' => 'add_new'
 ), admin_url( 'edit.php' ) ); ?>
-    <div class="wrap tc_wrap">
+    <div id="ticket_templates" class="wrap tc_wrap">
     <h2><?php esc_html_e( 'Ticket Templates', 'tickera-event-ticketing-system' ); ?>
         <?php if ( isset( $_GET[ 'action' ] ) && ( $_GET[ 'action' ] == 'edit' || $_GET[ 'action' ] == 'add_new' ) ) : ?>
             <a href="<?php echo esc_url( $templates_url ); ?>"
@@ -279,10 +279,12 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                 <?php foreach ( $tc_template_elements as $element ) {
                     $element_class = new $element[ 0 ];
                     if ( !in_array( $element[ 0 ], $template_elements_set ) ) { ?>
-                        <li class="ui-state-default" data-class="<?php echo esc_attr( $element[ 0 ] ); ?>">
+                        <li class="ui-state-default" data-class="<?php echo esc_attr( $element[ 0 ] ); ?>" tabindex="0">
                             <div class="elements-wrap">
-                                <div class="element_title"><?php echo esc_html( $element[ 1 ] ); ?>
-                                    <a class="close-this" href="#"><i class="fa fa-times"></i></a></div>
+                                <div class="element_title">
+                                    <?php echo esc_html( $element[ 1 ] ); ?>
+                                    <a class="close-this" href="#"><i class="fa fa-times"></i></a>
+                                </div>
                                 <div class="element-icon">
                                     <?php if ( empty( $element_class->font_awesome_icon ) ) { ?>
                                         <i class="fa fa-plus-circle"></i>
@@ -328,7 +330,8 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                                     <li class="ui-state-default cols"
                                         data-class="<?php echo esc_attr( $element_class_namespace ); ?>">
                                         <div class="elements-wrap">
-                                            <div class="element_title"><?php echo esc_html( $element->element_title ); ?>
+                                            <div class="element_title">
+                                                <?php echo esc_html( $element->element_title ); ?>
                                                 <a class="close-this" href="#"><i class="fa fa-times"></i></a>
                                             </div>
                                             <div class="element-icon">

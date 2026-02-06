@@ -162,8 +162,10 @@ body .ui-tooltip {
 .tc_wrap .chosen-container-active.chosen-with-drop .chosen-single {
     background: none;
 }
+
 .post-type-tc_events .button-primary,
 .tc_wrap .button-primary,
+.tc-thickbox .button-primary,
 .post-type-tc_tickets .button-primary,
 .post-type-tc_tickets_instances .button-primary,
 .post-type-tc_orders .button-primary,
@@ -183,7 +185,8 @@ body .ui-tooltip {
     letter-spacing: 0.03em;
 }
 
-.tc_wrap .button-primary {
+.tc_wrap .button-primary,
+.tc-thickbox .button-primary {
     background-color: #6b5f89; /* #ffdf3b; */
     text-shadow: none;
     border: none;
@@ -199,6 +202,16 @@ body .ui-tooltip {
     font-size: 1.2em;
     letter-spacing: 0.03em;
     float: left;
+}
+
+.tc-thickbox .button-primary {
+    float: none;
+    transition: none;
+    -webkit-transition: none;
+    -moz-transition: none;
+    padding: 5px 20px;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 .post-type-tc_events .button-secondary,
@@ -239,6 +252,8 @@ body .ui-tooltip {
 
 .tc_wrap .button-primary:hover,
 .tc_wrap .button-primary:focus,
+.tc-thickbox .button-primary:hover,
+.tc-thickbox .button-primary:focus,
 .post-type-tc_events .button-primary:hover,
 .post-type-tc_events .button-primary:focus,
 .post-type-tc_speakers .button-primary:hover,
@@ -250,7 +265,7 @@ body .ui-tooltip {
 .post-type-tc_orders .button-primary:hover,
 .post-type-tc_orders .button-primary:focus,
 .tc_events_page_tc_ticket_templates .button-primary:hover,
-.tc_events_page_tc_ticket_templates .button-primary:focus{
+.tc_events_page_tc_ticket_templates .button-primary:focus {
 
     background-color: #ffdf3b;
     color: #5d5d5d;
@@ -259,6 +274,11 @@ body .ui-tooltip {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+
+#sticky-wrapper .nav-tab:focus:not(.nav-tab-active) {
+    background-color: #ffdf3b;
+    color: #5d5d5d;
 }
 
 .wp-core-ui .tc_wrap .button-primary-disabled,
@@ -328,12 +348,15 @@ body .ui-tooltip {
     border-bottom: 5px solid #6b5f89;
 }
 
-#ticket_elements li:hover {
+#ticket_elements li:hover,
+#ticket_elements li:focus {
     border-bottom: 5px solid rgba(135, 117, 170, 0.4);
 }
 
 #ticket_elements li:hover i,
-#ticket_elements li:hover .element_title {
+#ticket_elements li:focus i,
+#ticket_elements li:hover .element_title,
+#ticket_elements li:focus .element_title {
     color: #6b5f89;
     -webkit-transition: all 0.3s linear;
     -moz-transition: all 0.3s linear;

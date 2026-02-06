@@ -25,7 +25,7 @@ if ( ! class_exists( '\Tickera\TC_Events_Search' ) ) {
 
             $args = [];
             $this->per_page = ( '' == $per_page ) ? (int) tickera_global_admin_per_page( $this->per_page ) : (int) $per_page;
-            $this->page_name = $tc->name . '_events';
+            $this->page_name = $tc ? $tc->name . '_events' : $this->page_name;
             $this->search_term = $search_term;
             $this->raw_page = ( '' == $page_num ) ? false : (int) $page_num;
             $this->page_num = (int) ( '' == $page_num ) ? 1 : (int) $page_num;

@@ -151,7 +151,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                                 <?php if ( $editable_qty ) { /* Hidden - Remove false to show */ ?>
                                                     <input class="tickera_button minus" type="button" value="-" data-action="minus"/>
                                                 <?php } ?>
-                                                <input type="<?php echo ( $editable_qty ? 'text' : 'hidden' ); ?>" inputmode="numeric" pattern="[0-9]*" name="ticket_quantity[]" min="<?php echo esc_attr( $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo esc_attr( (int) $ordered_count ); ?>" class="quantity tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" autocomplete="off">
+                                                <input type="<?php echo esc_attr( $editable_qty ? 'text' : 'hidden' ); ?>" inputmode="numeric" pattern="[0-9]*" name="ticket_quantity[]" min="<?php echo esc_attr( $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo esc_attr( (int) $ordered_count ); ?>" class="quantity tc_quantity_selector<?php echo esc_attr( $frontend_tooltip ? ' tc-tooltip' : '' ); ?>" data-tooltip="<?php echo esc_attr( $frontend_tooltip ? $frontend_tooltip_quantity_selector : '' ); ?>" autocomplete="off">
                                                 <?php if ( ! $editable_qty ) : ?>
                                                     <span><?php esc_html( $ordered_count ); ?></span>
                                                 <?php endif; ?>
@@ -229,8 +229,8 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                 <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ) ?>"><?php echo wp_kses_post( '<' . $field[ 'field_tag' ] . '>' . $field[ 'field_title' ] . '</' . $field[ 'field_tag' ] . '>' ); ?></div><?php
 
                             } elseif ( in_array( $field[ 'field_type' ], [ 'text', 'date', 'number' ] ) ) {
-                                $min = ( isset( $field[ 'field_min' ] ) && $field[ 'field_min' ] ) ? $field[ 'field_min' ] : 1;
-                                $max = ( isset( $field[ 'field_max' ] ) && $field[ 'field_max' ] ) ? $field[ 'field_max' ] : 9999;
+                                $min = ( isset( $field[ 'field_min' ] ) && $field[ 'field_min' ] ) ? $field[ 'field_min' ] : 0;
+                                $max = ( isset( $field[ 'field_max' ] ) && $field[ 'field_max' ] ) ? $field[ 'field_max' ] : 0;
                                 $step = ( isset( $field[ 'field_step' ] ) && $field[ 'field_step' ] ) ? $field[ 'field_step' ] : 1; ?>
                                 <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_' . $field[ 'validation_type' ] : ''; ?>">
                                     <label>
@@ -316,13 +316,15 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                     <label>
                                         <span><?php echo esc_html( $field[ 'required' ] ? '*' : '' ); ?><?php echo esc_html( $field[ 'field_title' ] ); ?></span>
                                         <select class="buyer-field-<?php echo esc_attr( $field[ 'field_type' ] . ' ' . $validation_class ); ?> tickera-input-field" name="<?php echo esc_attr( 'buyer_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>">
-                                            <option value=""><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? $field[ 'field_placeholder' ] : '' ); ?></option>
-                                            <?php if ( isset( $field[ 'field_values' ] ) ) {
+                                            <?php if ( ! $field[ 'required' ] ) : ?>
+                                                <option value=""><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? $field[ 'field_placeholder' ] : '' ); ?></option><?php
+                                            endif;
+                                            if ( isset( $field[ 'field_values' ] ) ) {
                                                 $field_values = explode( ',', $field[ 'field_values' ] );
-                                                foreach ( $field_values as $field_value ) { ?>
+                                                foreach ( $field_values as $field_value ) : ?>
                                                     <option value="<?php echo esc_attr( trim( $field_value ) ); ?>" <?php if ( tickera_cart_field_get_option_value_selected( $field, $field_value, esc_attr( 'buyer_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ) ) ) echo esc_attr( 'selected' ); ?>><?php echo esc_html( trim( $field_value ) ); ?></option>
-                                                <?php } ?>
-                                            <?php } ?>
+                                                <?php endforeach;
+                                            } ?>
                                         </select>
                                     </label>
                                     <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span>
@@ -389,8 +391,8 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
 
                                                         $posted_name = 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ];
                                                         $posted_value = ( isset( $_POST[ $posted_name ] ) ) ? ( isset( $_POST[ $posted_name ][ $ticket_type ][ $owner_index ] ) ? sanitize_text_field( $_POST[ $posted_name ][ $ticket_type ][ $owner_index ] ) : '' ) : '';
-                                                        $min = ( isset( $field[ 'field_min' ] ) && $field[ 'field_min' ] ) ? $field[ 'field_min' ] : 1;
-                                                        $max = ( isset( $field[ 'field_max' ] ) && $field[ 'field_max' ] ) ? $field[ 'field_max' ] : 9999;
+                                                        $min = ( isset( $field[ 'field_min' ] ) && $field[ 'field_min' ] ) ? $field[ 'field_min' ] : 0;
+                                                        $max = ( isset( $field[ 'field_max' ] ) && $field[ 'field_max' ] ) ? $field[ 'field_max' ] : 0;
                                                         $step = ( isset( $field[ 'field_step' ] ) && $field[ 'field_step' ] ) ? $field[ 'field_step' ] : 1;
 
                                                         if ( ( isset( $tc_general_settings[ 'show_owner_email_field' ] ) && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] && 'owner_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_email' ) { ?>
@@ -506,13 +508,15 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                                                 <span><?php echo esc_html( $field[ 'required' ] ? '*' : '' ); ?><?php echo esc_html( $field[ 'field_title' ] ); ?></span>
                                                             </label>
                                                             <select class="owner-field-<?php echo esc_attr( $field[ 'field_type' ] . ' ' . $validation_class ); ?> tickera-input-field" name="<?php echo esc_attr( 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>[<?php echo esc_attr( (int) $ticket_type ); ?>][<?php echo esc_attr( (int) $owner_index ); ?>]">
-                                                                <option value=""><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option>
-                                                                <?php if ( isset( $field[ 'field_values' ] ) ) {
+                                                                <?php if ( ! $field[ 'required' ] ) : ?>
+                                                                    <option value=""><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option><?php
+                                                                endif;
+                                                                if ( isset( $field[ 'field_values' ] ) ) {
                                                                     $field_values = explode( ',', $field[ 'field_values' ] );
-                                                                    foreach ( $field_values as $field_value ) { ?>
+                                                                    foreach ( $field_values as $field_value ) : ?>
                                                                         <option value="<?php echo esc_attr( trim( $field_value ) ); ?>" <?php if ( tickera_cart_field_get_option_value_selected( $field, $field_value, esc_attr( 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ), $ticket_type, $owner_index ) ) echo esc_attr( 'selected' ); ?>><?php echo esc_html( trim( $field_value ) ); ?></option>
-                                                                    <?php } ?>
-                                                                <?php } ?>
+                                                                    <?php endforeach;
+                                                                } ?>
                                                             </select>
                                                             <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span>
                                                             <?php if ( $field[ 'required' ] ) { ?>

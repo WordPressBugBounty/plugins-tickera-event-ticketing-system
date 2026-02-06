@@ -36,8 +36,15 @@ if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
                         <td>
                             <?php
                             foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
-                                $gateway = new $plugin[ 0 ]; ?>
-                                <div class="image-check-wrap">
+
+                                $input_class = '';
+                                $gateway = new $plugin[ 0 ];
+                                $permanently_active = ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? true : false;
+
+                                if ( $permanently_active ) {
+                                    $input_class = ' auto';
+                                } ?>
+                                <div class="image-check-wrap<?php echo esc_attr( $input_class ); ?>" <?php echo esc_attr( $permanently_active ? '' : 'tabindex=0' ); ?>>
                                     <label>
                                         <input type="checkbox" class="tc_active_gateways" name="tc[gateways][active][]" value="<?php echo esc_attr( $code ); ?>"<?php echo esc_attr( in_array( $code, $this->get_network_setting( 'gateways->active', array() ) ) ) ? ' checked="checked"' : ( ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? ' checked="checked"' : '' ); ?> <?php echo esc_attr( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? 'disabled' : ''; ?> />
                                         <div class="check-image check-image-<?php echo esc_attr( in_array( $code, $this->get_network_setting( 'gateways->active', array() ) ) ) ?>">

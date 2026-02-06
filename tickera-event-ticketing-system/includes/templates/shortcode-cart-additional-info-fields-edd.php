@@ -89,12 +89,14 @@
                             <span><?php echo esc_html( $field[ 'field_title' ] ); ?><?php echo wp_kses_post( $field[ 'required' ] ? '<abbr class="required" title="required">*</abbr>' : '' ); ?></span>
                         </label>
                         <select class="buyer-field-<?php echo esc_attr( $field[ 'field_type' ] . ' ' . $validation_class ); ?> tickera-input-field" name="<?php echo esc_attr( 'buyer_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>">
-                            <option value="" selected><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option>
-                            <?php if ( isset( $field[ 'field_values' ] ) ) {
+                            <?php if ( ! $field[ 'required'] ) : ?>
+                                <option value="" selected><?php echo esc_attr( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option><?php
+                            endif;
+                            if ( isset( $field[ 'field_values' ] ) ) {
                                 $field_values = explode( ',', $field[ 'field_values' ] );
-                                foreach ( $field_values as $field_value ) { ?>
+                                foreach ( $field_values as $field_value ) : ?>
                                     <option value="<?php echo esc_attr( trim( $field_value ) ); ?>" <?php if ( isset( $field[ 'field_default_value' ] ) && $field[ 'field_default_value' ] == trim( $field_value ) ) echo esc_attr( 'selected' ); ?>><?php echo esc_html( trim( $field_value ) ); ?></option>
-                                <?php }
+                                <?php endforeach;
                             } ?>
                         </select>
                         <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span>
@@ -233,12 +235,14 @@
                                                 <span><?php echo esc_html( $field[ 'field_title' ] ); ?><?php echo wp_kses_post( $field[ 'required' ] ? '<abbr class="required" title="required">*</abbr>' : '' ); ?></span>
                                             </label>
                                             <select class="owner-field-<?php echo esc_attr( $field[ 'field_type' ] . ' ' . $validation_class ); ?> tickera-input-field" name="<?php echo esc_attr( 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>[<?php echo esc_attr( (int) $ticket_type ); ?>][<?php echo esc_attr( (int) $owner_index ); ?>]">
-                                                <option value="" selected><?php echo wp_kses_post( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option>
-                                                <?php if ( isset( $field[ 'field_values' ] ) ) {
+                                                <?php if ( ! $field[ 'required' ] ) : ?>
+                                                    <option value="" selected><?php echo wp_kses_post( isset( $field[ 'field_placeholder' ] ) ? esc_attr( $field[ 'field_placeholder' ] ) : '' ); ?></option><?php
+                                                endif;
+                                                if ( isset( $field[ 'field_values' ] ) ) {
                                                     $field_values = explode( ',', $field[ 'field_values' ] );
-                                                    foreach ( $field_values as $field_value ) { ?>
+                                                    foreach ( $field_values as $field_value ) : ?>
                                                         <option value="<?php echo esc_attr( trim( $field_value ) ); ?>" <?php if ( isset( $field[ 'field_default_value' ] ) && $field[ 'field_default_value' ] == trim( $field_value ) ) echo esc_attr( 'selected' ); ?>><?php echo esc_html( trim( $field_value ) ); ?></option>
-                                                    <?php }
+                                                    <?php endforeach;
                                                 } ?>
                                             </select>
                                             <span class="description"><?php echo esc_html( $field[ 'field_description' ] ); ?></span>

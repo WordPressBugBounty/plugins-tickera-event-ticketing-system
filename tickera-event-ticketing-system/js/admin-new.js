@@ -1221,15 +1221,15 @@
          * Tickera > Ticket Types
          * Tickera > Attendees & Tickets
          */
-        $( 'select[name="tc_event_filter"]' ).chosen({
+        $( 'select.tc-event-filter' ).chosen({
             width: '200px'
         });
 
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_vars.please_enter_at_least_3_characters );
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_vars.please_enter_at_least_3_characters );
 
         window.tc_searching_event_filter = false;
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
             let keyword = $( this ).val();
             if ( ! window.searching_event_filter && keyword.length >= 3 ) {
                 tc_admin.debounce( function() {
@@ -1242,7 +1242,7 @@
                     }, function( response ) {
                         window.tc_searching_event_filter = false;
                         if ( response.count ) {
-                            $( 'select[name="tc_event_filter"]' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
+                            $( 'select.tc-event-filter' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
                         }
                         $( '.tc-loader' ).hide();
                     } );
@@ -1679,4 +1679,5 @@
           },500);
 
 
-} )( jQuery );
+  } )
+})( jQuery );

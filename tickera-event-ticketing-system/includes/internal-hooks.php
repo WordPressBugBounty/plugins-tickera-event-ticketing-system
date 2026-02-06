@@ -13,7 +13,9 @@ if ( ! function_exists( 'tickera_trash_post_before' ) ) {
 
     function tickera_trash_post_before() {
 
-        if ( isset( $_POST[ 'nonce' ] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+        check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+
+        if ( ( current_user_can( 'delete_tc_ticket' ) || current_user_can( 'delete_tc_tickets' ) ) ) {
 
             $btn_action = sanitize_text_field( $_POST[ 'btn_action' ] );
 
@@ -77,10 +79,19 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
                 $value = '-';
 
             } else {
-                $user_id = (int) $user_id;
-                $query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE {$wpdb->postmeta}.meta_key = '_customer_user' AND {$wpdb->postmeta}.meta_value = %d AND {$wpdb->posts}.post_type = 'shop_order'", $user_id );
-                $count = $wpdb->get_var( $query );
-                $value = "<a href='" . esc_url( admin_url( 'edit.php?s&post_type=shop_order&_customer_user=' . $user_id ) ) . "'>" . (int) $count . "</a>";
+
+                if ( ! apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) ) {
+                    $query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE {$wpdb->posts}.post_status <> 'trash' AND {$wpdb->posts}.post_author = %d AND {$wpdb->posts}.post_type = %s", $user_id, 'tc_orders' );
+                    $count = $wpdb->get_var( $query );
+                    $value = (int) $count;
+
+                } else {
+                    global $tc_woocommerce_bridge;
+                    $post_types = $tc_woocommerce_bridge->get_woo_order_types();
+                    $query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE {$wpdb->posts}.post_status <> 'trash' AND {$wpdb->postmeta}.meta_key = '_customer_user' AND {$wpdb->postmeta}.meta_value = %d AND {$wpdb->posts}.post_type IN ('" . implode( "','", $post_types ) . "')", $user_id );
+                    $count = $wpdb->get_var( $query );
+                    $value = "<a href='" . esc_url( admin_url( 'edit.php?s&post_type=shop_order&_customer_user=' . $user_id ) ) . "'>" . (int) $count . "</a>";
+                }
             }
         }
         return $value;

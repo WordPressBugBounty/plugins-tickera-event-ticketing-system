@@ -387,7 +387,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
                                             }
                                         }
 
-                                    } elseif ( 1 == $discount_details->discount_type && 'per_order' == $discount_object->details->discount_scope ) {
+                                    } elseif ( in_array( $discount_details->discount_type, [ 1, 3 ] ) && 'per_order' == $discount_object->details->discount_scope ) { // Fixed amount (per order) | 3 is equivalent to "Fixed amount (per order) from older versions.
 
                                         // Fixed amount per order
                                         if ( $max_discount > 0 ) {

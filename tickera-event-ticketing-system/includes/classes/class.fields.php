@@ -213,10 +213,10 @@ if ( ! class_exists( '\Tickera\TC_Fields' ) ) {
         public static function field_function( $field, $key ) {
 
             if ( isset( $field[ 'default_value' ] ) ) {
-                call_user_func( $field[ 'function' ], $field[ 'field_name' ], $field[ 'default_value' ] );
+                call_user_func( $field[ 'function' ], $field[ 'field_name' ], $field[ 'default_value' ], $field );
 
             } else {
-                call_user_func( $field[ 'function' ], $field[ 'field_name' ] );
+                call_user_func( $field[ 'function' ], $field[ 'field_name' ], '', $field );
             } ?>
             <span class="description"><?php echo esc_html( isset( $field[ 'field_description' ] ) ? $field[ 'field_description' ] : '' ); ?></span>
         <?php }

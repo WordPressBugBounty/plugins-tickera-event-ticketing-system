@@ -2330,11 +2330,11 @@ body.post-type-tc_tickets_instances .chosen-single {
  * Tickera > Attendees & Tickets
  * Event Filter
  */
-select[name="tc_event_filter"] ~ .chosen-container {
+select.tc-event-filter ~ .chosen-container {
     margin-right: 6px;
 }
 
-select[name="tc_event_filter"] ~ .chosen-container .tc-loader {
+select.tc-event-filter ~ .chosen-container .tc-loader {
     width: 17px;
     height: 100%;
     position: absolute;

@@ -278,9 +278,14 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
 
 .ticket-quantity .inner-wrap {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 10px;
+}
+
+.ticket-quantity .inner-wrap > * {
+    margin: auto;
 }
 
 .ticket-quantity .quantity,
@@ -290,6 +295,7 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
     width: 75px;
     text-align: center;
     border: 1px solid #e7e7e7;
+    margin: 0;
 }
 
 .ticket-quantity .plus {
@@ -304,6 +310,7 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
     height: 30px;
     outline: none;
     padding: 5px;
+    margin: 0;
 }
 
 .ticket-quantity .tickera_button:hover {

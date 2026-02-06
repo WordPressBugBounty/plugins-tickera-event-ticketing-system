@@ -54,7 +54,11 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
             }
 
             add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
-            add_filter( 'post_row_actions', array( $this, 'duplicate_event_action' ), 10, 2 );
+
+            if ( current_user_can( 'publish_tc_events' ) ) {
+                add_filter( 'post_row_actions', array( $this, 'duplicate_event_action' ), 10, 2 );
+            }
+
             add_action( 'admin_action_tc_duplicate_event_as_draft', '\Tickera\Addons\TC_Better_Events::tc_duplicate_event_as_draft' );
             add_action( 'pre_get_posts', '\Tickera\Addons\TC_Better_Events::tc_maybe_hide_events' );
             add_action( 'pre_get_posts', array( $this, 'tc_sort_end_start_date_columns' ) );
@@ -583,12 +587,19 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
 
                 $metas = apply_filters( 'events_metas', $metas );
 
-                /*
-                 * Manually update Show Tickets and Hide Event fields.
-                 * Please don't remove the following lines. Otherwise, recreate the process in the post_submitbox_misc_actions method.
-                 */
-                if ( $_POST && ! isset( $metas[ 'show_tickets_automatically' ] ) ) $metas[ 'show_tickets_automatically' ] = 0;
-                if ( $_POST && ! isset( $metas[ 'hide_event_after_expiration' ] ) ) $metas[ 'hide_event_after_expiration' ] = 0;
+                if ( $post_data && isset( $post_data[ 'action' ] ) && 'change_event_status' == $post_data[ 'action' ] ) {
+                    $metas[ 'show_tickets_automatically' ] = get_post_meta( $post_id, 'show_tickets_automatically', true );
+                    $metas[ 'hide_event_after_expiration' ] = get_post_meta( $post_id, 'hide_event_after_expiration', true );
+
+                } else {
+
+                    /*
+                     * Manually update Show Tickets and Hide Event fields.
+                     * Please don't remove the following lines. Otherwise, recreate the process in the post_submitbox_misc_actions method.
+                     */
+                    if ( $_POST && ! isset( $metas[ 'show_tickets_automatically' ] ) ) $metas[ 'show_tickets_automatically' ] = 0;
+                    if ( $_POST && ! isset( $metas[ 'hide_event_after_expiration' ] ) ) $metas[ 'hide_event_after_expiration' ] = 0;
+                }
 
                 foreach ( $metas as $key => $value ) {
                     update_post_meta( (int) $post_id, $key, tickera_sanitize_array( $value, true, true ) );

@@ -1,163 +1,215 @@
-=== Tickera - WordPress Event Ticketing ===  
-Contributors: tickera
-Tags: event ticketing, e-tickets, event, wordpress events, e-commerce,
+=== Tickera – Sell Tickets & Manage Events ===
+Contributors: tickera, freemius
+Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 4.1
-Tested up to: 6.8.2
-Stable tag: 3.5.5.9
-License: GPLv2 or later
+Tested up to: 6.9
+Stable tag: 3.5.6.7
 Requires PHP: 5.6
+License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Transform your WordPress site into a full-featured event ticketing system
+Sell tickets, manage events, and handle event registration on your site — PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
 
 == Description ==
 
-If you want to sell tickets on your website and deliver them to your customers digitally, Tickera is exactly what you need. By using Tickera plugin to sell and deliver tickets, you are essentially setting up your own hosted ticketing solution where you control the profits without any middleman fees taken by Tickera.
+**Tickera** lets you **sell tickets** on WordPress, manage **event registration**, and run **ticket sales** end-to-end on your own domain. Create an **event**, add **tickets**, deliver **PDF tickets** with QR/Barcodes, and check in attendees at the door. You keep the revenue - no middleman fees taken by Tickera.
 
-Tickera allows you to check in attendees easily by using integrated [Barcode readers](https://tickera.com/tickera-documentation/barcode-reader/ "Tickera Barcode Reader Add-on"). If you want to check the tickets in on your iOS and Android devices, our powerful premium [Checkinera apps](https://tickera.com/checkinera-app/ "Checkinera apps") will help you check the tickets in with blazing speeds and even offline! Also [Checkinera web app](https://tickera.com/checkinera-web/ "Checkinera web app") web app is available which can turn any web browser to fully fledged check-in system. 
+For ticket scanning, use integrated **[Barcode readers](https://tickera.com/tickera-documentation/barcode-reader/ "Tickera Barcode Reader Add-on")**. If you want mobile check-in on phones, our **premium** **[Checkinera apps](https://tickera.com/checkinera-app/ "Checkinera apps")** for iOS/Android enable blazing-fast scanning - **even offline** after sync. There’s also a **[Checkinera web app](https://tickera.com/checkinera-web/ "Checkinera web app")** that turns any modern browser into a fully-fledged check-in desk.
+---
 
-= The easy way to sell, deliver and check in tickets in WordPress. =
+### ✅ Key features
+- 🎟️ Sell event tickets on your site - you keep the revenue
+- 🗂️ Manage events in WordPress — create, edit, duplicate, set dates/capacity, and control ticket types
+- 🧾 PDF tickets with embedded QR/Barcode for fast entry
+- 🧍 Event registration with buyer and attendee fields
+- 💸 Ticket sales tools: multiple ticket types, limits, discount codes, fees, taxes
+- 🚀 Fast check-in with barcode readers, Checkinera mobile apps (premium), or the web app
+- 🧩 Works with most WordPress themes
+- 🧪 Developer-friendly (actions and filters for customization)
+- 🏷️ White-label ready
+- 🕸️ Multisite support
 
+━━━━━━━━━━━━━━━━
+
+> _“These guys offer a whole different level of service… give them a go!”_ — [James Farmer, WPMU DEV](https://wpmudev.com/)
+
+━━━━━━━━━━━━━━━━
+
+#### Manage events & event registration
+Create and update events in WordPress, then capture event registration details for each attendee.
+
+---
+
+### 🧠 How it works
+1. Choose your payment gateway.
+2. Create an **event** and add one or more **ticket types** (e.g., Standard, VIP).
+3. Share your **ticket sales** page and take orders.
+4. Buyers receive **PDF tickets** with **QR/Barcodes**.
+5. At the venue, **check in** attendees with scanners, the **Checkinera** apps (premium), or the **web app**.
+
+---
+
+### 🎬 Video
 [youtube https://www.youtube.com/watch?v=BPFpzi4kGFQ]
 
-= GET FULL DEMO ACCESS =
-Want to test premium version of Tickera with all add-ons? [Request a demo access](https://tickera.com/playground-request/ "Tickera Demo Request")
+---
 
-= RECOMMENDATIONS = 
+### 💳 Payments
+**Tickera plugin comes with** **[2Checkout](https://www.2checkout.com/referral?r=95d26f72d1 "2Checkout payment gateway")**, **Custom Offline Payments**, and **Free Orders** as built-in payment gateways.
 
+**Need more options?** Get **[Tickera Premium](http://tickera.com/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=premium "WordPress Event Ticketing system")** for gateways like:
+- **[Mollie](http://tickera.com/addons/mollie-payment-gateway/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=mollie "Mollie payment gateway for Tickera")** (iDeal, Credit Card, Bancontact/Mister Cash, SOFORT, Overbooking, Bitcoin, PayPal, paysafecard, AcceptEmail)
+- PayPal Standard • PayPal PRO • 2Checkout • Stripe • Paymill • Authorize.net • PIN Payments • Vogue Pay • iPay88 • PayGate • OptimalPayments/Netbanx • Braintree • PayUMoney • PayTabs • White Payments • PayU Latam • Komoju • plus Custom Offline Payments & Free Orders.
+---
 
+### 🛒 WooCommerce compatible
+Already on WooCommerce? Sell **tickets** as WooCommerce products while Tickera handles e-ticket delivery and check-in. Learn more about **[Bridge for WooCommerce](https://tickera.com/addons/bridge-for-woocommerce/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=bridge-for-woocommerce "Sell event tickets with WooCommerce and Tickera")** (**premium add-on**).
+---
 
-★★★★★<br />
-These guys offer a whole different level of service… give them a go! - <a href="https://premium.wpmudev.org/">James Farmer</a>
+### 🪑 Seating & 🧾 forms (premium add-ons)
+- 🪑 **Assigned seating** with **[Seating Charts](https://tickera.com/addons/seating-charts/ "Seating Charts")** - build seat maps; let buyers pick seats at checkout.
+- 🧾 **Custom attendee fields** and exports with **[Custom Forms](http://tickera.com/addons/custom-forms/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=custom-forms "Custom Forms add-on")**.
+- 💼 **Take a cut** on multisite/marketplaces with **[Stripe Connect](http://tickera.com/addons/stripe-connect/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=stripe-connect "Stripe Connect")**.
 
+For more, see the complete catalog: **[All Tickera add-ons](http://tickera.com/tickera-events-add-ons/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=addons "Tickera Add-ons and Extensions")**.
 
+---
 
-★★★★★<br />
-Tickera is filling a very deep and large hole in the ticket system market - Vinicius Freire, ViaMarket
+━━━━━━━━━━━━━━━━
 
+> _“In my opinion Tickera is the best ticket management solution available today on WordPress”_ - Anton Kozlov
+━━━━━━━━━━━━━━━━
 
+### 📚 Documentation
+- **Getting started & setup:** https://tickera.com/documentation-category/tickera/
+- **Checkinera apps (iOS/Android):** https://tickera.com/checkinera-app/
+- **Checkinera web app:** https://tickera.com/checkinera-web/
+- **Bridge for WooCommerce:** https://tickera.com/addons/bridge-for-woocommerce/
+- **Seating Charts:** https://tickera.com/addons/seating-charts/
+- **Custom Forms:** http://tickera.com/addons/custom-forms/
 
-★★★★★<br />
-I've compared and tried many ticket plugins and I have to say - this one is the best - Scope Themes
+Need help? Browse full docs: **https://tickera.com/documentation-category/tickera/**
 
+---
 
+### 🚀 Premium demo
+Want to try everything (including premium add-ons)?
+👉 **[Request a demo access](https://tickera.com/playground-request/ "Tickera Demo Request")**
 
-★★★★★<br />
-In my opinion Tickera is the best ticket management solution available today on WordPress - Anton Kozlov
+---
 
+### 🧰 Use cases
+- **Ticket sales** for concerts, conferences, festivals, theatres, meetups, comedy shows
+- **Sports events** (football matches, basketball, volleyball, tournaments, races)
+- **Event registration** for workshops, classes, seminars, trainings, hackathons
+- **Attractions & venues** (zoos, museums, galleries, exhibitions, theme/adventure parks)
+- **Tours & experiences** (city tours, boat/ferry tours, winery/brewery tours, campus open days)
+- **Community & non-profit** (church events, charity fundraisers, school/university events)
+- **Nightlife & hospitality** (clubs, DJ nights, VIP lists, table/service packages)
+- **Seasonal & holiday events** (markets, fairs, fireworks nights, Halloween/NYE)
+- **Corporate & product** (launches, networking, town halls, partner events)
+- **Education & webinars** (online events with attendee data collection)
+- **Theatre & cinema** (screenings, premieres; seat selection via Seating Charts add-on)
+- **On-site logistics** (entry lanes, staff/crew passes, vendor passes)
+- **Parking passes** for events (sell/scan parking **tickets** to manage capacity)
+- **Multi-activity days** (festival day passes, stage/area access levels)
+- **Timed entry windows** (staggered arrivals, capacity control at the door)
+- **Sell tickets** online and scan **tickets** on-site via QR/Barcode (readers, Checkinera apps, or web app)
+- **Event registration** with per-**attendee** data (forms, exports)
 
+━━━━━━━━━━━━━━━━
 
-★★★★★<br />
-Cannot recommend Tickera highly enough - DJ Andy Ward
+> _“Cannot recommend Tickera highly enough”_ - DJ Andy Ward
+━━━━━━━━━━━━━━━━
+---
 
-= PAYMENT GATEWAYS =
+== Frequently Asked Questions ==
 
-Tickera plugin comes with [2Checkout payment gateway](https://www.2checkout.com/referral?r=95d26f72d1 "2Checkout payment gateway"), Custom Offline Payments and Free Orders.
+= How do I sell tickets on WordPress with Tickera? =
+Create an event, add ticket types, publish, and share the purchase link. **Tickets** are delivered as **PDF tickets** with QR/Barcode for fast entry.
 
-If you need more payment options, you can download [Tickera Premium](http://tickera.com/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=premium "WordPress Event Ticketing system") version which includes:
+= Can I run ticket sales with WooCommerce? =
+Yes. **Ticket sales** with WooCommerce are available via the **premium** add-on **[Bridge for WooCommerce](https://tickera.com/addons/bridge-for-woocommerce/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=bridge-for-woocommerce "Sell event tickets with WooCommerce and Tickera")**, which lets you sell **tickets** as WooCommerce products.
 
-* [Mollie](http://tickera.com/addons/mollie-payment-gateway/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=mollie "Mollie payment gateway for Tickera") (iDeal, Credit Card, Bancontact / Mister Cash, SOFORT Banking, Overbooking, Bitcoin, PayPal, paysafecard and   AcceptEmail)
-* PayPal Standard
-* PayPal PRO
-* 2Checkout
-* Stripe
-* Paymill
-* Authorize.net
-* PIN Payments
-* Vogue Pay
-* iPay88
-* PayGate
-* OptimalPayments / Netbanx payment gateway
-* Braintree
-* PayUMoney
-* PayTabs
-* White Payments
-* PayU Latam
-* Komoju
-* Custom Offline Payments
-* Free Orders.
+= Can I check in tickets with phones and work offline? =
+Yes. Use the **Checkinera** (iOS/Android) **premium apps** for mobile scanning with **offline** support after the initial sync, or use barcode readers / the Checkinera web app.
+- Mobile apps: https://tickera.com/checkinera-app/
+- Web app: https://tickera.com/checkinera-web/
+- Barcode readers: https://tickera.com/tickera-documentation/barcode-reader/
 
-= WooCommerce COMPATIBLE =
-Already running WooCommerce on your website? Take the best of both worlds! Sell tickets as WooCommerce products on your website and deliver them to your buyers using the awesomeness of this WooCommerce and Tickera fusion! Yes, it is as good as it sounds. Learn more about [Bridge for WooCommerce](https://tickera.com/addons/bridge-for-woocommerce/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=bridge-for-woocommerce "Sell event tickets with WooCommerce and Tickera")
+= Do you support assigned seating and seat selection? =
+Yes. Assigned seating is available via the **premium** **[Seating Charts](https://tickera.com/addons/seating-charts/ "Seating Charts")** add-on.
 
-= SEATING CHARTS =
-
-Sell the tickets with assigned seats! [Seating Charts add-on](https://tickera.com/addons/seating-charts/ "Seating Charts") makes it easy to create floor plans of your venue with seating groups, standing areas and points of interest. All of that using the simple and intuitive drag'n'drop interface.
-
-= CART =
-Your customers will be able to purchase unlimited number of tickets from more than one event at once!
-
-= TICKET BUILDER =
-Ticket builder allows you to create ticket templates which could be selected for each ticket type. So each ticket type (Standard, VIP, etc.) may look totally different and you can achieve that easily by dragging and dropping elements, reordering, changing font sizes and colors, ticket paper size and its orientation or even put a full-background image if you want fully custom design of the ticket.
-
-= WHITE LABEL =
-Tickera plugin is ready for white-labeling. By changing just one line of code, you'll rename the plugin by your own or client's preference
-
-= MULTISITE SUPPORT =
-Do you have WordPress multisite installed with a number of subsites and clients? Awesome! Give your clients option to create their own events and sell tickets!
-
-= PURCHASE FORM =
-Purchase form includes info from each ticket owner. New hooks allows you to add new fields for buyer or ticket owners. It would be useful if you want to add, for instance, additional field where your customers may choose food preference, set their age, sex, etc. In addition, buyers are able to download tickets directly from a purchase confirmation page – no more lost emails which have to be sent manually, lost attachments or server issues which prevent tickets to reach your clients.
-Check [Custom Forms](http://tickera.com/addons/custom-forms/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=custom-forms "PayPal Chained Payments gateway for Tickera") add-on and create beautiful forms which will fit into your theme's design. Control order of the elements, number of columns, set required and optional fields in an easy way.
-
-= TAKE A CUT =
-Check out [Stripe Connect](http://tickera.com/addons/stripe-connect/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=stripe-connect "Stripe Connect gateway for Tickera"). Tickera add-on which will allow you to take a percentage per each sale on your WordPress multisite network.
-
-= TRANSLATION READY =
-You'll be able to translate every possible word in a [WordPress way](https://tickera.com/tickera-documentation/translating-tickera/ "Translate Tickera plugin").
-
-= TAX ADMINISTRATION =
-Collect taxes with Tickera. Administrators can set up and manage tax rate easily!
-
-= COMPATIBILITY =
-Tickera works well and look good with almost every WordPress theme out there
-
-= MULTIPLE TICKET TYPES =
-Create multiple ticket types for one or more events, set ticket quantity limits (ticket quantity per purchase, available check-ins per ticket...)
-
-= TICKET FEES =
-Add additional fee per ticket in order to cover payment gateway, service or any other type of cost
-
-= DISCOUNT CODES =
-Create unlimited number of discount codes available for all or just certain ticket type
-
-= CUSTOMIZABLE =
-Tickera is developer friendly. Customize any aspect of Tickera with actions and filters! Extend its functionality by creating great add-ons!
-
-= ADD-ONS & EXTENSTIONS =
-
-[Extend Tickera](http://tickera.com/tickera-events-add-ons/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=addons "Tickera Add-ons and Extensions") with a number of add-ons.
-
-= DOCUMENTATION =
-Stuck? Check out the [plugin documentation](http://tickera.com/documentation-category/tickera/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=documentation "Tickera Documentation")
-
-= EXTERNAL SERVICES =
-* [Freemius](https://freemius.com/) manages upgrades to the premium license and handles premium licensing. Privacy policy: https://freemius.com/privacy/
-* [TCPDF](https://tcpdf.org/) handles the rendering process of tickets, QR codes and barcodes. Privacy policy: https://tcpdf.org/about/
-* [Google Map API](maps.googleapis.com) handles the rendering process of ticket template's Google Map element. Privacy policy: https://policies.google.com/privacy?hl=en-US
-* [Freegeoip.net](https://freegeoip.net/) collects customer geolocation information (e.g City, ZIP) to pre-fill checkout payment forms. Privacy policy: https://freegeoip.live/privay-policy.html
-* [2Checkout](https://www.2checkout.com/) makes it possible to accept payments via 2Checkout payment gateway. Privacy policy: https://www.2checkout.com/legal/privacy/
-* [Tickera](https://tickera.com/) used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
- 
+= Which payment gateways come with Tickera? =
+**Tickera plugin comes with** **[2Checkout](https://www.2checkout.com/referral?r=95d26f72d1 "2Checkout payment gateway")**, **Custom Offline Payments**, and **Free Orders** as built-in payment gateways. Additional gateways are available in **[Tickera Premium](http://tickera.com/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=premium "WordPress Event Ticketing system")**.
+---
 
 == Installation ==
 
-= To Install =
+= To install =
+* Download the Tickera plugin file.
+* Unzip the file into a folder on your hard drive.
+* Upload the /tickera/ folder to the /wp-content/plugins/ folder on your site.
+* Visit your Dashboard → Plugins and activate it there.
 
-* Download the Tickera plugin file
-* Unzip the file into a folder on your hard drive
-* Upload the /tickera/ folder to the /wp-content/plugins/ folder on your site
-* Visit your Dashboard -> Plugins and Activate it there.
+= To set up and configure Tickera =
+You can find **[setup instructions here](http://tickera.com/documentation-category/tickera/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=documentation "Tickera plugin installation and usage help")**.
 
-= To Set Up And Configure Tickera = 
+---
 
-You can find [setup instructions here  ](http://tickera.com/documentation-category/tickera/?utm_source=wordpress.org&utm_medium=plugin-page&utm_campaign=documentation "Tickera plugin installation and usage help")
+== External services ==
+* **Freemius** manages upgrades to the premium license and handles premium licensing. Privacy policy: https://freemius.com/privacy/
+* **TCPDF** handles the rendering process of tickets, QR codes, and barcodes. Privacy policy: https://tcpdf.org/about/
+* **Google Map API** (maps.googleapis.com) renders the ticket template’s map element. Privacy policy: https://policies.google.com/privacy?hl=en-US
+* **Freegeoip.net** collects customer geolocation information (e.g., City, ZIP) to pre-fill checkout payment forms. Privacy policy: https://freegeoip.live/privay-policy.html
+* **2Checkout** makes it possible to accept payments via the 2Checkout payment gateway. Privacy policy: https://www.2checkout.com/legal/privacy/
+* **Tickera** is used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
 
-== Screenshots ==
+== Changelog ==
 
-  == Changelog ==
+= 3.5.6.7 29/01/2026 =
+* Escape and sanitize "Event Terms & Conditions" Element. Critical error occurred when the element's content html is incorrectly formatted.
+* Option to enable email attachment in "Client Order Completed Email" and "Admin Order Completed Email"
+* Removed empty option from a required select field.
 
-= 3.5.5.9 25/08/2025 =
+= 3.5.6.6 14/01/2026 =
+* Wordpress compliance, moved the Freemius SDK to a vendor directory.
+* Shortcode Builder: Initialize "Event" attribute field with 10 most recent events. Type at least 3 characters to search for events.
+* Shortcode Builder: Initialize "Ticket Type" attribute field with 10 most recent ticket types. Type at least 3 characters to search for ticket types.
+
+= 3.5.6.5 18/12/2025 =
+* Security patch for Broken Access Control Vulnerability.
+* Additional sanitization and escaping across the plugin files.
+
+= 3.5.6.4 09/12/2025 =
+* New "tc_bypass_hide_event_after_expiration" hook to bypass the Event's "hide event after expiration" logic. Argument(s): Boolean (Default: false), Event ID
+* Fixed amount (per order) created in the previous versions of Tickera stopped working unless re-saved. [Fixed]
+* Clearing out PHP Notice: map_meta_cap was called incorrectly.
+
+= 3.5.6.3 25/11/2025 =
+* Applied the "Hide event after expiration" option to individual event pages, ensuring expired events are hidden across both listings and single event views.
+* Unable to bulk trash Woocommerce > Orders while HPOS is active. [Fixed]
+* Security patch to fix a Broken Access Control Vulnerability on logged-in users.
+* Additional updates for Woocommerce High-Performance Order Storage Integration.
+
+= 3.5.6.2 27/10/2025 =
+* PHP fatal error when one or both of the administrator and staff roles do not exist. [Fixed]
+* "Ticket Orders" column in Dashboard > Users for Tickera Standalone.
+
+= 3.5.6.1 12/10/2025 =
+* Uncaught Error: Class "Tickera\stdClass" not found in class.virtualpage.php. [Fixed]
+
+= 3.5.6.0 08/10/2025 =
+* Removed the initial maximum value limit of 9999 from the Custom Form Number Field.
+* "Show tickets automatically" and "Hide event after expiration" are being disabled when changing the event status via Tickera > Events > Active Column > Toggle switch.
+* Tickera menu missing in staff role. [Fixed]
+* Disable event duplicate action in staff role.
+* Adjustment on the admin script to address undefined javascript functions due to caching mechanism.
+* New "tc_admin_script_allowed_pages" filter hook. Argument: $pages array
+* Backend keyboard navigation improvement. Tickera > Settings
+* Backend keyboard navigation improvement. Tickera > Ticket Templates
+
+= 3.5.5.9 29/08/2025 =
 * Fixed missing cart quantity field 
 
 = 3.5.5.8 25/08/2025 =

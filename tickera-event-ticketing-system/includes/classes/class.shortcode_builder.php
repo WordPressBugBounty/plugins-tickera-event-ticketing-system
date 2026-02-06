@@ -8,6 +8,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
 
     class TC_Shortcode_Builder {
 
+        var $event_filter_options = [];
+
         /**
          * TC_Shortcode_Builder constructor.
          * @param bool $init
@@ -38,6 +40,9 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             add_action( 'media_buttons', array( $this, 'media_buttons' ) );
             add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles_scripts' ) );
             add_action( 'in_admin_footer', array( $this, 'show_shortcodes' ) );
+
+            $wp_events_search =  new \Tickera\TC_Events_Search( '', '', 10 );
+            $this->event_filter_options = apply_filters( 'tc_init_event_filter_options', $wp_events_search->get_results() );
         }
 
         public function show_shortcodes() {
@@ -122,7 +127,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             <tr>
                 <th scope="row"><?php esc_html_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?></th>
                 <td>
-                    <select name="id">
+                    <select name="id" class="tc-ticket-type-filter">
                         <?php
                         $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1 );
                         foreach ( $wp_tickets_search->get_results() as $ticket_type ) : $ticket = new \Tickera\TC_Ticket( $ticket_type->ID ); ?>
@@ -191,10 +196,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="id">
-                            <?php
-                            $wp_events_search =  new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -298,10 +301,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="event_id">
-                            <?php
-                            $wp_events_search =  new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="event_id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -323,10 +324,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="event_id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="event_id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -348,10 +347,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -373,10 +370,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -398,10 +393,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -423,10 +416,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -448,10 +439,8 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e( 'Event', 'tickera-event-ticketing-system' ); ?></th>
                     <td>
-                        <select name="event_id">
-                            <?php
-                            $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
-                            foreach ( $wp_events_search->get_results() as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
+                        <select name="event_id" class="tc-event-filter">
+                            <?php foreach ( $this->event_filter_options as $event ) : $event = new \Tickera\TC_Event( $event->ID ); ?>
                                 <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title ); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -471,7 +460,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             <tr>
                 <th scope="row"><?php esc_html_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?></th>
                 <td>
-                    <select name="ticket_type_id">
+                    <select name="ticket_type_id" class="tc-ticket-type-filter">
                         <?php
                         $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1 );
                         foreach ( $wp_tickets_search->get_results() as $event ) : $ticket = new \Tickera\TC_Ticket( $event->ID ); ?>
@@ -488,7 +477,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             <tr>
                 <th scope="row"><?php esc_html_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?></th>
                 <td>
-                    <select name="ticket_type_id">
+                    <select name="ticket_type_id" class="tc-ticket-type-filter">
                         <?php
                         $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1 );
                         foreach ( $wp_tickets_search->get_results() as $event ) : $ticket = new \Tickera\TC_Ticket( $event->ID ); ?>
@@ -501,12 +490,21 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
         }
 
         public function enqueue_styles_scripts() {
+
             global $tc;
             $screen = get_current_screen();
+
             if ( isset( $screen->post_type ) && ! empty( $screen->post_type ) ) {
                 wp_enqueue_style( $tc->name . '-colorbox', $tc->plugin_url . 'css/colorbox/colorbox.css', false, $tc->version );
                 wp_enqueue_script( $tc->name . '-colorbox', $tc->plugin_url . 'js/jquery.colorbox-min.js', false, $tc->version );
                 wp_enqueue_script( $tc->name . '-shortcode-builders-script', $tc->plugin_url . 'js/builders/shortcode-builder.js', array( $tc->name . '-colorbox' ), $tc->version );
+
+                wp_localize_script( $tc->name . '-shortcode-builders-script', 'tc_shortcode_builder_vars', array(
+                        'ajaxUrl' => apply_filters( 'tc_ajaxurl', admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ) ),
+                        'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
+                        'please_enter_at_least_3_characters' => __( 'Please enter at least 3 characters.', 'tickera-event-ticketing-system' )
+                    )
+                );
             }
         }
 

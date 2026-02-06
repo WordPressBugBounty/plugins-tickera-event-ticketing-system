@@ -155,9 +155,16 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
 
         function get_element_margins() { ?>
             <label><?php esc_html_e( 'Element Break Lines', 'tickera-event-ticketing-system' ); ?></label>
-            <?php esc_html_e( 'Top', 'tickera-event-ticketing-system' ); ?> <input class="ticket_element_padding" type="text" name="<?php echo esc_attr( $this->element_name ); ?>_top_padding_post_meta" value="<?php echo esc_attr( isset( $this->template_metas[ $this->element_name . '_top_padding' ] ) ? $this->template_metas[ $this->element_name . '_top_padding' ] : 1 ); ?>"/>
-            <?php esc_html_e( 'Bottom', 'tickera-event-ticketing-system' ); ?> <input class="ticket_element_padding" type="text" name="<?php echo esc_attr( $this->element_name ); ?>_bottom_padding_post_meta" value="<?php echo esc_attr( isset( $this->template_metas[ $this->element_name . '_bottom_padding' ] ) ? $this->template_metas[ $this->element_name . '_bottom_padding' ] : 1 ); ?>"/>
-            </p>
+            <div id="ticket_element_padding">
+                <label for="<?php echo esc_attr( $this->element_name ) . '_top_padding'; ?>">
+                    <?php esc_html_e( 'Top', 'tickera-event-ticketing-system' ); ?>
+                    <input id="<?php echo esc_attr( $this->element_name ) . '_top_padding'; ?>" class="ticket_element_padding" type="text" name="<?php echo esc_attr( $this->element_name ); ?>_top_padding_post_meta" value="<?php echo esc_attr( isset( $this->template_metas[ $this->element_name . '_top_padding' ] ) ? $this->template_metas[ $this->element_name . '_top_padding' ] : 1 ); ?>"/>
+                </label>
+                <label for="<?php echo esc_attr( $this->element_name ) . '_bottom_padding'; ?>">
+                    <?php esc_html_e( 'Bottom', 'tickera-event-ticketing-system' ); ?>
+                    <input id="<?php echo esc_attr( $this->element_name ) . '_bottom_padding'; ?>" class="ticket_element_padding" type="text" name="<?php echo esc_attr( $this->element_name ); ?>_bottom_padding_post_meta" value="<?php echo esc_attr( isset( $this->template_metas[ $this->element_name . '_bottom_padding' ] ) ? $this->template_metas[ $this->element_name . '_bottom_padding' ] : 1 ); ?>"/>
+                </label>
+            </div>
             <?php
         }
 

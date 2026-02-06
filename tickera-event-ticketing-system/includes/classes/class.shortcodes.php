@@ -82,7 +82,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
             $event = new TC_Event( $id );
             $event_tickets = $event->get_event_ticket_types( 'publish', false, true, false );
 
-            if ( count( $event_tickets ) > 0 ) {
+            if ( count( $event_tickets ) > 0 && ! \Tickera\TC_Events::get_hidden_events_ids( $id ) ) {
 
                 if ( $event->details->post_status == 'publish' ) : ?>
                     <div class="tickera">

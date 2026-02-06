@@ -20,7 +20,7 @@
             }
         }
 
-        if ( count( $wp_api_keys_search->get_results() ) > 0 && ( current_user_can( 'manage_options' ) || ( ! current_user_can( 'manage_options' ) && $staff_api_keys_num ) ) ) { ?>
+        if ( count( $wp_api_keys_search->get_results() ) > 0 && ( current_user_can( 'manage_options' ) || $staff_api_keys_num ) ) { ?>
             <form action="" method="post" enctype="multipart/form-data">
                 <table class="checkin-table">
                     <tbody>

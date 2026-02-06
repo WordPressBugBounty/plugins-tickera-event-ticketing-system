@@ -205,6 +205,24 @@ if ( ! class_exists( '\Tickera\TC_Kses' ) ) {
                 case 'tickera':
                     $allowed_tags = $default_tags;
                     break;
+
+                case 'event_terms_element':
+                    $allowed_tags = [
+                        'div' => [],
+                        'h2' => [],
+                        'h3' => [],
+                        'br' => [],
+                        'strong' => [],
+                        'span' => [],
+                        'em' => [],
+                        'b' => [],
+                        'ul' => [],
+                        'ol' => [],
+                        'li' => [],
+                        'i' => [],
+                        'hr' => []
+                    ];
+                    break;
             }
 
             return $allowed_tags;

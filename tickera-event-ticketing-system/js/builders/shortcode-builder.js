@@ -3,6 +3,8 @@
     $( document ).ready( function( $ ) {
         tc_shortcode_builder.init();
         tc_shortcode_builder.init_colorbox();
+        tc_shortcode_builder.init_chosen_event_filter();
+        tc_shortcode_builder.init_chosen_ticket_type_filter();
         tc_shortcode_builder.init_conditional();
 
         let $tc_shortcodes_form = $( '#tc-shortcode-builder' );
@@ -10,6 +12,17 @@
     } );
 
     var tc_shortcode_builder = {
+
+        /**
+         * Delays the process
+         */
+        debounce: ( function() {
+            let timer = 0;
+            return function( callback, ms ) {
+                clearTimeout( timer );
+                timer = setTimeout( callback, ms );
+            };
+        })(),
 
         /**
          * Initialize Shortcode Builder
@@ -201,6 +214,80 @@
         window_height: function() {
             var tc_get_height = jQuery( '.tc-shortcode-wrap' ).height();
             $.colorbox.resize( { "height": tc_get_height + 130 + "px" } );
+        },
+
+        /**
+         * =======================================================================
+         * Events Filter - Chosen Field with initial 10 values.
+         * Search functionality to be handled by ajax request.
+         * =======================================================================
+         */
+        init_chosen_event_filter: function() {
+
+            $( 'select.tc-event-filter' ).chosen({ width: 'auto' });
+
+            $( 'select.tc-event-filter ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
+            $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_shortcode_builder_vars.please_enter_at_least_3_characters );
+
+            window.tc_searching_event_filter = false;
+            $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
+                let keyword = $( this ).val();
+                if ( ! window.searching_event_filter && keyword.length >= 3 ) {
+                    tc_shortcode_builder.debounce( function() {
+                        $( '.tc-loader' ).show();
+                        window.tc_searching_event_filter = true;
+                        $.post( tc_shortcode_builder_vars.ajaxUrl, {
+                            action: 'search_event_filter',
+                            s: keyword,
+                            nonce: tc_shortcode_builder_vars.ajaxNonce,
+                            excluded: [ 0 ] // List of Event IDs. Zero indicates to 'All'
+                        }, function( response ) {
+                            window.tc_searching_event_filter = false;
+                            if ( response.count ) {
+                                $( 'select.tc-event-filter' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
+                            }
+                            $( '.tc-loader' ).hide();
+                        } );
+                    }, 1000 )
+                }
+            } );
+        },
+
+        /**
+         * =======================================================================
+         * Ticket Types Filter - Chosen Field with initial 10 values.
+         * Search functionality to be handled by ajax request.
+         * =======================================================================
+         */
+        init_chosen_ticket_type_filter: function() {
+
+            $( 'select.tc-ticket-type-filter' ).chosen({ width: 'auto' });
+
+            $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
+            $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_shortcode_builder_vars.please_enter_at_least_3_characters );
+
+            window.tc_searching_ticket_type_filter = false;
+            $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
+                let keyword = $( this ).val();
+                if ( ! window.searching_ticket_type_filter && keyword.length >= 3 ) {
+                    tc_shortcode_builder.debounce( function() {
+                        $( '.tc-loader' ).show();
+                        window.tc_searching_ticket_type_filter = true;
+                        $.post( tc_shortcode_builder_vars.ajaxUrl, {
+                            action: 'search_ticket_type_filter',
+                            s: keyword,
+                            nonce: tc_shortcode_builder_vars.ajaxNonce,
+                            excluded: [ 0 ] // List of Event IDs. Zero indicates to 'All'
+                        }, function( response ) {
+                            window.tc_searching_ticket_type_filter = false;
+                            if ( response.count ) {
+                                $( 'select.tc-ticket-type-filter' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
+                            }
+                            $( '.tc-loader' ).hide();
+                        } );
+                    }, 1000 )
+                }
+            } );
         }
     };
 })( jQuery );

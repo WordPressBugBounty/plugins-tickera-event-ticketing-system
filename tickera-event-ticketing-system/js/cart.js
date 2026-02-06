@@ -19,6 +19,19 @@
 
     $( document ).ready( function() {
 
+        /**
+         * Provides additional focus functionality.
+         * This method can be used to enhance or customize the behavior of the
+         * focus event on selected elements in the DOM.
+         */
+        $.fn.tcFocus = function () {
+            return this.each(function () {
+                var $element = $(this);
+                $( '.tc-focus' ).removeClass( 'tc-focus' );
+                $element.addClass( 'tc-focus' );
+            });
+        };
+
         const tc_cart = {
 
             quantity: function() {
@@ -553,8 +566,9 @@
         $( document ).on( 'keydown', 'form#tickera_cart, table.event_tickets.tickera, .tc-event-dropdown-wrap, .tc-add-to-cart-group-wrap ~ .tc-add-to-cart-wrap', function( e ) {
 
             let fields = $( this ).find('input, select, textarea, a').filter(':visible:not([disabled]):not([type="hidden"]):not(.tc-hidden-important)'),
-                currentField = $( this ).find( ':focus' ),
-                currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
+                currentField = $( this ).find( ':focus' );
+
+            let currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
                 currentFieldType = $( currentField ).attr( 'type' ),
                 index = $( fields ).index( currentField );
 
@@ -673,8 +687,9 @@
         $( document ).on( 'keydown', 'form#tc_payment_form .tickera-payment-gateways.active', function( e ) {
 
             let fields = $( this ).find('input, select, textarea').filter(':visible:not([disabled])'),
-                currentField = $( this ).find( ':focus' ),
-                currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
+                currentField = $( this ).find( ':focus' );
+
+            let currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
                 currentFieldType = $( currentField ).attr( 'type' ),
                 index = $( fields ).index( currentField );
 

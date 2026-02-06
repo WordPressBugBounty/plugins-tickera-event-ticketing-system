@@ -166,7 +166,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                 $wp_events_search = new \Tickera\TC_Events_Search( '', '', '-1' );
                 $currently_selected = isset( $_REQUEST[ 'tc_event_filter' ] ) ? (int) $_REQUEST[ 'tc_event_filter' ] : '';
                 ?>
-                <select name="tc_event_filter">
+                <select name="tc_event_filter" class="tc-event-filter">
                     <option value="0"><?php esc_html_e( 'All Events', 'tickera-event-ticketing-system' ); ?></option>
                     <?php
                     foreach ( $wp_events_search->get_results() as $event ) {

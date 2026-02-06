@@ -22,7 +22,7 @@ if ( ! class_exists( '\Tickera\TC_Orders_Search' ) ) {
         var $period;
         var $period_compare;
 
-        function __construct( $search_term = '', $page_num = '', $per_page = '', $post_status = array( 'any' ), $period = '', $period_compare = '=' ) {
+        function __construct( $search_term = '', $page_num = '', $per_page = '', $post_status = [ 'any' ], $period = '', $period_compare = '=' ) {
 
             global $tc;
 

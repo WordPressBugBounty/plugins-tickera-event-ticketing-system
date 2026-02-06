@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Plugin Name: Tickera
+ * Plugin Name: Tickera – Sell Tickets & Manage Events
  * Plugin URI: https://tickera.com/
- * Description: Simple event ticketing system.
+ * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.5.9
+ * Version: 3.5.6.7
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.5.9';
+        var $version = '3.5.6.7';
 
         var $title = 'Tickera';
 
@@ -181,7 +181,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             add_action( 'wp_ajax_get_ticket_type_instances', array($this, 'tc_get_ticket_type_instances') );
             add_action( 'wp_ajax_nopriv_add_to_cart', array($this, 'add_to_cart') );
             add_action( 'wp_ajax_add_to_cart', array($this, 'add_to_cart') );
-            add_action( 'wp_ajax_nopriv_update_cart_widget', array(&$this, 'update_cart_widget') );
+            add_action( 'wp_ajax_nopriv_update_cart_widget', array($this, 'update_cart_widget') );
             add_action( 'wp_ajax_update_cart_widget', array($this, 'update_cart_widget') );
             add_action( 'wp_ajax_change_order_status', array($this, 'change_order_status_ajax') );
             add_action( 'wp_ajax_change_event_status', array($this, 'change_event_status') );
@@ -917,7 +917,8 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * @since 3.5.2.9
          */
         function tc_delete_tickets() {
-            if ( $_POST && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) && current_user_can( 'manage_options' ) ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+            if ( current_user_can( 'manage_options' ) && $_POST ) {
                 $page = ( isset( $_POST['page'] ) ? (int) $_POST['page'] : 1 );
                 $post_per_page = apply_filters( 'tc_delete_tickets_post_per_page', 20 );
                 $delete_orders = ( isset( $_POST['delete_orders'] ) ? sanitize_key( $_POST['delete_orders'] ) : 'no' );
@@ -1173,7 +1174,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * @return bool|false|float|string
          */
         function tc_get_ticket_type_instances() {
-            if ( isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
                 $ticket_instance_id = ( isset( $_POST['tc_ticket_instance_id'] ) ? (int) $_POST['tc_ticket_instance_id'] : '' );
                 // Action is not allowed on paid orders
                 $order_id = wp_get_post_parent_id( $ticket_instance_id );
@@ -1233,7 +1234,8 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * Save Attendees Information
          */
         function save_attendee_info() {
-            if ( isset( $_POST['post_id'] ) && isset( $_POST['meta_name'] ) && isset( $_POST['meta_value'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['post_id'] ) && isset( $_POST['meta_name'] ) && isset( $_POST['meta_value'] ) ) {
                 $post_id = (int) $_POST['post_id'];
                 $meta_name = sanitize_text_field( $_POST['meta_name'] );
                 $meta_value = sanitize_text_field( $_POST['meta_value'] );
@@ -1755,12 +1757,12 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 'read'                                   => 1,
             );
             $role = get_role( 'administrator' );
-            return apply_filters( 'tc_admin_capabilities', array_merge( $capabilities, $role->capabilities ) );
+            return apply_filters( 'tc_admin_capabilities', array_merge( $capabilities, (array) $role->capabilities ) );
         }
 
         function staff_capabilities() {
             $capabilities = array(
-                'manage_events_cap'                      => 0,
+                'manage_events_cap'                      => 1,
                 'manage_ticket_types_cap'                => 0,
                 'manage_discount_codes_cap'              => 0,
                 'manage_orders_cap'                      => 0,
@@ -1832,7 +1834,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 'read'                                   => 1,
             );
             $role = get_role( 'staff' );
-            return apply_filters( 'tc_staff_capabilities', array_merge( $capabilities, $role->capabilities ) );
+            return apply_filters( 'tc_staff_capabilities', array_merge( $capabilities, (array) $role->capabilities ) );
         }
 
         /**
@@ -1883,7 +1885,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
 
         function main_navigation_links_fallback( $current_menu ) {
             if ( !is_admin() ) {
-                $cart_link = new stdClass();
+                $cart_link = new \stdClass();
                 $cart_link->title = apply_filters( 'tc_cart_page_link_title', __( 'Cart', 'tickera-event-ticketing-system' ) );
                 $cart_link->menu_item_parent = 0;
                 $cart_link->ID = 'tc_cart';
@@ -3858,7 +3860,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         }
 
         function change_event_status() {
-            if ( isset( $_POST['event_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['event_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
                 $event_id = (int) $_POST['event_id'];
                 $post_status = sanitize_key( $_POST['event_status'] );
                 $post_data = array(
@@ -3878,7 +3880,8 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * Page: Tickera > Settings > API Access
          */
         function change_apikey_event_category() {
-            if ( isset( $_POST['event_term_category'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['event_term_category'] ) ) {
                 $event_ids = [];
                 $current_term_category = (int) $_POST['event_term_category'];
                 $wp_events_search = new TC_Events_Search('', '', -1);
@@ -3901,7 +3904,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         }
 
         function change_ticket_status() {
-            if ( isset( $_POST['ticket_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['ticket_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
                 $ticket_id = (int) $_POST['ticket_id'];
                 $post_status = sanitize_key( $_POST['ticket_status'] );
                 $post_data = array(
@@ -3917,7 +3920,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         }
 
         function change_order_status_ajax() {
-            if ( isset( $_POST['order_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            if ( current_user_can( 'manage_options' ) && isset( $_POST['order_id'] ) && isset( $_POST['nonce'] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
                 $order_id = (int) $_POST['order_id'];
                 $post_status = sanitize_key( $_POST['new_status'] );
                 $post_data = array(
@@ -4469,7 +4472,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 'show_ui'            => ( current_user_can( 'manage_events_cap' ) ? true : false ),
                 'has_archive'        => true,
                 'publicly_queryable' => true,
-                'capability_type'    => 'tc_events',
+                'capability_type'    => ['tc_event', 'tc_events'],
                 'map_meta_cap'       => true,
                 'capabilities'       => array(
                     'publish_posts'          => 'publish_tc_events',
@@ -4841,7 +4844,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         /**
          *  Load CSS and JS in Admin pages
          */
-        function admin_scripts_styles() {
+        function admin_scripts_styles( $hook_suffix ) {
             global $wp_version, $post_type;
             // Menu Icon
             if ( $wp_version >= 3.8 ) {
@@ -4867,12 +4870,6 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 wp_enqueue_style(
                     $this->name . '-admin-jquery-ui',
                     $this->plugin_url . 'css/jquery-ui-main.css',
-                    array(),
-                    $this->version
-                );
-                wp_enqueue_style(
-                    $this->name . '-chosen',
-                    $this->plugin_url . 'css/chosen.min.css',
                     array(),
                     $this->version
                 );
@@ -4905,18 +4902,18 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 wp_enqueue_style( 'wp-color-picker' );
             }
             global $pagenow;
-            $allowed_post_types = [
+            $post_type_page = ( $post_type ? $post_type : $hook_suffix );
+            $allowed_post_types = apply_filters( 'tc_admin_script_allowed_pages', [
                 'tc_events',
                 'tc_tickets_instances',
                 'tc_tickets',
                 'tc_speakers',
-                'shop_order',
                 'tc_orders',
                 'product',
                 'tc_seat_charts'
-            ];
+            ] );
             $request_data = tickera_sanitize_array( $_REQUEST, false, true );
-            if ( isset( $post_type ) && in_array( $post_type, $allowed_post_types ) || isset( $request_data['post_type'] ) && 'tc_events' == $request_data['post_type'] || isset( $request_data['page'] ) && preg_match( "/tc_/", $request_data['page'] ) || $pagenow == "themes.php" || $pagenow == "theme-install.php" ) {
+            if ( isset( $post_type_page ) && in_array( $post_type_page, $allowed_post_types ) || isset( $request_data['post_type'] ) && 'tc_events' == $request_data['post_type'] || isset( $request_data['page'] ) && preg_match( "/tc_/", $request_data['page'] ) || $pagenow == "themes.php" || $pagenow == "theme-install.php" ) {
                 wp_enqueue_script(
                     'tc-jquery-validate-additional-methods',
                     $this->plugin_url . 'js/additional-methods.min.js',
@@ -4961,6 +4958,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         false,
                         false
                     );
+                    add_thickbox();
                 }
                 if ( isset( $_COOKIE['tc_themes_notifications'] ) || defined( 'TICKET_PLUGIN_TITLE' ) ) {
                     $tc_themes_notifications = true;
@@ -4983,15 +4981,14 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     'plugin_uri'                                 => plugin_dir_url( __FILE__ ),
                     'check_for_cookie'                           => $tc_themes_notifications,
                     'please_enter_at_least_3_characters'         => __( 'Please enter at least 3 characters.', 'tickera-event-ticketing-system' ),
+                    'ticket_template_insert_element'             => __( 'Are you sure you want to insert this element onto the template?', 'tickera-event-ticketing-system' ),
+                    'ticket_template_modal_title'                => __( 'Please select how you’d like to proceed', 'tickera-event-ticketing-system' ),
+                    'ticket_template_modal_apply'                => __( 'Apply', 'tickera-event-ticketing-system' ),
+                    'ticket_template_modal_move'                 => __( 'Move', 'tickera-event-ticketing-system' ),
+                    'ticket_template_modal_close'                => __( 'Close', 'tickera-event-ticketing-system' ),
                 ) );
-                wp_enqueue_script(
-                    $this->name . '-chosen',
-                    $this->plugin_url . 'js/chosen.jquery.min.js',
-                    array($this->name . '-admin'),
-                    false,
-                    false
-                );
             }
+            // Date Picker
             wp_enqueue_script(
                 $this->name . '-simple-dtpicker',
                 $this->plugin_url . 'js/jquery.simple-dtpicker.js',
@@ -5014,6 +5011,20 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     'confirm_action_message'    => __( 'Please confirm if you want to proceed.', 'tickera-event-ticketing-system' ),
                 ) );
             }
+            // Chosen Select
+            wp_enqueue_style(
+                $this->name . '-chosen',
+                $this->plugin_url . 'css/chosen.min.css',
+                array(),
+                $this->version
+            );
+            wp_enqueue_script(
+                $this->name . '-chosen',
+                $this->plugin_url . 'js/chosen.jquery.min.js',
+                array(),
+                false,
+                false
+            );
             if ( isset( $_GET['page'] ) && 'tc_settings' == $_GET['page'] ) {
                 wp_enqueue_editor();
             }

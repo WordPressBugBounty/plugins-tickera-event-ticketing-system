@@ -59,26 +59,86 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 add_filter( 'posts_request', array( $this, 'posts_request' ) );
             }
 
-            add_action( 'wp_ajax_search_event_filter', array( &$this, 'search_event_filter' ) );
+            add_action( 'wp_ajax_search_event_filter', array( $this, 'search_event_filter' ) );
+            add_action( 'wp_ajax_search_ticket_type_filter', array( $this, 'search_ticket_type_filter' ) );
         }
 
+        /**
+         * Handles the Ajax request for filtering and searching events based on a keyword.
+         * This function checks the user's capability, sanitizes the input, and returns a list of events
+         * in HTML option format along with their count, excluding specific event IDs if provided.
+         * It ensures secure processing with nonce verification.
+         *
+         * @return void This function outputs a JSON response containing:
+         *              - 'count': The number of matching events.
+         *              - 'options_html': The HTML options representing the filtered events.
+         */
         function search_event_filter() {
 
-            if ( $_POST && isset( $_POST[ 's' ] ) && isset( $_POST[ 'nonce' ] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+
+            if ( current_user_can( 'manage_events_cap' ) && $_POST && isset( $_POST[ 's' ] ) ) {
 
                 $keyword = sanitize_text_field( $_POST[ 's' ] );
+                $excluded_event_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( $_POST[ 'excluded' ] ) : [];
                 $count = 0;
-                $options = '<option value="0">' . esc_html__( 'All Events', 'tickera-event-ticketing-system' ) . '</option>';
+
+                if ( ! in_array( 0, $excluded_event_ids ) ) {
+                    $options = '<option value="0">' . esc_html__( 'All Events', 'tickera-event-ticketing-system' ) . '</option>';
+                }
 
                 $events_search = new \Tickera\TC_Events_Search( $keyword, '', '', 'any', 'post_title', 'DESC', [ 'post_title' ] );
                 foreach ( $events_search->get_results() as $event ) {
-                    $options .= '<option value="' . (int) $event->ID . '">' . esc_html( $event->post_title . ' [#' . $event->ID . ']' ) . '</option>';
+                    $event_id = (int) $event->ID;
+                    if ( ! in_array( $event_id, $excluded_event_ids ) ) {
+                        $options .= '<option value="' . esc_attr( $event_id ) . '">' . esc_html( $event->post_title . ' [#' . $event->ID . ']' ) . '</option>';
+                    }
                     $count++;
                 }
 
                 wp_send_json( [
                     'count' => $count,
                     'options_html' => $options,
+                ] );
+            }
+        }
+
+        /**
+         * Handles AJAX request to search and filter ticket types based on a keyword.
+         *
+         * This method validates the AJAX request, sanitizes input, and queries ticket types
+         * matching the provided keyword while excluding specified event IDs. The results are
+         * returned as a JSON response containing the count of matching events and a list
+         * of HTML <option> elements representing the available events.
+         *
+         * @return void Outputs a JSON response containing the count of matching events and a string of HTML options.
+         */
+        function search_ticket_type_filter() {
+
+            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
+
+            if ( current_user_can( 'manage_ticket_types_cap' ) && $_POST && isset( $_POST[ 's' ] ) ) {
+
+                $keyword = sanitize_text_field( $_POST[ 's' ] );
+                $excluded_ticket_type_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( $_POST[ 'excluded' ] ) : [];
+                $count = 0;
+
+                if ( ! in_array( 0, $excluded_ticket_type_ids ) ) {
+                    $options = '<option value="0">' . esc_html__( 'All Events', 'tickera-event-ticketing-system' ) . '</option>';
+                }
+
+                $ticket_types_search = new \Tickera\TC_Tickets_Search( $keyword, '', '', 'any', 'post_title', 'DESC', [ 'post_title' ] );
+                foreach ( $ticket_types_search->get_results() as $ticket_type ) {
+                    $ticket_type_id = (int) $ticket_type->ID;
+                    if ( ! in_array( $ticket_type_id, $excluded_ticket_type_ids ) ) {
+                        $options .= '<option value="' . esc_attr( $ticket_type_id ) . '">' . esc_html( $ticket_type->post_title . ' [#' . $ticket_type->ID . ']' ) . '</option>';
+                    }
+                    $count++;
+                }
+
+                wp_send_json( [
+                        'count' => $count,
+                        'options_html' => $options,
                 ] );
             }
         }
@@ -254,7 +314,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                 $events_search = $selected_event ? $selected_event : $init_event_filter_options;
                 ?>
-                <select name="tc_event_filter">
+                <select name="tc_event_filter" class="tc-event-filter">
                     <option value="0"><?php esc_html_e( 'All Events', 'tickera-event-ticketing-system' ); ?></option>
                     <?php foreach ( $events_search as $event ) :
                         $event_id = (int) $event->ID; ?>
@@ -831,7 +891,7 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
             }
         }
 
-        if ( $has_api_records && ( current_user_can( 'manage_options' ) || ( ! current_user_can( 'manage_options' ) && $staff_api_keys_num > 0 ) ) ) { ?>
+        if ( $has_api_records && ( current_user_can( 'manage_options' ) || $staff_api_keys_num > 0 ) ) { ?>
             <form action="" method="post" enctype="multipart/form-data">
                 <table class="checkin-table">
                     <tbody>

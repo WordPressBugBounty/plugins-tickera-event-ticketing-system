@@ -1,6 +1,26 @@
 ( function( $ ) {
 
+    /**
+     * Ticket Templates
+     * @type {any[]}
+     */
+    var ticket_classes = new Array(),
+        parent_id = 0;
+
     $( document ).ready( function( $ ) {
+
+        /**
+         * Provides additional focus functionality.
+         * This method can be used to enhance or customize the behavior of the
+         * focus event on selected elements in the DOM.
+         */
+        $.fn.tcFocus = function () {
+            return this.each(function () {
+                var $element = $(this);
+                $( '.tc-focus' ).removeClass( 'tc-focus' );
+                $element.addClass( 'tc-focus' );
+            });
+        };
 
         /**
          * Initialize Conditional Fields
@@ -294,89 +314,29 @@
             return false;
         } );
 
-        /**
-         * Ticket Templates
-         * @type {any[]}
-         */
-        var ticket_classes = new Array(),
-            parent_id = 0;
-
         $( '.tc-color-picker' ).wpColorPicker();
         $( "ul.sortables" ).sortable( {
             connectWith: 'ul',
             forcePlaceholderSize: true,
             receive: function( template, ui ) {
-                update_li();
+                tc_admin.update_li();
                 $( ".rows ul li" ).last().addClass( "last_child" );
             },
             stop: function( template, ui ) {
-                update_li();
+                tc_admin.update_li();
             }
         } );
 
-        function update_li() {
-
-            var children_num = 0,
-                current_child_num = 0;
-
-            $( ".rows ul" ).each( function() {
-
-                // Empty the array
-                ticket_classes.length = 0;
-
-                children_num = $( this ).children( 'li' ).length;
-                $( this ).children( 'li' ).removeClass();
-                $( this ).children( 'li' ).addClass( "ui-state-default" );
-                $( this ).children( 'li' ).addClass( "cols cols_" + children_num );
-                $( this ).children( 'li' ).last().addClass( "last_child" );
-                $( this ).find( 'li' ).each( function( index, element ) {
-
-                    if ( $.inArray( $( this ).attr( 'data-class' ), ticket_classes ) == -1 ) {
-                        ticket_classes.push( $( this ).attr( 'data-class' ) );
-                    }
-                } );
-
-                $( this ).find( '.rows_classes' ).val( ticket_classes.join() );
-            } );
-            tc_fix_template_elements_sizes();
-
-            $( ".rows ul li" ).last().addClass( "last_child" );
-            $( ".tc_wrap select" ).css( 'width', '25em' );
-            $( ".tc_wrap select" ).css( 'display', 'block' );
-            $( ".tc_wrap select" ).chosen( { disable_search_threshold: 5 } );
-            $( ".tc_wrap select" ).css( 'display', 'none' );
-            $( ".tc_wrap .chosen-container" ).css( 'width', '100%' );
-            $( ".tc_wrap .chosen-container" ).css( 'max-width', '25em' );
-            $( ".tc_wrap .chosen-container" ).css( 'min-width', '1em' );
-        }
-
-        function tc_fix_template_elements_sizes() {
-
-            $( ".rows ul" ).each( function() {
-
-                var maxHeight = -1;
-
-                $( this ).find( 'li' ).each( function() {
-                    $( this ).removeAttr( "style" );
-                    maxHeight = maxHeight > $( this ).height() ? maxHeight : $( this ).height();
-                } );
-
-                $( this ).find( 'li' ).each( function() {
-                    $( this ).height( maxHeight );
-                } );
-            } );
-        }
-
         if ( $( '#ticket_elements' ).length ) {
-            update_li();
-            tc_fix_template_elements_sizes();
+            tc_admin.update_li();
+            tc_admin.tc_fix_template_elements_sizes();
         }
 
         $( '.close-this' ).click( function( event ) {
             event.preventDefault();
-            $( this ).closest( '.ui-state-default' ).appendTo( '#ticket_elements' );
-            update_li();
-            tc_fix_template_elements_sizes();
+            $( this ).closest( '.ui-state-default' ).removeClass('drop-area').appendTo( '#ticket_elements' ).focus();
+            tc_admin.update_li();
+            tc_admin.tc_fix_template_elements_sizes();
         } );
 
         $( '#tc_order_resend_confirmation_email' ).on( 'click', function( event ) {
@@ -457,56 +417,7 @@
          * @param connectWith
          */
         $.fn.inlineEdit = function( replaceWith, connectWith ) {
-
-            let clicked;
-
-            $( this ).hover( function() {
-                $( this ).addClass( 'inline_hover' );
-
-            }, function() {
-                $( this ).removeClass( 'inline_hover' );
-            } );
-
-            $( this ).click( function() {
-
-                if ( !$( this ).hasClass( 'inline_clicked' ) ) {
-
-                    clicked = $( this );
-
-                    // Leave a mark on input
-                    $( this ).addClass( 'inline_clicked' );
-
-                    let orig_val = $( this ).html();
-                    $( replaceWith ).val( $.trim( orig_val ) );
-
-                    $( this ).hide();
-                    $( this ).after( replaceWith );
-                    replaceWith.focus();
-
-                    /* Update Attendee Information */
-                    $( replaceWith ).blur( function() {
-
-                        // Remove a mark of an input
-                        clicked.removeClass( 'inline_clicked' );
-
-                        if ( clicked.val() != "" ) {
-                            connectWith.val( $( this ).val() ).change();
-                            clicked.text( $( this ).val() );
-                        }
-
-                        clicked.text( $( this ).val() );
-
-                        var ticket_id = $( this ).parent( 'tr' ).find( '.ID' );
-                        ticket_id = ticket_id.attr( 'data-id' );
-
-                        save_attendee_info( ticket_id, $( this ).prev().attr( 'class' ), $( this ).val() );
-
-                        $( this ).remove();
-                        clicked.show();
-
-                    } );
-                }
-            } );
+            tc_admin.inlineEdit( $( this ), replaceWith, connectWith );
         };
 
         /**
@@ -515,66 +426,7 @@
          * @param connectWith
          */
         $.fn.inlineChosenEdit = function( replaceWith, connectWith ) {
-
-            let clicked;
-
-            $( this ).hover( function() {
-                    $( this ).addClass( 'inline_hover' );
-                }, function() {
-                    $( this ).removeClass( 'inline_hover' );
-                }
-            );
-
-            $( this ).click( function() {
-
-                if ( !$( this ).hasClass( 'inline_clicked' ) ) {
-
-                    clicked = $( this );
-
-                    // Leave a mark on input
-                    $( this ).addClass( 'inline_clicked' );
-
-                    // Collect Related Ticket Types
-                    let ticket_instance_id = $( this ).siblings( '.ID' ).attr( 'data-id' );
-                    $.post( tc_vars.ajaxUrl, {
-                        action: 'get_ticket_type_instances',
-                        tc_ticket_instance_id: ticket_instance_id,
-                        nonce: tc_vars.ajaxNonce
-                    }, function( response ) {
-                        if ( !response.error ) {
-                            clicked.hide().after( replaceWith );
-                            initialize_chosen( replaceWith, response );
-                        } else {
-                            replaceWith = '<td>' + response.error + '</td>';
-                            clicked.hide().after( replaceWith );
-                        }
-                    } );
-
-                    // Update Attendee Information
-                    replaceWith.on( 'change', function() {
-
-                        // Remove a mark to an input
-                        clicked.removeClass( 'inline_clicked' );
-
-                        let select_chosen = $( this ).find( ':selected' );
-
-                        if ( select_chosen.val() != "" ) {
-                            connectWith.val( select_chosen.val() ).change();
-                            clicked.text( select_chosen.text() );
-                        }
-
-                        clicked.text( select_chosen.text() );
-
-                        var ticket_id = $( this ).parent( 'tr' ).find( '.ID' );
-                        ticket_id = ticket_id.attr( 'data-id' );
-
-                        save_attendee_info( ticket_id, $( this ).prev().attr( 'class' ), select_chosen.val() );
-
-                        $( this ).chosen( 'destroy' ).empty().remove();
-                        clicked.show();
-                    } );
-                }
-            } );
+            tc_admin.inlineChosenEdit( $( this ), replaceWith, connectWith );
         };
 
         /**
@@ -585,8 +437,21 @@
             replaceWithOption = $( '<select class="ticket_type_id_chosen"></select>' ),
             connectWith = $( 'input[name="hiddenField"]' );
 
-        $( '#order-details-tc-metabox-wrapper .order-details tr' ).find( 'td.ticket_type_id:first' ).inlineChosenEdit( replaceWithOption, connectWith );
-        $( 'td.first_name, td.last_name, td.owner_email' ).inlineEdit( replaceWithInput, connectWith );
+        if ( $( '#order-details-tc-metabox-wrapper .order-details tr td.ticket_type_id:first' ).length ) {
+            tc_admin.inlineChosenEdit( $( '#order-details-tc-metabox-wrapper .order-details tr td.ticket_type_id:first' ), replaceWithOption, connectWith );
+        }
+
+        if (  $( 'td.first_name' ).length ) {
+            tc_admin.inlineEdit( $( 'td.first_name' ), replaceWithInput, connectWith );
+        }
+
+        if (  $( 'td.last_name' ).length ) {
+            tc_admin.inlineEdit( $( 'td.last_name' ), replaceWithInput, connectWith );
+        }
+
+        if (  $( 'td.owner_email' ).length ) {
+            tc_admin.inlineEdit( $( 'td.owner_email' ), replaceWithInput, connectWith );
+        }
 
         /**
          * Better Order: Update Temporary fields on keyup
@@ -597,34 +462,6 @@
             }
             e.preventDefault();
         } );
-
-        /**
-         * Initialize Chosen
-         * @param elem
-         * @param dataSource
-         */
-        function initialize_chosen( elem, dataSource ) {
-
-            for ( let i = 0; i < dataSource.length; i++ ) {
-                elem.append( '<option value="' + dataSource[ i ].id + '">' + dataSource[ i ].text + '</option>' );
-            }
-
-            $( ".order-details select" ).chosen( {
-                disable_search_threshold: 5,
-                allow_single_deselect: false
-            } );
-        }
-
-        function save_attendee_info( ticket_id, meta_name, meta_value ) {
-
-            $.post( tc_vars.ajaxUrl, {
-                action: 'save_attendee_info',
-                post_id: ticket_id,
-                meta_name: meta_name,
-                meta_value: meta_value,
-                nonce: tc_vars.ajaxNonce
-            } );
-        }
 
         $( document ).ready( function() {
 
@@ -680,7 +517,7 @@
                 } );
             } );
 
-            $( document ).on( 'click', '#doaction', function( e ) {
+            $( document ).on( 'click', '.post-type-tc_tickets #doaction', function( e ) {
 
                 if ( $( '#bulk-action-selector-top' ).val() == 'trash' ) {
 
@@ -732,21 +569,24 @@
         tc_page_names_width();
 
         /**
+         * =======================================================================
          * Events Filter - Chosen Field with initial 10 values.
-         * Search functionality will be handled by ajax request.
+         * Search functionality to be handled by ajax request.
          *
          * Tickera > Ticket Types
          * Tickera > Attendees & Tickets
+         * Shortcode Builder
+         * =======================================================================
          */
-        $( 'select[name="tc_event_filter"]' ).chosen({
+        $( 'select.tc-event-filter' ).chosen({
             width: '200px'
         });
 
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_vars.please_enter_at_least_3_characters );
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_vars.please_enter_at_least_3_characters );
 
         window.tc_searching_event_filter = false;
-        $( 'select[name="tc_event_filter"] ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
+        $( 'select.tc-event-filter ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
             let keyword = $( this ).val();
             if ( ! window.searching_event_filter && keyword.length >= 3 ) {
                 tc_admin.debounce( function() {
@@ -759,7 +599,7 @@
                     }, function( response ) {
                         window.tc_searching_event_filter = false;
                         if ( response.count ) {
-                            $( 'select[name="tc_event_filter"]' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
+                            $( 'select.tc-event-filter' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
                         }
                         $( '.tc-loader' ).hide();
                     } );
@@ -768,8 +608,47 @@
         } );
 
         /**
+         * =======================================================================
+         * Ticket Types Filter - Chosen Field with initial 10 values.
+         * Search functionality to be handled by ajax request.
+         *
+         * Shortcode Builder
+         * =======================================================================
+         */
+        $( 'select.tc-ticket-type-filter' ).chosen({
+            width: '200px'
+        });
+
+        $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search' ).prepend( '<div class="tc-loader"></div>' );
+        $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search input' ).attr( 'placeholder', tc_vars.please_enter_at_least_3_characters );
+
+        window.tc_searching_ticket_type_filter = false;
+        $( 'select.tc-ticket-type-filter ~ .chosen-container .chosen-search input' ).on( 'keyup', function() {
+            let keyword = $( this ).val();
+            if ( ! window.searching_ticket_type_filter && keyword.length >= 3 ) {
+                tc_admin.debounce( function() {
+                    $( '.tc-loader' ).show();
+                    window.tc_searching_ticket_type_filter = true;
+                    $.post( tc_vars.ajaxUrl, {
+                        action: 'search_ticket_type_filter',
+                        s: keyword,
+                        nonce: tc_vars.ajaxNonce
+                    }, function( response ) {
+                        window.tc_searching_ticket_type_filter = false;
+                        if ( response.count ) {
+                            $( 'select.tc-ticket-type-filter' ).empty().append( response.options_html ).trigger( 'chosen:updated' )
+                        }
+                        $( '.tc-loader' ).hide();
+                    } );
+                }, 1000 )
+            }
+        } );
+
+        /**
+         * =======================================================================
          * API Key - Event Category/Name Fields
          * Dynamically Update a Chosen Fields
+         * =======================================================================
          */
         $( '#tc-event-category-field' ).chosen().change( function() {
 
@@ -807,8 +686,10 @@
         } );
 
         /**
+         * =======================================================================
          * Export Attendees PDF
          * Settings > Export PDF
+         * =======================================================================
          */
         $( '#export_event_data' ).on( 'click', function( event ) {
             event.preventDefault();
@@ -816,8 +697,10 @@
         });
 
         /**
+         * =======================================================================
          * API Access - Accordion
          * Settings > API Access
+         * =======================================================================
          */
         tc_admin.settings_accordion({
             form: $( '#poststuff.tc-api-form' ),
@@ -827,14 +710,185 @@
         });
 
         /**
+         * =======================================================================
          * Discount Codes - Accordion
          * Tickera > Discount Codes
+         * =======================================================================
          */
         tc_admin.settings_accordion({
             form: $( '#poststuff.tc-discount-form' ),
             actions: $( '#poststuff.tc-discount-actions' ),
             add: $( '#poststuff.tc-discount-actions #add_new_discount_code' ),
             cancel: $( '#poststuff.tc-discount-form #cancel_add_edit' )
+        });
+
+        /**
+         * =======================================================================
+         * Handles left and right arrow keys to move around fields.
+         * Tickera > Settings
+         * =======================================================================
+         */
+        $( document ).on( 'keydown', '.tc_wrap:not(#ticket_templates):not(.tc_forms_wrap), #sticky-wrapper', function( e ) {
+
+            let container = $( this ),
+                fields = container.find('input, select, textarea, a, .wp-editor-wrap button.insert-media, .wp-editor-wrap button.wp-switch-editor, div.image-check-wrap:not(.auto)').filter(':visible:not([disabled]):not([type="hidden"]):not(.tc-hidden-important):not(.tc_tooltip):not(.chosen-single)');
+
+            tc_admin.keyboard_navigation( container, fields, e );
+        } );
+
+        /**
+         * =======================================================================
+         * Handles left and right arrow keys to move around fields.
+         * Tickera > Ticket Templates
+         * =======================================================================
+         */
+        let ticketTemplatesDropListMovable = false;
+        $( document ).on( 'keydown', '.tc_wrap#ticket_templates', function( e ) {
+
+            let container = $( this ),
+                fields = container.find('input, select, textarea, a, li.ui-state-default').filter(':visible:not([disabled]):not([type="hidden"]):not(.tc-hidden-important):not(.tc_tooltip):not(.chosen-single)');
+
+            let currentField = container.find( ':focus' );
+
+            // Select the first field if there's no currently focused field.
+            if ( ! currentField.length ) {
+                currentField = $( fields[0] );
+                $( fields[0] ).focus();
+            }
+
+            if ( currentField.hasClass( 'ui-state-default' ) && ! currentField.hasClass( 'drop-area' ) && e.keyCode == 13 ) {
+
+                /*
+                 * Handles Tickera > Ticket Templates
+                 * Inserting of elements onto the drop area
+                 */
+                e.preventDefault();
+                let elementContainer = $('.ticket-elements-drop-area #row_1');
+                elementContainer.append(currentField);
+                elementContainer.find(' > :last-child').focus();
+                tc_admin.update_li();
+                tc_admin.tc_fix_template_elements_sizes();
+
+            } else if ( currentField.hasClass( 'ui-state-default' ) && currentField.hasClass( 'drop-area' ) && ticketTemplatesDropListMovable === true ) {
+
+                e.preventDefault();
+
+                switch ( e.keyCode ) {
+
+                    case 37: // Left arrow key
+                        if ( 'li' == $( currentField ).prev().prop( 'tagName' ).toLowerCase() ) {
+                            currentField.insertBefore( currentField.prev() ).focus();
+                            tc_admin.update_li();
+                            tc_admin.tc_fix_template_elements_sizes();
+                        }
+                        break;
+
+                    case 39: // Right arrow key
+                        if ( $( currentField ).next().length > 0 && 'li' == $( currentField ).next().prop( 'tagName' ).toLowerCase() ) {
+                            currentField.insertAfter( currentField.next() ).focus();
+                            tc_admin.update_li();
+                            tc_admin.tc_fix_template_elements_sizes();
+                        }
+                        break;
+
+                    case 38: // Up arrow key
+                        currentField.closest( 'ul' ).prev().append( currentField );
+                        currentField.focus();
+                        tc_admin.update_li();
+                        tc_admin.tc_fix_template_elements_sizes();
+                        break;
+
+                    case 40: // Down arrow key
+                        if ( currentField.closest( 'ul' ).next().length > 0 && 'ul' == currentField.closest( 'ul' ).next().prop( 'tagName' ).toLowerCase() ) {
+                            currentField.closest( 'ul' ).next().append( currentField );
+                            currentField.focus();
+                            tc_admin.update_li();
+                            tc_admin.tc_fix_template_elements_sizes();
+                        }
+                        break;
+
+                    case 13: // Enter key
+                    case 27: // Esc key
+                        ticketTemplatesDropListMovable = false;
+                        break;
+
+                    case 8: // Delete key
+
+                        /*
+                         * Handles Tickera > Ticket Templates
+                         * Removing of elements
+                         */
+                        currentField.removeClass( 'drop-area' ).appendTo( '#ticket_elements' );
+                        tc_admin.update_li();
+                        tc_admin.tc_fix_template_elements_sizes();
+                        currentField.focus();
+                        ticketTemplatesDropListMovable = false;
+                        break;
+
+                    default:
+                        tc_admin.keyboard_navigation( container, fields, e );
+                }
+
+            } else if ( currentField.hasClass( 'ui-state-default' ) && currentField.hasClass( 'drop-area' ) && ticketTemplatesDropListMovable === false ) {
+
+                e.preventDefault();
+
+                switch ( e.keyCode ) {
+
+                    case 13: // Enter key
+                        ticketTemplatesDropListMovable = true;
+                        break;
+
+                    case 8: // Delete key
+
+                        /*
+                         * Handles Tickera > Ticket Templates
+                         * Removing of elements
+                         */
+                        currentField.removeClass( 'drop-area' ).appendTo( '#ticket_elements' );
+                        tc_admin.update_li();
+                        tc_admin.tc_fix_template_elements_sizes();
+                        currentField.focus();
+                        ticketTemplatesDropListMovable = false;
+                        break;
+
+                    default:
+                        tc_admin.keyboard_navigation( container, fields, e );
+                }
+
+            } else {
+                tc_admin.keyboard_navigation( container, fields, e );
+            }
+        } );
+    } );
+
+    /**
+     * Handles Ticket Templates Thickbox close
+     */
+    $( document ).on( 'click', '#tc_tb_close', function( e ) {
+        e.preventDefault();
+        tb_remove();
+    } );
+
+    /**
+     * Handles Ticket Templates Thickbox Apply
+     */
+    $( document ).on( 'click', '#tc_tb_apply', function( e ) {
+
+        e.preventDefault();
+        let fieldToUpdate = $( '.ticket-elements-drop-area .tc-active' );
+
+        $( '.tc-thickbox' ).find( 'input, select' ).each( function() {
+
+            let value = $( this ).val(),
+                fieldName = $( this ).attr( 'name' );
+
+            if ( $( this ).hasClass( 'tc-color-picker' ) ) {
+                fieldToUpdate.find( '[name="' + fieldName + '"]' ).wpColorPicker( 'color', value ).trigger('change');
+
+            } else {
+                fieldToUpdate.find( '[name="' + fieldName + '"]' ).val( value ).trigger('chosen:updated');
+            }
         });
     } );
 
@@ -959,6 +1013,10 @@
                 $( '.tc_wrap select' ).css( 'display', 'none' );
                 $( '.tc_wrap .chosen-container' ).css( { 'width': '100%', 'max-width': '25em', 'min-width': '1em' } );
             }
+        },
+
+        destroy_chosen: function( element ) {
+            element.chosen( 'destroy' );
         },
 
         /**
@@ -1102,6 +1160,391 @@
             }
 
             tc_admin.fix_chosen();
+        },
+
+        /**
+         * Initialize Chosen
+         * @param elem
+         * @param dataSource
+         */
+        initialize_chosen: function( elem, dataSource ) {
+
+            for ( let i = 0; i < dataSource.length; i++ ) {
+                elem.append( '<option value="' + dataSource[ i ].id + '">' + dataSource[ i ].text + '</option>' );
+            }
+
+            $( ".order-details select" ).chosen( {
+                disable_search_threshold: 5,
+                allow_single_deselect: false
+            } );
+        },
+
+        inlineChosenEdit:function( elem, replaceWith, connectWith ) {
+
+            let clicked;
+
+            elem.hover( function() {
+                    $( this ).addClass( 'inline_hover' );
+                }, function() {
+                    $( this ).removeClass( 'inline_hover' );
+                }
+            );
+
+            elem.click( function() {
+
+                if ( !$( this ).hasClass( 'inline_clicked' ) ) {
+
+                    clicked = $( this );
+
+                    // Leave a mark on input
+                    $( this ).addClass( 'inline_clicked' );
+
+                    // Collect Related Ticket Types
+                    let ticket_instance_id = $( this ).siblings( '.ID' ).attr( 'data-id' );
+                    $.post( tc_vars.ajaxUrl, {
+                        action: 'get_ticket_type_instances',
+                        tc_ticket_instance_id: ticket_instance_id,
+                        nonce: tc_vars.ajaxNonce
+                    }, function( response ) {
+                        if ( !response.error ) {
+                            clicked.hide().after( replaceWith );
+                            tc_admin.initialize_chosen( replaceWith, response );
+                        } else {
+                            replaceWith = '<td>' + response.error + '</td>';
+                            clicked.hide().after( replaceWith );
+                        }
+                    } );
+
+                    // Update Attendee Information
+                    replaceWith.on( 'change', function() {
+
+                        // Remove a mark to an input
+                        clicked.removeClass( 'inline_clicked' );
+
+                        let select_chosen = $( this ).find( ':selected' );
+
+                        if ( select_chosen.val() != "" ) {
+                            connectWith.val( select_chosen.val() ).change();
+                            clicked.text( select_chosen.text() );
+                        }
+
+                        clicked.text( select_chosen.text() );
+
+                        var ticket_id = $( this ).parent( 'tr' ).find( '.ID' );
+                        ticket_id = ticket_id.attr( 'data-id' );
+
+                        tc_admin.save_attendee_info( ticket_id, $( this ).prev().attr( 'class' ), select_chosen.val() );
+
+                        $( this ).chosen( 'destroy' ).empty().remove();
+                        clicked.show();
+                    } );
+                }
+            } );
+        },
+
+        inlineEdit:function ( elem, replaceWith, connectWith ) {
+
+            let clicked;
+
+            elem.hover( function() {
+                $( this ).addClass( 'inline_hover' );
+
+            }, function() {
+                $( this ).removeClass( 'inline_hover' );
+            } );
+
+            elem.click( function() {
+
+                if ( !$( this ).hasClass( 'inline_clicked' ) ) {
+
+                    clicked = $( this );
+
+                    // Leave a mark on input
+                    $( this ).addClass( 'inline_clicked' );
+
+                    let orig_val = $( this ).html();
+                    $( replaceWith ).val( $.trim( orig_val ) );
+
+                    $( this ).hide();
+                    $( this ).after( replaceWith );
+                    replaceWith.focus();
+
+                    /* Update Attendee Information */
+                    $( replaceWith ).blur( function() {
+
+                        // Remove a mark of an input
+                        clicked.removeClass( 'inline_clicked' );
+
+                        if ( clicked.val() != "" ) {
+                            connectWith.val( $( this ).val() ).change();
+                            clicked.text( $( this ).val() );
+                        }
+
+                        clicked.text( $( this ).val() );
+
+                        var ticket_id = $( this ).parent( 'tr' ).find( '.ID' );
+                        ticket_id = ticket_id.attr( 'data-id' );
+
+                        tc_admin.save_attendee_info( ticket_id, $( this ).prev().attr( 'class' ), $( this ).val() );
+
+                        $( this ).remove();
+                        clicked.show();
+
+                    } );
+                }
+            } );
+        },
+
+        save_attendee_info: function( ticket_id, meta_name, meta_value ) {
+            $.post( tc_vars.ajaxUrl, {
+                action: 'save_attendee_info',
+                post_id: ticket_id,
+                meta_name: meta_name,
+                meta_value: meta_value,
+                nonce: tc_vars.ajaxNonce
+            } );
+        },
+
+        tb_show: function( id, args ) {
+
+            tc_admin.tb_remove();
+
+            let title = ( typeof args.title !== 'undefined' && args.title ) ? args.title : '',
+                content = ( typeof args.content !== 'undefined' && args.content ) ? args.content : '',
+                modalHtml = '' +
+                '<div id="' + id + '_modal' + '" style="display:none;" class="tc-thickbox">' +
+                '<div class="inner-wrap">' +
+                ( title ? '<p class="tc-tb-title">' + title + '</p>' : '' );
+
+            modalHtml += '<div class="tc-tb-content">' + content + '</div>';
+
+            let actions = ( typeof args.actions !== 'undefined' ) ? args.actions : null;
+            if ( actions ) {
+                modalHtml += '<div class="tc-tb-actions">';
+                Object.values( actions ).forEach( function( action ) {
+                    let actionName = ( typeof action.name !== 'undefined' ) ? action.name : '',
+                        actionLabel = ( typeof action.label !== 'undefined' ) ? action.label : '',
+                        actionClass = ( typeof action.class !== 'undefined' ) ? action.class : '';
+                    modalHtml += '<a href="#" class="' + actionClass + '" id="' + actionName + '">' + actionLabel + '</a>';
+                })
+
+                modalHtml += '</div>';
+            }
+
+            modalHtml += '</div></div>';
+
+            let width = ( typeof args.styles.dimension.width !== 'undefined' ) ? args.styles.dimension.width : 0,
+                height = ( typeof args.styles.dimension.height !== 'undefined' ) ? args.styles.dimension.height : 0,
+                url = '#TB_inline?width=' + width + '&height=' + height + '&inlineId=' + id + '_modal';
+
+            $( '#' + id ).append( modalHtml );
+            tb_show( args.title, url );
+            $( '#TB_window' ).addClass('tc-thickbox');
+
+            let field = typeof args.field !== 'undefined' ? args.field : null;
+            field.addClass( 'tc-active' );
+
+            if ( field ) {
+                $( 'body' ).on( 'thickbox:removed', function() {
+                    field.removeClass( 'tc-active' );
+                    field.focus();
+                } );
+            }
+
+            // Fix chosen fields
+            $( '.tc-thickbox' ).find( 'select' ).each( function() {
+                $( this ).chosen( 'destroy' ).chosen( 'destroy' );
+                $( this ).next( '.chosen-container' ).remove();
+                $( this ).next( '.chosen-container' ).remove();
+                $( this ).chosen().chosen();
+            });
+
+            // Fix color picker
+            $( '.tc-thickbox' ).find( '.tc-color-picker' ).each( function() {
+
+                let field = $( this ),
+                    fieldContainer = field.closest( '.wp-picker-container' );
+
+                field.insertAfter( fieldContainer ).hide();
+                fieldContainer.remove();
+
+                field.show();
+                field.wpColorPicker();
+            });
+        },
+
+        tb_remove: function() {
+            tb_remove();
+            $( '.tc-thickbox' ).remove();
+        },
+
+        /**
+         * =======================================================================
+         * Handles left and right arrow keys to move around fields.
+         * =======================================================================
+         */
+        keyboard_navigation: function( container, fields, event ) {
+
+            let currentField = container.find( ':focus' );
+
+            // Select the first field if there's no currently focused field.
+            if ( ! currentField.length ) {
+                currentField = $( fields[0] );
+                $( fields[0] ).focus();
+            }
+
+            let currentFieldElementType = $( currentField ).prop( 'tagName' ).toLowerCase(),
+                currentFieldType = $( currentField ).attr( 'type' ),
+                index = $( fields ).index( currentField );
+
+            if ( ( currentFieldElementType === 'input' && currentFieldType.includes( 'text' ) ) || currentFieldElementType === 'textarea' ) {
+
+                let caretPlacement = $(currentField).prop('selectionStart'),
+                    fieldValueLength = $(currentField).val().length;
+
+                if (event.keyCode == 37 && caretPlacement === 0) {
+                    $(fields[index - 1]).focus();
+
+                } else if (event.keyCode == 39 && caretPlacement === fieldValueLength) {
+                    $(fields[index + 1]).focus();
+                }
+
+            } else if ( currentFieldElementType === 'input' && currentFieldType.includes( 'checkbox' ) && event.keyCode == 13 ) {
+
+                if (currentField.prop('checked')) {
+                    currentField.prop('checked', false).trigger('change');
+
+                } else {
+                    currentField.prop('checked', true).trigger('change');
+                }
+
+            } else if ( currentFieldElementType === 'input' && currentFieldType.includes( 'radio' ) ) {
+
+                event.preventDefault();
+
+                switch (event.keyCode) {
+
+                    case 37: // Left arrow key
+                        $(fields[index - 1]).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                        $(fields[index + 1]).focus();
+                        break;
+
+                    case 13: // Enter key
+                        currentField.prop('checked', true).trigger('change');
+                        break;
+                }
+
+            } else {
+
+                switch ( event.keyCode ) {
+
+                    case 37: // Left arrow key
+                        $( fields[ index - 1 ] ).focus();
+                        break;
+
+                    case 39: // Right arrow key
+                        $( fields[ index + 1 ] ).focus();
+                        break;
+
+                    case 13: // Enter key
+
+                        // Handles Tickera > Settings > Payment Gateways
+                        if ( currentFieldElementType === 'div' || currentField.hasClass( 'image-check-wrap' ) ) {
+                            currentField.toggleClass( 'active-gateway' );
+
+                            if ( currentField.hasClass( 'active-gateway' ) ) {
+                                currentField.find( 'input.tc_active_gateways' ).prop( 'checked', true );
+
+                            } else {
+                                currentField.find( 'input.tc_active_gateways' ).prop( 'checked', false );
+                            }
+                        }
+
+                    case 9: // Tab key
+
+                        /*
+                         * Handles Tickera > Settings > Sticky Sidebar
+                         * Move to tc_wrap on tab
+                         */
+                        if ( $( currentField ).closest( '#sticky-wrapper' ).length ) {
+                            event.preventDefault();
+                            $( '.tc_wrap' ).trigger( 'keydown' );
+                        }
+                        break;
+                }
+            }
+
+            // Move back to from tc_wrap to sticky sidebar if it exists
+            if ( index === 0 ) {
+
+                if ( container.closest( '.tc_wrap' ).length
+                    && container.closest( '.tc_outside_wrap' ).find( '#sticky-wrapper' ).length
+                    && event.keyCode === 37
+                ) {
+                    event.preventDefault();
+                    $( '#sticky-wrapper' ).trigger( 'keydown' );
+                }
+            }
+
+            // Identifying the currently focused field whether it is the first or last field
+
+        },
+
+        update_li: function() {
+
+            var children_num = 0,
+                current_child_num = 0;
+
+            $( ".rows ul" ).each( function() {
+
+                // Empty the array
+                ticket_classes.length = 0;
+
+                children_num = $( this ).children( 'li' ).length;
+                $( this ).children( 'li' ).removeClass();
+                $( this ).children( 'li' ).addClass( "ui-state-default" );
+                $( this ).children( 'li' ).addClass( "drop-area cols cols_" + children_num );
+                $( this ).children( 'li' ).last().addClass( "last_child" );
+                $( this ).children( 'li' ).attr( 'tabindex', 0 );
+                $( this ).find( 'li' ).each( function( index, element ) {
+
+                    if ( $.inArray( $( this ).attr( 'data-class' ), ticket_classes ) == -1 ) {
+                        ticket_classes.push( $( this ).attr( 'data-class' ) );
+                    }
+                } );
+
+                $( this ).find( '.rows_classes' ).val( ticket_classes.join() );
+            } );
+            tc_admin.tc_fix_template_elements_sizes();
+
+            $( ".rows ul li" ).last().addClass( "last_child" );
+            $( ".tc_wrap select" ).css( 'width', '25em' );
+            $( ".tc_wrap select" ).css( 'display', 'block' );
+            $( ".tc_wrap select" ).chosen( { disable_search_threshold: 5 } );
+            $( ".tc_wrap select" ).css( 'display', 'none' );
+            $( ".tc_wrap .chosen-container" ).css( 'width', '100%' );
+            $( ".tc_wrap .chosen-container" ).css( 'max-width', '25em' );
+            $( ".tc_wrap .chosen-container" ).css( 'min-width', '1em' );
+        },
+
+        tc_fix_template_elements_sizes: function() {
+
+            $( ".rows ul" ).each( function() {
+
+                var maxHeight = -1;
+
+                $( this ).find( 'li' ).each( function() {
+                    $( this ).removeAttr( "style" );
+                    maxHeight = maxHeight > $( this ).height() ? maxHeight : $( this ).height();
+                } );
+
+                $( this ).find( 'li' ).each( function() {
+                    $( this ).height( maxHeight );
+                } );
+            } );
         }
     }
 

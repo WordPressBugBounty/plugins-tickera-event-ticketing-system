@@ -1148,7 +1148,7 @@
             /* Checking exist a picker */
             var input = this;
             if ( 0 < $( PickerObjects[$( input ).data( 'pickerId' )] ).length ) {
-                console.log( "dtpicker - Already exist appended picker" );
+                // console.log( "dtpicker - Already exist appended picker" );
                 return;
             }
 

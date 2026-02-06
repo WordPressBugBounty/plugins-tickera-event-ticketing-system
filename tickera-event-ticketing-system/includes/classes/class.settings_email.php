@@ -9,7 +9,11 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
 
     class TC_Settings_Email {
 
-        function __construct() {}
+        var $settings = [];
+
+        function __construct() {
+            $this->settings = get_option( 'tickera_general_setting', [] );
+        }
 
         function TC_Settings_Email() {
             $this->__construct();
@@ -22,9 +26,8 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
          */
         function get_settings_email_sections() {
 
-            $general_settings = get_option( 'tickera_general_setting' );
-            $owner_fields = isset( $general_settings[ 'show_owner_fields' ] ) ? $general_settings[ 'show_owner_fields' ] : 'no';
-            $owner_email = isset( $general_settings[ 'show_owner_email_field' ] ) ? $general_settings[ 'show_owner_email_field' ] : 'no';
+            $owner_fields = isset( $this->settings[ 'show_owner_fields' ] ) ? $this->settings[ 'show_owner_fields' ] : 'no';
+            $owner_email = isset( $this->settings[ 'show_owner_email_field' ] ) ? $this->settings[ 'show_owner_email_field' ] : 'no';
 
             return apply_filters( 'tc_settings_email_sections', array(
 
@@ -80,6 +83,9 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
          * @return mixed|void
          */
         function get_settings_email_fields() {
+
+            $owner_fields = isset( $this->settings[ 'show_owner_fields' ] ) ? $this->settings[ 'show_owner_fields' ] : 'no';
+            $owner_email = isset( $this->settings[ 'show_owner_email_field' ] ) ? $this->settings[ 'show_owner_email_field' ] : 'no';
 
             $client_order_placed_email_fields = apply_filters( 'client_order_placed_email_fields', array(
 
@@ -166,6 +172,21 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => 'yes',
                         'tooltip' => __( 'Enable/disable emails sent to ticket buyer for completed orders. <br/>Make sure this is enabled if you want ticket buyer to receive the tickets upon finishing their order.', 'tickera-event-ticketing-system' ),
                         'section' => 'client_order_completed_email'
+                    ),
+                    array(
+                        'field_name' => 'client_completed_attach_ticket',
+                        'field_title' => __( 'Enable attachment', 'tickera-event-ticketing-system' ),
+                        'field_type' => 'function',
+                        'function' => 'tickera_yes_no_email',
+                        'default_value' => 'no',
+                        'tooltip' => __( 'Attach ticket as a file to the email', 'tickera-event-ticketing-system' ),
+                        'section' => 'client_order_completed_email',
+                        'conditional' => array(
+                            'field_name' => 'client_send_message',
+                            'field_type' => 'radio',
+                            'value' => 'no',
+                            'action' => 'hide'
+                        )
                     ),
                     array(
                         'field_name' => 'client_order_subject',
@@ -311,7 +332,8 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'function' => 'tickera_yes_no_email',
                         'default_value' => 'no',
                         'tooltip' => __( 'Enable/disable emails sent to the attendees for completed orders. <br/>In order for these emails to get delivered, you must enable attendee email fields in Tickera Settings > General.', 'tickera-event-ticketing-system' ),
-                        'section' => 'attendee_order_completed_email'
+                        'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                     ),
                     array(
                         'field_name' => 'attendee_attach_ticket',
@@ -321,6 +343,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => 'no',
                         'tooltip' => __( 'Attach ticket as a file to the email', 'tickera-event-ticketing-system' ),
                         'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                         'conditional' => array(
                             'field_name' => 'attendee_send_message',
                             'field_type' => 'radio',
@@ -335,6 +358,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => __( 'Your Ticket is here!', 'tickera-event-ticketing-system' ),
                         'tooltip' => __( 'Subject of the email', 'tickera-event-ticketing-system' ),
                         'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                         'conditional' => array(
                             'field_name' => 'attendee_send_message',
                             'field_type' => 'radio',
@@ -349,6 +373,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => get_option( 'blogname' ),
                         'tooltip' => __( 'Enter a name you would like to use in the emails sent to your customers', 'tickera-event-ticketing-system' ),
                         'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                         'conditional' => array(
                             'field_name' => 'attendee_send_message',
                             'field_type' => 'radio',
@@ -363,6 +388,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => get_option( 'admin_email' ),
                         'tooltip' => __( 'Enter email address you would like your emails to appear as "sent from". ', 'tickera-event-ticketing-system' ),
                         'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                         'conditional' => array(
                             'field_name' => 'attendee_send_message',
                             'field_type' => 'radio',
@@ -382,6 +408,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                             apply_filters( 'tc_attendee_order_completed_message_placeholders_description', 'DOWNLOAD_LINK, DOWNLOAD_URL, TICKET_TYPE, TICKET_CODE, FIRST_NAME, LAST_NAME, EVENT_NAME, EVENT_LOCATION' )
                         ),
                         'section' => 'attendee_order_completed_email',
+                        'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
                         'conditional' => array(
                             'field_name' => 'attendee_send_message',
                             'field_type' => 'radio',
@@ -487,6 +514,21 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'default_value' => 'yes',
                         'tooltip' => __( 'Enable/disable emails sent to the admin email address for completed orders.', 'tickera-event-ticketing-system' ),
                         'section' => 'admin_order_completed_email'
+                    ),
+                    array(
+                        'field_name' => 'admin_completed_attach_ticket',
+                        'field_title' => __( 'Enable attachment', 'tickera-event-ticketing-system' ),
+                        'field_type' => 'function',
+                        'function' => 'tickera_yes_no_email',
+                        'default_value' => 'no',
+                        'tooltip' => __( 'Attach ticket as a file to the email', 'tickera-event-ticketing-system' ),
+                        'section' => 'admin_order_completed_email',
+                        'conditional' => array(
+                            'field_name' => 'admin_send_message',
+                            'field_type' => 'radio',
+                            'value' => 'no',
+                            'action' => 'hide'
+                        )
                     ),
                     array(
                         'field_name' => 'admin_order_subject',

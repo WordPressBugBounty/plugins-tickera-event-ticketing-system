@@ -24,6 +24,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_terms_element' ) ) {
                 $ticket = new \Tickera\TC_Ticket();
                 $event_id = $ticket->get_ticket_event( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
                 $event_terms = apply_filters( 'tc_the_content', get_post_meta( $event_id, 'event_terms', true ) );
+                $event_terms = wp_kses( $event_terms, wp_kses_allowed_html( 'tickera_event_terms_element' ) );
                 return '<br/>' . apply_filters( 'tc_event_terms_element', $event_terms, $event_id );
 
             } else {

@@ -62,7 +62,7 @@ if ( ! class_exists( '\Tickera\TC_Virtual_Page' ) ) {
 
             if ( $old_post_slug_id == '' ) {
 
-                $post = new stdClass;
+                $post = new \stdClass;
 
                 $post->ID = '';
                 $post->post_author = $this->author;

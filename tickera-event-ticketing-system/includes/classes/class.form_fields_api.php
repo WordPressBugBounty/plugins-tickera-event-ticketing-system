@@ -368,9 +368,9 @@ if ( ! class_exists( '\Tickera\TC_Form_Fields_API' ) ) {
                     <fieldset>
                         <legend class="screen-reader-text"><span><?php echo wp_kses_post( $data[ 'title' ] ); ?></span>
                         </legend>
-                        <select class="select <?php echo esc_attr( $key ) . ' ' . esc_attr( $data[ 'class' ] ) ; ?>" name="<?php echo esc_attr( $field ) . ( $data[ 'multiple' ] ? '[]' : '' ); ?>" id="<?php echo esc_attr( $field ); ?>" style="<?php echo esc_attr( $data[ 'css' ] ); ?>" <?php disabled( $data[ 'disabled' ], true ); ?> <?php echo esc_html( $this->get_custom_attribute_field( $data ) ); ?><?php echo ( $data[ 'multiple' ] ? ' multiple' : '' ); ?>>
+                        <select class="select <?php echo esc_attr( $key ) . ' ' . esc_attr( $data[ 'class' ] ) ; ?>" name="<?php echo esc_attr( $field ) . ( $data[ 'multiple' ] ? '[]' : '' ); ?>" id="<?php echo esc_attr( $field ); ?>" style="<?php echo esc_attr( $data[ 'css' ] ); ?>" <?php disabled( $data[ 'disabled' ], true ); ?> <?php echo esc_html( $this->get_custom_attribute_field( $data ) ); ?><?php echo esc_attr( $data[ 'multiple' ] ? ' multiple' : '' ); ?>>
                             <?php foreach ( (array) $data[ 'options' ] as $option_key => $option_value ) : ?>
-                                <option value="<?php echo esc_attr( $option_key ); ?>" <?php echo ( in_array( $option_key, (array) $this->get_option( $key, $data ) ) ? 'selected' : '' ); ?>><?php echo esc_attr( $option_value ); ?></option>
+                                <option value="<?php echo esc_attr( $option_key ); ?>" <?php echo esc_attr( in_array( $option_key, (array) $this->get_option( $key, $data ) ) ? 'selected' : '' ); ?>><?php echo esc_attr( $option_value ); ?></option>
                             <?php endforeach; ?>
                         </select>
                         <?php echo wp_kses_post( $this->get_description_field( $data ) ); ?>

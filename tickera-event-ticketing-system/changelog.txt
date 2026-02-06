@@ -1,7 +1,54 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
-= 3.5.5.9 25/08/2025 =
+= 3.5.6.7 29/01/2026 =
+* Escape and sanitize "Event Terms & Conditions" Element. Critical error occurred when the element's content html is incorrectly formatted.
+* Option to enable email attachment in "Client Order Completed Email" and "Admin Order Completed Email"
+* Removed empty option from a required select field.
+
+= 3.5.6.7 29/01/2026 =
+* Escape and sanitize "Event Terms & Conditions" Element. Critical error occurred when the element's content html is incorrectly formatted.
+* Option to enable email attachment in "Client Order Placed Email", "Client Order Completed Email", "Admin Order Placed Email" and "Admin Order Completed Email"
+* Removed empty option from a required select field.
+
+= 3.5.6.6 14/01/2026 =
+* Wordpress compliance, moved the Freemius SDK to a vendor directory.
+* Shortcode Builder: Initialize "Event" attribute field with 10 most recent events. Type at least 3 characters to search for events.
+* Shortcode Builder: Initialize "Ticket Type" attribute field with 10 most recent ticket types. Type at least 3 characters to search for ticket types.
+
+= 3.5.6.5 18/12/2025 =
+* Security patch for Broken Access Control Vulnerability.
+* Additional sanitization and escaping across the plugin files.
+
+= 3.5.6.4 09/12/2025 =
+* New "tc_bypass_hide_event_after_expiration" hook to bypass the Event's "hide event after expiration" logic. Argument(s): Boolean (Default: false), Event ID
+* Fixed amount (per order) created in the previous versions of Tickera stopped working unless re-saved. [Fixed]
+* Clearing out PHP Notice: map_meta_cap was called incorrectly.
+
+= 3.5.6.3 25/11/2025 =
+* Applied the "Hide event after expiration" option to individual event pages, ensuring expired events are hidden across both listings and single event views.
+* Unable to bulk trash Woocommerce > Orders while HPOS is active. [Fixed]
+* Security patch to fix a Broken Access Control Vulnerability on logged-in users.
+* Additional updates for Woocommerce High-Performance Order Storage Integration.
+
+= 3.5.6.2 27/10/2025 =
+* PHP fatal error when one or both of the administrator and staff roles do not exist. [Fixed]
+* "Ticket Orders" column in Dashboard > Users for Tickera Standalone.
+
+= 3.5.6.1 12/10/2025 =
+* Uncaught Error: Class "Tickera\stdClass" not found in class.virtualpage.php. [Fixed]
+
+= 3.5.6.0 08/10/2025 =
+* Removed the initial maximum value limit of 9999 from the Custom Form Number Field.
+* "Show tickets automatically" and "Hide event after expiration" are being disabled when changing the event status via Tickera > Events > Active Column > Toggle switch.
+* Tickera menu missing in staff role. [Fixed]
+* Disable event duplicate action in staff role.
+* Adjustment on the admin script to address undefined javascript functions due to caching mechanism.
+* New "tc_admin_script_allowed_pages" filter hook. Argument: $pages array
+* Backend keyboard navigation improvement. Tickera > Settings
+* Backend keyboard navigation improvement. Tickera > Ticket Templates
+
+= 3.5.5.9 29/08/2025 =
 * Fixed missing cart quantity field 
 
 = 3.5.5.8 25/08/2025 =
@@ -99,6 +146,11 @@ Author: Tickera.com=====
 * Additional error handler for Stripe payment method.
 * Selecting "Courier" font in Ticket Template is being overridden by "Al Arabiya". [Fixed]
 
+* Wordpress compliance, moved the Freemius SDK to a vendor directory.
+* Shortcode Builder: Initialize "Event" attribute field with 10 most recent events. Type at least 3 characters to search for events.
+* Shortcode Builder: Initialize "Ticket Type" attribute field with 10 most recent ticket types. Type at least 3 characters to search for ticket types.
+
+
 = 3.5.4.5 28/10/2024=
 * New "tickera_track_added_to_cart" hook. Arguments: $ticket_id, $quantity, $cart_content.
 * Ticket type's "Limit check-ins on time basis" executes regardless the status of the option. The issue occurs when the option's limit field is set with a value (any value from 0). [Fixed]
@@ -134,81 +186,6 @@ Author: Tickera.com=====
 
 = 3.5.3.9 04/09/2024 =
 * Critical error in the event page. [Fixed]
-
-= 3.5.3.8 03/09/2024 =
-* Implemented namespace across plugin classes.
-* Additional sanitization and escaping across the plugin files.
-* Wordpress version 6.5+ compliance.
-
-= 3.5.3.7 29/08/2024 =
-* Fatal error on an incomplete object __PHP_Incomplete_Class. [Fixed]
-
-= 3.5.3.6 27/08/2024 =
-* Translation for cart field's error messages
-* Unable to send offline payment instruction email. [Fixed]
-* Remove legacy functions.
-* Wordpress version 6.5+ compliance.
-
-= 3.5.3.5 15/08/2024 =
-* Fatal error occurs whenever the "Enable Webhook" option is enabled in Stripe Elements 3D Secure
-* Applied TC prefix across all constant variables.
-
-= 3.5.3.4 14/08/2024 =
-* Enforce ticket download without hash via "tickera_bypass_ticket_download_hash" filter hook
-* Replaced tc.pot with tickera-event-ticketing-system.pot file.
-* Set an earlier load priority for ticket template elements classes. These classes serves as a dependency of any sort of custom ticket template element add-ons.
-* Additional "Disable Ticket Download Hash" option at Tickera > Settings > Miscellaneous.
-* Wordpress version 6.5+ compliance.
-
-
-= 3.5.3.3 01/08/2024 =
-* Ticket template duplication: Unable to clone existing elements. The issue occurs only on cached websites. [Fixed]
-* New "First name field require" and "Last name field required" options in Tickera > Settings > General.
-* Apply background image across Ticket's PDF pages.
-* New 'Enable Webhook' option in Standard Stripe Payment Gateway.
-* Unable to limit check-ins on time basis whenever the date format is set with m/d/y. [Fixed]
-* Styles adjustment in cart page.
-* Divi > Theme Builder > Template and Tickera Shortcode Builder compatibility.
-* Adjustment on search queries to address intermittent empty results.
-* More string translation across the plugin files. Applied translator to those variable strings.
-* Update Freemius SDK to 2.7.3
-* Updated static functions with "tickera_" prefix. Applied legacy system to those deprecated functions.
-* Wordpress version 6.5+ compliance. In progress...
-
-= 3.5.3.1 24/07/2024 =
-*WordPress 6.6.1 compatibility 
-
-= 3.5.3.0 13/07/2024 =
-*Bug fixes
-
-= 3.5.2.9 12/06/2024 =
-* Additional admin side security measures on bulk delete tickets. Only admin accounts can execute the function.
-
-= 3.5.2.8 12/06/2024 =
-* Set namespace for TCPDF library. Addresses plugins/themes conflict.
-* Allow radio button to be assigned with empty default value in cart/checkout pages.
-* Ability to require radio button in cart/checkout pages.
-* Staff account is unable to view/download tickets. [Fixed]
-* Number field handler in cart page.
-
-= 3.5.2.7 27/05/2024 =
-* Unable to search order number in Attendees & Tickets. [Fixed]
-* Ability to disable extensive search functionality in Attendees & Tickets via "tc_tickets_instances_extensive_search" filter hook. Default: true
-* Ability to override Ticket Checkin API via "tc_results_before_ticket_checkin" filter hook.
-* Additional "Calendar day/24hrs basis" option for "Limit Check-ins on time basis". Tickera > Ticket Types
-* Disable alphanumeric filtering in the client side cart page fields.
-* Update Tickera Shortcode Builder and Beaver builder integration.
-* "Attendee Order Completed Email" Notification: New DOWNLOAD_LINK that will render clickable "Download" link to download ticket.
-* "Attendee Order Completed Email" Notification: Updated DOWNLOAD_URL to render raw url. It can be used as an href of an anchor tag. E.g <a href="DOWNLOAD_URL">Click here to download your ticket</a>
-* Renamed "Terms & Conditions" ticket template element to "Event Terms & Conditions".
-* Ability to insert static content onto the ticket template html via "tc_ticket_template_html" filter hook.
-* Ticket Templates: Broken color picker styles. [Fixed]
-* Additional "tc_additional_buyer_fields" and "tc_additional_owner_fields" shortcodes.
-* Braintree 3D Secure 2 overflowed height. [Fixed]
-* Stripe payment method compliance for the latest Stripe API Version.
-* Additional security for Broken Access Control Vulnerability in Attendees & Tickets.
-* Attendee & Tickets search functionality conflict with Elementor. [Fixed]
-* Additional 'tc_attendee_order_completed_email_subject' filter hook. Default arguments: $subject, $ticket_id
 
 
 ----------------------------------------------------------------------
