@@ -72,7 +72,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                 'soldout_message' => __( 'Tickets are sold out.', 'tickera-event-ticketing-system' ),
                 'quantity_title' => __( 'Qty.', 'tickera-event-ticketing-system' ),
                 'quantity' => false,
-                'type' => 'cart',
+                'type' => ( apply_filters( 'tc_ticket_buynow_button_type', false ) ? 'buynow' : 'cart' ),
                 'open_method' => 'regular',
                 'title' => __( 'Add to Cart', 'tickera-event-ticketing-system' ),
                 'wrapper' => '' ), $atts ) );

@@ -131,10 +131,11 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				if ( 'publish' == $ticket_instance_status ) {
 
 					$ticket_instance = new \Tickera\TC_Ticket( $ticket_instance_id );
-					$pdf_filename	 = apply_filters( 'tc_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance ) . '.pdf';
+                    $pdf_filename = apply_filters( 'tc_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance ) . '.pdf';
 
-					$ticket_template = get_post_meta( $ticket_instance->details->ticket_type_id, 'ticket_template', true );
-					$post_id		 = (!$ticket_template ) ? get_post_meta( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ), apply_filters( 'tc_ticket_template_field_name', '_ticket_template' ), true ) : $ticket_template;
+                    $ticket_template = get_post_meta( $ticket_instance->details->ticket_type_id, 'ticket_template', true );
+                    $ticket_instance_ticket_type_id = apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id );
+                    $post_id = (!$ticket_template ) ? get_post_meta( $ticket_instance_ticket_type_id, apply_filters( 'tc_ticket_template_field_name', '_ticket_template', $ticket_instance_ticket_type_id ), true ) : $ticket_template;
 				} else {
 					esc_html_e( 'Something went wrong. Ticket does not exists.', 'tickera-event-ticketing-system' );
 					exit;

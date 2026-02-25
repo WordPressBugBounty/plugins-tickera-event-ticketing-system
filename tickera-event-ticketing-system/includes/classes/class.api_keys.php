@@ -38,7 +38,7 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
             $default_fields = array(
                 array(
                     'field_name' => 'event_name',
-                    'field_title' => __( 'Events / event categories', 'tickera-event-ticketing-system' ),
+                    'field_title' => __( 'Events/Categories', 'tickera-event-ticketing-system' ),
                     'field_type' => 'function',
                     'function' => 'tickera_get_api_keys_events',
                     'field_description' => '',

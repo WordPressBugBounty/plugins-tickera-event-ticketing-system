@@ -105,7 +105,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
         function get_event_id() {
             $ticket_type_id = $this->details->ticket_type_id;
             $event_id = get_post_meta( $ticket_type_id, 'event_name', true );
-            $alternate_event_id = get_post_meta( $ticket_type_id, apply_filters( 'tc_event_name_field_name', 'event_name' ), true );
+            $alternate_event_id = get_post_meta( $ticket_type_id, apply_filters( 'tc_event_name_field_name', 'event_name', $ticket_type_id ), true );
 
             $event_id = ! empty( $event_id ) ? $event_id : $event_id;
             return $event_id;

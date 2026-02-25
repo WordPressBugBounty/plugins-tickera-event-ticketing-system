@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 4.1
 Tested up to: 6.9
-Stable tag: 3.5.6.7
+Stable tag: 3.5.6.8
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -166,6 +166,10 @@ You can find **[setup instructions here](http://tickera.com/documentation-catego
 * **Tickera** is used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
 
 == Changelog ==
+
+= 3.5.6.8 25/02/2026 =
+* Added "tc_ticket_buynow_button_type" filter hook (in standalone setup) to enforce redirection to cart after clicking "Add to Cart". Argument(s): Boolean (Default: false)
+* New "tc_pre_discount_lookup" action hook to allow developers to execute custom logic before code validation. Argument(s): (string) $discount_code
 
 = 3.5.6.7 29/01/2026 =
 * Escape and sanitize "Event Terms & Conditions" Element. Critical error occurred when the element's content html is incorrectly formatted.

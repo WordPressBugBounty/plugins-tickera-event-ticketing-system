@@ -271,7 +271,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
          */
         function get_ticket_event( $ticket_type_id = false ) {
             $ticket_type_id = ! $ticket_type_id ? $this->id : $ticket_type_id;
-            return get_post_meta( $ticket_type_id, apply_filters( 'tc_event_name_field_name', 'event_name' ), true );
+            return get_post_meta( $ticket_type_id, apply_filters( 'tc_event_name_field_name', 'event_name', $ticket_type_id ), true );
         }
 
         /**

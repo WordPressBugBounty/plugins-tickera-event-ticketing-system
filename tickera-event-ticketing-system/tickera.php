@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.6.7
+ * Version: 3.5.6.8
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.6.7';
+        var $version = '3.5.6.8';
 
         var $title = 'Tickera';
 
@@ -5211,19 +5211,20 @@ if ( !function_exists( '\\Tickera\\tets_fs' ) ) {
                     }
                 }
                 $tets_fs = fs_dynamic_init( array(
-                    'id'             => '3102',
-                    'bundle_id'      => '3192',
-                    'slug'           => 'tickera-event-ticketing-system',
-                    'premium_slug'   => 'tickera',
-                    'type'           => 'plugin',
-                    'public_key'     => 'pk_7a38a2a075ec34d6221fe925bdc65',
-                    'is_premium'     => false,
-                    'premium_suffix' => '',
-                    'has_addons'     => true,
-                    'has_paid_plans' => true,
-                    'menu'           => $menu_options,
-                    'menu_network'   => $network_menu_options,
-                    'is_live'        => true,
+                    'id'               => '3102',
+                    'bundle_id'        => '3192',
+                    'slug'             => 'tickera-event-ticketing-system',
+                    'premium_slug'     => 'tickera',
+                    'type'             => 'plugin',
+                    'public_key'       => 'pk_7a38a2a075ec34d6221fe925bdc65',
+                    'is_premium'       => false,
+                    'premium_suffix'   => '',
+                    'has_addons'       => true,
+                    'has_paid_plans'   => true,
+                    'menu'             => $menu_options,
+                    'menu_network'     => $network_menu_options,
+                    'is_live'          => true,
+                    'is_org_compliant' => false,
                 ) );
             }
             return $tets_fs;

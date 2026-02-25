@@ -131,7 +131,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 $this->duplicate_post_meta( $post_id, (int) $new_post_id );
 
                 // Replace event ids
-                update_post_meta( (int) $new_post_id, apply_filters( 'tc_event_name_field_name', 'event_name' ), (int) $new_event_id );
+                update_post_meta( (int) $new_post_id, apply_filters( 'tc_event_name_field_name', 'event_name', $new_post_id ), (int) $new_event_id );
             }
 
             do_action( 'tc_after_ticket_type_duplication', $new_event_id, $old_event_id, $caller, $caller_id, $old_caller_id, $old_and_new_ticket_types );

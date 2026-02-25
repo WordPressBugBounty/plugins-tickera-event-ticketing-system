@@ -3952,7 +3952,8 @@ if ( ! function_exists( 'tickera_get_order_subtotal' ) ) {
     function tickera_get_order_subtotal( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
+        $payment_info = isset( $order->details->tc_payment_info ) ? $order->details->tc_payment_info : [];
+        echo esc_html( apply_filters( 'tc_cart_currency_and_format', ( isset( $payment_info ) ? $payment_info[ 'subtotal' ] : '' ) ) );
     }
 }
 
@@ -4146,16 +4147,16 @@ if ( ! function_exists( 'tickera_get_limit_checkins_fields' ) ) {
 
     function tickera_get_limit_checkins_fields( $field_name = '', $post_id = '' ) {
 
-        $enable = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_field_name', $field_name, $post_id ), true );
+        $enable = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_field_name', $field_name, false, $post_id ), true );
         $enable = ( $enable ) ? sanitize_key( $enable ) : 'no';
 
-        $time_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $post_id ), true );
+        $time_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', false, $post_id ), true );
         $time_basis = ( $time_basis ) ? $time_basis : 'hour';
 
-        $calendar_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $post_id ), true );
+        $calendar_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', false, $post_id ), true );
         $calendar_basis = $calendar_basis ? $calendar_basis : 'no';
 
-        $allowed_checkin = get_post_meta( $post_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $post_id ), true );
+        $allowed_checkin = get_post_meta( $post_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', false, $post_id ), true );
         ?>
         <label><input type="radio" name="<?php echo esc_attr( $field_name ) . '_post_meta'; ?>" class="<?php echo esc_attr( $field_name ) . '_post_meta'; ?> has_conditional" value="yes" <?php checked( $enable, 'yes', true ); ?>/><?php esc_html_e( 'Yes', 'tickera-event-ticketing-system' ); ?></label>
         <label><input type="radio" name="<?php echo esc_attr( $field_name ) . '_post_meta'; ?>" class="<?php echo esc_attr( $field_name ) . '_post_meta'; ?> has_conditional" value="no" <?php checked( $enable, 'no', true ); ?>/><?php esc_html_e( 'No', 'tickera-event-ticketing-system' ); ?></label><br/>

@@ -386,7 +386,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
              * Checkins on Time Basis - Variables
              */
             $valid_time_base_checkins = 0;
-            $checkins_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_field_name', 'checkins_time_basis', $ticket_id ), true );
+            $checkins_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_field_name', 'checkins_time_basis', $ticket_id, $ticket_type_id ), true );
             $checkins_time_basis = ( $checkins_time_basis ) ? $checkins_time_basis : 'no';
 
             if ( 'no' == $checkins_time_basis ) {
@@ -395,14 +395,14 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $allowed_checkins_per_time_basis = 99999;
 
             } else {
-                $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id ), true );
+                $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id, $ticket_type_id ), true );
                 $allowed_checkins_per_time_basis = ( is_numeric( $allowed_checkins_per_time_basis ) ) ? (int) $allowed_checkins_per_time_basis : 99999; // 99999 means unlimited check-ins but it's set for easier comparison
             }
 
-            $basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id ), true );
+            $basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id, $ticket_type_id ), true );
             $date_checked = isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local();
 
-            $calendar_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $ticket_id ), true );
+            $calendar_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $ticket_id, $ticket_type_id ), true );
             $calendar_basis = $calendar_basis ? $calendar_basis : 'no';
 
             $interval = [
@@ -563,9 +563,9 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 if ( $tc_general_setting ) {
 
                     $globally_allow_ticket_checkout = isset( $tc_general_setting[ 'allow_global_ticket_checkout' ] ) ? $tc_general_setting[ 'allow_global_ticket_checkout' ] : 'no';
-                    $allow_ticket_checkout_field_name = apply_filters( 'tc_allow_ticket_checkout_field_name', 'allow_ticket_checkout' );
                     $ticket_type_id = get_post_meta( $ticket_instance_id, 'ticket_type_id', true );
                     $ticket_type_id = ( 'product_variation' == get_post_type( $ticket_type_id ) ) ? wp_get_post_parent_id( $ticket_type_id ) : $ticket_type_id;
+                    $allow_ticket_checkout_field_name = apply_filters( 'tc_allow_ticket_checkout_field_name', 'allow_ticket_checkout', $ticket_type_id );
                     $allow_ticket_checkout = ( metadata_exists( 'post', $ticket_type_id, $allow_ticket_checkout_field_name ) ) ? get_post_meta( $ticket_type_id, $allow_ticket_checkout_field_name, true ) : 'no';
 
                     if ( 'yes' == $globally_allow_ticket_checkout || ( 'no' == $globally_allow_ticket_checkout && 'yes' == $allow_ticket_checkout ) ) {
@@ -915,14 +915,14 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     }
 
                     $r[ 'custom_fields' ] = array(
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Ticket Type' ), apply_filters( 'tc_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $result_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Event' ), apply_filters( 'tc_checkout_owner_info_event_title', $event_title, $event_id, $result_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Buyer Name' ), apply_filters( 'tc_ticket_checkin_buyer_full_name', $buyer_full_name, $order_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Buyer E-mail' ), apply_filters( 'tc_ticket_checkin_buyer_email', $buyer_email, $order_id ) ),
+                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Ticket Type', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $result_id ) ),
+                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Event', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_checkout_owner_info_event_title', $event_title, $event_id, $result_id ) ),
+                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Buyer Name', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_buyer_full_name', $buyer_full_name, $order_id ) ),
+                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Buyer E-mail', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_buyer_email', $buyer_email, $order_id ) ),
                     );
 
                     if ( isset( $attendee_email ) && ! empty( $attendee_email ) ) {
-                        $r[ 'custom_fields' ][] = array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Attendee E-mail' ), apply_filters( 'tc_ticket_checkin_attendee_email', $attendee_email, $result_id ) );
+                        $r[ 'custom_fields' ][] = array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Attendee E-mail', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_attendee_email', $attendee_email, $result_id ) );
                     }
 
                     $r = apply_filters( 'tc_checkins_row', $r, $result_id, $event_ids, $order, $ticket_type );

@@ -289,6 +289,13 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
             if ( $discount_code ) {
 
+                /**
+                 * Act on discount code before database lookup
+                 * Allows custom validation and dynamic discount creation
+                 * @param string $discount_code The entered discount code
+                 */
+                do_action( 'tc_pre_discount_lookup', $discount_code );
+
                 $discount_object = new \Tickera\TC_Discount();
                 $discount_object = $discount_object->get_discount_by_code( $discount_code );
 

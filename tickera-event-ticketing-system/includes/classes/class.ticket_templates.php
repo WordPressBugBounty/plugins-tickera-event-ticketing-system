@@ -75,8 +75,10 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
                     // Tickera Standalone
                     $ticket_template = get_post_meta( $ticket_instance->details->ticket_type_id, 'ticket_template', true );
 
+                    $ticket_instance_ticket_type_id = apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id );
+
                     // Tickera alongside Bridge for Woocommerce
-                    $ticket_template = ( ! $ticket_template ) ? get_post_meta( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ), apply_filters( 'tc_ticket_template_field_name', '_ticket_template' ), true ) : $ticket_template;
+                    $ticket_template = ( ! $ticket_template ) ? get_post_meta( $ticket_instance_ticket_type_id, apply_filters( 'tc_ticket_template_field_name', '_ticket_template', $ticket_instance_ticket_type_id ), true ) : $ticket_template;
 
                     // template_id specified in frontend url
                     $ticket_template = ( $template_id ) ? $template_id : $ticket_template;
