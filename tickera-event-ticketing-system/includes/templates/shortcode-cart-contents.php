@@ -43,9 +43,12 @@ if ( !is_null( $session_cart_ticket_error_ids ) ) {
 $discount = new \Tickera\TC_Discounts();
 $cart_contents = $tc->get_cart_cookie();
 
-$tc_general_settings = get_option( 'tickera_general_setting', false );
-$frontend_tooltip = isset( $tc_general_settings[ 'frontend_tooltip' ] ) ? ( 'yes' == $tc_general_settings[ 'frontend_tooltip' ] ? true : false ) : false; // Default true
-$frontend_tooltip_quantity_selector = isset( $tc_general_settings[ 'frontend_tooltip_quantity_selector' ] ) ? $tc_general_settings[ 'frontend_tooltip_quantity_selector' ] : __( 'Select the quantity of the ticket type.', 'tickera-event-ticketing-system' );
+$settings = get_option( 'tickera_general_setting', false );
+$frontend_tooltip = isset( $settings[ 'frontend_tooltip' ] ) ? ( 'yes' == $settings[ 'frontend_tooltip' ] ? true : false ) : false; // Default true
+$frontend_tooltip_quantity_selector = isset( $settings[ 'frontend_tooltip_quantity_selector' ] ) ? $settings[ 'frontend_tooltip_quantity_selector' ] : __( 'Select the quantity of the ticket type.', 'tickera-event-ticketing-system' );
+
+$show_owner_fields = isset( $settings[ 'show_owner_fields' ] ) ? $settings[ 'show_owner_fields' ] : 'yes';
+$show_owner_fields = ( 'yes' == $show_owner_fields ) ? true : false;
 
 $session_cart_subtotal = $tc->session->get( 'tc_cart_subtotal' );
 $session_discount_code = $tc->session->get( 'tc_discount_code' );
@@ -68,7 +71,7 @@ if ( !is_null( $session_remove_from_cart ) ) {
     }
 }
 
-if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_settings[ 'force_login' ] && ! is_user_logged_in() ) : ?>
+if ( isset( $settings[ 'force_login' ] ) && 'yes' == $settings[ 'force_login' ] && ! is_user_logged_in() ) : ?>
     <div class="force_login_message"><?php
         echo wp_kses_post( sprintf(
             /* translators: %s: Admin login url */
@@ -174,7 +177,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                         <span class="total_item_amount"><?php echo esc_html( apply_filters( 'tc_cart_currency_and_format', apply_filters( 'tc_cart_subtotal', $cart_subtotal ) ) ); ?></span>
                                     </div>
                                     <?php do_action( 'tc_cart_col_value_before_total_price_discount', apply_filters( 'tc_cart_discount', 0 ) ); ?>
-                                    <?php if ( ! isset( $tc_general_settings[ 'show_discount_field' ] ) || ( isset( $tc_general_settings[ 'show_discount_field' ] ) && 'yes' == $tc_general_settings[ 'show_discount_field' ] ) ) : ?>
+                                    <?php if ( ! isset( $settings[ 'show_discount_field' ] ) || ( isset( $settings[ 'show_discount_field' ] ) && 'yes' == $settings[ 'show_discount_field' ] ) ) : ?>
                                         <div>
                                             <span class="total_item_title"><?php esc_html_e( 'DISCOUNT: ', 'tickera-event-ticketing-system' ); ?></span>
                                             <span class="total_item_amount"><?php echo esc_html( apply_filters( 'tc_cart_currency_and_format', apply_filters( 'tc_cart_discount', 0 ) ) ); ?></span>
@@ -193,7 +196,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                 <td class="actions" colspan="<?php echo esc_attr( apply_filters( 'tc_cart_table_colspan', '5' ) ); ?>">
                                     <?php do_action( 'tc_cart_before_discount_field' ); ?>
                                     <div class="action-wrap">
-                                        <?php if ( ! isset( $tc_general_settings[ 'show_discount_field' ] ) || ( isset( $tc_general_settings[ 'show_discount_field' ] ) && 'yes' == $tc_general_settings[ 'show_discount_field' ] ) ) : ?>
+                                        <?php if ( ! isset( $settings[ 'show_discount_field' ] ) || ( isset( $settings[ 'show_discount_field' ] ) && 'yes' == $settings[ 'show_discount_field' ] ) ) : ?>
                                             <div class="discount-wrap">
                                                 <input type="text" name="coupon_code" id="coupon_code" placeholder="<?php esc_html_e( "Discount Code", "tickera-event-ticketing-system" ); ?>" class="coupon_code tickera-input-field coupon-code" value="<?php echo esc_attr( ( isset( $_POST[ 'coupon_code' ] ) && ! empty( $_POST[ 'coupon_code' ] ) ? sanitize_text_field( $_POST[ 'coupon_code' ] ) : ( !is_null( $session_discount_code ) ? sanitize_text_field( $session_discount_code ) : '' ) ) ); ?>" autocomplete="off"/>
                                                 <?php if ( $discount->discount_message ) : ?>
@@ -248,7 +251,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                 </div><?php
 
                             } elseif ( 'email' == $field[ 'field_type' ] ) {
-                                if ( ( isset( $tc_general_settings[ 'email_verification_buyer_owner' ] ) && 'yes' == $tc_general_settings[ 'email_verification_buyer_owner' ] && 'confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'confirm_email' ) { ?>
+                                if ( ( isset( $settings[ 'email_verification_buyer_owner' ] ) && 'yes' == $settings[ 'email_verification_buyer_owner' ] && 'confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'confirm_email' ) { ?>
                                     <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_confirm_' . $field[ 'validation_type' ] : ''; ?>">
                                         <label>
                                             <span><?php echo esc_html( $field[ 'required' ] ? '*' : '' ); ?><?php echo esc_html( $field[ 'field_title' ] ); ?></span>
@@ -335,7 +338,6 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                             <?php } ?>
                         <?php } ?>
                     </div>
-                    <?php $show_owner_fields = ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) || ( isset( $tc_general_settings[ 'show_owner_fields' ] ) && 'yes' == $tc_general_settings[ 'show_owner_fields' ] ) ) ? true : false; ?>
                     <div class="tickera_owner_info info_section">
                         <?php
                         if ( $show_owner_fields ) {
@@ -348,6 +350,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                     $owner_form = new \Tickera\TC_Cart_Form( $ticket_type );
                                     $owner_form_fields = $owner_form->get_owner_info_fields( $ticket_type );
                                     $form_visibilities = array_column( $owner_form_fields, 'form_visibility' );
+
                                     $show_field = ( ! in_array( true, $form_visibilities ) ) ? 'tc-hidden' : '';
                                     ?>
                                     <div class="tc-form-ticket-fields-wrap <?php echo esc_html( $show_field ); ?>">
@@ -395,7 +398,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                                         $max = ( isset( $field[ 'field_max' ] ) && $field[ 'field_max' ] ) ? $field[ 'field_max' ] : 0;
                                                         $step = ( isset( $field[ 'field_step' ] ) && $field[ 'field_step' ] ) ? $field[ 'field_step' ] : 1;
 
-                                                        if ( ( isset( $tc_general_settings[ 'show_owner_email_field' ] ) && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] && 'owner_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_email' ) { ?>
+                                                        if ( ( isset( $settings[ 'show_owner_email_field' ] ) && 'yes' == $settings[ 'show_owner_email_field' ] && 'owner_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_email' ) { ?>
                                                             <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_' . $field[ 'validation_type' ] : ''; ?>">
                                                                 <label>
                                                                     <span><?php echo esc_html( $field[ 'required' ] ? '*' : '' ); ?><?php echo esc_html( $field[ 'field_title' ] ); ?></span>
@@ -413,7 +416,7 @@ if ( isset( $tc_general_settings[ 'force_login' ] ) && 'yes' == $tc_general_sett
                                                         <?php }
 
                                                     } elseif ( 'email' == $field[ 'field_type' ] ) { ?>
-                                                        <?php if ( ( isset( $tc_general_settings[ 'email_verification_buyer_owner' ] ) && ( isset( $tc_general_settings[ 'show_owner_email_field' ] ) ) && 'yes' == $tc_general_settings[ 'email_verification_buyer_owner' ] && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] && ( 'owner_confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_confirm_email' ) ) { ?>
+                                                        <?php if ( ( isset( $settings[ 'email_verification_buyer_owner' ] ) && ( isset( $settings[ 'show_owner_email_field' ] ) ) && 'yes' == $settings[ 'email_verification_buyer_owner' ] && 'yes' == $settings[ 'show_owner_email_field' ] && ( 'owner_confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_confirm_email' ) ) { ?>
                                                             <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_' . $field[ 'validation_type' ] : ''; ?>">
                                                                 <?php
                                                                     $posted_name = 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ];

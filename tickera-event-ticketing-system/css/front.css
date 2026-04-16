@@ -113,6 +113,16 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
     padding: 30px 0;
 }
 
+.tc-error {
+    color: red;
+    font-size: 18px;
+}
+
+.tc_gateway_form .tc-error {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
 .tickera-payment-gateways .plugin-title {
     font-size: 0.9em;
 }

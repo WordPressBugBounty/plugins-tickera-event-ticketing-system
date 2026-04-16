@@ -1,9 +1,11 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-$tc_general_settings = get_option( 'tickera_general_setting', false );
-$cart_contents = apply_filters( 'tc_cart_contents', array() );
-$show_owner_fields = ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) || ( isset( $tc_general_settings[ 'show_owner_fields' ] ) && $tc_general_settings[ 'show_owner_fields' ] == 'yes' ) ) ? true : false;
+$settings = get_option( 'tickera_general_setting', false );
+$cart_contents = apply_filters( 'tc_cart_contents', [] );
+
+$show_owner_fields = isset( $settings[ 'show_owner_fields' ] ) ? $settings[ 'show_owner_fields' ] : 'yes';
+$show_owner_fields = ( 'yes' == $show_owner_fields ) ? true : false;
 ?>
 <div class="tickera_owner_info info_section">
     <?php if ( $show_owner_fields ) {
@@ -27,6 +29,7 @@ $show_owner_fields = ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) ||
 
             $form_visibilities = array_column( $owner_form_fields, 'form_visibility' );
             $show_field = ( ! in_array( true, $form_visibilities ) ) ? 'tc-hidden' : '';
+
             $ticket = new \Tickera\TC_Ticket( $ticket_type );
             ?>
             <div class="tc-form-ticket-fields-wrap <?php echo esc_attr( $show_field ); ?>">
@@ -84,7 +87,7 @@ $show_owner_fields = ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) ||
                                     $input_value = '';
                                 }
 
-                                if ( ( isset( $tc_general_settings[ 'show_owner_email_field' ] ) && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] && 'owner_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_email' ) { ?>
+                                if ( ( isset( $settings[ 'show_owner_email_field' ] ) && 'yes' == $settings[ 'show_owner_email_field' ] && 'owner_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_email' ) { ?>
                                     <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_' . $field[ 'validation_type' ] : ''; ?>">
                                         <label>
                                             <span><?php echo esc_html( $field[ 'field_title' ] ); ?><?php echo wp_kses_post( $field[ 'required' ] ? '<abbr class="required" title="required">*</abbr>' : '' ); ?></span>
@@ -98,7 +101,7 @@ $show_owner_fields = ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) ||
                                 <?php }
 
                             } elseif ( 'email' == $field[ 'field_type' ] ) { ?>
-                                <?php if ( ( isset( $tc_general_settings[ 'email_verification_buyer_owner' ] ) && 'yes' == $tc_general_settings[ 'email_verification_buyer_owner' ] && ( 'owner_confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_confirm_email' ) && isset( $tc_general_settings[ 'show_owner_email_field' ] ) && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] ) { ?>
+                                <?php if ( ( isset( $settings[ 'email_verification_buyer_owner' ] ) && 'yes' == $settings[ 'email_verification_buyer_owner' ] && ( 'owner_confirm_email' == $field[ 'field_name' ] ) || $field[ 'field_name' ] !== 'owner_confirm_email' ) && isset( $settings[ 'show_owner_email_field' ] ) && 'yes' == $settings[ 'show_owner_email_field' ] ) { ?>
                                     <div class="fields-wrap <?php if ( isset( $field[ 'field_class' ] ) ) echo esc_attr( $field[ 'field_class' ] ); $validation_class = ( isset( $field[ 'validation_type' ] ) ) ? 'tc_validate_field_type_' . $field[ 'validation_type' ] : ''; ?>">
                                         <?php
                                         $posted_name = 'owner_data_' . $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ];

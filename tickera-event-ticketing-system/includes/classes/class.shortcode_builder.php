@@ -16,6 +16,9 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
          */
         function __construct( $init = true ) {
 
+            $wp_events_search =  new \Tickera\TC_Events_Search( '', '', 10 );
+            $this->event_filter_options = apply_filters( 'tc_init_event_filter_options', $wp_events_search->get_results() );
+
             if ( ! $init ) {
                 return;
             }

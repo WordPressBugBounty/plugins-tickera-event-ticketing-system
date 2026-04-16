@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.6.8
+ * Version: 3.5.6.9
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.6.8';
+        var $version = '3.5.6.9';
 
         var $title = 'Tickera';
 
@@ -2196,7 +2196,8 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $skip_payment_screen = false;
             foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
                 if ( $this->gateway_is_network_allowed( $code ) ) {
-                    $gateway = new $plugin[0]();
+                    $class_name = $plugin[0];
+                    $gateway = new $class_name();
                     $plugin_name = ( $gateway->plugin_name == 'checkout' ? '2checkout' : $gateway->plugin_name );
                     $active_gateways = ( isset( $settings['gateways']['active'] ) ? $settings['gateways']['active'] : [] );
                     $gateway_show_priority = ( isset( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) && is_numeric( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) ? $settings['gateways'][$plugin_name]['gateway_show_priority'] : '30' );
@@ -3304,7 +3305,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $post_data = tickera_sanitize_array( $_POST, true, true );
             $post_data = ( $post_data ? $post_data : [] );
             if ( !is_array( $tc_gateways_currencies ) ) {
-                $tc_gateways_currencies = array();
+                $tc_gateways_currencies = [];
             }
             if ( isset( $_post['gateway_settings'] ) ) {
                 $settings = get_option( 'tickera_settings' );
@@ -3348,10 +3349,10 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $gateways = $this->get_setting( 'gateways' );
             foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
                 $class = $plugin[0];
-                if ( isset( $gateways['active'] ) && in_array( $code, (array) $gateways['active'] ) && class_exists( $class ) && !$plugin[3] ) {
-                    $tc_gateway_active_plugins[] = new $class();
-                }
                 $gateway = new $class();
+                if ( isset( $gateways['active'] ) && in_array( $code, (array) $gateways['active'] ) && class_exists( $class ) && !$plugin[3] ) {
+                    $tc_gateway_active_plugins[] = $gateway;
+                }
                 if ( isset( $gateway->currencies ) && is_array( $gateway->currencies ) ) {
                     $tc_gateways_currencies = array_merge( $gateway->currencies, $tc_gateways_currencies );
                 }
@@ -3437,6 +3438,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 'paygate.php',
                 'paymill.php',
                 'paypal-pro.php',
+                'paypal-payments.php',
                 'paypal-standard.php',
                 'paytabs.php',
                 'payu-latam.php',

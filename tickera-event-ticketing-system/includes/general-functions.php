@@ -313,7 +313,7 @@ if ( ! function_exists( 'tickera_sanitize_array' ) ) {
                 break;
 
             case 'boolean':
-                return (boolean) $value;
+                return (bool) $value;
                 break;
 
             case 'string':
@@ -1894,14 +1894,23 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
     }
 }
 
-/**
- * Deprecated function "tc_minimum_total".
- * @since 3.5.3.0
- */
+
 if ( ! function_exists( 'tickera_minimum_total' ) ) {
 
-    function tickera_minimum_total( $total ) {
-        return ( $total < 0 ) ? 0 : $total;
+    /**
+     * Ensures that the total amount satisfies a minimum threshold, correcting small negative or close-to-zero values.
+     *
+     * @param float $total The total amount to validate.
+     * @param float $epsilon The threshold for determining whether a number should be treated as zero. Default is 1e-10.
+     * @return float The validated total, ensuring it is non-negative and not close to zero.
+     */
+    function tickera_minimum_total( $total, $epsilon = 1e-10 ) {
+
+        if ( $total < 0 || abs( $total ) < $epsilon ) {
+            return 0;
+        }
+
+        return $total;
     }
 }
 

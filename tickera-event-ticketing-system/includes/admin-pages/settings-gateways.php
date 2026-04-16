@@ -54,7 +54,10 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
 
                                         $checked = '';
                                         $input_class = '';
-                                        $gateway = new $plugin[ 0 ];
+
+                                        $class_name = $plugin[ 0 ];
+                                        $gateway = new $class_name();
+
                                         $active_gateways = $this->get_setting( 'gateways->active', [] );
                                         $permanently_active = ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ? true : false;
 

@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 4.1
 Tested up to: 6.9
-Stable tag: 3.5.6.8
+Stable tag: 3.5.6.9
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -166,6 +166,13 @@ You can find **[setup instructions here](http://tickera.com/documentation-catego
 * **Tickera** is used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
 
 == Changelog ==
+
+= 3.5.6.9 16/04/2026 =
+* New "Paypal Payments" payment method.
+* Missing event's options in Divi > Text Element > Tickera Shortcode Builder. [Fixed]
+* Applied epsilon-based (1e-10) threshold when comparing two floating point numbers. This is to avoid floating-point precision errors for values close to zero.
+* Attendees Information label persistently appears in the cart/checkout page regardless "Show attendee fields" setting. [Fixed]
+* Clearing out PHP8.5 deprecated errors.
 
 = 3.5.6.8 25/02/2026 =
 * Added "tc_ticket_buynow_button_type" filter hook (in standalone setup) to enforce redirection to cart after clicking "Add to Cart". Argument(s): Boolean (Default: false)

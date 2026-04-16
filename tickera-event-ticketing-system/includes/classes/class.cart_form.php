@@ -82,7 +82,11 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
 
         function get_owner_info_fields( $ticket_type_id = '' ) {
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
+            $settings = get_option( 'tickera_general_setting', false );
+            $show_owner_fields = isset( $settings[ 'show_owner_fields' ] ) ? $settings[ 'show_owner_fields' ] : 'yes';
+            $show_first_last_names = isset( $settings[ 'show_attendee_first_and_last_name_fields' ] ) ? $settings[ 'show_attendee_first_and_last_name_fields' ] : 'yes';
+            $show_owner_email_field = isset( $settings[ 'show_owner_email_field' ] ) ? $settings[ 'show_owner_email_field' ] : 'no';
+            $show_email_confirmation_field = isset( $settings[ 'email_verification_buyer_owner' ] ) ? $settings[ 'email_verification_buyer_owner' ] : 'no';
 
             $default_fields[] = [
                 'field_name' => 'ticket_type_id',
@@ -95,10 +99,7 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                 'required' => false
             ];
 
-            if (
-                ! isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] )
-                || ( isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) && 'yes' == $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] )
-            ) {
+            if ( 'yes' == $show_owner_fields && 'yes' == $show_first_last_names ) {
                 $default_fields[] = [
                     'field_name' => 'first_name',
                     'field_title' => __( 'First Name', 'tickera-event-ticketing-system' ),
@@ -106,14 +107,11 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                     'field_description' => '',
                     'post_field_type' => 'post_meta',
                     'form_visibility' => true,
-                    'required' => ( isset( $tc_general_settings[ 'first_name_field_required' ] ) && 'no' == $tc_general_settings[ 'first_name_field_required' ] ) ? false : true
+                    'required' => ( isset( $settings[ 'first_name_field_required' ] ) && 'no' == $settings[ 'first_name_field_required' ] ) ? false : true
                 ];
             }
 
-            if (
-                ! isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] )
-                || ( isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) && 'yes' == $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] )
-            ) {
+            if ( 'yes' == $show_owner_fields && 'yes' == $show_first_last_names ) {
                 $default_fields[] = [
                     'field_name' => 'last_name',
                     'field_title' => __( 'Last Name', 'tickera-event-ticketing-system' ),
@@ -121,11 +119,11 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                     'field_description' => '',
                     'post_field_type' => 'post_meta',
                     'form_visibility' => true,
-                    'required' => ( isset( $tc_general_settings[ 'last_name_field_required' ] ) && 'no' == $tc_general_settings[ 'last_name_field_required' ] ) ? false : true
+                    'required' => ( isset( $settings[ 'last_name_field_required' ] ) && 'no' == $settings[ 'last_name_field_required' ] ) ? false : true
                 ];
             }
 
-            if ( isset( $tc_general_settings[ 'show_owner_email_field' ] ) && 'yes' == $tc_general_settings[ 'show_owner_email_field' ] ) {
+            if ( 'yes' == $show_owner_fields && 'yes' == $show_owner_email_field ) {
                 $default_fields[] = [
                     'field_name' => 'owner_email',
                     'field_title' => __( 'E-Mail', 'tickera-event-ticketing-system' ),
@@ -137,7 +135,7 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                 ];
             }
 
-            if ( isset( $tc_general_settings[ 'email_verification_buyer_owner' ] ) && 'yes' == $tc_general_settings[ 'email_verification_buyer_owner' ] ) {
+            if ( 'yes' == $show_owner_email_field && 'yes' == $show_email_confirmation_field ) {
                 $default_fields[] = [
                     'field_name' => 'owner_confirm_email',
                     'field_title' => __( 'Confirm E-Mail', 'tickera-event-ticketing-system' ),
