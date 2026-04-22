@@ -1343,7 +1343,9 @@ if ( ! function_exists( 'tickera_mail' ) ) {
 
         // Remove temporary files
         foreach ( $attachments as $attachment ) {
-            @unlink( $attachment );
+            if ( file_exists( $attachment ) ) {
+                @unlink( $attachment );
+            }
         }
 
         // Maybe remove temporary files via cron
