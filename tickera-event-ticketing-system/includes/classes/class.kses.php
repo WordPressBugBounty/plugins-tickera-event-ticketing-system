@@ -212,6 +212,7 @@ if ( ! class_exists( '\Tickera\TC_Kses' ) ) {
                         'h2' => [],
                         'h3' => [],
                         'br' => [],
+                        'p' => [],
                         'strong' => [],
                         'span' => [],
                         'em' => [],

@@ -21,18 +21,11 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
         protected $_data;
 
         /**
-         * Constructor method that initializes the class by calling the static init method.
-         * @return void
-         */
-        function __construct() {
-            self::init();
-        }
-
-        /**
          * Initializes the internal data array by starting the session, sanitizing the session data, and closing the session.
          * @return void
          */
-        function init() {
+        function maybe_init() {
+
             self::start();
 
             if ( isset( $_SESSION ) && $_SESSION && is_array( $_SESSION ) ) {
@@ -51,6 +44,8 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
          * @return mixed The value associated with the specified key, or the entire data array if no key is provided. Returns null if the key does not exist.
          */
         function get( $key = '' ) {
+
+            $this->maybe_init();
 
             if ( ! $key ) {
                 return $this->_data;
@@ -73,6 +68,7 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
          */
         function set( $key = false, $value = '', $allow_html = false ) {
 
+            $this->maybe_init();
             $value = is_array( $value ) ? tickera_sanitize_array( $value, $allow_html, true ) : ( $allow_html ? wp_kses_post( $value ) : sanitize_text_field( $value ) );
 
             if ( $key ) {
@@ -92,6 +88,7 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
          * @return void
          */
         function drop( $key ) {
+            $this->maybe_init();
             if ( $key && isset( $this->_data[ $key ] ) ) {
                 unset( $this->_data[ $key ] );
                 self::save();
@@ -113,7 +110,7 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
          * @return void
          */
         function start() {
-            if ( ! session_id() || ( session_status() == PHP_SESSION_NONE && ! headers_sent() ) ) {
+            if ( ! session_id() || ( ! headers_sent() && PHP_SESSION_NONE == session_status() ) ) {
                 do_action( 'tc_before_session_start' );
                 @session_start();
                 do_action( 'tc_after_session_started' );

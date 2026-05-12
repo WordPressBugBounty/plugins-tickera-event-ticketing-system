@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.7.0
+ * Version: 3.5.7.1
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.7.0';
+        var $version = '3.5.7.1';
 
         var $title = 'Tickera';
 
@@ -1974,7 +1974,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         function generate_ticket_preview() {
             if ( (current_user_can( 'manage_options' ) || current_user_can( 'edit_tc_tickets_instances' )) && (isset( $_GET['tc_preview'] ) || isset( $_GET['tc_download'] )) ) {
                 $templates = new TC_Ticket_Templates();
-                $templates->generate_preview( (int) $_GET['ticket_instance_id'], ( isset( $_GET['tc_download'] ) ? true : false ) );
+                $templates->generate_preview( (int) $_GET['ticket_instance_id'], ( isset( $_GET['tc_download'] ) ? true : false ), ( isset( $_GET['template_id'] ) ? (int) $_GET['template_id'] : false ) );
             }
         }
 

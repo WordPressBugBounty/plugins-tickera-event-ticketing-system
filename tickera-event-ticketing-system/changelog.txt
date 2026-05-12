@@ -1,6 +1,10 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.7.1 12/05/2026 =
+* Added support for the <p> tag in the "Event Terms & Conditions" Ticket Template element.
+* Adjusted the session handler to execute within Tickera core pages only.
+
 = 3.5.7.0 12/04/2026 =
 * Added safety check before removing temporary files.
 
