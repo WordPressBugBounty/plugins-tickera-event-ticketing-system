@@ -1,9 +1,9 @@
 === Tickera – Sell Tickets & Manage Events ===
 Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
-Requires at least: 4.1
-Tested up to: 6.9.4
-Stable tag: 3.5.7.1
+Requires at least: 5.9
+Tested up to: 7.0
+Stable tag: 3.5.7.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -166,6 +166,10 @@ You can find **[setup instructions here](http://tickera.com/documentation-catego
 * **Tickera** is used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
 
 == Changelog ==
+
+= 3.5.7.2 05/06/2026 =
+* Add block alignment support for "Event - Add to Cart" block.
+* WP 7.0 Compliance
 
 = 3.5.7.1 12/05/2026 =
 * Added support for the <p> tag in the "Event Terms & Conditions" Ticket Template element.

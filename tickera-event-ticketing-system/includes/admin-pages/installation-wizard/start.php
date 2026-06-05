@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $tc;
 ?>

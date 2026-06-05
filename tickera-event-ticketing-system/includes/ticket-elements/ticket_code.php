@@ -15,7 +15,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_code_element' ) ) {
 
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_code_element_title', __( 'Ticket Code', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_code_element_title', __( 'Ticket Code', 'tickera-event-ticketing-system' ) );
         }
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {
@@ -23,10 +23,10 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_code_element' ) ) {
             if ( $ticket_instance_id ) {
                 $ticket_instance = new \Tickera\TC_Ticket_Instance( (int) $ticket_instance_id );
                 $ticket_code = $ticket_instance->details->ticket_code;
-                return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_ticket_code_element', $ticket_code ) );
+                return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_ticket_code_element', $ticket_code ) );
 
             } else {
-                return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_ticket_code_element_default', __( '123456-1', 'tickera-event-ticketing-system' ) ) );
+                return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_ticket_code_element_default', __( '123456-1', 'tickera-event-ticketing-system' ) ) );
             }
         }
     }

@@ -1,5 +1,4 @@
 <?php
-
 namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) )
@@ -14,7 +13,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
 
         function __construct() {
             $this->form_title = __( 'Tickets', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Tickets() {
@@ -23,7 +22,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
 
         public static function get_ticket_fields() {
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
 
             $default_fields = array(
                 array(
@@ -148,7 +147,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                 ),
             );
 
-            $use_global_fees = isset( $tc_general_settings[ 'use_global_fees' ] ) ? $tc_general_settings[ 'use_global_fees' ] : 'no';
+            $use_global_fees = isset( $tickera_general_settings[ 'use_global_fees' ] ) ? $tickera_general_settings[ 'use_global_fees' ] : 'no';
 
             if ( $use_global_fees == 'no' ) {
                 $default_fields[] = array(
@@ -216,7 +215,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                 'post_field_type' => 'post_meta',
             );
 
-            $use_global_ticket_checkouts = isset( $tc_general_settings[ 'allow_global_ticket_checkout' ] ) ? $tc_general_settings[ 'allow_global_ticket_checkout' ] : 'no';
+            $use_global_ticket_checkouts = isset( $tickera_general_settings[ 'allow_global_ticket_checkout' ] ) ? $tickera_general_settings[ 'allow_global_ticket_checkout' ] : 'no';
 
             if ( 'no' == $use_global_ticket_checkouts ) {
 
@@ -231,7 +230,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                 );
             }
 
-            if ( current_user_can( apply_filters( 'tc_ticket_type_activation_capability', 'edit_others_ticket_types' ) ) || current_user_can( 'manage_options' ) ) {
+            if ( current_user_can( tickera_apply_filters( 'tickera_ticket_type_activation_capability', 'edit_others_ticket_types' ) ) || current_user_can( 'manage_options' ) ) {
                 $default_fields[] = array(
                     'field_name' => 'ticket_active',
                     'field_title' => __( 'Active', 'tickera-event-ticketing-system' ),
@@ -244,7 +243,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                 );
             }
 
-            return apply_filters( 'tc_ticket_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_ticket_fields', $default_fields );
         }
 
         function get_columns() {
@@ -295,11 +294,13 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
 
             global $user_id;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket save request is handled by the Tickera ticket editor workflow.
             if ( isset( $_POST[ 'add_new_ticket' ] ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, true, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket payload is unslashed and sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -320,10 +321,10 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                         $metas[ sanitize_key( str_replace( '_post_meta', '', $field_name ) ) ] = sanitize_text_field( $field_value );
                     }
 
-                    do_action( 'tc_after_ticket_post_field_type_check' );
+                    tickera_do_action( 'tickera_after_ticket_post_field_type_check' );
                 }
 
-                $metas = apply_filters( 'tickets_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_tickets_metas', $metas );
 
                 $arg = array(
                     'post_author'   => (int) $user_id,
@@ -334,7 +335,9 @@ if ( ! class_exists( '\Tickera\TC_Tickets' ) ) {
                     'post_type'     => 'tc_tickets',
                 );
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket post ID is used only to update the submitted ticket.
                 if ( isset( $_POST[ 'post_id' ] ) ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket post ID is cast before being passed to wp_insert_post().
                     $arg[ 'ID' ] = (int) $_POST[ 'post_id' ];
                 }
 

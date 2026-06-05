@@ -1,20 +1,22 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $tc;
+$tickera_addons = get_transient( 'tc_addons_data' . $tc->version );
 
-if ( false === ( $addons = get_transient( 'tc_addons_data' . $tc->version ) ) ) {
+if ( false === $tickera_addons ) {
 
-    $addons_json = wp_remote_get( 'https://tickera.com/addons.json?ts=' . time(), array( 'user-agent' => 'Tickera Addons Page', 'sslverify' => false ) );
-    $addons = json_decode( wp_remote_retrieve_body( $addons_json ), true );
-    $addons = tickera_sanitize_array( $addons, true, true );
+    $tickera_addons_json = wp_remote_get( 'https://tickera.com/addons.json?ts=' . time(), array( 'user-agent' => 'Tickera Addons Page', 'sslverify' => false ) );
+    $tickera_addons = json_decode( wp_remote_retrieve_body( $tickera_addons_json ), true );
+    $tickera_addons = tickera_sanitize_array( $tickera_addons, true, true );
 
-    if ( ! is_wp_error( $addons_json ) ) {
+    if ( ! is_wp_error( $tickera_addons_json ) ) {
 
-        $addons = json_decode( wp_remote_retrieve_body( $addons_json ), true );
-        $addons = tickera_sanitize_array( $addons, true, true );
+        $tickera_addons = json_decode( wp_remote_retrieve_body( $tickera_addons_json ), true );
+        $tickera_addons = tickera_sanitize_array( $tickera_addons, true, true );
 
-        if ( $addons ) {
-            set_transient( 'tc_addons_data' . $tc->version, $addons, HOUR_IN_SECONDS );
+        if ( $tickera_addons ) {
+            set_transient( 'tc_addons_data' . $tc->version, $tickera_addons, HOUR_IN_SECONDS );
         }
     }
 } ?>
@@ -25,15 +27,15 @@ if ( false === ( $addons = get_transient( 'tc_addons_data' . $tc->version ) ) ) 
     </div>
     <div class="tc_addons_wrap">
         <?php
-        if ( count( $addons ) > 0 ) {
-            foreach ( $addons as $addon ) {
-                echo wp_kses_post( '<div class="tc_addon"><a target="_blank" href="' . esc_url( $addon->link ) . '">' );
-                if ( ! empty( $addon->image ) ) {
-                    echo wp_kses_post( '<div class="tc-addons-image"><img src="' . esc_url( $addon->image ) . '"/></div>' );
+        if ( count( $tickera_addons ) > 0 ) {
+            foreach ( $tickera_addons as $tickera_addon ) {
+                echo wp_kses_post( '<div class="tc_addon"><a target="_blank" href="' . esc_url( $tickera_addon->link ) . '">' );
+                if ( ! empty( $tickera_addon->image ) ) {
+                    echo wp_kses_post( '<div class="tc-addons-image"><img src="' . esc_url( $tickera_addon->image ) . '"/></div>' );
                 } else {
-                    echo wp_kses_post( '<h3>' . esc_html( $addon->title ) . '</h3>' );
+                    echo wp_kses_post( '<h3>' . esc_html( $tickera_addon->title ) . '</h3>' );
                 }
-                echo wp_kses_post( '<div class="tc-addon-content"><p>' . esc_html( $addon->excerpt ) . '</p>' );
+                echo wp_kses_post( '<div class="tc-addon-content"><p>' . esc_html( $tickera_addon->excerpt ) . '</p>' );
                 echo wp_kses_post( '</div></a></div>' );
             }
         } else {

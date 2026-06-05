@@ -1,10 +1,11 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $tc;
 $api_keys = new \Tickera\TC_API_Keys();
-$page = sanitize_key( $_GET[ 'page' ] );
-$tab = sanitize_key( $_GET[ 'tab' ] );
+$page = isset( $_GET[ 'page' ] ) ? sanitize_key( wp_unslash( $_GET[ 'page' ] ) ) : '';
+$tab = isset( $_GET[ 'tab' ] ) ? sanitize_key( wp_unslash( $_GET[ 'tab' ] ) ) : '';
 
 /**
  * Add New API Keys
@@ -26,7 +27,7 @@ if ( isset( $_POST[ 'add_new_api_key' ] ) ) {
 /**
  * Edit API Keys
  */
-if ( isset( $_GET[ 'action' ] ) && 'edit' == $_GET[ 'action' ] ) {
+if ( isset( $_GET[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) && isset( $_GET[ 'ID' ] ) ) {
     $id = (int) $_GET[ 'ID' ];
     $api_key = new \Tickera\TC_API_Key( $id );
     $post_id = $id;
@@ -36,7 +37,7 @@ if ( isset( $_GET[ 'action' ] ) && 'edit' == $_GET[ 'action' ] ) {
 /**
  * Delete API Keys
  */
-if ( isset( $_GET[ 'action' ] ) && 'delete' == $_GET[ 'action' ] ) {
+if ( isset( $_GET[ 'action' ] ) && 'delete' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) && isset( $_GET[ 'ID' ] ) ) {
 
     if ( ! isset( $_POST[ '_wpnonce' ] ) ) {
 
@@ -55,7 +56,7 @@ if ( isset( $_GET[ 'action' ] ) && 'delete' == $_GET[ 'action' ] ) {
 }
 
 $page_num = ( isset( $_GET[ 'page_num' ] ) ) ? (int) $_GET[ 'page_num' ] : 1;
-$api_keys_search = ( isset( $_GET[ 's' ] ) ) ? sanitize_text_field( $_GET[ 's' ] ) : '';
+$api_keys_search = ( isset( $_GET[ 's' ] ) ) ? sanitize_text_field( wp_unslash( $_GET[ 's' ] ) ) : '';
 
 $wp_api_keys_search = new \Tickera\TC_API_Keys_Search( $api_keys_search, $page_num );
 $fields = $api_keys->get_api_keys_fields();
@@ -98,7 +99,7 @@ $settings_api_url = add_query_arg(
                                         </label>
                                     </th>
                                     <td>
-                                        <?php do_action( 'tc_before_api_keys_field_type_check' ); ?>
+                                        <?php tickera_do_action( 'tickera_before_api_keys_field_type_check' ); ?>
                                         <?php if ( 'function' == $field[ 'field_type' ] ) : ?>
                                             <?php
                                             if ( 'event_name' == $field[ 'field_name' ] ) {
@@ -153,7 +154,7 @@ $settings_api_url = add_query_arg(
                                             <br/>
                                             <?php echo wp_kses_post( $field[ 'field_description' ] ); ?>
                                         <?php endif;
-                                        do_action( 'tc_after_api_keys_field_type_check' ); ?>
+                                        tickera_do_action( 'tickera_after_api_keys_field_type_check' ); ?>
                                     </td>
                                 </tr>
                             <?php endif;
@@ -161,8 +162,8 @@ $settings_api_url = add_query_arg(
                         </tbody>
                     </table>
                     <div class="tc-api-form-actions">
-                        <?php submit_button( ( isset( $_REQUEST[ 'action' ] ) && 'edit' == $_REQUEST[ 'action' ] ? __( 'Update', 'tickera-event-ticketing-system' ) : __( 'Add New', 'tickera-event-ticketing-system' ) ), 'primary', 'add_new_api_key', false ); ?>
-                        <a <?php echo wp_kses_post( ( isset( $_GET[ 'action' ] ) && 'edit' == $_GET[ 'action' ] ) ) ? 'href="' . esc_url( $settings_api_url ) . '"' : 'href="#"' . ' id="cancel_add_edit"'; ?> class="tc-tickera-secondary"><?php esc_html_e( 'Cancel', 'tickera-event-ticketing-system' ); ?></a>
+                        <?php submit_button( ( isset( $_REQUEST[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_REQUEST[ 'action' ] ) ) ? __( 'Update', 'tickera-event-ticketing-system' ) : __( 'Add New', 'tickera-event-ticketing-system' ) ), 'primary', 'add_new_api_key', false ); ?>
+                        <a <?php echo wp_kses_post( ( isset( $_GET[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) ) ) ? 'href="' . esc_url( $settings_api_url ) . '"' : 'href="#"' . ' id="cancel_add_edit"'; ?> class="tc-tickera-secondary"><?php esc_html_e( 'Cancel', 'tickera-event-ticketing-system' ); ?></a>
                     </div>
                     <div class="clear"></div>
                 </form>
@@ -226,7 +227,7 @@ $settings_api_url = add_query_arg(
                 <?php $style = ''; ?>
                 <?php foreach ( $wp_api_keys_search->get_results() as $api_key ) :
                     $api_key_obj = new \Tickera\TC_API_Key( $api_key->ID );
-                    $api_key_object = apply_filters( 'tc_api_key_object_details', $api_key_obj->details );
+                    $api_key_object = tickera_apply_filters( 'tickera_api_key_object_details', $api_key_obj->details );
                     $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"';
                     ?>
                     <tr id='user-<?php echo esc_attr( $api_key_object->ID ); ?>' data-id="<?php echo esc_attr( (int) $api_key_object->ID ); ?>" <?php echo wp_kses_post($style); ?>>
@@ -245,8 +246,8 @@ $settings_api_url = add_query_arg(
                                     <?php
                                     $post_field_type = $api_keys->check_field_property( $key, 'post_field_type' );
                                     echo wp_kses_post( ( isset( $post_field_type ) && 'post_meta' == $post_field_type )
-                                        ? apply_filters( 'tc_api_key_field_value', $api_key_object->{$key}, $post_field_type, $key )
-                                        : apply_filters( 'tc_api_key_field_value', ( isset( $api_key_object->{$post_field_type} ) ? $api_key_object->{$post_field_type} : $api_key_object->{$key} ), $post_field_type, $key )
+                                        ? tickera_apply_filters( 'tickera_api_key_field_value', $api_key_object->{$key}, $post_field_type, $key )
+                                        : tickera_apply_filters( 'tickera_api_key_field_value', ( isset( $api_key_object->{$post_field_type} ) ? $api_key_object->{$post_field_type} : $api_key_object->{$key} ), $post_field_type, $key )
                                     );
                                     ?>
                                 </td>

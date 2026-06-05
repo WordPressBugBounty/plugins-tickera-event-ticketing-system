@@ -30,6 +30,7 @@ var AlignmentToolbar = wp.editor.AlignmentToolbar,
  * Add to Cart
  */
 registerBlockType( 'tickera/add-to-cart-group', {
+    apiVersion: 3,
     title: __( 'Ticket - Add to Cart', 'tickera-event-ticketing-system' ),
     description: __( 'Tickets Add to Cart', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -220,6 +221,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/add-to-cart', {
+    apiVersion: 3,
     title: __( 'Ticket - Add to Cart', 'tickera-event-ticketing-system' ),
     description: __( 'Ticket Add to Cart button', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -240,6 +242,7 @@ registerBlockType( 'tickera/add-to-cart', {
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         setTimeout( function() {
             props.setAttributes( {
@@ -250,10 +253,14 @@ registerBlockType( 'tickera/add-to-cart', {
             });
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/add-to-cart',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/add-to-cart',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;
@@ -316,6 +323,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/ticket-price', {
+    apiVersion: 3,
     title: __( 'Ticket Price', 'tickera-event-ticketing-system' ),
     description: __( 'Ticket Price Label', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -335,6 +343,7 @@ registerBlockType( 'tickera/ticket-price', {
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         let id = ( typeof context[ 'tickera/ticket_type_id' ] !== 'undefined' ) ? context[ 'tickera/ticket_type_id' ] : '',
             show_price = ( typeof context[ 'tickera/show_price' ] !== 'undefined' ) ? context[ 'tickera/show_price' ] : false,
@@ -344,10 +353,14 @@ registerBlockType( 'tickera/ticket-price', {
             props.setAttributes( { id: ticket_type_id } );
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/ticket-price',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/ticket-price',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;

@@ -15,7 +15,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
         function __construct() {
             $this->form_title = __( 'Discount Codes', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Discounts() {
@@ -114,15 +114,17 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
             $discount_per_order_used_times = 0;
 
             // Initialize Variables
-            $discount = ( new \Tickera\TC_Discount() )->get_discount_by_code( $discount_code );
-            $discount_scope = isset( $discount->details->discount_scope ) ? $discount->details->discount_scope : 'per_item';
-            $discount_availability = array_filter( explode( ',', $discount->details->discount_availability ) );
+            $tickera_discount = ( new \Tickera\TC_Discount() )->get_discount_by_code( $discount_code );
+            $discount_scope = isset( $tickera_discount->details->discount_scope ) ? $tickera_discount->details->discount_scope : 'per_item';
+            $discount_availability = array_filter( explode( ',', $tickera_discount->details->discount_availability ) );
 
             // Retrieve the orders that are associated with the discount code
             $orders = get_posts( [
                 'posts_per_page' => -1,
                 'author' => 0,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => 'tc_discount_code',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => $discount_code,
                 'post_type' => 'tc_orders',
                 'post_status' => 'any'
@@ -265,7 +267,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
          */
         function discounted_cart_total( $total = false, $discount_code = '' ) {
 
-            global $tc, $discount, $discount_value_total, $new_total;
+            global $tc, $tickera_discount, $tickera_discount_value_total, $tickera_new_total;
             $cart_contents = $tc->get_cart_cookie();
 
             $cart_subtotal = 0;
@@ -273,8 +275,8 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
             $discount_error_message = '';
             $current_date = current_time( "Y-m-d H:i:s" );
 
-            if ( empty( $discount ) ) {
-                $discount = new \Tickera\TC_Discounts();
+            if ( empty( $tickera_discount ) ) {
+                $tickera_discount = new \Tickera\TC_Discounts();
             }
 
             foreach ( $cart_contents as $ticket_type => $ordered_count ) {
@@ -284,7 +286,8 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
             $tc->session->set( 'tc_cart_subtotal', $cart_subtotal );
 
             if ( ! $discount_code ) {
-                $discount_code = isset( $_POST[ 'coupon_code' ] ) ? sanitize_text_field( $_POST[ 'coupon_code' ] ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart coupon code is sanitized before discount validation.
+                $discount_code = isset( $_POST[ 'coupon_code' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'coupon_code' ] ) ) : '';
             }
 
             if ( $discount_code ) {
@@ -294,7 +297,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
                  * Allows custom validation and dynamic discount creation
                  * @param string $discount_code The entered discount code
                  */
-                do_action( 'tc_pre_discount_lookup', $discount_code );
+                tickera_do_action( 'tickera_pre_discount_lookup', $discount_code );
 
                 $discount_object = new \Tickera\TC_Discount();
                 $discount_object = $discount_object->get_discount_by_code( $discount_code );
@@ -351,11 +354,11 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
                     // If invalid: Unset discount
                     if ( $discount_error_message ) {
                         $this->unset_discount();
-                        $discount->discount_message = $discount_error_message;
+                        $tickera_discount->discount_message = $discount_error_message;
 
                     } else {
 
-                        $tc_discount_code_post_validation = apply_filters( 'tc_discount_code_post_validation', array( 'validated' => true, 'message' => '' ), $discount_code );
+                        $tc_discount_code_post_validation = tickera_apply_filters( 'tickera_discount_code_post_validation', array( 'validated' => true, 'message' => '' ), $discount_code );
 
                         // Apply discount if Post validation succeeded. Otherwise, display error message
                         if ( $tc_discount_code_post_validation[ 'validated' ] ) {
@@ -434,7 +437,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
                             // Display error message
                             $this->unset_discount();
-                            $discount->discount_message = $tc_discount_code_post_validation[ 'message' ];
+                            $tickera_discount->discount_message = $tc_discount_code_post_validation[ 'message' ];
                         }
                     }
 
@@ -442,7 +445,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
                     // Discount code cannot be found.
                     $this->unset_discount();
-                    $discount->discount_message = __( 'Discount code cannot be found', 'tickera-event-ticketing-system' );
+                    $tickera_discount->discount_message = __( 'Discount code cannot be found', 'tickera-event-ticketing-system' );
                 }
 
                 if ( $discount_value ) {
@@ -452,64 +455,64 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
                         && isset( $discount_available_per_ticket ) && ( count( $discount_available_per_ticket ) != count( $cart_contents ) ) ) {
 
                         // Discount code is applied for specific ticket types
-                        $discount->discount_message = __( 'Discount code is partially applied.', 'tickera-event-ticketing-system' );
+                        $tickera_discount->discount_message = __( 'Discount code is partially applied.', 'tickera-event-ticketing-system' );
 
                     } else {
-                        $discount->discount_message = __( 'Discount code applied.', 'tickera-event-ticketing-system' );
+                        $tickera_discount->discount_message = __( 'Discount code applied.', 'tickera-event-ticketing-system' );
                     }
 
                 } else {
-                    $discount->discount_message = __( 'Discount code invalid or expired.', 'tickera-event-ticketing-system' );
+                    $tickera_discount->discount_message = __( 'Discount code invalid or expired.', 'tickera-event-ticketing-system' );
                 }
             }
 
-            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
-                $discount_value_total = round( $discount_value, 2 );
+            if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
+                $tickera_discount_value_total = round( $discount_value, 2 );
 
             } else {
-                $discount_value_total = $discount_value;
+                $tickera_discount_value_total = $discount_value;
             }
 
-            add_filter( 'tc_cart_discount', function() {
-                global $tc, $discount_value_total;
+            tickera_add_filter( 'tickera_cart_discount', function() {
+                global $tc, $tickera_discount_value_total;
                 $session_cart_subtotal = $tc->session->get( 'tc_cart_subtotal' );
                 $total = $session_cart_subtotal;
-                $max_discount = TC_Discounts::max_discount( tickera_minimum_total( $discount_value_total ), $total );
+                $max_discount = TC_Discounts::max_discount( tickera_minimum_total( $tickera_discount_value_total ), $total );
                 $tc->session->set( 'discount_value_total', $max_discount );
-                return TC_Discounts::max_discount( $discount_value_total, $total );
-            }, 10, 0 );
+                return TC_Discounts::max_discount( $tickera_discount_value_total, $total );
+            }, 10, 0, array( 'tc_cart_discount' ) );
 
-            add_filter( 'tc_cart_subtotal', function() {
+            tickera_add_filter( 'tickera_cart_subtotal', function() {
                 global $tc;
                 $session_cart_subtotal = $tc->session->get( 'tc_cart_subtotal' );
                 $cart_subtotal = (float) $session_cart_subtotal;
                 return tickera_minimum_total( $cart_subtotal );
-            } );
+            }, 10, 1, array( 'tc_cart_subtotal' ) );
 
             $session_cart_subtotal = $tc->session->get( 'tc_cart_subtotal' );
-            $new_total = ( !is_null( $session_cart_subtotal ) ? (float) $session_cart_subtotal : 0 ) - $discount_value;
+            $tickera_new_total = ( !is_null( $session_cart_subtotal ) ? (float) $session_cart_subtotal : 0 ) - $discount_value;
 
-            add_filter( 'tc_cart_total', function() {
-                global $tc, $new_total, $subtotal_value;
-                $total = tickera_minimum_total( $new_total );
+            tickera_add_filter( 'tickera_cart_total', function() {
+                global $tc, $tickera_new_total, $tickera_subtotal_value;
+                $total = tickera_minimum_total( $tickera_new_total );
                 $tc->session->set( 'tc_cart_total', $total );
-                $subtotal_value = $total;
-                return tickera_minimum_total( $new_total );
-            } );
+                $tickera_subtotal_value = $total;
+                return tickera_minimum_total( $tickera_new_total );
+            }, 10, 1, array( 'tc_cart_total' ) );
 
             $tc->session->set( 'tc_discount_code', $discount_code );
-            $minimum_discounted_total = tickera_minimum_total( apply_filters( 'tc_discounted_total', $new_total ) );
+            $minimum_discounted_total = tickera_minimum_total( tickera_apply_filters( 'tickera_discounted_total', $tickera_new_total ) );
             $tc->session->set( 'discounted_total', $minimum_discounted_total );
 
             return [
                 'success' => ! $discount_error_message ? true : false,
-                'message' => $discount->discount_message
+                'message' => $tickera_discount->discount_message
             ];
         }
 
         public static function discount_code_message( $message ) {
-            global $discount;
-            $message = $discount->discount_message;
+            global $tickera_discount;
+            $message = $tickera_discount->discount_message;
             return $message;
         }
 
@@ -658,7 +661,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
             array_unshift( $default_fields, $first_field );
 
-            return apply_filters( 'tc_discount_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_discount_fields', $default_fields );
         }
 
         function get_columns() {
@@ -701,7 +704,8 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, false, true );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), false, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -724,10 +728,10 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
                         $metas[ sanitize_key( str_replace( '_post_meta', '', $field_name ) ) ] = sanitize_text_field( $field_value );
                     }
 
-                    do_action( 'tc_after_discount_post_field_type_check' );
+                    tickera_do_action( 'tickera_after_discount_post_field_type_check' );
                 }
 
-                $metas = apply_filters( 'discount_code_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_discount_code_metas', $metas );
 
                 $arg = array(
                     'post_author'   => (int) $user_id,

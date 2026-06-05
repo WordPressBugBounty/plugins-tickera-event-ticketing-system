@@ -28,8 +28,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
              */
             $hide_checkin_ineligible = ( isset( $general_settings[ 'hide_checkin_ineligible_tickets' ] ) && $general_settings[ 'hide_checkin_ineligible_tickets' ] ) ? $general_settings[ 'hide_checkin_ineligible_tickets' ] : 'no';
             $this->checkin_eligible_order_statuses = ( 'no' == $hide_checkin_ineligible )
-                ? apply_filters( 'tc_checkin_eligible_order_statuses', tickera_get_order_statuses() )
-                : apply_filters( 'tc_checkin_eligible_order_statuses', [ 'order_paid' => ( tickera_get_order_statuses() )[ 'order_paid' ] ] );
+                ? tickera_apply_filters( 'tickera_checkin_eligible_order_statuses', tickera_get_order_statuses() )
+                : tickera_apply_filters( 'tickera_checkin_eligible_order_statuses', [ 'order_paid' => ( tickera_get_order_statuses() )[ 'order_paid' ] ] );
 
             add_filter( 'manage_tc_tickets_instances_posts_columns', array( $this, 'manage_tc_tickets_instances_columns' ) );
             add_action( 'manage_tc_tickets_instances_posts_custom_column', array( $this, 'manage_tc_tickets_instances_posts_custom_column' ), 10, 2 );
@@ -79,8 +79,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             if ( current_user_can( 'manage_events_cap' ) && $_POST && isset( $_POST[ 's' ] ) ) {
 
-                $keyword = sanitize_text_field( $_POST[ 's' ] );
-                $excluded_event_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( $_POST[ 'excluded' ] ) : [];
+                $keyword = sanitize_text_field( wp_unslash( $_POST[ 's' ] ) );
+
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $excluded_event_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( wp_unslash( $_POST[ 'excluded' ] ) ) : [];
                 $count = 0;
 
                 if ( ! in_array( 0, $excluded_event_ids ) ) {
@@ -119,8 +121,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             if ( current_user_can( 'manage_ticket_types_cap' ) && $_POST && isset( $_POST[ 's' ] ) ) {
 
-                $keyword = sanitize_text_field( $_POST[ 's' ] );
-                $excluded_ticket_type_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( $_POST[ 'excluded' ] ) : [];
+                $keyword = sanitize_text_field( wp_unslash( $_POST[ 's' ] ) );
+
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $excluded_ticket_type_ids = isset( $_POST[ 'excluded' ] ) ? tickera_sanitize_array( wp_unslash( $_POST[ 'excluded' ] ) ) : [];
                 $count = 0;
 
                 if ( ! in_array( 0, $excluded_ticket_type_ids ) ) {
@@ -161,8 +165,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         function pre_get_posts_reorder( $query ) {
             global $post_type, $pagenow;
             if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type ) {
-                $order_by = ( $_GET && isset( $_GET[ 'orderby' ] ) ) ? sanitize_key( $_GET[ 'orderby' ] ) : 'date';
-                $order = ( $_GET && isset( $_GET[ 'order' ] ) ) ? sanitize_key( $_GET[ 'order' ] ) : 'DESC';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee list orderby parameter is sanitized before updating the query.
+                $order_by = ( $_GET && isset( $_GET[ 'orderby' ] ) ) ? sanitize_key( wp_unslash( $_GET[ 'orderby' ] ) ) : 'date';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee list order direction is sanitized before updating the query.
+                $order = ( $_GET && isset( $_GET[ 'order' ] ) ) ? sanitize_key( wp_unslash( $_GET[ 'order' ] ) ) : 'DESC';
                 $query->set( 'orderby', $order_by );
                 $query->set( 'order', $order );
             }
@@ -179,9 +185,11 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || 'tc_tickets' == $post_type ) ) {
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter only scopes attendee and ticket type list queries.
                 if ( isset( $_REQUEST[ 'tc_event_filter' ] ) && ( 'tc_tickets_instances' == $query->query[ 'post_type' ] || 'tc_tickets' == $query->query[ 'post_type' ] ) ) {
 
-                    if ( $_REQUEST[ 'tc_event_filter' ] !== '0' ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is sanitized before changing the list query.
+                    if ( sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) ) !== '0' ) {
                         add_filter( 'posts_where', array( $this, 'pre_get_posts_events_filter_where' ) );
                     }
                 }
@@ -198,13 +206,21 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             global $wpdb, $post_type;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter only scopes attendee and ticket type list queries.
+            if ( ! isset( $_REQUEST[ 'tc_event_filter' ] ) ) {
+                return $where;
+            }
+
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is sanitized before changing the SQL condition.
+            $tc_event_filter = sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) );
+
             if ( 'tc_tickets' == $post_type ) {
                 $meta_key = 'event_name';
-                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . sanitize_text_field( $_REQUEST[ 'tc_event_filter' ] ) . ")";
+                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . $tc_event_filter . ")";
 
             } elseif ( 'tc_tickets_instances' == $post_type ) {
                 $meta_key = 'event_id';
-                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . sanitize_text_field( $_REQUEST[ 'tc_event_filter' ] ) . ")";
+                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . $tc_event_filter . ")";
             }
 
             return $where;
@@ -218,7 +234,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         function pre_get_posts_order_status_filter( $query ) {
             global $post_type, $pagenow;
             if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ]
-                && isset( $_REQUEST[ 'tc_order_status_filter' ] ) && $_REQUEST[ 'tc_order_status_filter' ] !== '0' ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the attendee list query.
+                && isset( $_REQUEST[ 'tc_order_status_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) !== '0' ) {
                 add_filter( 'posts_where', array( $this, 'pre_get_posts_order_status_filter_where' ), 10, 2 );
             }
         }
@@ -231,7 +248,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         function pre_get_posts_order_status_filter_where( $where ) {
 
             global $wpdb;
-            $order_statuses = ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) && $_REQUEST[ 'tc_order_status_filter' ] ) ? [ sanitize_text_field( $_REQUEST[ 'tc_order_status_filter' ] ) ] : [];
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the SQL condition.
+            $order_statuses = ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) ) ? [ sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) ] : [];
 
             if ( ! $order_statuses )
                 return $where;
@@ -240,7 +258,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             $where .= " AND ";
             $order_status_filter = $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ( " . $order_statuses . "))";
-            $order_status_filter = apply_filters( 'tc_tickets_instances_order_status_where_clause', $order_status_filter, $order_statuses, true );
+            $order_status_filter = tickera_apply_filters( 'tickera_tickets_instances_order_status_where_clause', $order_status_filter, $order_statuses, true );
 
             return $where . $order_status_filter;
         }
@@ -270,7 +288,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             $where .= " AND ";
             $where_order_status = $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ('trash'," . $order_statuses . "))";
-            $where_order_status = apply_filters( 'tc_tickets_instances_order_status_where_clause', $where_order_status, $order_statuses );
+            $where_order_status = tickera_apply_filters( 'tickera_tickets_instances_order_status_where_clause', $where_order_status, $order_statuses );
 
             return $where . $where_order_status;
         }
@@ -301,7 +319,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                 <?php
                 $tc_events_search = new \Tickera\TC_Events_Search( '', '', '10' );
-                $init_event_filter_options = apply_filters( 'tc_init_event_filter_options', $tc_events_search->get_results() );
+                $init_event_filter_options = tickera_apply_filters( 'tickera_init_event_filter_options', $tc_events_search->get_results() );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is cast before selecting the current filter option.
                 $currently_selected = isset( $_REQUEST[ 'tc_event_filter' ] ) ? (int) $_REQUEST[ 'tc_event_filter' ] : '';
                 $selected_event = $currently_selected ? get_post( $currently_selected ) : [];
 
@@ -318,7 +337,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                     <option value="0"><?php esc_html_e( 'All Events', 'tickera-event-ticketing-system' ); ?></option>
                     <?php foreach ( $events_search as $event ) :
                         $event_id = (int) $event->ID; ?>
-                        <option value="<?php echo esc_attr( (int) $event_id ); ?>" <?php selected( $currently_selected, $event_id, true ); ?>><?php echo esc_html( apply_filters( 'tc_event_select_name', $event->post_title . ' [#' . $event->ID . ']', $event_id ) ); ?></option>
+                        <option value="<?php echo esc_attr( (int) $event_id ); ?>" <?php selected( $currently_selected, $event_id, true ); ?>><?php echo esc_html( tickera_apply_filters( 'tickera_event_select_name', $event->post_title . ' [#' . $event->ID . ']', $event_id ) ); ?></option>
                     <?php endforeach; ?>
                 </select>
 
@@ -334,7 +353,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
             global $post_type;
 
             if ( 'tc_tickets_instances' == $post_type ) {
-                $currently_selected = isset( $_REQUEST[ 'tc_order_status_filter' ] ) ? sanitize_text_field( $_REQUEST[ 'tc_order_status_filter' ] ) : ''; ?>
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before selecting the current filter option.
+                $currently_selected = isset( $_REQUEST[ 'tc_order_status_filter' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) : ''; ?>
                 <select name="tc_order_status_filter">
                     <option value="0"><?php esc_html_e( 'All Order Statuses', 'tickera-event-ticketing-system' ); ?></option>
                     <?php foreach ( $this->checkin_eligible_order_statuses as $order_status => $order_status_label ) { ?>
@@ -352,14 +372,16 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          */
         function save_tickets_instances_meta( $post_id, $post, $update ) {
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin attendee check-in API key is handled by the attendee metabox save workflow.
             if ( isset( $post->post_type ) && 'tc_tickets_instances' == $post->post_type && isset( $_POST[ 'api_key' ] ) ) {
 
                 $ticket_instance = new \Tickera\TC_Ticket_Instance( (int) $post_id );
                 $ticket_type = new \Tickera\TC_Ticket( $ticket_instance->details->ticket_type_id );
                 $ticket_event_id = $ticket_type->get_ticket_event( $ticket_instance->details->ticket_type_id );
 
-                $api_key = new \Tickera\TC_API_Key( sanitize_text_field( $_POST[ 'api_key' ] ) );
-                $checkin = new \Tickera\TC_Checkin_API( $api_key->details->api_key, apply_filters( 'tc_checkin_request_name', 'tickera_scan' ), 'return', $ticket_instance->details->ticket_code, false );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin attendee check-in API key is sanitized before check-in processing.
+                $api_key = new \Tickera\TC_API_Key( sanitize_text_field( wp_unslash( $_POST[ 'api_key' ] ) ) );
+                $checkin = new \Tickera\TC_Checkin_API( $api_key->details->api_key, tickera_apply_filters( 'tickera_checkin_request_name', 'tickera_scan' ), 'return', $ticket_instance->details->ticket_code, false );
                 $checkin_result = $checkin->ticket_checkin( false );
 
                 if ( isset( $checkin_result[ 'status' ] ) && 1 == $checkin_result[ 'status' ] ) {
@@ -385,9 +407,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             global $post_type, $pagenow, $wpdb;
 
-            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == $_GET[ 'post_type' ] ) ) && isset( $_REQUEST[ 's' ] ) && isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search parameters only scope extended list-table search.
+            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) ) ) && isset( $_REQUEST[ 's' ] ) && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) ) {
 
-                if ( apply_filters( 'tc_tickets_instances_extensive_search', true ) ) {
+                if ( tickera_apply_filters( 'tickera_tickets_instances_extensive_search', true ) ) {
 
                     // Remove extra spaces
                     $query = preg_replace( '/\s+/', ' ', $query );
@@ -430,11 +453,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          */
         function extended_search_join( $join ) {
             global $post_type, $pagenow, $wpdb;
-            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == $_GET[ 'post_type' ] ) ) && isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search parameters only scope extended list-table joins.
+            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) ) ) && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) ) {
 
                 $join = rtrim( $join, ' ' );
 
-                if ( apply_filters( 'tc_tickets_instances_extensive_search', true ) ) {
+                if ( tickera_apply_filters( 'tickera_tickets_instances_extensive_search', true ) ) {
                     $join .= ' LEFT JOIN ' . $wpdb->postmeta . ' as pm ON p.ID = pm.post_id ';
 
                 } else {
@@ -454,11 +478,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             global $post_type, $pagenow, $wpdb;
 
-            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == $_GET[ 'post_type' ] ) ) && isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search parameters only scope extended list-table conditions.
+            if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) ) ) && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) ) {
 
-                $search_filter = isset( $_GET[ 's' ] ) ? strtolower( sanitize_text_field( $_GET[ 's' ] ) ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search term is sanitized before building search conditions.
+                $search_filter = isset( $_GET[ 's' ] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET[ 's' ] ) ) ) : '';
 
-                $meta_keys = apply_filters( 'tc_tickets_instances_extended_search_meta_keys', [
+                $meta_keys = tickera_apply_filters( 'tickera_tickets_instances_extended_search_meta_keys', [
                     'first_name',
                     'last_name',
                     'owner_email',
@@ -468,7 +494,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                 $meta_keys = "'" . implode( "','", $meta_keys ) . "'";
 
-                if ( apply_filters( 'tc_tickets_instances_extensive_search', true ) ) {
+                if ( tickera_apply_filters( 'tickera_tickets_instances_extensive_search', true ) ) {
 
                     $where = preg_replace(
                         "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
@@ -544,10 +570,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 3 => __( 'Custom field deleted.', 'tickera-event-ticketing-system' ),
                 4 => __( 'Check-in records updated.', 'tickera-event-ticketing-system' ),
                 /* translators: %s: date and time of the revision */
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast and used only for the attendee updated message.
                 5 => isset( $_GET[ 'revision' ] )
                     ? sprintf(
                         /* translators: %s: Formatted datetime timestamp of a revision. */
                         __( 'Attendee data restored to revision from %s', 'tickera-event-ticketing-system' ),
+                        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast before loading the revision title.
                         wp_post_revision_title( (int) $_GET[ 'revision' ], false )
                     )
                     : false,
@@ -601,9 +629,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          * Enqueue scripts and styles
          */
         function admin_enqueue_scripts_and_styles() {
-            global $post_type;
+            global $tc, $post_type;
             if ( 'tc_tickets_instances' == $post_type ) {
-                wp_enqueue_style( 'tc-better-attendees-and-tickets', plugins_url( 'css/admin.css', __FILE__ ) );
+                wp_enqueue_style( 'tc-better-attendees-and-tickets', plugins_url( 'css/admin.css', __FILE__ ), [], $tc->version );
             }
         }
 
@@ -651,19 +679,19 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                         if ( isset( $post_field_type ) && 'post_meta' == $post_field_type ) {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ), $field_id ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ), $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ) ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_ticket_instance_field_value', $ticket_instance->details->ID, $ticket_instance->details->{$field_name}, $post_field_type, ( isset( $tickets_instances_column[ 'field_id' ] ) ? $tickets_instances_column[ 'field_id' ] : '' ) ) );
                             }
 
                         } else {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ], $field_id ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ], $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ] ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_ticket_instance_field_value', $ticket_instance->details->ID, ( isset( $ticket_instance->details->{$post_field_type} ) ? $ticket_instance->details->{$post_field_type} : $ticket_instance->details->{$field_name} ), $post_field_type, $tickets_instances_column[ 'field_name' ] ) );
                             }
                         }
                     }
@@ -702,8 +730,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         }
     }
 
-    global $TC_Better_Attendees_and_Tickets;
-    $TC_Better_Attendees_and_Tickets = new TC_Better_Attendees_and_Tickets();
+    new TC_Better_Attendees_and_Tickets();
 }
 
 /**
@@ -716,15 +743,16 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
 
     function tickera_attendees_check_in_details_metabox() {
 
-        $ticket_instance = new \Tickera\TC_Ticket_Instance( (int) $_GET[ 'post' ] );
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee post ID is cast before loading check-in details for the metabox.
+        $ticket_instance = isset( $_GET[ 'post' ] ) ? new \Tickera\TC_Ticket_Instance( (int) $_GET[ 'post' ] ) : null;
         $ticket_type = new \Tickera\TC_Ticket( $ticket_instance->details->ticket_type_id );
         $ticket_event_id = $ticket_type->get_ticket_event( $ticket_instance->details->ticket_type_id );
         $ticket_checkins = $ticket_instance->get_ticket_checkins();
         $ticket_checkouts = $ticket_instance->get_ticket_checkouts();
 
-        if ( isset( $_GET[ 'checkin_action' ] ) && 'delete_checkin' == $_GET[ 'checkin_action' ] && check_admin_referer( 'delete_checkin' ) && ! isset( $_POST[ 'api_key' ] ) ) {
+        if ( isset( $_GET[ 'checkin_action' ] ) && 'delete_checkin' == sanitize_text_field( wp_unslash( $_GET[ 'checkin_action' ] ) ) && isset( $_GET[ 'checkin_entry' ] ) && check_admin_referer( 'delete_checkin' ) && ! isset( $_POST[ 'api_key' ] ) ) {
 
-            $entry_to_delete = sanitize_text_field( $_GET[ 'checkin_entry' ] );
+            $entry_to_delete = sanitize_text_field( wp_unslash( $_GET[ 'checkin_entry' ] ) );
             $checkin_row = 0;
 
             if ( $ticket_checkins ) {
@@ -747,7 +775,7 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
                 update_post_meta( $ticket_instance->details->ID, 'tc_checkins', tickera_sanitize_array( $ticket_checkins, false, true ) );
                 update_post_meta( $ticket_instance->details->ID, 'tc_checkouts', tickera_sanitize_array( $ticket_checkouts, false, true ) );
 
-                do_action( 'tc_check_in_deleted', $ticket_instance->details->ID, $ticket_checkins );
+                tickera_do_action( 'tickera_check_in_deleted', $ticket_instance->details->ID, $ticket_checkins );
                 $message_type = 'updated';
                 $message = __( 'Check-in record deleted successfully.', 'tickera-event-ticketing-system' );
             }
@@ -777,15 +805,18 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
                 foreach ( $ticket_checkins as $ticket_checkin ) { ?>
                     <tr class="alternate">
                     <td><?php echo esc_html( tickera_format_date( $ticket_checkin[ 'date_checked' ], false, false ) ); ?></td>
-                    <td><?php echo wp_kses_post( apply_filters( 'tc_checkins_status', $ticket_checkin[ 'status' ] ) ); ?></td>
-                    <td><?php echo wp_kses_post( apply_filters( 'tc_checkins_api_key_id', $ticket_checkin[ 'api_key_id' ] ) ); ?></td>
+                    <td><?php echo wp_kses_post( tickera_apply_filters( 'tickera_checkins_status', $ticket_checkin[ 'status' ] ) ); ?></td>
+                    <td><?php echo wp_kses_post( tickera_apply_filters( 'tickera_checkins_api_key_id', $ticket_checkin[ 'api_key_id' ] ) ); ?></td>
                     <?php if ( current_user_can( 'manage_options' ) || current_user_can( 'delete_checkins_cap' ) ) { ?>
                         <td><?php
-                            echo wp_kses_post( sprintf(
+                            $_post = isset( $_GET[ 'post' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'post' ] ) ) : null;
+                            if ( $_post ) {
+                                echo wp_kses_post( sprintf(
                                 /* translators: %s: Delete checkin url. */
-                                __( '<a class="tc_delete_link" href="%s">Delete</a>', 'tickera-event-ticketing-system' ),
-                                esc_url( wp_nonce_url( admin_url( 'post.php?post=' . (int) $_GET[ 'post' ] . '&action=edit&checkin_action=delete_checkin&checkin_entry=' . (int) $ticket_checkin[ 'date_checked' ] ), 'delete_checkin' ) )
-                            ) );
+                                        __( '<a class="tc_delete_link" href="%s">Delete</a>', 'tickera-event-ticketing-system' ),
+                                        esc_url( wp_nonce_url( admin_url( 'post.php?post=' . $_post . '&action=edit&checkin_action=delete_checkin&checkin_entry=' . (int) $ticket_checkin[ 'date_checked' ] ), 'delete_checkin' ) )
+                                ) );
+                            }
                             ?></td>
                     <?php } ?>
                     </tr><?php

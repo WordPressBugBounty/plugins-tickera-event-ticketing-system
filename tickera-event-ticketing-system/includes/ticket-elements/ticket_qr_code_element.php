@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_qr_code_element' ) ) {
         var $font_awesome_icon = '<i class="fa fa-qrcode"></i>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_qr_code_element_title', __( 'QR Code', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_qr_code_element_title', __( 'QR Code', 'tickera-event-ticketing-system' ) );
         }
 
         function admin_content() {
@@ -42,11 +42,11 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_qr_code_element' ) ) {
                 $ticket_instance = new \Tickera\TC_Ticket_Instance( (int) $ticket_instance_id );
                 $order = new \Tickera\TC_Order( $ticket_instance->details->post_parent );
 
-                if ( apply_filters( 'tc_qr_code_quick_scan_info', true ) ) {
-                    $qrstring = apply_filters( 'tc_qr_code_info', $ticket_instance->details->ticket_code, $ticket_instance, $order );
+                if ( tickera_apply_filters( 'tickera_qr_code_quick_scan_info', true ) ) {
+                    $qrstring = tickera_apply_filters( 'tickera_qr_code_info', $ticket_instance->details->ticket_code, $ticket_instance, $order );
 
                 } else {
-                    $qrstring = apply_filters( 'tc_qr_code_info', 'id|' . $ticket_instance_id . '|name|' . $ticket_instance->details->first_name . ' ' . $ticket_instance->details->last_name . '|city|' . ( $ticket_instance->details->city ? $ticket_instance->details->city : '' ) . '|address|' . ( $ticket_instance->details->address ? $ticket_instance->details->address : '' ) . '|country|' . ( $ticket_instance->details->country ? $ticket_instance->details->country : '' ) . '|state|' . ( $ticket_instance->details->state ? $ticket_instance->details->state : '' ) . '|payment_date|' . $order->details->post_date . '|checksum|' . $ticket_instance->details->ticket_code, $ticket_instance, $order );
+                    $qrstring = tickera_apply_filters( 'tickera_qr_code_info', 'id|' . $ticket_instance_id . '|name|' . $ticket_instance->details->first_name . ' ' . $ticket_instance->details->last_name . '|city|' . ( $ticket_instance->details->city ? $ticket_instance->details->city : '' ) . '|address|' . ( $ticket_instance->details->address ? $ticket_instance->details->address : '' ) . '|country|' . ( $ticket_instance->details->country ? $ticket_instance->details->country : '' ) . '|state|' . ( $ticket_instance->details->state ? $ticket_instance->details->state : '' ) . '|payment_date|' . $order->details->post_date . '|checksum|' . $ticket_instance->details->ticket_code, $ticket_instance, $order );
                 }
             }
 
@@ -67,15 +67,15 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_qr_code_element' ) ) {
             }
 
             $style = array(
-                'position' => apply_filters( 'tc_qr_code_cell_alignment', $cell_alignment ),
-                'border' => apply_filters( 'tc_show_qr_code_border', true ),
-                'padding' => apply_filters( 'tc_qr_code_padding', 1 ),
-                'fgcolor' => tickera_hex2rgb( apply_filters( 'tc_qr_code_fg_color', '#000000' ) ),
-                'bgcolor' => tickera_hex2rgb( apply_filters( 'tc_qr_code_bg_color', '#FFFFFF' ) ),
+                'position' => tickera_apply_filters( 'tickera_qr_code_cell_alignment', $cell_alignment ),
+                'border' => tickera_apply_filters( 'tickera_show_qr_code_border', true ),
+                'padding' => tickera_apply_filters( 'tickera_qr_code_padding', 1 ),
+                'fgcolor' => tickera_hex2rgb( tickera_apply_filters( 'tickera_qr_code_fg_color', '#000000' ) ),
+                'bgcolor' => tickera_hex2rgb( tickera_apply_filters( 'tickera_qr_code_bg_color', '#FFFFFF' ) ),
             );
 
             $params_array = array(
-                isset( $qrstring ) ? apply_filters( 'tc_qr_string', $qrstring ) : $tc->create_unique_id(),
+                isset( $qrstring ) ? tickera_apply_filters( 'tickera_qr_string', $qrstring ) : $tc->create_unique_id(),
                 'QRCODE,H',
                 '',
                 '',
@@ -85,7 +85,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_qr_code_element' ) ) {
                 'N'
             );
 
-            $params_array = apply_filters( 'tc_2d_code_params', $params_array, isset( $qrstring ) ? apply_filters( 'tc_qr_string', $qrstring ) : $tc->create_unique_id(), 'QRCODE,H', '', '', $code_size, $code_size, $style, 'N' );
+            $params_array = tickera_apply_filters( 'tickera_2d_code_params', $params_array, isset( $qrstring ) ? tickera_apply_filters( 'tickera_qr_string', $qrstring ) : $tc->create_unique_id(), 'QRCODE,H', '', '', $code_size, $code_size, $style, 'N' );
             $pars = $pdf->serializeTCPDFtagParameters( $params_array );
 
             return '<div><tcpdf method="write2DBarcode" params="' . esc_attr( $pars ) . '" /></div>';

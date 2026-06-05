@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
 
         function __construct() {
             $this->form_title = __( 'Orders', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Orders() {
@@ -195,7 +195,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_order_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_order_fields', $default_fields );
         }
 
 
@@ -268,23 +268,23 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_owner_info_orders_table_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_owner_info_orders_table_fields', $default_fields );
         }
 
         function get_owner_info_fields_front() {
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
 
-            if ( ! isset( $tc_general_settings[ 'show_owner_fields' ] ) || ( isset( $tc_general_settings[ 'show_owner_fields' ] ) && $tc_general_settings[ 'show_owner_fields' ] == 'yes' ) ) {
-                $show_owner_fields = apply_filters( 'tc_get_owner_info_fields_front_show', true );
+            if ( ! isset( $tickera_general_settings[ 'show_owner_fields' ] ) || ( isset( $tickera_general_settings[ 'show_owner_fields' ] ) && $tickera_general_settings[ 'show_owner_fields' ] == 'yes' ) ) {
+                $show_owner_fields = tickera_apply_filters( 'tickera_get_owner_info_fields_front_show', true );
             } else {
-                $show_owner_fields = apply_filters( 'tc_get_owner_info_fields_front_show', false );
+                $show_owner_fields = tickera_apply_filters( 'tickera_get_owner_info_fields_front_show', false );
             }
 
-            if ( ! isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) || ( isset( $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) && $tc_general_settings[ 'show_attendee_first_and_last_name_fields' ] == 'yes' ) ) {
-                $show_attendee_first_and_last_name_fields = apply_filters( 'tc_show_attendee_first_and_last_name_fields', true );
+            if ( ! isset( $tickera_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) || ( isset( $tickera_general_settings[ 'show_attendee_first_and_last_name_fields' ] ) && $tickera_general_settings[ 'show_attendee_first_and_last_name_fields' ] == 'yes' ) ) {
+                $show_attendee_first_and_last_name_fields = tickera_apply_filters( 'tickera_show_attendee_first_and_last_name_fields', true );
             } else {
-                $show_attendee_first_and_last_name_fields = apply_filters( 'tc_show_attendee_first_and_last_name_fields', false );
+                $show_attendee_first_and_last_name_fields = tickera_apply_filters( 'tickera_show_attendee_first_and_last_name_fields', false );
             }
 
             $default_fields = array(
@@ -293,7 +293,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                     'field_name' => 'ticket_type_id',
                     'field_title' => __( 'Event Name', 'tickera-event-ticketing-system' ),
                     'field_type' => 'function',
-                    'function' => ( apply_filters( 'tc_get_ticket_instance_event_front', true ) ? 'tickera_get_ticket_instance_event_front' : 'tickera_get_ticket_instance_event' ),
+                    'function' => ( tickera_apply_filters( 'tickera_get_ticket_instance_event_front', true ) ? 'tickera_get_ticket_instance_event_front' : 'tickera_get_ticket_instance_event' ),
                     'field_description' => '',
                     'post_field_type' => 'post_meta'
                 ),
@@ -343,7 +343,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                 }
             }
 
-            return apply_filters( 'tc_owner_info_orders_table_fields_front', $default_fields );
+            return tickera_apply_filters( 'tickera_owner_info_orders_table_fields_front', $default_fields );
         }
 
         /**
@@ -394,7 +394,7 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
         public static function get_user_orders( $user ) {
 
             $user_id = ( $user && isset( $user->ID ) ) ? $user->ID : get_current_user_id();
-            $email = apply_filters( 'tc_ticket_order_history_list_by_user_email', false ) ? $user->user_email : '';
+            $email = tickera_apply_filters( 'tickera_ticket_order_history_list_by_user_email', false ) ? $user->user_email : '';
 
             $args = [
                 'posts_per_page' => -1,
@@ -406,11 +406,12 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
 
             if ( $email ) {
 
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 $args[ 'meta_query' ] = [ [ 'key' => 'tc_cart_info', 'value' => $email, 'compare' => 'LIKE' ] ];
                 $posts = get_posts( $args );
 
                 foreach ( $posts as $key => $post ) {
-                    $cart_info = apply_filters( 'tc_order_cart_info', get_post_meta( $post->ID, 'tc_cart_info', true ), $post->ID );
+                    $cart_info = tickera_apply_filters( 'tickera_order_cart_info', get_post_meta( $post->ID, 'tc_cart_info', true ), $post->ID );
                     $buyer_data = isset( $cart_info[ 'buyer_data' ] ) ? $cart_info[ 'buyer_data' ] : [];
                     $buyer_email = isset( $buyer_data[ 'email_post_meta' ] ) ? $buyer_data[ 'email_post_meta' ] : '';
 
@@ -482,11 +483,13 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
 
             global $user_id;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin order save request is handled by the Tickera order editor workflow.
             if ( isset( $_POST[ 'add_new_order' ] ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, false, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Admin order payload is unslashed and sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), false, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -504,10 +507,10 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                         $metas[ sanitize_key( str_replace( '_post_meta', '', $field_name ) ) ] = sanitize_text_field( $field_value );
                     }
 
-                    do_action( 'tc_after_order_post_field_type_check' );
+                    tickera_do_action( 'tickera_after_order_post_field_type_check' );
                 }
 
-                $metas = apply_filters( 'tc_orders_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_orders_metas', $metas );
 
                 $arg = array(
                     'post_author'   => (int) $user_id,
@@ -518,7 +521,9 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
                     'post_type'     => 'tc_orders',
                 );
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin order post ID is used only to update the submitted order.
                 if ( isset( $_POST[ 'post_id' ] ) ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin order post ID is cast before being passed to wp_insert_post().
                     $arg[ 'ID' ] = (int) $_POST[ 'post_id' ];
                 }
 

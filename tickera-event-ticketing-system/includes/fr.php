@@ -15,8 +15,8 @@ if ( !function_exists( 'tickera_get_license_key' ) ) {
         if ( !empty( $fr_license_key ) ) {
             return $fr_license_key;
         } else {
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $license_key = ( defined( 'TC_LCK' ) && TC_LCK !== '' ? TC_LCK : (( isset( $tc_general_settings['license_key'] ) && $tc_general_settings['license_key'] !== '' ? $tc_general_settings['license_key'] : '' )) );
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
+            $license_key = ( defined( 'TC_LCK' ) && TC_LCK !== '' ? TC_LCK : (( isset( $tickera_general_settings['license_key'] ) && $tickera_general_settings['license_key'] !== '' ? $tickera_general_settings['license_key'] : '' )) );
             return $license_key;
         }
     }

@@ -33,15 +33,15 @@ if ( ! class_exists( '\Tickera\Widget\TC_Cart_Widget' ) ) {
             global $tc;
 
             $cart_url = trailingslashit( $tc->get_cart_slug( true ) );
-            $show_widget_on_cart_page = apply_filters( 'tc_show_cart_widget_on_cart_page', false );
+            $show_widget_on_cart_page = tickera_apply_filters( 'tickera_show_cart_widget_on_cart_page', false );
 
             if ( ( tickera_current_url() !== $cart_url ) || $show_widget_on_cart_page ) {
 
                 extract( $args, EXTR_SKIP );
                 echo wp_kses_post( $before_widget );
 
-                $title = empty( $instance[ 'title' ] ) ? ' ' : apply_filters( 'tc_cart_widget_title', $instance[ 'title' ] );
-                $button_title = empty( $instance[ 'button_title' ] ) ? '' : apply_filters( 'tc_cart_widget_button_title', $instance[ 'button_title' ] );
+                $title = empty( $instance[ 'title' ] ) ? ' ' : tickera_apply_filters( 'tickera_cart_widget_title', $instance[ 'title' ] );
+                $button_title = empty( $instance[ 'button_title' ] ) ? '' : tickera_apply_filters( 'tickera_cart_widget_button_title', $instance[ 'button_title' ] );
 
                 if ( ! empty( $title ) ) {
                     echo wp_kses_post( $before_title . $title . $after_title );
@@ -50,25 +50,25 @@ if ( ! class_exists( '\Tickera\Widget\TC_Cart_Widget' ) ) {
                 // Cart Contents
                 $cart_contents = $tc->get_cart_cookie();
                 if ( ! empty( $cart_contents ) ) {
-                    do_action( 'tc_cart_before_ul', $cart_contents ); ?>
+                    tickera_do_action( 'tickera_cart_before_ul', $cart_contents ); ?>
                     <ul class='tc_cart_ul'>
                         <?php foreach ( $cart_contents as $ticket_type => $ordered_count ) :
                             $ticket = new \Tickera\TC_Ticket( $ticket_type ); ?>
                             <li id='tc_ticket_type_<?php echo esc_attr( (int) $ticket_type ); ?>'>
-                                <?php echo wp_kses_post( apply_filters( 'tc_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . apply_filters( 'tc_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ) ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
+                                <?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ) ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
                     <?php
-                    do_action( 'tc_cart_after_ul', $cart_contents );
+                    tickera_do_action( 'tickera_cart_after_ul', $cart_contents );
 
                 } else {
-                    do_action( 'tc_cart_before_empty' ); ?>
+                    tickera_do_action( 'tickera_cart_before_empty' ); ?>
                     <ul class='tc_cart_ul'>
                         <li><span class='tc_empty_cart'><?php esc_html_e( 'The cart is empty', 'tickera-event-ticketing-system' ); ?></span></li>
                     </ul>
                     <?php
-                    do_action( 'tc_cart_after_empty' );
+                    tickera_do_action( 'tickera_cart_after_empty' );
                 }
                 ?>
                 <button class='tc_widget_cart_button' data-url='<?php echo esc_attr( $cart_url ); ?>'><?php echo wp_kses_post( $button_title ); ?></button>

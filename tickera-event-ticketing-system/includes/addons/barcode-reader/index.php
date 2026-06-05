@@ -29,11 +29,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
                 global $tc;
                 $this->plugin_dir = $tc->plugin_dir . 'includes/addons/' . $this->dir_name . '/';
                 $this->plugin_url = plugins_url( '/', __FILE__ );
-                add_filter( 'tc_admin_capabilities', array( $this, 'append_capabilities' ) );
-                add_filter( 'tc_staff_capabilities', array( $this, 'append_capabilities' ) );
-                add_action( 'tc_add_menu_items_after_ticket_templates', array( $this, 'add_admin_menu_item_to_tc' ) );
+                tickera_add_filter( 'tickera_admin_capabilities', array( $this, 'append_capabilities' ), 10, 1, array( 'tc_admin_capabilities' ) );
+                tickera_add_filter( 'tickera_staff_capabilities', array( $this, 'append_capabilities' ), 10, 1, array( 'tc_staff_capabilities' ) );
+                add_action( 'tickera_add_menu_items_after_ticket_templates', array( $this, 'add_admin_menu_item_to_tc' ), 10, 1 );
                 add_action( 'admin_enqueue_scripts', array( $this, 'admin_header' ) );
                 add_action( 'wp_ajax_check_in_barcode', array( $this, 'check_in_barcode' ) );
+
+                $this->title = __( 'Barcode Reader', 'tickera-event-ticketing-system' );
             }
         }
 
@@ -46,8 +48,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
 
             if ( isset( $_POST[ 'api_key' ] ) && isset( $_POST[ 'barcode' ] ) && defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 
-                $api_key = sanitize_text_field( $_POST[ 'api_key' ] );
-                $barcode = sanitize_text_field( $_POST[ 'barcode' ] );
+                $api_key = sanitize_text_field( wp_unslash( $_POST[ 'api_key' ] ) );
+                $barcode = sanitize_text_field( wp_unslash( $_POST[ 'barcode' ] ) );
 
                 $api = new \Tickera\TC_API_Key( $api_key );
                 $current_user = wp_get_current_user();
@@ -55,7 +57,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
 
                 if ( current_user_can( 'manage_options' ) || strtolower( $api->details->api_username ) == strtolower( $current_username ) ) {
 
-                    $checkin = new \Tickera\TC_Checkin_API( $api->details->api_key, apply_filters( 'tc_checkin_request_name', 'tickera_scan' ), 'return', $barcode, false );
+                    $checkin = new \Tickera\TC_Checkin_API( $api->details->api_key, tickera_apply_filters( 'tickera_checkin_request_name', 'tickera_scan' ), 'return', $barcode, false );
                     $checkin_result = $checkin->ticket_checkin( false );
 
                     if ( is_numeric( $checkin_result ) && $checkin_result == 403 ) {
@@ -106,11 +108,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
                 require_once( $this->plugin_dir . "/includes/admin-pages/" . $this->name . ".php" );
             };
 
-            $title = sprintf(
-                /* translators: %s: Barcode Reader label */
-                __( '%s', 'tickera-event-ticketing-system' ),
-                esc_html( $this->title )
-            );
+            $title = esc_html( $this->title );
 
             add_submenu_page(
                 $first_tc_menu_handler,
@@ -121,7 +119,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
                 $admin_page_func
             );
 
-            do_action( $this->name . '_add_menu_items_after_' . $handler );
+            tickera_do_action( 'tickera_barcode_reader_add_menu_items_after_' . $handler );
         }
 
         /**
@@ -129,9 +127,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Barcode_Reader_Core' ) ) {
          */
         function admin_header() {
 
-            if ( $_GET && isset( $_GET[ 'page' ] ) && isset( $_GET[ 'post_type' ] ) && $this->name == $_GET[ 'page' ] && 'tc_events' == $_GET[ 'post_type' ] ) {
+            global $tc;
 
-                wp_enqueue_script( $this->name . '-admin', $this->plugin_url . 'js/admin.js', array( 'jquery' ), false, false );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin barcode reader page check only controls addon asset loading.
+            if ( $_GET && isset( $_GET[ 'page' ] ) && isset( $_GET[ 'post_type' ] ) && $this->name == sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) && 'tc_events' == sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) ) {
+
+                wp_enqueue_script( $this->name . '-admin', $this->plugin_url . 'js/admin.js', array( 'jquery' ), $tc->version, false );
                 wp_localize_script( $this->name . '-admin', 'tc_barcode_reader_vars', array(
                     'admin_ajax_url' => admin_url( 'admin-ajax.php' ),
                     'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
@@ -158,4 +159,4 @@ if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
     require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 }
 
-$tc_barcode_reader_core = new TC_Barcode_Reader_Core();
+new TC_Barcode_Reader_Core();

@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_sponsors_logo_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -22,6 +24,7 @@ var AlignmentToolbar = wp.editor.AlignmentToolbar,
 var __ = wp.i18n.__;
 
 registerBlockType( 'tickera/event-sponsors-logo', {
+    apiVersion: 3,
     title: __( 'Event Sponsors Logo', 'tc' ),
     description: __( 'Shows sponsors image / logo of an event', 'tc' ),
     icon: 'format-image',
@@ -41,6 +44,7 @@ registerBlockType( 'tickera/event-sponsors-logo', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_sponsors_logo_block_editor.events );
 
         /**
@@ -83,10 +87,14 @@ registerBlockType( 'tickera/event-sponsors-logo', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-sponsors-logo",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-sponsors-logo",
+                    attributes: props.attributes
+                } )
+            )
 
         ];
     },

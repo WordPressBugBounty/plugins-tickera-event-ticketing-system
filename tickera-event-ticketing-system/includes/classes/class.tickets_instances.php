@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets_Instances' ) ) {
 
         function __construct() {
             $this->form_title = __( 'Attendees & Tickets', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_tickets_instances_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_tickets_instances_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Tickets_Instances() {
@@ -108,7 +108,7 @@ if ( ! class_exists( '\Tickera\TC_Tickets_Instances' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_tickets_instances_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_tickets_instances_fields', $default_fields );
         }
 
         function get_columns() {

@@ -33,7 +33,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
             $this->get_font_colors();
             $this->get_cell_alignment();
             $this->get_element_margins();
-            return apply_filters( 'tc_ticket_admin_content', ob_get_clean() );
+            return tickera_apply_filters( 'tickera_ticket_admin_content', ob_get_clean() );
         }
 
         function advanced_admin_element_settings() {}
@@ -48,7 +48,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
 
             $set_elements = array();
 
-            for ( $i = 1; $i <= apply_filters( 'tc_ticket_template_row_number', 10 ); $i++ ) {
+            for ( $i = 1; $i <= tickera_apply_filters( 'tickera_ticket_template_row_number', 10 ); $i++ ) {
                 $rows_elements = get_post_meta( $this->id, 'rows_' . $i, true );
                 if ( isset( $rows_elements ) && $rows_elements !== '' ) {
                     $element_class_names = explode( ',', $rows_elements );
@@ -71,7 +71,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
                     <option value="72" <?php selected( isset( $this->template_metas[ 'dpi' ] ) ? $this->template_metas[ 'dpi' ] : '72', '72', true ); ?>><?php esc_html_e( '72 (default)', 'tickera-event-ticketing-system' ); ?></option>
                     <option value="150" <?php selected( isset( $this->template_metas[ 'dpi' ] ) ? $this->template_metas[ 'dpi' ] : '72', '150', true ); ?>><?php esc_html_e( '150', 'tickera-event-ticketing-system' ); ?></option>
                     <option value="300" <?php selected( isset( $this->template_metas[ 'dpi' ] ) ? $this->template_metas[ 'dpi' ] : '72', '300', true ); ?>><?php esc_html_e( '300', 'tickera-event-ticketing-system' ); ?></option>
-                    <?php do_action( 'tc_additional_ticket_dpi', $this->template_metas[ 'dpi' ] ); ?>
+                    <?php tickera_do_action( 'tickera_additional_ticket_dpi', $this->template_metas[ 'dpi' ] ); ?>
                 </select>
             </div>
             <?php
@@ -88,7 +88,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
                     <option value="A7" <?php selected( $document_ticket_size, 'A7', true ); ?>><?php esc_html_e( 'A7 (74 × 105 mm)', 'tickera-event-ticketing-system' ); ?></option>
                     <option value="A8" <?php selected( $document_ticket_size, 'A8', true ); ?>><?php esc_html_e( 'A8 (52 × 74 mm)', 'tickera-event-ticketing-system' ); ?></option>
                     <option value="ANSI_A" <?php selected( $document_ticket_size, 'ANSI_A', true ); ?>><?php esc_html_e( 'Letter (216x279 mm)', 'tickera-event-ticketing-system' ); ?></option>
-                    <?php do_action( 'tc_additional_ticket_document_size', $document_ticket_size ); ?>
+                    <?php tickera_do_action( 'tickera_additional_ticket_document_size', $document_ticket_size ); ?>
                 </select>
             </div>
             <?php
@@ -238,7 +238,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Template_Elements' ) ) {
                 <option value='symbol' <?php selected( $template_prefix_font, 'symbol', true ); ?>><?php esc_html_e( 'Symbol', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='times' <?php selected( $template_prefix_font, 'times', true ); ?>><?php esc_html_e( 'Times-Roman', 'tickera-event-ticketing-system' ); ?></option>
                 <option value='thsarabun' <?php selected( $template_prefix_font, 'thsarabun', true ); ?>><?php esc_html_e( 'Sarabun (Thai)', 'tickera-event-ticketing-system' ); ?></option>
-                <?php do_action( 'tc_ticket_font', isset( $this->template_metas[ $prefix . '_font' ] ) ? $this->template_metas[ $prefix . '_font' ] : '', $default_font ); ?>
+                <?php tickera_do_action( 'tickera_ticket_font', isset( $this->template_metas[ $prefix . '_font' ] ) ? $this->template_metas[ $prefix . '_font' ] : '', $default_font ); ?>
             </select>
             <?php
         }
@@ -279,14 +279,14 @@ if ( ! function_exists( 'tickera_register_template_element' ) ) {
 
     function tickera_register_template_element( $class_name, $element_title ) {
 
-        global $tc_template_elements;
+        global $tickera_template_elements;
 
-        if ( ! is_array( $tc_template_elements ) ) {
-            $tc_template_elements = array();
+        if ( ! is_array( $tickera_template_elements ) ) {
+            $tickera_template_elements = array();
         }
 
         if ( class_exists( $class_name ) ) {
-            $tc_template_elements[] = array( $class_name, $element_title );
+            $tickera_template_elements[] = array( $class_name, $element_title );
 
         } else {
             return false;

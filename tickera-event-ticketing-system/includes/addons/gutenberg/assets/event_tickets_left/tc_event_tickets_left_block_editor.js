@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_tickets_left_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -70,6 +72,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/event-tickets-left', {
+    apiVersion: 3,
     title: __( 'Event Tickets Left', 'tc' ),
     description: __( 'Shows number of tickets left (unsold) for an event', 'tc' ),
     icon: 'info',
@@ -87,6 +90,7 @@ registerBlockType( 'tickera/event-tickets-left', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_tickets_left_block_editor.events );
 
         /**
@@ -129,10 +133,14 @@ registerBlockType( 'tickera/event-tickets-left', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-tickets-left",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-tickets-left",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

@@ -33,16 +33,16 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
             $items = [];
             foreach ( $cart_contents as $item_id => $qty ) {
                 $ticket = new \Tickera\TC_Ticket( $item_id );
-                $items[] = sanitize_text_field( apply_filters( 'tc_cart_item_line', $ticket->details->post_title . ' x ' . $qty, $item_id, $qty, $this ) );
+                $items[] = sanitize_text_field( tickera_apply_filters( 'tickera_cart_item_line', $ticket->details->post_title . ' x ' . $qty, $item_id, $qty, $this ) );
             }
 
-            $items_result = sanitize_text_field( apply_filters( 'tc_cart_items_display', implode( apply_filters( 'tc_cart_items_sign', $sign ), $items ) ) );
+            $items_result = sanitize_text_field( tickera_apply_filters( 'tickera_cart_items_display', implode( tickera_apply_filters( 'tickera_cart_items_sign', $sign ), $items ) ) );
 
-            if ( !is_null( $session_order ) && apply_filters( 'tc_cart_items_prepend_order_id', false ) ) {
+            if ( !is_null( $session_order ) && tickera_apply_filters( 'tickera_cart_items_prepend_order_id', false ) ) {
                 $items_result = sprintf( /* translators: %s: Order ID */ __( 'Order #%s', 'tickera-event-ticketing-system' ), sanitize_text_field( $session_order ) ) . ': ' . $items_result;
             }
 
-            return sanitize_text_field( apply_filters( 'tc_cart_items_display_result', $items_result ) );
+            return sanitize_text_field( tickera_apply_filters( 'tickera_cart_items_display_result', $items_result ) );
         }
 
         function get_option( $option_name = '', $default_value = '', $gateway_name = false ) {
@@ -72,7 +72,7 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
                 $value = trim( $default_value );
             }
 
-            return apply_filters( 'tc_gateway_option_value', $value, $gateway_name, $option_name, $default_value );
+            return tickera_apply_filters( 'tickera_gateway_option_value', $value, $gateway_name, $option_name, $default_value );
         }
 
         function get_global_currencies() {
@@ -119,7 +119,7 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
             switch ( $order->details->post_status ) {
 
                 case 'order_received':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is not yet complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is not yet complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     $content .= '<p>' . esc_html__( 'Current order status:', 'tickera-event-ticketing-system' ) . ' <strong>' . esc_html__( 'Pending Payment', 'tickera-event-ticketing-system' ) . '</strong></p>';
                     break;
 
@@ -128,19 +128,19 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
                     break;
 
                 case 'order_paid':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
 
                 case 'order_cancelled':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is cancelled.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is cancelled.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
 
                 case 'order_refunded':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is refunded.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment Gateway name 2: Order total value */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is refunded.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
             }
 
-            $content = wp_kses_post( apply_filters( 'tc_order_confirmation_message_content', $content, $order, $this->plugin_name ) );
+            $content = wp_kses_post( tickera_apply_filters( 'tickera_order_confirmation_message_content', $content, $order, $this->plugin_name ) );
             $tc->remove_order_session_data();
             $tc->maybe_skip_confirmation_screen( $this, $order );
             return $content;
@@ -264,7 +264,7 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
             $session_discounted_total = $tc->session->get( 'discounted_total' );
             $discounted_total = !is_null( $session_discounted_total ) ? (float) $session_discounted_total : '';
 
-            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+            if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
 
                 $total = ( isset( $discounted_total ) && is_numeric( $discounted_total ) )
                     ? round( $discounted_total, 2 )
@@ -367,18 +367,18 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
                 if ( isset( $wp_query->query_vars[ 'checkoutstep' ] ) && $wp_query->query_vars[ 'checkoutstep' ] == 'confirmation' ) {
                     $session_order = $tc->session->get( 'tc_order' );
                     $session_payment_method = $tc->session->get( 'tc_payment_method' );
-                    do_action( 'tc_checkout_payment_pre_confirmation_' . sanitize_text_field( $session_payment_method ), $tc->get_order( sanitize_text_field( $session_order ) ) );
+                    tickera_do_action( 'tickera_checkout_payment_pre_confirmation_' . sanitize_text_field( $session_payment_method ), $tc->get_order( sanitize_text_field( $session_order ) ) );
                 }
             }
         }
 
         function isSSL() {
 
-            if ( ! empty( $_SERVER[ 'https' ] ) ) {
+            if ( isset( $_SERVER[ 'https' ] ) && '' !== sanitize_text_field( wp_unslash( $_SERVER[ 'https' ] ) ) ) {
                 return true;
             }
 
-            if ( ! empty( $_SERVER[ 'HTTP_X_FORWARDED_PROTO' ] ) && $_SERVER[ 'HTTP_X_FORWARDED_PROTO' ] == 'https' ) {
+            if ( isset( $_SERVER[ 'HTTP_X_FORWARDED_PROTO' ] ) && '' !== sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_X_FORWARDED_PROTO' ] ) ) && sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_X_FORWARDED_PROTO' ] ) ) == 'https' ) {
                 return true;
             }
 
@@ -388,14 +388,15 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
         function force_ssl() {
             if ( $this->is_payment_page() && $this->force_ssl && ! is_ssl() && $this->is_active() ) {
                 if ( ! $this->isSSL() ) {
-                    tickera_redirect( 'https://' . sanitize_text_field( $_SERVER[ 'HTTP_HOST' ] ) . sanitize_text_field( $_SERVER[ 'REQUEST_URI' ] ) );
+                    tickera_redirect( 'https://' . ( isset( $_SERVER[ 'HTTP_HOST' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_HOST' ] ) ) : '' ) . ( isset( $_SERVER[ 'REQUEST_URI' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'REQUEST_URI' ] ) ) : '' ) );
                 }
             }
         }
 
         function show_cart_errors() {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment return status flags only control display of the cart error message.
             if ( isset( $_GET[ $this->cancel_slug ] ) || isset( $_GET[ $this->failed_slug ] ) ) {
-                add_filter( 'tc_cart_errors', array( &$this, 'cart_error_content' ) );
+                tickera_add_filter( 'tickera_cart_errors', array( &$this, 'cart_error_content' ), 10, 1, array( 'tc_cart_errors' ) );
             }
         }
 
@@ -430,20 +431,20 @@ if ( ! class_exists( '\Tickera\TC_Gateway_API' ) ) {
             $this->on_creation();
             $this->init();
 
-            add_action( 'tc_gateway_settings', array( &$this, 'gateway_admin_settings' ) );
-            add_action( 'tc_handle_payment_return_' . $this->plugin_name, array( &$this, 'ipn' ) );
+            tickera_add_action( 'tickera_gateway_settings', array( &$this, 'gateway_admin_settings' ), 10, 1, [ 'tc_gateway_settings' ] );
+            add_action( 'tickera_handle_payment_return_' . $this->plugin_name, array( &$this, 'ipn' )  );
 
             add_action( 'template_redirect', array( &$this, '_checkout_confirmation_hook' ) );
-            add_filter( 'tc_checkout_confirm_payment_' . $this->plugin_name, array( &$this, 'confirm_payment_form' ), 10, 2 );
-            add_action( 'tc_payment_confirm_' . $this->plugin_name, array( &$this, 'process_payment' ), 10, 2 );
-            add_filter( 'tc_order_notification_' . $this->plugin_name, array( &$this, 'order_confirmation_email' ), 10, 2 );
-            add_action( 'tc_checkout_payment_pre_confirmation_' . $this->plugin_name, array( &$this, 'order_confirmation' ) );
-            add_filter( 'tc_checkout_payment_confirmation_' . $this->plugin_name, array( &$this, 'order_confirmation_message' ), 10, 2 );
+            tickera_add_filter( 'tickera_checkout_confirm_payment_' . $this->plugin_name, array( &$this, 'confirm_payment_form' ), 10, 2, [ 'tc_checkout_confirm_payment_' . $this->plugin_name ] );
+            tickera_add_action( 'tickera_payment_confirm_' . $this->plugin_name, array( &$this, 'process_payment' ), 10, 2, [ 'tc_payment_confirm_' . $this->plugin_name ] );
+            tickera_add_filter( 'tickera_order_notification_' . $this->plugin_name, array( &$this, 'order_confirmation_email' ), 10, 2, [ 'tc_order_notification_' . $this->plugin_name ] );
+            add_action( 'tickera_checkout_payment_pre_confirmation_' . $this->plugin_name, array( &$this, 'order_confirmation' ), 10, 1 );
+            tickera_add_filter( 'tickera_checkout_payment_confirmation_' . $this->plugin_name, array( &$this, 'order_confirmation_message' ), 10, 2, [ 'tc_checkout_payment_confirmation_' . $this->plugin_name ] );
 
             add_action( 'template_redirect', array( &$this, 'force_ssl' ) );
             add_action( 'init', array( &$this, 'show_cart_errors' ) );
 
-            add_action( 'tc_save_tc_gateway_settings', array( $this, 'save_settings' ) );
+            add_action( 'tickera_save_tc_gateway_settings', array( $this, 'save_settings' ), 10, 1 );
         }
     }
 }
@@ -464,18 +465,18 @@ if ( ! function_exists( 'tickera_register_gateway_plugin' ) ) {
     */
     function tickera_register_gateway_plugin( $class_name, $plugin_name, $admin_name, $global = false, $demo = false ) {
 
-        global $tc_gateway_plugins;
+        global $tickera_gateway_plugins;
 
-        if ( ! is_array( $tc_gateway_plugins ) ) {
-            $tc_gateway_plugins = [];
+        if ( ! is_array( $tickera_gateway_plugins ) ) {
+            $tickera_gateway_plugins = [];
         }
 
         if ( class_exists( $class_name ) ) {
 
-            $tc_gateway_plugins[ $plugin_name ] = array( $class_name, $admin_name, $global, $demo );
+            $tickera_gateway_plugins[ $plugin_name ] = array( $class_name, $admin_name, $global, $demo );
 
             // Sort gateways by priority
-            uksort( $tc_gateway_plugins, function ( $a, $b ) use($tc_gateway_plugins) {
+            uksort( $tickera_gateway_plugins, function ( $a, $b ) use($tickera_gateway_plugins) {
 
                 $settings = get_option( 'tickera_settings' );
 

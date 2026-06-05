@@ -72,7 +72,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                 'soldout_message' => __( 'Tickets are sold out.', 'tickera-event-ticketing-system' ),
                 'quantity_title' => __( 'Qty.', 'tickera-event-ticketing-system' ),
                 'quantity' => false,
-                'type' => ( apply_filters( 'tc_ticket_buynow_button_type', false ) ? 'buynow' : 'cart' ),
+                'type' => ( tickera_apply_filters( 'tickera_ticket_buynow_button_type', false ) ? 'buynow' : 'cart' ),
                 'open_method' => 'regular',
                 'title' => __( 'Add to Cart', 'tickera-event-ticketing-system' ),
                 'wrapper' => '' ), $atts ) );
@@ -90,15 +90,15 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                             <div class="tc-event-table-wrap">
                                 <table class="<?php echo esc_attr( $event_table_class ); ?>">
                                     <tr>
-                                        <?php do_action( 'tc_event_col_title_before_ticket_title' ); ?>
+                                        <?php tickera_do_action( 'tickera_event_col_title_before_ticket_title' ); ?>
                                         <th><?php echo esc_html( $ticket_type_title ); ?></th>
-                                        <?php do_action( 'tc_event_col_title_before_ticket_price' ); ?>
+                                        <?php tickera_do_action( 'tickera_event_col_title_before_ticket_price' ); ?>
                                         <th><?php echo esc_html( $price_title ); ?></th>
                                         <?php if ( $quantity ) { ?>
-                                            <?php do_action( 'tc_event_col_title_before_quantity' ); ?>
+                                            <?php tickera_do_action( 'tickera_event_col_title_before_quantity' ); ?>
                                             <th><?php echo esc_html( $quantity_title ); ?></th>
                                         <?php } ?>
-                                        <?php do_action( 'tc_event_col_title_before_cart_title' ); ?>
+                                        <?php tickera_do_action( 'tickera_event_col_title_before_cart_title' ); ?>
                                         <th><?php echo esc_html( $cart_title ); ?></th>
                                     </tr>
                                     <?php
@@ -106,9 +106,9 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                                         $event_ticket = new TC_Ticket( (int) $event_ticket_id );
                                         if ( TC_Ticket::is_sales_available( (int) $event_ticket_id ) ) : ?>
                                             <tr>
-                                            <?php do_action( 'tc_event_col_value_before_ticket_type', (int) $event_ticket_id ); ?>
-                                            <td data-column="<?php esc_attr_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?>"><?php echo esc_html( apply_filters( 'tc_tickets_table_title', $event_ticket->details->post_title, $event_ticket_id ) ); ?></td>
-                                            <?php do_action( 'tc_event_col_value_before_ticket_price', (int) $event_ticket_id ); ?>
+                                            <?php tickera_do_action( 'tickera_event_col_value_before_ticket_type', (int) $event_ticket_id ); ?>
+                                            <td data-column="<?php esc_attr_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?>"><?php echo esc_html( tickera_apply_filters( 'tickera_tickets_table_title', $event_ticket->details->post_title, $event_ticket_id ) ); ?></td>
+                                            <?php tickera_do_action( 'tickera_event_col_value_before_ticket_price', (int) $event_ticket_id ); ?>
                                             <td data-column="<?php esc_attr_e( 'Price', 'tickera-event-ticketing-system' ); ?>"><?php
                                                 echo esc_html( do_shortcode( sprintf(
                                                     /* translators: %d: Ticket type ID */
@@ -117,12 +117,12 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                                                 ) ) );
                                             ?></td>
                                             <?php if ( $quantity ) { ?>
-                                                <?php do_action( 'tc_event_col_value_before_quantity', (int) $event_ticket_id ); ?>
+                                                <?php tickera_do_action( 'tickera_event_col_value_before_quantity', (int) $event_ticket_id ); ?>
                                                 <td data-column="<?php esc_attr_e( 'Quantity', 'tickera-event-ticketing-system' ); ?>"><?php
                                                     echo wp_kses( tickera_quantity_selector( (int) $event_ticket->details->ID, true ), wp_kses_allowed_html( 'tickera_quantity_selector' ) );
                                                 ?></td>
                                             <?php } ?>
-                                            <?php do_action( 'tc_event_col_value_before_cart_title', (int) $event_ticket_id ); ?>
+                                            <?php tickera_do_action( 'tickera_event_col_value_before_cart_title', (int) $event_ticket_id ); ?>
                                             <td data-column="<?php esc_attr_e( 'Cart', 'tickera-event-ticketing-system' ); ?>"><?php
                                                 echo wp_kses(
                                                         do_shortcode( sprintf(
@@ -229,14 +229,14 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                 $with_price_content = ( $show_price ) ? ' <span class="' . esc_attr( $price_wrapper_class ) . '">' . esc_html( do_shortcode( '[ticket_price id="' . (int) $id . '"]' ) ) . '</span> ' : '';
 
                 if ( is_array( $tc->get_cart_cookie() ) && array_key_exists( $id, $tc->get_cart_cookie() ) ) {
-                    $button = sprintf( '<' . sanitize_text_field( $price_wrapper ) . ' class="tc_in_cart">%s <a href="%s" class="%s" data-tooltip="%s">%s</a></' . sanitize_text_field( $price_wrapper ) . '>', apply_filters( 'tc_ticket_added_to_message', __( 'Ticket added to', 'tickera-event-ticketing-system' ) ), esc_url( $tc->get_cart_slug( true ) ), ( $frontend_tooltip ? 'tc-tooltip' : '' ), esc_attr( $frontend_tooltip ? $frontend_tooltip_cart : '' ), apply_filters( 'tc_ticket_added_to_cart_message', __( 'Cart', 'tickera-event-ticketing-system' ) ) );
+                    $button = sprintf( '<' . sanitize_text_field( $price_wrapper ) . ' class="tc_in_cart">%s <a href="%s" class="%s" data-tooltip="%s">%s</a></' . sanitize_text_field( $price_wrapper ) . '>', tickera_apply_filters( 'tickera_ticket_added_to_message', __( 'Ticket added to', 'tickera-event-ticketing-system' ) ), esc_url( $tc->get_cart_slug( true ) ), ( $frontend_tooltip ? 'tc-tooltip' : '' ), esc_attr( $frontend_tooltip ? $frontend_tooltip_cart : '' ), tickera_apply_filters( 'tickera_ticket_added_to_cart_message', __( 'Cart', 'tickera-event-ticketing-system' ) ) );
 
                 } else {
 
                     if ( $ticket_type->is_sold_ticket_exceeded_limit_level() === false ) {
 
                         if ( isset( $general_settings[ 'force_login' ] ) && 'yes' == $general_settings[ 'force_login' ] && ! is_user_logged_in() ) {
-                            $button = '<form class="cart_form">' . $nonce . ( 'before' == $price_position ? $with_price_content : '' ) . '<a href="' . esc_url( apply_filters( 'tc_force_login_url', wp_login_url( get_permalink() ), get_permalink() ) ) . '" class="add_to_cart_force_login" id="ticket_' . (int) $id . '"><span class="title">' . esc_html( $title ) . '</span></a>' . wp_kses_post( 'after' == $price_position ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
+                            $button = '<form class="cart_form">' . $nonce . ( 'before' == $price_position ? $with_price_content : '' ) . '<a href="' . esc_url( tickera_apply_filters( 'tickera_force_login_url', wp_login_url( get_permalink() ), get_permalink() ) ) . '" class="add_to_cart_force_login" id="ticket_' . (int) $id . '"><span class="title">' . esc_html( $title ) . '</span></a>' . wp_kses_post( 'after' == $price_position ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
 
                         } else {
                             $button = '<form class="cart_form">' . $nonce . wp_kses(( true == $quantity ? tickera_quantity_selector( $id, true, false ) : '' ), wp_kses_allowed_html( 'tickera_quantity_selector' ) ) . ( ( 'before' == $price_position ) ? $with_price_content : '' ) . '<a href="#" class="add_to_cart' . ( $frontend_tooltip ? ' tc-tooltip' : '' ) . '" data-button-type="' . esc_attr( $type ) . '" data-open-method="' . esc_attr( $open_method ) . '" id="ticket_' . esc_attr( $id ) . '"' . ( $frontend_tooltip ? ' data-tooltip="' . esc_attr( $frontend_tooltip_add_to_cart ) . '"' : '' ) . '><span class="title">' . esc_html( $title ) . '</span></a>' . ( ( 'after' == $price_position ) ? $with_price_content : '' ) . '<input type="hidden" name="ticket_id" class="ticket_id" value="' . esc_attr( $id ) . '"/>' . '</form>';
@@ -266,7 +266,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
             ), $atts ) );
 
             $ticket = new TC_Ticket( (int) $id, 'publish' );
-            return apply_filters( 'tc_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) );
+            return tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) );
         }
 
         function event_tickets_sold( $atts ) {
@@ -332,7 +332,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
             }
 
             $event = new TC_Event( $id );
-            return apply_filters( 'tc_shortcode_event_terms', wpautop( $event->details->event_terms ), $event->details->event_terms );
+            return tickera_apply_filters( 'tickera_shortcode_event_terms', wpautop( $event->details->event_terms ), $event->details->event_terms );
         }
 
         function event_sponsors_logo( $atts ) {
@@ -602,5 +602,5 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
         }
     }
 
-    $tc_shortcodes = new TC_Shortcodes();
+    new TC_Shortcodes();
 }

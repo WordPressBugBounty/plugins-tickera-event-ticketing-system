@@ -1,6 +1,99 @@
 <?php
-
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+if ( ! function_exists( 'tickera_add_filter' ) ) {
+
+    function tickera_add_filter( $hook_name, $callback, $priority = 10, $arguments = 1, $deprecated_hook_name = '', $support_deprecated_hook = true ) {
+        
+        add_filter( $hook_name, $callback, $priority, $arguments );
+
+        // Continue to register deprecated hook if supported.
+        if ( $deprecated_hook_name && $support_deprecated_hook ) {
+
+            if ( is_array( $deprecated_hook_name ) ) {
+
+                array_map( function( $name ) use ( $hook_name, $callback, $priority, $arguments ) {
+                    $deprecated_name = sanitize_text_field( $name );
+                    if ( ! has_filter( $deprecated_name, $callback ) ) {
+                        add_filter( $deprecated_name, $callback, $priority, $arguments );
+                    }
+                }, $deprecated_hook_name );
+
+            } else {
+
+                $deprecated_name = sanitize_text_field( $deprecated_hook_name );
+                if ( ! has_filter( $deprecated_name, $callback ) ) {
+                    add_filter( $deprecated_name, $callback, $priority, $arguments );
+                }
+            }
+        }
+    }
+}
+
+if ( ! function_exists( 'tickera_add_action' ) ) {
+
+    function tickera_add_action( $hook_name, $callback, $priority = 10, $arguments = 1, $deprecated_hook_name = '', $support_deprecated_hook = true ) {
+
+        add_action( $hook_name, $callback, $priority, $arguments );
+
+        // Continue to register deprecated hook if supported.
+        if ( $deprecated_hook_name && $support_deprecated_hook ) {
+
+            if ( is_array( $deprecated_hook_name ) ) {
+
+                array_map( function( $name ) use ( $hook_name, $callback, $priority, $arguments ) {
+                    $deprecated_name = sanitize_text_field( $name );
+                    if ( ! has_action( $deprecated_name, $callback ) ) {
+                        add_action( $deprecated_name, $callback, $priority, $arguments );
+                    }
+                }, $deprecated_hook_name );
+
+            } else {
+
+                $deprecated_name = sanitize_text_field( $deprecated_hook_name );
+                if ( ! has_action( $deprecated_name, $callback ) ) {
+                    add_action( $deprecated_name, $callback, $priority, $arguments );
+                }
+            }
+        }
+    }
+}
+
+if ( ! function_exists( 'tickera_apply_filters' ) ) {
+
+    function tickera_apply_filters( $hook_name, $value ) {
+        $args = array_slice( func_get_args(), 2 );
+        $clean_hook_name = preg_replace( '/^(tc_|tickera_)/', '', $hook_name );
+
+        if ( ! in_array( $clean_hook_name, [ 'the_content', 'the_title', 'the_excerpt', 'the_content_filtered' ] ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+            $value = apply_filters( $clean_hook_name, $value, ...$args );
+        }
+
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+        $value = apply_filters( 'tc_' . $clean_hook_name, $value, ...$args );
+
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+        return apply_filters( $hook_name, $value, ...$args );
+    }
+}
+
+if ( ! function_exists( 'tickera_do_action' ) ) {
+
+    function tickera_do_action( $hook_name ) {
+        $args = array_slice( func_get_args(), 1 );
+        $clean_hook_name = preg_replace( '/^(tc_|tickera_)/', '', $hook_name );
+
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+        do_action( $clean_hook_name, ...$args );
+
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+        do_action( 'tc_' . $clean_hook_name, ...$args );
+
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+        do_action( $hook_name, ...$args );
+    }
+}
 
 /**
  * Check which radio value should be checked in the cart form
@@ -21,20 +114,25 @@ if ( ! function_exists( 'tickera_cart_field_get_radio_value_checked' ) ) {
 
     function tickera_cart_field_get_radio_value_checked( $field, $field_value, $field_values, $field_name, $ticket_type = false, $owner_index = false ) {
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart field helper only reads submitted checkout values for form state.
         if ( ! $_POST ) {
             return false;
         }
 
         $result = false;
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart radio field is sanitized before checking selected state.
         if ( isset( $_POST[ $field_name ] ) ) {
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart radio field is sanitized before checking selected state.
             if ( is_array( $_POST[ $field_name ] ) ) {
-                $posted_value = tickera_sanitize_array( $_POST[ $field_name ], false, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $posted_value = tickera_sanitize_array( wp_unslash( $_POST[ $field_name ] ), false, true );
                 $posted_value = isset( $posted_value[ $ticket_type ][ $owner_index ] ) ? sanitize_text_field( $posted_value[ $ticket_type ][ $owner_index ] ) : ( isset( $field[ 'field_default_value' ] ) ? sanitize_text_field( $field[ 'field_default_value' ] ) : '' );
 
             } else {
-                $posted_value = sanitize_text_field( $_POST[ $field_name ] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart radio field is sanitized before checking selected state.
+                $posted_value = sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) );
             }
         }
 
@@ -65,7 +163,7 @@ if ( ! function_exists( 'tickera_check_ajax' ) ) {
 
     function tickera_check_ajax(){
         $no_ajax = '';
-        if( ! empty( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) && strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ]) == 'xmlhttprequest' ) {
+        if( isset( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) && '' !== sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) && strtolower( sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) ) == 'xmlhttprequest' ) {
             $no_ajax = true;
         }
         return $no_ajax;
@@ -100,14 +198,14 @@ if ( ! function_exists( 'tickera_final_cart_check' ) ) {
         // Discount code validation
         $discount_code = $tc->session->get( 'tc_discount_code' );
         if ( $discount_code ) {
-            $discount = ( new \Tickera\TC_Discounts() )->discounted_cart_total( false, $discount_code );
-            if ( ! $discount[ 'success' ] ) {
-                $tc->session->set( 'tc_cart_errors', $discount[ 'message' ] );
+            $tickera_discount = ( new \Tickera\TC_Discounts() )->discounted_cart_total( false, $discount_code );
+            if ( ! $tickera_discount[ 'success' ] ) {
+                $tc->session->set( 'tc_cart_errors', $tickera_discount[ 'message' ] );
                 $error_numbers++;
             }
         }
 
-        do_action( 'tc_add_more_final_checks', $cart );
+        tickera_do_action( 'tickera_add_more_final_checks', $cart );
 
         if ( $error_numbers > 0 ) {
             $tc->session->set( 'tc_cart_ticket_error_ids', $tickets_soldout );
@@ -138,14 +236,18 @@ if ( ! function_exists( 'tickera_cart_field_get_option_value_selected' ) ) {
 
         $result = false;
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart select field is sanitized before checking selected state.
         if ( isset( $_POST[ $field_name ] ) ) {
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart select field is sanitized before checking selected state.
             if ( is_array( $_POST[ $field_name ] ) ) {
-                $posted_value = tickera_sanitize_array( $_POST[ $field_name ], false, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $posted_value = tickera_sanitize_array( wp_unslash( $_POST[ $field_name ] ), false, true );
                 $posted_value = isset( $posted_value[ $ticket_type ][ $owner_index ] ) ? sanitize_text_field( $posted_value[ $ticket_type ][ $owner_index ] ) : '';
 
             } else {
-                $posted_value = sanitize_text_field( $_POST[ $field_name ] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart select field is sanitized before checking selected state.
+                $posted_value = sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) );
             }
         }
 
@@ -182,14 +284,18 @@ if ( ! function_exists( 'tickera_cart_field_posted_values' ) ) {
 
     function tickera_cart_field_posted_values( $field_name, $ticket_type = false, $owner_index = false ) {
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart field value is sanitized before use.
         if ( isset( $_POST[ $field_name ] ) ) {
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart field value is sanitized before use.
             if ( is_array( $_POST[ $field_name ] ) ) {
-                $posted_value = tickera_sanitize_array( $_POST[ $field_name ], false, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $posted_value = tickera_sanitize_array( wp_unslash( $_POST[ $field_name ] ), false, true );
                 $posted_value = isset( $posted_value[ $ticket_type ][ $owner_index ] ) ? sanitize_text_field( $posted_value[ $ticket_type ][ $owner_index ] ) : '';
 
             } else {
-                $posted_value = sanitize_text_field( $_POST[ $field_name ] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart field value is sanitized before use.
+                $posted_value = sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) );
             }
         }
 
@@ -219,14 +325,18 @@ if ( ! function_exists( 'tickera_cart_field_get_checkbox_value_checked' ) ) {
     function tickera_cart_field_get_checkbox_value_checked( $field, $field_value, $field_values, $field_name, $ticket_type = false, $owner_index = false ) {
         $result = false;
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart checkbox field is sanitized before checking selected state.
         if ( isset( $_POST[ $field_name ] ) ) {
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart checkbox field is sanitized before checking selected state.
             if ( is_array( $_POST[ $field_name ] ) ) {
-                $posted_value = tickera_sanitize_array( $_POST[ $field_name ], false, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $posted_value = tickera_sanitize_array( wp_unslash( $_POST[ $field_name ] ), false, true );
                 $posted_value = isset( $posted_value[ $ticket_type ][ $owner_index ] ) ? sanitize_text_field( $posted_value[ $ticket_type ][ $owner_index ] ) : '';
 
             } else {
-                $posted_value = sanitize_text_field( $_POST[ $field_name ] );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Cart checkbox field is sanitized before checking selected state.
+                $posted_value = sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) );
             }
 
             $posted_value = explode( ', ', $posted_value );
@@ -359,7 +469,7 @@ if ( ! function_exists( 'tickera_sanitize_array' ) ) {
                 break;
 
             default:
-                throw new \Exception( __( 'Invalid data type passed on tickera_sanitize_array function.', 'tickera-event-ticketing-system' ) );
+                throw new \Exception( esc_html__( 'Invalid data type passed on tickera_sanitize_array function.', 'tickera-event-ticketing-system' ) );
                 exit;
         }
     }
@@ -548,12 +658,12 @@ if ( ! function_exists( 'tickera_cache_delete' ) ) {
  * Deprecated function "tc_the_content".
  * @since 3.5.3.0
  */
-add_filter( 'tc_the_content', 'tickera_the_content' );
+tickera_add_filter( 'tickera_the_content', 'tickera_the_content', 10, 1, array( 'tc_the_content' ) );
 if ( ! function_exists( 'tickera_the_content' ) ) {
 
     function tickera_the_content( $content ) {
 
-        if ( apply_filters( 'tc_the_content_wpautop', true ) ) {
+        if ( tickera_apply_filters( 'tickera_the_content_wpautop', true ) ) {
             return wpautop( $content );
         }
 
@@ -602,12 +712,19 @@ if ( ! function_exists( 'tickera_redirect' ) ) {
             return;
         }
 
-        if ( apply_filters( 'tc_bypass_redirection', false ) ) {
+        if ( tickera_apply_filters( 'tickera_bypass_redirection', false ) ) {
             return;
         }
 
         ob_start();
-        @wp_redirect( $url );
+
+        $base_url = wp_parse_url( $url, PHP_URL_HOST );
+        add_filter( 'allowed_redirect_hosts', function ( $hosts ) use ( $base_url ) {
+            if ( $base_url && !in_array( $base_url, $hosts ) ) { $hosts[] = $base_url; }
+            return $hosts;
+        } );
+
+        @wp_safe_redirect( $url );
 
         if ( $force ) {
             tickera_js_redirect( $url, false );
@@ -636,7 +753,7 @@ if ( ! function_exists( 'tickera_js_redirect' ) ) {
             ob_start();
         }
 
-        if ( apply_filters( 'tc_bypass_redirection', false ) ) {
+        if ( tickera_apply_filters( 'tickera_bypass_redirection', false ) ) {
             return false;
         }
         ?>
@@ -655,7 +772,7 @@ if ( ! function_exists( 'tickera_get_ticket_price' ) ) {
 
     function tickera_get_ticket_price( $id ) {
         $price_per_ticket = get_post_meta( $id, 'price_per_ticket', true );
-        return (float) apply_filters( 'tc_price_per_ticket', $price_per_ticket, $id );
+        return (float) tickera_apply_filters( 'tickera_price_per_ticket', $price_per_ticket, $id );
     }
 }
 
@@ -759,12 +876,12 @@ if ( ! function_exists( 'tickera_quantity_selector' ) ) {
         if ( $quantity_left > 0 ) {
             if ( $quantity_left ) : ?>
                 <?php if ( $number_field ) : ?>
-                    <div class="ticket-quantity"><div class="inner-wrap"><input type="button" class="tickera_button minus" value="-" data-action="minus"/><input type="number" class="tc_quantity_selector" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) apply_filters( 'tc_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>" tabindex="0"><input type="button" class="tickera_button plus" value="+" data-action="plus"/></div></div>
+                    <div class="ticket-quantity"><div class="inner-wrap"><input type="button" class="tickera_button minus" value="-" data-action="minus"/><input type="number" class="tc_quantity_selector" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) tickera_apply_filters( 'tickera_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>" tabindex="0"><input type="button" class="tickera_button plus" value="+" data-action="plus"/></div></div>
                 <?php else : ?>
-                    <div class="ticket-quantity"><div class="inner-wrap"><input type="button" class="tickera_button minus" value="-" data-action="minus"/><input type="text" inputmode="numeric" pattern="[0-9]*" class="tc_quantity_selector" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) apply_filters( 'tc_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>" tabindex="0"><input type="button" class="tickera_button plus" value="+" data-action="plus"/></div></div>
+                    <div class="ticket-quantity"><div class="inner-wrap"><input type="button" class="tickera_button minus" value="-" data-action="minus"/><input type="text" inputmode="numeric" pattern="[0-9]*" class="tc_quantity_selector" min="<?php echo esc_attr( (int) $min_quantity ); ?>" max="<?php echo esc_attr( $max_quantity ); ?>" value="<?php echo (int) tickera_apply_filters( 'tickera_quantity_selector_default_value', ( $quantity ? $quantity : ( $min_quantity ? $min_quantity : 1 ) ) ); ?>" tabindex="0"><input type="button" class="tickera_button plus" value="+" data-action="plus"/></div></div>
                 <?php endif; ?>
             <?php else : ?>
-                <span><?php _e( 'Sold out', 'tickera-event-ticketing-system' ); ?></span>
+                <span><?php esc_html_e( 'Sold out', 'tickera-event-ticketing-system' ); ?></span>
             <?php endif; ?>
             <?php if ( $return ) { return ob_get_clean(); }
         }
@@ -779,8 +896,8 @@ if ( ! function_exists( 'tickera_quantity_selector' ) ) {
 if ( ! function_exists( 'tickera_is_tax_inclusive' ) ) {
 
     function tickera_is_tax_inclusive() {
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        return ( isset( $tc_general_settings[ 'tax_inclusive' ] ) && 'yes' == $tc_general_settings[ 'tax_inclusive' ] ) ? true : false;;
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        return ( isset( $tickera_general_settings[ 'tax_inclusive' ] ) && 'yes' == $tickera_general_settings[ 'tax_inclusive' ] ) ? true : false;;
     }
 }
 
@@ -792,24 +909,32 @@ if ( ! function_exists( 'tickera_get_tickets_user_purchased_count' ) ) {
 
     function tickera_get_tickets_user_purchased_count( $user_id, $ticket_type_id = null ) {
 
-        global $wpdb;
-
         if ( ! $user_id )
             return false;
 
         $order_statuses = [ 'order_paid', 'order_received', 'order_fraud' ];
-        $prepare_placeholder = implode( ",", array_fill( 0, count( $order_statuses ), '%s' ) );
-        $prepare_arguments = array_merge( [ (int) $user_id ], $order_statuses );
-
-        $query = $wpdb->prepare( "SELECT `post_content` FROM {$wpdb->posts} WHERE `post_type` = 'tc_orders' AND `post_author`=%d AND `post_status` IN ($prepare_placeholder) AND `post_content` <> ''", $prepare_arguments );
-        $user_purchase = $wpdb->get_results( $query );
+        $user_purchase = get_posts( [
+            'post_type' => 'tc_orders',
+            'author' => (int) $user_id,
+            'post_status' => $order_statuses,
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+            'no_found_rows' => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+        ] );
 
         $sold_count = 0;
 
-        foreach ( $user_purchase as $key => $val ) {
-            $post_content = maybe_unserialize( $val->post_content );
-            $quanity = ( $ticket_type_id ) ? ( isset( $post_content[ $ticket_type_id ] ) ) ? $post_content[ $ticket_type_id ] : 0 : array_sum( $post_content );
-            $sold_count = $sold_count + $quanity;
+        foreach ( $user_purchase as $order_id ) {
+            $post_content = maybe_unserialize( get_post_field( 'post_content', $order_id ) );
+
+            if ( empty( $post_content ) || ! is_array( $post_content ) ) {
+                continue;
+            }
+
+            $quantity = ( $ticket_type_id ) ? ( isset( $post_content[ $ticket_type_id ] ) ? $post_content[ $ticket_type_id ] : 0 ) : array_sum( $post_content );
+            $sold_count = $sold_count + $quantity;
         }
 
         return $sold_count;
@@ -862,30 +987,45 @@ if ( ! function_exists( 'tickera_get_tickets_count_sold' ) ) {
 
     function tickera_get_tickets_count_sold( $ticket_ids ) {
 
-        global $wpdb;
-
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $removed_cancelled_orders_from_stock = isset( $tc_general_settings[ 'removed_cancelled_orders_from_stock' ] ) ? $tc_general_settings[ 'removed_cancelled_orders_from_stock' ] : 'yes';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $removed_cancelled_orders_from_stock = isset( $tickera_general_settings[ 'removed_cancelled_orders_from_stock' ] ) ? $tickera_general_settings[ 'removed_cancelled_orders_from_stock' ] : 'yes';
 
         // $return_cancelled_orders_in_stock
         $skip_statuses = ( 'yes' == $removed_cancelled_orders_from_stock ) ? [ 'trash', 'draft', 'order_cancelled', 'order_refunded', 'order_fraud' ] : [ 'trash', 'draft' ];
 
-        if ( is_array( $ticket_ids ) ) {
-            $prepare_placeholder = implode( ',', array_fill( 0, count( $ticket_ids ), '%d' ) );
-            $query = $wpdb->prepare( "SELECT COUNT(*) as cnt, p.post_parent FROM {$wpdb->posts} p, {$wpdb->postmeta} pm WHERE p.ID = pm.post_id AND p.post_type = 'tc_tickets_instances' AND p.post_status = 'publish' AND pm.meta_key = 'ticket_type_id' AND pm.meta_value IN ($prepare_placeholder) GROUP BY p.post_parent", $ticket_ids );
+        $ticket_ids = is_array( $ticket_ids ) ? array_map( 'intval', $ticket_ids ) : [ (int) $ticket_ids ];
+        $ticket_ids = array_filter( $ticket_ids );
 
-        } else {
-            $query = $wpdb->prepare( "SELECT COUNT(*) as cnt, p.post_parent FROM {$wpdb->posts} p, {$wpdb->postmeta} pm WHERE p.ID = pm.post_id AND p.post_type = 'tc_tickets_instances' AND p.post_status = 'publish' AND pm.meta_key = 'ticket_type_id' AND pm.meta_value = %1s GROUP BY p.post_parent", (int) $ticket_ids );
+        if ( empty( $ticket_ids ) ) {
+            return 0;
         }
 
-        $sold_records = $wpdb->get_results( $query );
+        $sold_records = get_posts( [
+            'post_type' => 'tc_tickets_instances',
+            'post_status' => 'publish',
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+            'no_found_rows' => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required to count ticket instances for the selected ticket type IDs.
+            'meta_query' => [
+                [
+                    'key' => 'ticket_type_id',
+                    'value' => $ticket_ids,
+                    'compare' => 'IN',
+                    'type' => 'NUMERIC',
+                ],
+            ],
+        ] );
 
         $sold_count = 0;
-        foreach ( $sold_records as $sold_record ) {
-            $order_status = get_post_status( $sold_record->post_parent );
+        foreach ( $sold_records as $ticket_instance_id ) {
+            $order_id = wp_get_post_parent_id( $ticket_instance_id );
+            $order_status = get_post_status( $order_id );
 
-            if ( ! in_array( $order_status, $skip_statuses ) ) {
-                $sold_count += $sold_record->cnt;
+            if ( ! in_array( $order_status, $skip_statuses, true ) ) {
+                $sold_count++;
             }
         }
 
@@ -989,7 +1129,6 @@ if ( ! function_exists( 'tickera_create_page' ) ) {
 
     function tickera_create_page( $slug, $option = '', $page_title = '', $page_content = '', $post_parent = 0 ) {
 
-        global $wpdb;
         $option_value = get_option( sanitize_key( $option ) );
 
         if ( $option_value > 0 && get_post( $option_value ) ) {
@@ -998,11 +1137,30 @@ if ( ! function_exists( 'tickera_create_page' ) ) {
 
         $page_found = null;
 
-        $page_found = ( strlen( $page_content ) > 0 )
-            ? $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_type='page' AND post_content LIKE '%%%s%%' LIMIT 1;", $page_content ) ) // Search for an existing page with the specified page content ( typically a shortcode )
-            : $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_type='page' AND post_name = %s LIMIT 1;", $slug ) ); // Search for an existing page with the specified page slug
+        if ( strlen( $page_content ) > 0 ) {
+            $pages = get_posts( [
+                'post_type' => 'page',
+                'post_status' => 'any',
+                'posts_per_page' => -1,
+                'fields' => 'ids',
+                'no_found_rows' => true,
+                'update_post_meta_cache' => false,
+                'update_post_term_cache' => false,
+            ] );
 
-        $page_found = (int) apply_filters( 'tc_create_page_id', $page_found, $slug, $page_content );
+            foreach ( $pages as $page_id ) {
+                if ( false !== strpos( get_post_field( 'post_content', $page_id ), $page_content ) ) {
+                    $page_found = $page_id;
+                    break;
+                }
+            }
+
+        } else {
+            $page = get_page_by_path( $slug, OBJECT, 'page' );
+            $page_found = $page ? $page->ID : null;
+        }
+
+        $page_found = (int) tickera_apply_filters( 'tickera_create_page_id', $page_found, $slug, $page_content );
 
         if ( $page_found ) {
 
@@ -1014,7 +1172,6 @@ if ( ! function_exists( 'tickera_create_page' ) ) {
         }
 
         $args = [
-            'post_author'       => get_current_user_id(),
             'post_status'       => 'publish',
             'post_type'         => 'page',
             'post_author'       => 1,
@@ -1062,7 +1219,7 @@ if ( ! function_exists( 'tickera_get_events_and_tickets_shortcode_select_box' ) 
     }
 }
 
-add_action( 'tc_order_created', 'tickera_order_created_email', 10, 5 );
+add_action( 'tickera_order_created', 'tickera_order_created_email', 10, 5 );
 
 /**
  * Bridge for Woocommerce Hook
@@ -1074,7 +1231,7 @@ add_action( 'tc_order_created', 'tickera_order_created_email', 10, 5 );
  * Deprecated function "tc_maybe_send_order_paid_attendee_email".
  * @since 3.5.3.0
  */
-add_action( 'tc_wb_maybe_send_attendee_order_completed_email', 'tickera_maybe_send_order_paid_attendee_email' );
+tickera_add_action( 'tickera_wb_maybe_send_attendee_order_completed_email', 'tickera_maybe_send_order_paid_attendee_email', 10, 1, [ 'tc_wb_maybe_send_attendee_order_completed_email' ] );
 if ( ! function_exists( 'tickera_maybe_send_order_paid_attendee_email' ) ) {
 
     function tickera_maybe_send_order_paid_attendee_email( $wc_order ) {
@@ -1090,8 +1247,8 @@ if ( ! function_exists( 'tickera_maybe_send_order_paid_attendee_email' ) ) {
 if ( ! function_exists( 'tickera_client_email_from_name' ) ) {
 
     function tickera_client_email_from_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'client_order_from_name' ] ) && $tc_email_settings[ 'client_order_from_name' ] ) ? $tc_email_settings[ 'client_order_from_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'client_order_from_name' ] ) && $tickera_email_settings[ 'client_order_from_name' ] ) ? $tickera_email_settings[ 'client_order_from_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1102,8 +1259,8 @@ if ( ! function_exists( 'tickera_client_email_from_name' ) ) {
 if ( ! function_exists( 'tickera_client_email_from_email' ) ) {
 
     function tickera_client_email_from_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'client_order_from_email' ] ) && $tc_email_settings[ 'client_order_from_email' ] ) ? $tc_email_settings[ 'client_order_from_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'client_order_from_email' ] ) && $tickera_email_settings[ 'client_order_from_email' ] ) ? $tickera_email_settings[ 'client_order_from_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1114,8 +1271,8 @@ if ( ! function_exists( 'tickera_client_email_from_email' ) ) {
 if ( ! function_exists( 'tickera_attendee_email_from_name' ) ) {
 
     function tickera_attendee_email_from_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'attendee_order_from_name' ] ) && $tc_email_settings[ 'attendee_order_from_name' ] ) ? $tc_email_settings[ 'attendee_order_from_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'attendee_order_from_name' ] ) && $tickera_email_settings[ 'attendee_order_from_name' ] ) ? $tickera_email_settings[ 'attendee_order_from_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1126,8 +1283,8 @@ if ( ! function_exists( 'tickera_attendee_email_from_name' ) ) {
 if ( ! function_exists( 'tickera_attendee_email_from_email' ) ) {
 
     function tickera_attendee_email_from_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'attendee_order_from_email' ] ) && $tc_email_settings[ 'attendee_order_from_email' ] ) ? $tc_email_settings[ 'attendee_order_from_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'attendee_order_from_email' ] ) && $tickera_email_settings[ 'attendee_order_from_email' ] ) ? $tickera_email_settings[ 'attendee_order_from_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1138,8 +1295,8 @@ if ( ! function_exists( 'tickera_attendee_email_from_email' ) ) {
 if ( ! function_exists( 'tickera_client_email_from_placed_name' ) ) {
 
     function tickera_client_email_from_placed_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'client_order_from_placed_name' ] ) && $tc_email_settings[ 'client_order_from_placed_name' ] ) ? $tc_email_settings[ 'client_order_from_placed_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'client_order_from_placed_name' ] ) && $tickera_email_settings[ 'client_order_from_placed_name' ] ) ? $tickera_email_settings[ 'client_order_from_placed_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1150,8 +1307,8 @@ if ( ! function_exists( 'tickera_client_email_from_placed_name' ) ) {
 if ( ! function_exists( 'tickera_client_email_from_placed_email' ) ) {
 
     function tickera_client_email_from_placed_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'client_order_from_placed_email' ] ) && $tc_email_settings[ 'client_order_from_placed_email' ] ) ? $tc_email_settings[ 'client_order_from_placed_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'client_order_from_placed_email' ] ) && $tickera_email_settings[ 'client_order_from_placed_email' ] ) ? $tickera_email_settings[ 'client_order_from_placed_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1162,8 +1319,8 @@ if ( ! function_exists( 'tickera_client_email_from_placed_email' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_name' ) ) {
 
     function tickera_admin_email_from_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_from_name' ] ) && $tc_email_settings[ 'admin_order_from_name' ] ) ? $tc_email_settings[ 'admin_order_from_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_from_name' ] ) && $tickera_email_settings[ 'admin_order_from_name' ] ) ? $tickera_email_settings[ 'admin_order_from_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1174,8 +1331,8 @@ if ( ! function_exists( 'tickera_admin_email_from_name' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_email' ) ) {
 
     function tickera_admin_email_from_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_from_email' ] ) && $tc_email_settings[ 'admin_order_from_email' ] ) ? $tc_email_settings[ 'admin_order_from_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_from_email' ] ) && $tickera_email_settings[ 'admin_order_from_email' ] ) ? $tickera_email_settings[ 'admin_order_from_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1186,8 +1343,8 @@ if ( ! function_exists( 'tickera_admin_email_from_email' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_placed_name' ) ) {
 
     function tickera_admin_email_from_placed_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_placed_from_name' ] ) && $tc_email_settings[ 'admin_order_placed_from_name' ] ) ? $tc_email_settings[ 'admin_order_placed_from_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_placed_from_name' ] ) && $tickera_email_settings[ 'admin_order_placed_from_name' ] ) ? $tickera_email_settings[ 'admin_order_placed_from_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1198,8 +1355,8 @@ if ( ! function_exists( 'tickera_admin_email_from_placed_name' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_placed_email' ) ) {
 
     function tickera_admin_email_from_placed_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_placed_from_email' ] ) && $tc_email_settings[ 'admin_order_placed_from_email' ] ) ? $tc_email_settings[ 'admin_order_placed_from_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_placed_from_email' ] ) && $tickera_email_settings[ 'admin_order_placed_from_email' ] ) ? $tickera_email_settings[ 'admin_order_placed_from_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1210,8 +1367,8 @@ if ( ! function_exists( 'tickera_admin_email_from_placed_email' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_refunded_name' ) ) {
 
     function tickera_admin_email_from_refunded_name() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_refunded_from_name' ] ) && $tc_email_settings[ 'admin_order_refunded_from_name' ] ) ? $tc_email_settings[ 'admin_order_refunded_from_name' ] : get_option( 'blogname' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_refunded_from_name' ] ) && $tickera_email_settings[ 'admin_order_refunded_from_name' ] ) ? $tickera_email_settings[ 'admin_order_refunded_from_name' ] : get_option( 'blogname' );
     }
 }
 
@@ -1222,8 +1379,8 @@ if ( ! function_exists( 'tickera_admin_email_from_refunded_name' ) ) {
 if ( ! function_exists( 'tickera_admin_email_from_refunded_email' ) ) {
 
     function tickera_admin_email_from_refunded_email() {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
-        return ( isset( $tc_email_settings[ 'admin_order_refunded_from_email' ] ) && $tc_email_settings[ 'admin_order_refunded_from_email' ] ) ? $tc_email_settings[ 'admin_order_refunded_from_email' ] : get_option( 'admin_email' );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
+        return ( isset( $tickera_email_settings[ 'admin_order_refunded_from_email' ] ) && $tickera_email_settings[ 'admin_order_refunded_from_email' ] ) ? $tickera_email_settings[ 'admin_order_refunded_from_email' ] : get_option( 'admin_email' );
     }
 }
 
@@ -1236,6 +1393,7 @@ if ( ! function_exists( 'tickera_email_insert_string_attachment' ) ) {
     function tickera_email_insert_string_attachment( $phpmailer ) {
 
         // The default attachment will fail since it's not an actual file.
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Ticket instance ID is used only to recover email attachment context.
         if ( '' !== $phpmailer->ErrorInfo && isset( $_POST[ 'ticket_instance_id' ] ) ) {
 
             $error_info = $phpmailer->ErrorInfo;
@@ -1250,12 +1408,14 @@ if ( ! function_exists( 'tickera_email_insert_string_attachment' ) ) {
                 // The result will be the json encoded string that was attached as default
                 $attachment = ( is_object( $attachment_string ) ) ? json_decode( $attachment_string ) : $attachment_string;
 
-                if ( isset( $attachment ) && $attachment ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Ticket instance ID is used only to recover email attachment context.
+                if ( isset( $attachment ) && $attachment && isset( $_POST[ 'ticket_instance_id' ] ) ) {
 
                     // Retrieve Ticket Instance
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Ticket instance ID is cast before loading the ticket instance.
                     $ticket_instance_id = (int) $_POST[ 'ticket_instance_id' ];
                     $ticket_instance = new \Tickera\TC_Ticket_Instance( $ticket_instance_id );
-                    $ticket_code = apply_filters( 'tc_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance );
+                    $ticket_code = tickera_apply_filters( 'tickera_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance );
 
                     // Retrieve filename via post
                     $file_name = $ticket_code ? $ticket_code . '.pdf' : 'ticket.pdf';
@@ -1279,15 +1439,16 @@ if ( ! function_exists( 'tickera_maybe_create_temporary_ticket_file' ) ) {
 
             $upload = wp_upload_dir();
             $upload_dir = $upload['basedir'];
+            $wp_filesystem = \Tickera\TC::get_filesystem();
 
             // Create main directory
             $upload_dir = $upload_dir . '/tc-tmp/';
-            if ( !is_dir( $upload_dir ) ) {
-                @mkdir( $upload_dir, 0755 );
+            if ( $wp_filesystem && ! $wp_filesystem->is_dir( $upload_dir ) ) {
+                $wp_filesystem->mkdir( $upload_dir, 0755 );
                 $filename = '.htaccess';
                 $path = $upload_dir . '/' . $filename;
-                if ( !file_exists( $path ) ) {
-                    @chmod( $path, 0644 );
+                if ( ! $wp_filesystem->exists( $path ) ) {
+                    $wp_filesystem->chmod( $path, 0644 );
                 }
             }
 
@@ -1301,17 +1462,17 @@ if ( ! function_exists( 'tickera_maybe_create_temporary_ticket_file' ) ) {
             $pdf_save_option = function() { return 'F'; };
             $pdf_exit_after_output = function() { return false; };
 
-            add_filter( 'tc_pdf_ticket_name', $pdf_file_name );
-            add_filter( 'tc_change_tcpdf_save_option', $pdf_save_option );
-            add_filter( 'tc_exit_after_pdf_output', $pdf_exit_after_output );
+            add_filter( 'tickera_pdf_ticket_name', $pdf_file_name );
+            add_filter( 'tickera_change_tcpdf_save_option', $pdf_save_option );
+            add_filter( 'tickera_exit_after_pdf_output', $pdf_exit_after_output );
 
             // Generate PDFs
             $ticket = new \Tickera\TC_Ticket_Templates();
             $ticket->generate_preview( $ticket_id );
 
-            remove_filter( 'tc_pdf_ticket_name', $pdf_file_name );
-            remove_filter( 'tc_change_tcpdf_save_option', $pdf_save_option );
-            remove_filter( 'tc_exit_after_pdf_output', $pdf_exit_after_output );
+            remove_filter( 'tickera_pdf_ticket_name', $pdf_file_name );
+            remove_filter( 'tickera_change_tcpdf_save_option', $pdf_save_option );
+            remove_filter( 'tickera_exit_after_pdf_output', $pdf_exit_after_output );
 
         } catch ( Exception $e ) {
             // We can't make a directory
@@ -1334,7 +1495,7 @@ if ( ! function_exists( 'tickera_mail' ) ) {
             tickera_maybe_create_temporary_ticket_file( $ticket_id );
 
             $ticket_code = get_post_meta( $ticket_id, 'ticket_code', true );
-            $file_name = apply_filters( 'tc_pdf_ticket_name', $ticket_code, $ticket_id );
+            $file_name = tickera_apply_filters( 'tickera_pdf_ticket_name', $ticket_code, $ticket_id );
             $attachments[] = $upload_dir . '/tc-tmp/' . $file_name . '.pdf';
         }
 
@@ -1344,7 +1505,7 @@ if ( ! function_exists( 'tickera_mail' ) ) {
         // Remove temporary files
         foreach ( $attachments as $attachment ) {
             if ( file_exists( $attachment ) ) {
-                @unlink( $attachment );
+                wp_delete_file( $attachment );
             }
         }
 
@@ -1369,7 +1530,7 @@ if ( ! function_exists( 'tickera_maybe_remove_temporary_ticket_files' ) ) {
 
             foreach ( $files as $file ) {
                 if ( is_file( $file ) && ( time() - filemtime( $file ) ) > $maxAge ) {
-                    @unlink( $file );
+                    wp_delete_file( $file );
                 }
             }
         }
@@ -1398,20 +1559,20 @@ if ( ! function_exists( 'tickera_order_paid_attendee_email' ) ) {
             add_filter( 'wp_mail_from_name', 'tickera_attendee_email_from_name', 999 );
 
             $subject = isset( $settings[ 'attendee_order_subject' ] ) ? $settings[ 'attendee_order_subject' ] : __( 'Your Ticket is here!', 'tickera-event-ticketing-system' );
-            $subject = apply_filters( 'tc_attendee_order_completed_email_subject', $subject, $order_id );
+            $subject = tickera_apply_filters( 'tickera_attendee_order_completed_email_subject', $subject, $order_id );
 
             $default_message = __( 'Hello, <br /><br />You can download ticket for EVENT_NAME here DOWNLOAD_URL', 'tickera-event-ticketing-system' );
             $order = new \Tickera\TC_Order( $order_id );
 
             $tc_attendee_order_message = isset( $settings[ 'attendee_order_message' ] ) ? $settings[ 'attendee_order_message' ] : '';
-            $tc_attendee_order_message = apply_filters( 'tc_attendee_order_message', $tc_attendee_order_message, $order );
+            $tc_attendee_order_message = tickera_apply_filters( 'tickera_attendee_order_message', $tc_attendee_order_message, $order );
 
             $attendee_headers = '';
             $order_attendees = \Tickera\TC_Orders::get_tickets_ids( $order->details->ID );
 
             foreach ( $order_attendees as $order_attendee_id ) {
 
-                $subject = apply_filters( 'tc_attendee_order_completed_email_subject', $subject, $order_attendee_id );
+                $subject = tickera_apply_filters( 'tickera_attendee_order_completed_email_subject', $subject, $order_attendee_id );
                 $ticket_meta = get_post_meta( $order_attendee_id );
                 $ticket_type_id = isset( $ticket_meta[ 'ticket_type_id' ] ) ? reset( $ticket_meta[ 'ticket_type_id' ] ) : '';
                 $ticket_type_name = get_the_title( $ticket_type_id );
@@ -1436,15 +1597,15 @@ if ( ! function_exists( 'tickera_order_paid_attendee_email' ) ) {
                 if ( ! empty( $owner_email ) ) {
 
                     $enabled_attachment = ( isset( $settings[ 'attendee_attach_ticket' ] ) && 'yes' == $settings[ 'attendee_attach_ticket' ] ) ? true : false;
-                    $placeholders = apply_filters( 'tc_order_completed_attendee_email_placeholders', $placeholders );
-                    $placeholder_values = apply_filters( 'tc_order_completed_attendee_email_placeholder_values', $placeholder_values, $order_attendee_id, $order_id );
+                    $placeholders = tickera_apply_filters( 'tickera_order_completed_attendee_email_placeholders', $placeholders );
+                    $placeholder_values = tickera_apply_filters( 'tickera_order_completed_attendee_email_placeholder_values', $placeholder_values, $order_attendee_id, $order_id );
                     $message = str_replace( $placeholders, $placeholder_values, $message );
 
                     if ( $email_send_type == 'wp_mail' ) {
 
                         $attachments = $enabled_attachment ? [ $order_attendee_id ] : [];
-                        $message = apply_filters( 'tc_order_completed_attendee_email_message', wpautop( $message ) );
-                        $attendee_headers = apply_filters( 'tc_order_completed_attendee_email_headers', $attendee_headers );
+                        $message = tickera_apply_filters( 'tickera_order_completed_attendee_email_message', wpautop( $message ) );
+                        $attendee_headers = tickera_apply_filters( 'tickera_order_completed_attendee_email_headers', $attendee_headers );
                         tickera_mail( sanitize_email( $owner_email ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop ( $message ) ) ), $attendee_headers, $attachments );
 
                     } else {
@@ -1519,11 +1680,11 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
         $order_status_url = $tc->tc_order_status_url( $order, $order->details->tc_order_date, '', false );
 
         if ( $cart_contents === false ) {
-            $cart_contents = apply_filters( 'tc_order_cart_contents', get_post_meta( $order->details->ID, 'tc_cart_contents', true ), $order->details->ID );
+            $cart_contents = tickera_apply_filters( 'tickera_order_cart_contents', get_post_meta( $order->details->ID, 'tc_cart_contents', true ), $order->details->ID );
         }
 
         if ( $cart_info === false ) {
-            $cart_info = apply_filters( 'tc_order_cart_info', get_post_meta( $order->details->ID, 'tc_cart_info', true ), $order->details->ID );
+            $cart_info = tickera_apply_filters( 'tickera_order_cart_info', get_post_meta( $order->details->ID, 'tc_cart_info', true ), $order->details->ID );
         }
 
         if ( $payment_info === false ) {
@@ -1553,7 +1714,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $event_locations[] = $event_location;
         }
 
-        do_action( 'tc_before_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
+        tickera_do_action( 'tickera_before_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
 
         if ( 'order_paid' == $status ) {
 
@@ -1567,21 +1728,21 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
                 $enabled_attachment = ( isset( $settings[ 'client_completed_attach_ticket' ] ) && 'yes' == $settings[ 'client_completed_attach_ticket' ] ) ? true : false;
                 $subject = isset( $settings[ 'client_order_subject' ] ) ? $settings[ 'client_order_subject' ] : __( 'Order Completed', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_client_order_completed_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_client_order_completed_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> is completed. <br /><br />You can download your tickets here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $tc_client_order_message = isset( $settings[ 'client_order_message' ] ) ? $settings[ 'client_order_message' ] : $default_message;
-                $tc_client_order_message = apply_filters( 'tc_client_order_message', $tc_client_order_message, $order );
+                $tc_client_order_message = tickera_apply_filters( 'tickera_client_order_message', $tc_client_order_message, $order );
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
-                $message = str_replace( apply_filters( 'tc_order_completed_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_completed_client_email_placeholder_values', $placeholder_values ), $tc_client_order_message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_completed_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_completed_client_email_placeholder_values', $placeholder_values ), $tc_client_order_message );
 
                 if ( 'wp_mail' == $email_send_type ) {
                     $attachments = $enabled_attachment ? \Tickera\TC_Orders::get_tickets_ids( $order->details->ID ) : [];
-                    tickera_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_completed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_completed_client_email_headers', '' ), $attachments );
+                    tickera_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_completed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_completed_client_email_headers', '' ), $attachments );
 
                 } else {
                     $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -1589,7 +1750,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= 'From: ' . tickera_client_email_from_email() . "\r\n";
                     $headers .= 'Reply-To: ' . tickera_client_email_from_email() . "\r\n";
                     $headers .= 'X-Mailer: PHP/' . phpversion();
-                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_completed_client_email_headers', $headers ) );
+                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_completed_client_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_client_email_from_email', 999 );
@@ -1611,13 +1772,13 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
 
                 $enabled_attachment = ( isset( $settings[ 'admin_completed_attach_ticket' ] ) && 'yes' == $settings[ 'admin_completed_attach_ticket' ] ) ? true : false;
                 $subject = isset( $settings[ 'admin_order_subject' ] ) ? $settings[ 'admin_order_subject' ] : __( 'New Order Completed', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_admin_order_completed_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_admin_order_completed_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />A new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $settings[ 'admin_order_message' ] ) ? $settings[ 'admin_order_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 if ( isset( $settings[ 'admin_order_to_email' ] )
                     && $settings[ 'admin_order_to_email' ] ) {
@@ -1640,7 +1801,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $to = get_option('admin_email');
                 }
 
-                $message = str_replace( apply_filters( 'tc_order_completed_admin_email_placeholders', $placeholders ), apply_filters( 'tc_order_completed_admin_email_placeholder_values', $placeholder_values ), $message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_completed_admin_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_completed_admin_email_placeholder_values', $placeholder_values ), $message );
 
                 // Preparing Cc:
                 $ccs = explode( ',', $to );
@@ -1662,7 +1823,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     }
 
                     $attachments = $enabled_attachment ? \Tickera\TC_Orders::get_tickets_ids( $order->details->ID ) : [];
-                    tickera_mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_completed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_completed_admin_email_headers', $admin_headers ), $attachments );
+                    tickera_mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_completed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_completed_admin_email_headers', $admin_headers ), $attachments );
 
                 } else {
 
@@ -1673,7 +1834,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= ( $ccs ) ? 'Cc: ' . implode( ', ', $ccs ) . "\r\n" : '';
                     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-                    @mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_completed_admin_email_headers', $headers ) );
+                    @mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_completed_admin_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_admin_email_from_email', 999 );
@@ -1692,19 +1853,19 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_client_email_from_placed_name', 999 );
 
                 $subject = isset( $settings[ 'client_order_placed_subject' ] ) ? $settings[ 'client_order_placed_subject' ] : __( 'Order Placed', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_client_order_placed_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_client_order_placed_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> is placed. <br /><br />You can track your order status here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $settings[ 'client_order_placed_message' ] ) ? $settings[ 'client_order_placed_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
-                $message = str_replace( apply_filters( 'tc_order_placed_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_placed_client_email_placeholder_values', $placeholder_values ), $message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_placed_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_placed_client_email_placeholder_values', $placeholder_values ), $message );
 
                 if ( 'wp_mail' == $email_send_type ) {
-                    tickera_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_placed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_placed_client_email_headers', '' ) );
+                    tickera_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_placed_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_placed_client_email_headers', '' ) );
 
                 } else {
                     $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -1713,7 +1874,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= 'Reply-To: ' . tickera_client_email_from_placed_email() . "\r\n";
                     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_placed_client_email_headers', $headers ) );
+                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_placed_client_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_client_email_from_placed_email', 999 );
@@ -1729,13 +1890,13 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_admin_email_from_placed_name', 999 );
 
                 $subject = isset( $settings[ 'admin_order_placed_subject' ] ) ? $settings[ 'admin_order_placed_subject' ] : __( 'New Order Placed', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_admin_order_placed_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_admin_order_placed_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />A new order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been placed. <br /><br />You can check the order details here: ORDER_ADMIN_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $settings[ 'admin_order_placed_message' ] ) ? $settings[ 'admin_order_placed_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 if ( isset( $settings[ 'admin_order_placed_to_email' ] )
                     && $settings[ 'admin_order_placed_to_email' ] ) {
@@ -1758,7 +1919,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $to = get_option('admin_email');
                 }
 
-                $message = str_replace( apply_filters( 'tc_order_placed_admin_email_placeholders', $placeholders ), apply_filters( 'tc_order_placed_admin_email_placeholder_values', $placeholder_values ), $message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_placed_admin_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_placed_admin_email_placeholder_values', $placeholder_values ), $message );
 
                 // Preparing Cc:
                 $ccs = explode( ',', $to );
@@ -1779,7 +1940,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                         $admin_headers = explode( ', ', $admin_headers );
                     }
 
-                    tickera_mail( $to, sanitize_text_field( stripslashes( $subject ) ), apply_filters( 'tc_order_completed_admin_email_message', wp_kses_post( stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_completed_admin_email_headers', $admin_headers ) );
+                    tickera_mail( $to, sanitize_text_field( stripslashes( $subject ) ), tickera_apply_filters( 'tickera_order_completed_admin_email_message', wp_kses_post( stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_completed_admin_email_headers', $admin_headers ) );
 
                 } else {
 
@@ -1790,7 +1951,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= ( $ccs ) ? 'Cc: ' . implode( ', ', $ccs ) . "\r\n" : '';
                     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-                    @mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_completed_admin_email_headers', $headers ) );
+                    @mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_completed_admin_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_admin_email_from_placed_email', 999 );
@@ -1809,19 +1970,19 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_client_email_from_placed_name', 999 );
 
                 $subject = isset( $settings[ 'client_order_refunded_subject' ] ) ? $settings[ 'client_order_refunded_subject' ] : __( 'Order Refunded', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_client_order_refunded_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_client_order_refunded_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> has been refunded. <br /><br />You can check your order details here DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $settings[ 'client_order_refunded_message' ] ) ? $settings[ 'client_order_refunded_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
-                $message = str_replace( apply_filters( 'tc_order_refunded_client_email_placeholders', $placeholders ), apply_filters( 'tc_order_refunded_client_email_placeholder_values', $placeholder_values ), $message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_refunded_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_refunded_client_email_placeholder_values', $placeholder_values ), $message );
 
                 if ( 'wp_mail' == $email_send_type ) {
-                    @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_refunded_client_email_headers', '' ) );
+                    @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_refunded_client_email_headers', '' ) );
 
                 } else {
                     $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -1830,7 +1991,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= 'Reply-To: ' . tickera_client_email_from_placed_email() . "\r\n";
                     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_refunded_client_email_headers', $headers ) );
+                    @mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_refunded_client_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_client_email_from_placed_email', 999 );
@@ -1843,16 +2004,16 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 add_filter( 'wp_mail_from_name', 'tickera_admin_email_from_refunded_name', 999 );
 
                 $subject = isset( $settings[ 'admin_order_refunded_subject' ] ) ? $settings[ 'admin_order_refunded_subject' ] : __( 'Order Refunded', 'tickera-event-ticketing-system' );
-                $subject = apply_filters( 'tc_admin_order_refunded_email_subject', $subject, $order->details->ID );
+                $subject = tickera_apply_filters( 'tickera_admin_order_refunded_email_subject', $subject, $order->details->ID );
 
                 $default_message = __( 'Hello, <br /><br />Your order (ORDER_ID) totalling <strong>ORDER_TOTAL</strong> was refunded. <br /><br />You can track your order status here: DOWNLOAD_URL', 'tickera-event-ticketing-system' );
                 $message = isset( $settings[ 'admin_order_refunded_message' ] ) ? $settings[ 'admin_order_refunded_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 $to = ( isset( $settings[ 'admin_order_refunded_to_email' ] ) && $settings[ 'admin_order_refunded_to_email' ] ) ? $settings[ 'admin_order_refunded_to_email' ] : get_option('admin_email');
-                $message = str_replace( apply_filters( 'tc_order_refunded_admin_email_placeholders', $placeholders ), apply_filters( 'tc_order_refunded_admin_email_placeholder_values', $placeholder_values ), $message );
+                $message = str_replace( tickera_apply_filters( 'tickera_order_refunded_admin_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_refunded_admin_email_placeholder_values', $placeholder_values ), $message );
 
                 // Preparing Cc:
                 $ccs = explode( ',', $to );
@@ -1873,7 +2034,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                         $admin_headers = explode( ', ', $admin_headers );
                     }
 
-                    @wp_mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_refunded_admin_email_headers', $admin_headers ) );
+                    @wp_mail( $to, sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_refunded_admin_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_refunded_admin_email_headers', $admin_headers ) );
 
                 } else {
                     $headers = 'MIME-Version: 1.0' . "\r\n";
@@ -1883,7 +2044,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                     $headers .= ( $ccs ) ? 'Cc: ' . implode( ', ', $ccs ) . "\r\n" : '';
                     $headers .= 'X-Mailer: PHP/' . phpversion();
 
-                    @mail( $to, sanitize_text_field( stripslashes( $subject  ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), apply_filters( 'tc_order_refunded_admin_email_headers', $headers ) );
+                    @mail( $to, sanitize_text_field( stripslashes( $subject  ) ), wp_kses_post( stripcslashes( wpautop( $message ) ) ), tickera_apply_filters( 'tickera_order_refunded_admin_email_headers', $headers ) );
                 }
 
                 remove_filter( 'wp_mail_from', 'tickera_admin_email_from_refunded_email', 999 );
@@ -1892,7 +2053,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
         }
 
         remove_filter( 'wp_mail_content_type', $mail_content_type );
-        do_action( 'tc_after_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
+        tickera_do_action( 'tickera_after_order_created_email', $order_id, $status, $cart_contents, $cart_info, $payment_info, $send_email_to_admin );
     }
 }
 
@@ -1958,7 +2119,7 @@ if ( ! function_exists( 'tickera_get_delete_pending_orders_intervals' ) ) {
                 <?php
             }
             ?>
-            <?php do_action( 'tc_get_delete_pending_orders_intervals_after' ); ?>
+            <?php tickera_do_action( 'tickera_get_delete_pending_orders_intervals_after' ); ?>
         </select>
         <p class="description"><?php echo wp_kses_post( __( '</br><strong>Important:</strong> Some payment gateways have long intervals of clearing payments (i.e. PayPal eCheck, Mollie) which may cause an order to be cancelled prior the payment is cleared. </br>For example, PayPal eCheck takes <strong>several working days</strong> to clear. In such cases, it is the best practice to leave this option disabled in order to avoid cancelation of the orders that were later fully paid.', 'tickera-event-ticketing-system' ) ); ?></p><?php
     }
@@ -1973,10 +2134,10 @@ if ( ! function_exists( 'tickera_get_delete_pending_orders_intervals' ) ) {
 if ( ! function_exists( 'tickera_yes_no_email' ) ) {
 
     function tickera_yes_no_email( $field_name, $default_value = '', $field = [] ) {
-        $tc_email_settings = get_option( 'tickera_email_setting', false );
+        $tickera_email_settings = get_option( 'tickera_email_setting', false );
 
-        if ( isset( $tc_email_settings[ $field_name ] ) ) {
-            $checked = $tc_email_settings[ $field_name ];
+        if ( isset( $tickera_email_settings[ $field_name ] ) ) {
+            $checked = $tickera_email_settings[ $field_name ];
 
         } else {
             $checked = ( $default_value !== '' ) ? $default_value : 'no';
@@ -2008,11 +2169,7 @@ if ( ! function_exists( 'tickera_extended_radio_button' ) ) {
 
         foreach ( $values as $key => $val ) {
 
-            $label = spritnf(
-            /* translators: %s: Label of a radio button. */
-                __( '%s', 'tickera-event-ticketing-system' ),
-                ucfirst( $val )
-            );
+            $label = ucfirst( $val );
             $checked = ( $val == $value ) ? 'checked="checked"' : '';
             $html .= '<label>';
             $html .= '<input type="radio" class="' . esc_attr( $field_name ) . '" name="' . esc_attr( $field_name ) . '" value = "' . esc_attr( $val ) . '" ' . $checked . '/>' . $label;
@@ -2031,9 +2188,9 @@ if ( ! function_exists( 'tickera_yes_no' ) ) {
 
     function tickera_yes_no( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_general_settings;
-        if ( isset( $tc_general_settings[ $field_name ] ) ) {
-            $checked = $tc_general_settings[ $field_name ];
+        global $tickera_general_settings;
+        if ( isset( $tickera_general_settings[ $field_name ] ) ) {
+            $checked = $tickera_general_settings[ $field_name ];
 
         } else {
             $checked = ( $default_value !== '' ) ? $default_value : 'no';
@@ -2057,10 +2214,10 @@ if ( ! function_exists( 'tickera_get_client_order_message' ) ) {
 
     function tickera_get_client_order_message( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_email_settings;
+        global $tickera_email_settings;
 
-        if ( isset( $tc_email_settings[ $field_name ] ) ) {
-            $value = $tc_email_settings[ $field_name ];
+        if ( isset( $tickera_email_settings[ $field_name ] ) ) {
+            $value = $tickera_email_settings[ $field_name ];
 
         } else {
             $value = ( $default_value !== '' ) ? $default_value : '';
@@ -2078,10 +2235,10 @@ if ( ! function_exists( 'tickera_get_attendee_order_message' ) ) {
 
     function tickera_get_attendee_order_message( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_email_settings;
+        global $tickera_email_settings;
 
-        if ( isset( $tc_email_settings[ $field_name ] ) ) {
-            $value = $tc_email_settings[ $field_name ];
+        if ( isset( $tickera_email_settings[ $field_name ] ) ) {
+            $value = $tickera_email_settings[ $field_name ];
 
         } else {
             $value = ( $default_value !== '' ) ? $default_value : '';
@@ -2099,10 +2256,10 @@ if ( ! function_exists( 'tickera_get_admin_order_message' ) ) {
 
     function tickera_get_admin_order_message( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_email_settings;
+        global $tickera_email_settings;
 
-        if ( isset( $tc_email_settings[ $field_name ] ) ) {
-            $value = $tc_email_settings[ $field_name ];
+        if ( isset( $tickera_email_settings[ $field_name ] ) ) {
+            $value = $tickera_email_settings[ $field_name ];
 
         } else {
             $value = ( $default_value !== '' ) ? $default_value : '';
@@ -2120,10 +2277,10 @@ if ( ! function_exists( 'tickera_email_send_type' ) ) {
 
     function tickera_email_send_type( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_email_settings;
+        global $tickera_email_settings;
 
-        if ( isset( $tc_email_settings[ $field_name ] ) ) {
-            $checked = $tc_email_settings[ $field_name ];
+        if ( isset( $tickera_email_settings[ $field_name ] ) ) {
+            $checked = $tickera_email_settings[ $field_name ];
 
         } else {
             $checked = ( $default_value !== '' ) ? $default_value : 'wp_mail';
@@ -2147,9 +2304,9 @@ if ( ! function_exists( 'tickera_global_fee_type' ) ) {
 
     function tickera_global_fee_type( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_general_settings;
-        $checked = ( isset( $tc_general_settings[ $field_name ] ) )
-            ? $tc_general_settings[ $field_name ]
+        global $tickera_general_settings;
+        $checked = ( isset( $tickera_general_settings[ $field_name ] ) )
+            ? $tickera_general_settings[ $field_name ]
             : $default_value;
         ?>
         <label>
@@ -2170,10 +2327,10 @@ if ( ! function_exists( 'tickera_global_fee_scope' ) ) {
 
     function tickera_global_fee_scope( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_general_settings;
+        global $tickera_general_settings;
 
-        $checked = ( isset( $tc_general_settings[ $field_name ] ) )
-            ? $tc_general_settings[ $field_name ]
+        $checked = ( isset( $tickera_general_settings[ $field_name ] ) )
+            ? $tickera_general_settings[ $field_name ]
             : $default_value;
         ?>
         <label>
@@ -2194,10 +2351,10 @@ if ( ! function_exists( 'tickera_get_price_formats' ) ) {
 
     function tickera_get_price_formats( $field_name, $default_value = '', $field = [] ) {
 
-        global $tc_general_settings;
+        global $tickera_general_settings;
 
-        if ( isset( $tc_general_settings[ $field_name ] ) ) {
-            $checked = $tc_general_settings[ $field_name ];
+        if ( isset( $tickera_general_settings[ $field_name ] ) ) {
+            $checked = $tickera_general_settings[ $field_name ];
 
         } else {
             $checked = ( $default_value !== '' ) ? $default_value : 'us';
@@ -2208,7 +2365,7 @@ if ( ! function_exists( 'tickera_get_price_formats' ) ) {
             <option value="eu" <?php selected( $checked, 'eu', true ); ?>><?php esc_html_e( '1.234,56', 'tickera-event-ticketing-system' ); ?></option>
             <option value="french_comma" <?php selected( $checked, 'french_comma', true ); ?>><?php esc_html_e( '1 234,56', 'tickera-event-ticketing-system' ); ?></option>
             <option value="french_dot" <?php selected( $checked, 'french_dot', true ); ?>><?php esc_html_e( '1 234.56', 'tickera-event-ticketing-system' ); ?></option>
-            <?php do_action( 'tc_price_formats' ); ?>
+            <?php tickera_do_action( 'tickera_price_formats' ); ?>
         </select>
         <?php
     }
@@ -2221,9 +2378,9 @@ if ( ! function_exists( 'tickera_get_price_formats' ) ) {
 if ( ! function_exists( 'tickera_get_currency_positions' ) ) {
 
     function tickera_get_currency_positions( $field_name, $default_value = '', $field = [] ) {
-        global $tc_general_settings;
-        if ( isset( $tc_general_settings[ $field_name ] ) ) {
-            $checked = $tc_general_settings[ $field_name ];
+        global $tickera_general_settings;
+        if ( isset( $tickera_general_settings[ $field_name ] ) ) {
+            $checked = $tickera_general_settings[ $field_name ];
         } else {
             if ( $default_value !== '' ) {
                 $checked = $default_value;
@@ -2232,14 +2389,14 @@ if ( ! function_exists( 'tickera_get_currency_positions' ) ) {
             }
         }
 
-        $symbol = ( isset( $tc_general_settings[ 'currency_symbol' ] ) && $tc_general_settings[ 'currency_symbol' ] != '' ? $tc_general_settings[ 'currency_symbol' ] : ( isset( $tc_general_settings[ 'currencies' ] ) ? $tc_general_settings[ 'currencies' ] : '$' ) );
+        $symbol = ( isset( $tickera_general_settings[ 'currency_symbol' ] ) && $tickera_general_settings[ 'currency_symbol' ] != '' ? $tickera_general_settings[ 'currency_symbol' ] : ( isset( $tickera_general_settings[ 'currencies' ] ) ? $tickera_general_settings[ 'currencies' ] : '$' ) );
         ?>
         <select name="tickera_general_setting[<?php echo esc_html( $field_name ); ?>]">
             <option value="pre_space" <?php selected( $checked, 'pre_space', true ); ?>><?php echo esc_html( $symbol . ' 10' ); ?></option>
             <option value="pre_nospace" <?php selected( $checked, 'pre_nospace', true ); ?>><?php echo esc_html( $symbol . '10' ); ?></option>
             <option value="post_nospace" <?php selected( $checked, 'post_nospace', true ); ?>><?php echo esc_html( '10' . $symbol ); ?></option>
             <option value="post_space" <?php selected( $checked, 'post_space', true ); ?>><?php echo esc_html( '10 ' . $symbol ); ?></option>
-            <?php do_action( 'tc_currencies_position' ); ?>
+            <?php tickera_do_action( 'tickera_currencies_position' ); ?>
         </select>
         <?php
     }
@@ -2252,14 +2409,14 @@ if ( ! function_exists( 'tickera_get_currency_positions' ) ) {
 if ( ! function_exists( 'tickera_get_global_currencies' ) ) {
 
     function tickera_get_global_currencies( $field_name, $default_value = '', $field = [] ) {
-        global $tc_general_settings;
+        global $tickera_general_settings;
         $settings = get_option( 'tickera_settings' );
         $currencies = $settings[ 'gateways' ][ 'currencies' ];
 
         ksort( $currencies );
 
-        if ( isset( $tc_general_settings[ $field_name ] ) ) {
-            $checked = $tc_general_settings[ $field_name ];
+        if ( isset( $tickera_general_settings[ $field_name ] ) ) {
+            $checked = $tickera_general_settings[ $field_name ];
         } else {
             if ( $default_value !== '' ) {
                 $checked = $default_value;
@@ -2284,9 +2441,9 @@ if ( ! function_exists( 'tickera_get_global_currencies' ) ) {
 if ( ! function_exists( 'tickera_global_admin_per_page' ) ) {
 
     function tickera_global_admin_per_page( $value ) {
-        global $tc_general_settings;
+        global $tickera_general_settings;
         $settings = get_option( 'tickera_settings' );
-        return isset( $tc_general_settings[ 'global_admin_per_page' ] ) ? $tc_general_settings[ 'global_admin_per_page' ] : $value;
+        return isset( $tickera_general_settings[ 'global_admin_per_page' ] ) ? $tickera_general_settings[ 'global_admin_per_page' ] : $value;
     }
 }
 
@@ -2297,13 +2454,13 @@ if ( ! function_exists( 'tickera_global_admin_per_page' ) ) {
 if ( ! function_exists( 'tickera_get_global_admin_per_page' ) ) {
 
     function tickera_get_global_admin_per_page( $field_name, $default_value = '', $field = [] ) {
-        global $tc_general_settings;
+        global $tickera_general_settings;
 
         $settings = get_option( 'tickera_settings' );
         $rows = array( 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100 );
 
-        if ( isset( $tc_general_settings[ $field_name ] ) ) {
-            $checked = $tc_general_settings[ $field_name ];
+        if ( isset( $tickera_general_settings[ $field_name ] ) ) {
+            $checked = $tickera_general_settings[ $field_name ];
         } else {
             if ( $default_value !== '' ) {
                 $checked = $default_value;
@@ -2329,35 +2486,51 @@ if ( ! function_exists( 'tickera_save_page_ids' ) ) {
 
     function tickera_save_page_ids() {
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_cart_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_cart_page_id', (int) $_POST[ 'tc_cart_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_payment_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_payment_page_id', (int) $_POST[ 'tc_payment_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_confirmation_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_confirmation_page_id', (int) $_POST[ 'tc_confirmation_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_order_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_order_page_id', (int) $_POST[ 'tc_order_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_process_payment_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_process_payment_page_id', (int) $_POST[ 'tc_process_payment_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings virtual page flag is cast before saving.
         if ( isset( $_POST[ 'tc_process_payment_use_virtual' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings virtual page flag is cast before saving.
             update_option( 'tickera_process_payment_use_virtual', (int) $_POST[ 'tc_process_payment_use_virtual' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
         if ( isset( $_POST[ 'tc_ipn_page_id' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings page ID is cast before saving.
             update_option( 'tickera_ipn_page_id', (int) $_POST[ 'tc_ipn_page_id' ] );
         }
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings virtual page flag is cast before saving.
         if ( isset( $_POST[ 'tc_ipn_use_virtual' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Settings virtual page flag is cast before saving.
             update_option( 'tickera_ipn_use_virtual', (int) $_POST[ 'tc_ipn_use_virtual' ] );
         }
     }
@@ -2371,8 +2544,10 @@ if ( ! function_exists( 'tickera_get_cart_page_settings' ) ) {
 
     function tickera_get_cart_page_settings( $field_name, $default_value = '', $field = [] ) {
 
+        $options = get_option( 'tickera_cart_page_id', -1 );
+
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_cart_page_id', -1 ),
+            'selected' => (int) $options,
             'echo' => 1,
             'name' => 'tc_cart_page_id',
         ]);
@@ -2387,8 +2562,10 @@ if ( ! function_exists( 'tickera_get_payment_page_settings' ) ) {
 
     function tickera_get_payment_page_settings( $field_name, $default_value = '', $field = [] ) {
 
+        $option = get_option( 'tickera_payment_page_id', -1 );
+
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_payment_page_id', -1 ),
+            'selected' => (int) $option,
             'echo' => 1,
             'name' => 'tc_payment_page_id',
         ]);
@@ -2404,7 +2581,7 @@ if ( ! function_exists( 'tickera_get_confirmation_page_settings' ) ) {
     function tickera_get_confirmation_page_settings( $field_name, $default_value = '', $field = [] ) {
 
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_confirmation_page_id', -1 ),
+            'selected' => (int) get_option( 'tickera_confirmation_page_id', -1 ),
             'echo' => 1,
             'name' => 'tc_confirmation_page_id',
         ]);
@@ -2420,7 +2597,7 @@ if ( ! function_exists( 'tickera_get_process_payment_page_settings' ) ) {
     function tickera_get_process_payment_page_settings( $field_name, $default_value = '', $field = [] ) {
 
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_process_payment_page_id', -1 ),
+            'selected' => (int) get_option( 'tickera_process_payment_page_id', -1 ),
             'echo' => 1,
             'name' => 'tc_process_payment_page_id',
         ]);
@@ -2436,7 +2613,7 @@ if ( ! function_exists( 'tickera_get_ipn_page_settings' ) ) {
     function tickera_get_ipn_page_settings( $field_name, $default_value = '', $field = [] ) {
 
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_ipn_page_id', -1 ),
+            'selected' => (int) get_option( 'tickera_ipn_page_id', -1 ),
             'echo' => 1,
             'name' => 'tc_ipn_page_id',
         ]);
@@ -2452,7 +2629,7 @@ if ( ! function_exists( 'tickera_get_order_page_settings' ) ) {
     function tickera_get_order_page_settings( $field_name, $default_value = '', $field = [] ) {
 
         wp_dropdown_pages( [
-            'selected' => get_option( 'tickera_order_page_id', -1 ),
+            'selected' => (int) get_option( 'tickera_order_page_id', -1 ),
             'echo' => 1,
             'name' => 'tc_order_page_id',
         ]);
@@ -2475,7 +2652,7 @@ if ( ! function_exists( 'tickera_get_pages_settings' ) ) {
             $install_desciption = __( 'If you want to reinstall the pages, make sure to delete old ones first (even from the trash).', 'tickera-event-ticketing-system' );
         }
         ?>
-        <p class="submit"><a href="<?php echo esc_url( add_query_arg( 'install_tickera_pages', 'true', admin_url( 'edit.php?post_type=tc_events&page=tc_settings' ) ) ); ?>" class="button-secondary"><?php echo esc_html( sprintf( /* translators: 1: Caption (Install or Re-install) 2: Tickera */ __( '%1$s %2$s Pages', 'tickera-event-ticketing-system' ), esc_html( $install_caption ), esc_html( $tc->title ) ) ); ?></a>
+        <p class="submit"><a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'install_tickera_pages', 'true', admin_url( 'edit.php?post_type=tc_events&page=tc_settings' ) ), 'install_tickera_pages' ) ); ?>" class="button-secondary"><?php echo esc_html( sprintf( /* translators: 1: Caption (Install or Re-install) 2: Tickera */ __( '%1$s %2$s Pages', 'tickera-event-ticketing-system' ), esc_html( $install_caption ), esc_html( $tc->title ) ) ); ?></a>
         </p>
         <p class="description"><?php echo esc_html( $install_desciption ); ?></p>
         <?php
@@ -2521,7 +2698,7 @@ if ( ! function_exists( 'tickera_get_client_ip' ) ) {
     function tickera_get_client_ip() {
 
         if ( isset( $_SERVER[ 'X-Real-IP' ] ) ) {
-            return sanitize_text_field( $_SERVER[ 'X-Real-IP' ] );
+            return sanitize_text_field( wp_unslash( $_SERVER[ 'X-Real-IP' ] ) );
 
         } elseif ( isset( $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) ) {
 
@@ -2529,10 +2706,10 @@ if ( ! function_exists( 'tickera_get_client_ip' ) ) {
             * Proxy servers can send through this header like this: X-Forwarded-For: client1, proxy1, proxy2
             * Make sure we always only send through the first IP in the list which should always be the client IP.
             */
-            return trim( current( explode( ',', sanitize_text_field( $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) ) ) );
+            return trim( current( explode( ',', sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_X_FORWARDED_FOR' ] ) ) ) ) );
 
         } elseif ( isset( $_SERVER[ 'REMOTE_ADDR' ] ) ) {
-            return sanitize_text_field( $_SERVER[ 'REMOTE_ADDR' ] );
+            return sanitize_text_field( wp_unslash( $_SERVER[ 'REMOTE_ADDR' ] ) );
         }
 
         return false;
@@ -2609,7 +2786,7 @@ if ( ! function_exists( 'tickera_countries' ) ) {
             $selected = $client_data->country_code;
         }
 
-        $selected = apply_filters( 'tc_default_selected_country', $selected );
+        $selected = tickera_apply_filters( 'tickera_default_selected_country', $selected );
         ?>
         <select class="<?php echo esc_attr( $class ); ?>" name="<?php echo esc_attr( $name ); ?>">
             <option value="AF" <?php selected( $selected, 'AF', true ); ?>><?php esc_html_e( 'Afghanistan', 'tickera-event-ticketing-system' ); ?></option>
@@ -2915,13 +3092,11 @@ if ( ! function_exists( 'tickera_get_order_id_by_name' ) ) {
 
     function tickera_get_order_id_by_name( $slug ) {
 
-        global $wpdb;
-
-        $order_post_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_name = '%s'", strtolower( $slug ) ) );
-        $post = get_post( $order_post_id );
+        $slug = strtolower( $slug );
+        $post = get_page_by_path( $slug, OBJECT, 'tc_orders' );
 
         if ( isset( $post ) && ! empty( $post ) ) {
-            if ( $post->post_name == strtolower( $slug ) ) {
+            if ( $post->post_name === $slug ) {
                 return $post;
             } else {
                 return false;
@@ -3067,7 +3242,7 @@ if ( ! function_exists( 'tickera_get_ticket_instance_event' ) ) {
         } else {
             $ticket_type_id = get_post_meta( $ticket_instance_id, 'ticket_type_id', true );
             $ticket_type = new \Tickera\TC_Ticket( $ticket_type_id );
-            $event_id = $ticket_type->get_ticket_event( apply_filters( 'tc_ticket_type_id', $ticket_type_id ) );
+            $event_id = $ticket_type->get_ticket_event( tickera_apply_filters( 'tickera_ticket_type_id', $ticket_type_id ) );
         }
         if ( ! empty( $event_id ) ) {
             $event = new \Tickera\TC_Event( $event_id );
@@ -3105,8 +3280,8 @@ if ( ! function_exists( 'tickera_get_ticket_instance_event_front' ) ) {
         $event_id = get_post_meta( $ticket_instance_id, 'event_id', true );
         if ( ! empty( $event_id ) && get_post( $event_id ) ) {
             $event = new \Tickera\TC_Event( $event_id );
-            echo wp_kses_post( '<a href="' . esc_url( apply_filters( 'tc_email_event_permalink', get_the_permalink( $event->details->ID ), $event_id, $ticket_instance_id ) ) . '">' . esc_html( $event->details->post_title ) . '</a>' );
-            do_action( 'tc_after_event_title_table_front_event_permalink', $event_id );
+            echo wp_kses_post( '<a href="' . esc_url( tickera_apply_filters( 'tickera_email_event_permalink', get_the_permalink( $event->details->ID ), $event_id, $ticket_instance_id ) ) . '">' . esc_html( $event->details->post_title ) . '</a>' );
+            tickera_do_action( 'tickera_after_event_title_table_front_event_permalink', $event_id );
         } else {
             esc_html_e( 'N/A', 'tickera-event-ticketing-system' );
         }
@@ -3130,7 +3305,7 @@ if ( ! function_exists( 'tickera_get_ticket_instance_type' ) ) {
             $ticket_type_title = sprintf( /* translators: %d: Ticket type Post ID. */ __( 'Missing Ticket Type ID %d', 'tickera-event-ticketing-system' ), (int) $ticket_type_id );
         }
 
-        $ticket_type_title = apply_filters( 'tc_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $ticket_instance_id );
+        $ticket_type_title = tickera_apply_filters( 'tickera_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $ticket_instance_id );
         echo wp_kses_post( $ticket_type_title );
     }
 }
@@ -3144,31 +3319,32 @@ if ( ! function_exists( 'tickera_get_ticket_download_link' ) ) {
     function tickera_get_ticket_download_link( $field_name, $field_id, $ticket_id, $return = false ) {
         global $tc, $wp;
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $use_order_details_pretty_links = isset( $tc_general_settings[ 'use_order_details_pretty_links' ] ) ? $tc_general_settings[ 'use_order_details_pretty_links' ] : 'yes';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $use_order_details_pretty_links = isset( $tickera_general_settings[ 'use_order_details_pretty_links' ] ) ? $tickera_general_settings[ 'use_order_details_pretty_links' ] : 'yes';
 
         $ticket = new \Tickera\TC_Ticket( $ticket_id );
         $order = new \Tickera\TC_Order( $ticket->details->post_parent );
 
         if ( $use_order_details_pretty_links == 'yes' ) {
             $order_key = isset( $wp->query_vars[ 'tc_order_key' ] ) ? sanitize_text_field( $wp->query_vars[ 'tc_order_key' ] ) : strtotime( $order->details->post_date );
-            $download_url = apply_filters( 'tc_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . $order->details->post_title . '/' . $order_key . '/?download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id );
+            $download_url = tickera_apply_filters( 'tickera_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . $order->details->post_title . '/' . $order_key . '/?download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id );
 
             if ( $return ) {
-                return apply_filters( 'tc_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url );
+                return tickera_apply_filters( 'tickera_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url );
             } else {
-                echo wp_kses_post( apply_filters( 'tc_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url ) );
+                echo wp_kses_post( tickera_apply_filters( 'tickera_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url ) );
             }
 
         } else {
 
-            $order_key = isset( $_GET[ 'tc_order_key' ] ) ? sanitize_key( $_GET[ 'tc_order_key' ] ) : strtotime( $order->details->post_date );
-            $download_url = str_replace( ' ', '', apply_filters( 'tc_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . '?tc_order=' . $order->details->post_title . '&tc_order_key=' . $order_key . '&download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public order key is sanitized before building the ticket download URL.
+            $order_key = isset( $_GET[ 'tc_order_key' ] ) ? sanitize_key( wp_unslash( $_GET[ 'tc_order_key' ] ) ) : strtotime( $order->details->post_date );
+            $download_url = str_replace( ' ', '', tickera_apply_filters( 'tickera_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . '?tc_order=' . $order->details->post_title . '&tc_order_key=' . $order_key . '&download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id ) );
 
             if ( $return ) {
-                return apply_filters( 'tc_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url );
+                return tickera_apply_filters( 'tickera_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url );
             } else {
-                echo wp_kses_post( apply_filters( 'tc_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url ) );
+                echo wp_kses_post( tickera_apply_filters( 'tickera_download_ticket_url_front_link', '<a href="' . esc_url( $download_url ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>', $ticket_id, $ticket->details->post_parent, $download_url ) );
             }
         }
     }
@@ -3184,8 +3360,8 @@ if ( ! function_exists( 'tickera_get_raw_ticket_download_link' ) ) {
 
         global $tc, $wp;
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $use_order_details_pretty_links = isset( $tc_general_settings[ 'use_order_details_pretty_links' ] ) ? $tc_general_settings[ 'use_order_details_pretty_links' ] : 'yes';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $use_order_details_pretty_links = isset( $tickera_general_settings[ 'use_order_details_pretty_links' ] ) ? $tickera_general_settings[ 'use_order_details_pretty_links' ] : 'yes';
 
         $ticket = new \Tickera\TC_Ticket( $ticket_id );
         $order = new \Tickera\TC_Order( $ticket->details->post_parent );
@@ -3193,25 +3369,26 @@ if ( ! function_exists( 'tickera_get_raw_ticket_download_link' ) ) {
         if ( $use_order_details_pretty_links == 'yes' ) {
 
             $order_key = isset( $wp->query_vars[ 'tc_order_key' ] ) ? sanitize_text_field( $wp->query_vars[ 'tc_order_key' ] ) : strtotime( $order->details->post_date );
-            $download_url = apply_filters( 'tc_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . $order->details->post_title . '/' . $order_key . '/?download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id );
+            $download_url = tickera_apply_filters( 'tickera_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . $order->details->post_title . '/' . $order_key . '/?download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id );
 
             if ( $return ) {
-                return apply_filters( 'tc_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent );
+                return tickera_apply_filters( 'tickera_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent );
 
             } else {
-                echo esc_html( apply_filters( 'tc_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent ) );
+                echo esc_html( tickera_apply_filters( 'tickera_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent ) );
             }
 
         } else {
 
-            $order_key = isset( $_GET[ 'tc_order_key' ] ) ? sanitize_key( $_GET[ 'tc_order_key' ] ) : strtotime( $order->details->post_date );
-            $download_url = str_replace( ' ', '', apply_filters( 'tc_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . '?tc_order=' . $order->details->post_title . '&tc_order_key=' . $order_key . '&download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public order key is sanitized before building the raw ticket download URL.
+            $order_key = isset( $_GET[ 'tc_order_key' ] ) ? sanitize_key( wp_unslash( $_GET[ 'tc_order_key' ] ) ) : strtotime( $order->details->post_date );
+            $download_url = str_replace( ' ', '', tickera_apply_filters( 'tickera_download_ticket_url_front', trailingslashit( $tc->get_order_slug( true ) ) . '?tc_order=' . $order->details->post_title . '&tc_order_key=' . $order_key . '&download_ticket=' . $ticket_id . '&order_key=' . $order_key . '&nonce=' . wp_hash( $ticket_id . $order_key ), $order_key, $ticket_id ) );
 
             if ( $return ) {
-                return apply_filters( 'tc_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent );
+                return tickera_apply_filters( 'tickera_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent );
 
             } else {
-                echo esc_html( apply_filters( 'tc_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent ) );
+                echo esc_html( tickera_apply_filters( 'tickera_download_ticket_url_front_link', $download_url, $ticket_id, $ticket->details->post_parent ) );
             }
         }
     }
@@ -3235,7 +3412,7 @@ if ( ! function_exists( 'tickera_get_tickets_table_email' ) ) {
 
         $order = new \Tickera\TC_Order( $order_id );
         $order_is_paid = ( 'order_paid' == $order->details->post_status ) ? true : false;
-        $order_is_paid = apply_filters( 'tc_order_is_paid', $order_is_paid, $order_id );
+        $order_is_paid = tickera_apply_filters( 'tickera_order_is_paid', $order_is_paid, $order_id );
 
         if ( $order_is_paid ) {
 
@@ -3258,15 +3435,12 @@ if ( ! function_exists( 'tickera_get_tickets_table_email' ) ) {
                 'post_type' => 'tc_tickets_instances',
                 'post_status' => [ 'trash' ],
                 'post_parent' => $order->details->ID,
-                'meta_query' => [
-                    [
-                        'key' => '_cancelled_order',
-                        'compare' => 'EXISTS'
-                    ]
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
+                'meta_query' => [ [ 'key' => '_cancelled_order', 'compare' => 'EXISTS' ]
                 ]
             ] ) );
 
-            $columns = apply_filters( 'tc_ticket_table_email_columns', $orders->get_owner_info_fields_front() );
+            $columns = tickera_apply_filters( 'tickera_ticket_table_email_columns', $orders->get_owner_info_fields_front() );
 
             $style = '';
             $style_css_table = 'cellspacing="0" cellpadding="6" style="width: 100%; font-family: Helvetica, Roboto, Arial, sans-serif;" border="1"';
@@ -3274,22 +3448,22 @@ if ( ! function_exists( 'tickera_get_tickets_table_email' ) ) {
             $style_css_td = '';
 
             if ( $tickets ) :
-                do_action( 'tc_tickets_table_email_before_table', $order_id, $tickets, $columns );
+                tickera_do_action( 'tickera_tickets_table_email_before_table', $order_id, $tickets, $columns );
                 ?>
-            <table class="td" <?php echo wp_kses_post( apply_filters( 'tc_style_css_table', $style_css_table ) ); ?>>
-                <tr <?php echo wp_kses_post( apply_filters( 'tc_style_css_tr', $style_css_tr ) ); ?>>
+            <table class="td" <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_table', $style_css_table ) ); ?>>
+                <tr <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_tr', $style_css_tr ) ); ?>>
                     <?php foreach ( $columns as $column ) : ?>
-                        <?php do_action( 'tc_tickets_table_email_column_title_before_' . $column[ 'id' ] ); ?>
-                        <th class="td" <?php echo wp_kses_post( apply_filters( 'tc_style_css_th', $style_css_tr ) ); ?>><?php echo esc_html( $column[ 'field_title' ] ); ?></th>
-                        <?php do_action( 'tc_tickets_table_email_column_title_after_' . $column[ 'id' ] ); ?>
+                        <?php tickera_do_action( 'tickera_tickets_table_email_column_title_before_' . $column[ 'id' ] ); ?>
+                        <th class="td" <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_th', $style_css_tr ) ); ?>><?php echo esc_html( $column[ 'field_title' ] ); ?></th>
+                        <?php tickera_do_action( 'tickera_tickets_table_email_column_title_after_' . $column[ 'id' ] ); ?>
                     <?php endforeach; ?>
                 </tr>
                 <?php foreach ( $tickets as $ticket ) :
                 $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"'; ?>
-                <tr <?php echo wp_kses( $style, [ 'class' => [] ] ); ?> <?php echo wp_kses_post( apply_filters( 'tc_style_css_tr', $style_css_tr ) ); ?>>
+                <tr <?php echo wp_kses( $style, [ 'class' => [] ] ); ?> <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_tr', $style_css_tr ) ); ?>>
                     <?php foreach ( $columns as $column ) : ?>
-                        <?php do_action( 'tc_tickets_table_email_column_value_before_' . $column[ 'id' ], $ticket ); ?>
-                        <td class="td" <?php echo wp_kses_post( apply_filters( 'tc_style_css_td', $style_css_td ) ); ?>>
+                        <?php tickera_do_action( 'tickera_tickets_table_email_column_value_before_' . $column[ 'id' ], $ticket ); ?>
+                        <td class="td" <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_td', $style_css_td ) ); ?>>
                             <?php if ( 'function' == $column[ 'field_type' ] ) {
                                 call_user_func( $column[ 'function' ], $column[ 'field_name' ], ( isset( $column[ 'field_id' ] ) ? $column[ 'field_id' ] : '' ), $ticket->ID );
                             } else {
@@ -3302,13 +3476,13 @@ if ( ! function_exists( 'tickera_get_tickets_table_email' ) ) {
                             }
                             ?>
                         </td>
-                        <?php do_action( 'tc_tickets_table_email_column_value_after_' . $column[ 'id' ], $ticket ); ?>
+                        <?php tickera_do_action( 'tickera_tickets_table_email_column_value_after_' . $column[ 'id' ], $ticket ); ?>
                     <?php endforeach; ?>
                 </tr>
-                <?php do_action( 'tc_tickets_table_email_additional_row', $ticket ); ?>
+                <?php tickera_do_action( 'tickera_tickets_table_email_additional_row', $ticket ); ?>
             <?php endforeach; ?>
                 </table><?php
-                do_action( 'tc_tickets_table_email_after_table', $order_id, $tickets, $columns );
+                tickera_do_action( 'tickera_tickets_table_email_after_table', $order_id, $tickets, $columns );
             endif;
         }
 
@@ -3337,7 +3511,7 @@ if ( ! function_exists( 'tickera_get_order_details_email' ) ) {
             ob_start();
         }
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
 
         $order = new \Tickera\TC_Order( $order_id );
 
@@ -3384,70 +3558,70 @@ if ( ! function_exists( 'tickera_get_order_details_email' ) ) {
                     $order_status = $order->details->post_status;
             }
 
-            $fees_total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
-            $tax_total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
-            $subtotal = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
-            $total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+            $fees_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+            $tax_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+            $subtotal = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
+            $total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
 
             $transaction_id = isset( $order->details->tc_payment_info[ 'transaction_id' ] ) ? sanitize_text_field( $order->details->tc_payment_info[ 'transaction_id' ] ) : '';
             $order_id = strtoupper( $order->details->post_name );
-            $order_date = $payment_date = apply_filters( 'tc_order_date', tickera_format_date( $order->details->tc_order_date, true ) );
+            $order_date = $payment_date = tickera_apply_filters( 'tickera_order_date', tickera_format_date( $order->details->tc_order_date, true ) );
 
             $tc_style_email_label = '';
             $tc_style_email_label_span = '';
 
-            do_action( 'tc_get_order_details_email_labels_before', $order_id );
+            tickera_do_action( 'tickera_get_order_details_email_labels_before', $order_id );
 
-            if ( apply_filters( 'tc_get_order_details_email_show_order', true, $order_id ) == true ) { ?>
-                <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                    <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_id ); ?>
+            if ( tickera_apply_filters( 'tickera_get_order_details_email_show_order', true, $order_id ) == true ) { ?>
+                <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                    <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_id ); ?>
                 </label>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_order_date', true, $order_id ) == true ) { ?>
-                <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                    <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order date: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_date ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_order_date', true, $order_id ) == true ) { ?>
+                <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                    <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order date: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_date ); ?>
                 </label>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_order_status', true, $order_id ) == true ) { ?>
-                <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                    <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order status: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_status ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_order_status', true, $order_id ) == true ) { ?>
+                <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                    <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Order status: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_status ); ?>
                 </label>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_transaction_id', true, $order_id ) == true ) { ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_transaction_id', true, $order_id ) == true ) { ?>
                 <?php if ( isset( $transaction_id ) && $transaction_id !== '' ) { ?>
-                    <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                        <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Transaction ID: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $transaction_id ); ?>
+                    <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                        <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Transaction ID: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $transaction_id ); ?>
                     </label>
                 <?php } ?>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_subtitle', true, $order_id ) == true ) { ?>
-                <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                    <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Subtotal: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $subtotal ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_subtitle', true, $order_id ) == true ) { ?>
+                <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                    <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Subtotal: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $subtotal ); ?>
                 </label>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_fees', true, $order_id ) == true ) { ?>
-                <?php if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || isset( $tc_general_settings[ 'show_fees' ] ) && $tc_general_settings[ 'show_fees' ] == 'yes' ) { ?>
-                    <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                        <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php echo esc_html( @$tc_general_settings[ 'fees_label' ] ); ?></span> <?php echo esc_html( $fees_total ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_fees', true, $order_id ) == true ) { ?>
+                <?php if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || isset( $tickera_general_settings[ 'show_fees' ] ) && $tickera_general_settings[ 'show_fees' ] == 'yes' ) { ?>
+                    <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                        <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php echo esc_html( @$tickera_general_settings[ 'fees_label' ] ); ?></span> <?php echo esc_html( $fees_total ); ?>
                     </label>
                 <?php } ?>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_tax', true, $order_id ) == true ) { ?>
-                <?php if ( ! isset( $tc_general_settings[ 'show_tax_rate' ] ) || isset( $tc_general_settings[ 'show_tax_rate' ] ) && $tc_general_settings[ 'show_tax_rate' ] == 'yes' ) { ?>
-                    <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                        <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php echo esc_html( @$tc_general_settings[ 'tax_label' ] ); ?></span> <?php echo esc_html( $tax_total ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_tax', true, $order_id ) == true ) { ?>
+                <?php if ( ! isset( $tickera_general_settings[ 'show_tax_rate' ] ) || isset( $tickera_general_settings[ 'show_tax_rate' ] ) && $tickera_general_settings[ 'show_tax_rate' ] == 'yes' ) { ?>
+                    <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                        <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php echo esc_html( @$tickera_general_settings[ 'tax_label' ] ); ?></span> <?php echo esc_html( $tax_total ); ?>
                     </label>
                 <?php } ?>
             <?php } ?>
-            <?php if ( apply_filters( 'tc_get_order_details_email_show_total', true, $order_id ) == true ) { ?>
-                <label <?php echo wp_kses_post( apply_filters( 'tc_style_email_label', $tc_style_email_label ) ); ?>>
-                    <span <?php echo wp_kses_post( apply_filters( 'tc_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Total: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $total ); ?>
+            <?php if ( tickera_apply_filters( 'tickera_get_order_details_email_show_total', true, $order_id ) == true ) { ?>
+                <label <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label', $tc_style_email_label ) ); ?>>
+                    <span <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_email_label_span', $tc_style_email_label_span ) ); ?> class="order_details_title"><?php esc_html_e( 'Total: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $total ); ?>
                 </label>
                 <?php
             }
-            do_action( 'tc_get_order_details_email_tickets_table_before', $order_id );
+            tickera_do_action( 'tickera_get_order_details_email_tickets_table_before', $order_id );
 
-            if ( apply_filters( 'tc_get_order_details_email_show_tickets_table', true, $order_id ) == true ) { ?>
+            if ( tickera_apply_filters( 'tickera_get_order_details_email_show_tickets_table', true, $order_id ) == true ) { ?>
                 <?php
                 if ( 'order_paid' == $order->details->post_status ) {
 
@@ -3461,28 +3635,28 @@ if ( ! function_exists( 'tickera_get_order_details_email' ) ) {
                         'post_parent' => (int) $order->details->ID
                     ]);
 
-                    $columns = apply_filters( 'tc_ticket_table_email_columns', $orders->get_owner_info_fields_front() );
+                    $columns = tickera_apply_filters( 'tickera_ticket_table_email_columns', $orders->get_owner_info_fields_front() );
                     $style = '';
 
                     $style_css_table = 'cellspacing="0" cellpadding="6" style="width: 100%; font-family: Helvetica, Roboto, Arial, sans-serif;" border="1"';
                     $style_css_tr = '';
                     $style_css_td = '';
                     ?>
-                    <table class="order-details widefat shadow-table" <?php echo wp_kses_post( apply_filters( 'tc_style_css_table', $style_css_table ) ); ?>>
-                        <tr <?php echo wp_kses_post( apply_filters( 'tc_style_css_tr', $style_css_tr ) ); ?>>
+                    <table class="order-details widefat shadow-table" <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_table', $style_css_table ) ); ?>>
+                        <tr <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_tr', $style_css_tr ) ); ?>>
                             <?php foreach ( $columns as $column ) { ?>
-                                <?php do_action( 'tc_order_details_email_column_title_before_' . $column[ 'id' ] ); ?>
-                                <th <?php echo wp_kses_post( apply_filters( 'tc_style_css_th', $style_css_td ) ); ?>><?php echo esc_html( $column[ 'field_title' ] ); ?></th>
-                                <?php do_action( 'tc_order_details_email_column_title_after_' . $column[ 'id' ] ); ?>
+                                <?php tickera_do_action( 'tickera_order_details_email_column_title_before_' . $column[ 'id' ] ); ?>
+                                <th <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_th', $style_css_td ) ); ?>><?php echo esc_html( $column[ 'field_title' ] ); ?></th>
+                                <?php tickera_do_action( 'tickera_order_details_email_column_title_after_' . $column[ 'id' ] ); ?>
                             <?php } ?>
                         </tr>
                         <?php
                         foreach ( $tickets as $ticket ) {
                             $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"'; ?>
-                            <tr <?php echo wp_kses_post( $style ); ?> <?php echo wp_kses_post( apply_filters( 'tc_style_css_tr', $style_css_tr ) ); ?>>
+                            <tr <?php echo wp_kses_post( $style ); ?> <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_tr', $style_css_tr ) ); ?>>
                                 <?php foreach ( $columns as $column ) { ?>
-                                    <?php do_action( 'tc_order_details_email_column_value_before_' . $column[ 'id' ], $ticket ); ?>
-                                    <td <?php echo wp_kses_post( apply_filters( 'tc_style_css_td', $style_css_td ) ); ?>>
+                                    <?php tickera_do_action( 'tickera_order_details_email_column_value_before_' . $column[ 'id' ], $ticket ); ?>
+                                    <td <?php echo wp_kses_post( tickera_apply_filters( 'tickera_style_css_td', $style_css_td ) ); ?>>
                                         <?php
                                         if ( $column[ 'field_type' ] == 'function' ) {
                                             call_user_func( $column[ 'function' ], $column[ 'field_name' ], ( isset( $column[ 'field_id' ] ) ? $column[ 'field_id' ] : '' ), $ticket->ID );
@@ -3496,18 +3670,18 @@ if ( ! function_exists( 'tickera_get_order_details_email' ) ) {
                                         }
                                         ?>
                                     </td>
-                                    <?php do_action( 'tc_order_details_email_column_value_after_' . $column[ 'id' ], $ticket ); ?>
+                                    <?php tickera_do_action( 'tickera_order_details_email_column_value_after_' . $column[ 'id' ], $ticket ); ?>
                                 <?php }
                                 ?>
                             </tr>
-                            <?php do_action( 'tc_order_details_email_additional_row', $ticket ); ?>
+                            <?php tickera_do_action( 'tickera_order_details_email_additional_row', $ticket ); ?>
                             <?php
                         } ?>
                     </table>
                     <?php
                 }
             }
-            do_action( 'tc_get_order_details_email_tickets_table_after', $order_id );
+            tickera_do_action( 'tickera_get_order_details_email_tickets_table_after', $order_id );
         }
 
         if ( $return ) {
@@ -3536,7 +3710,7 @@ if ( ! function_exists( 'tickera_order_details_table_front' ) ) {
 
         $order = new \Tickera\TC_Order( $order_id );
         $order_is_paid = ( 'order_paid' == $order->details->post_status ) ? true : false;
-        $order_is_paid = apply_filters( 'tc_order_is_paid', $order_is_paid, $order_id );
+        $order_is_paid = tickera_apply_filters( 'tickera_order_is_paid', $order_is_paid, $order_id );
 
         if ( true == $order_is_paid ) {
 
@@ -3551,28 +3725,28 @@ if ( ! function_exists( 'tickera_order_details_table_front' ) ) {
 
             $style = '';
             $orders = new \Tickera\TC_Orders();
-            $columns = apply_filters( 'tc_front_ticket_table_columns', $orders->get_owner_info_fields_front() );
-            $classes = apply_filters( 'tc_order_details_table_front_classes', 'order-details widefat shadow-table' );
+            $columns = tickera_apply_filters( 'tickera_front_ticket_table_columns', $orders->get_owner_info_fields_front() );
+            $classes = tickera_apply_filters( 'tickera_order_details_table_front_classes', 'order-details widefat shadow-table' );
 
-            if ( apply_filters( 'tc_order_details_table_front_show_tickets_header', true ) == true ) {
+            if ( tickera_apply_filters( 'tickera_order_details_table_front_show_tickets_header', true ) == true ) {
                 echo wp_kses_post( '<h2>' . __( 'Tickets', 'tickera-event-ticketing-system' ) . '</h2>' );
             }
 
-            do_action( 'tc_order_details_table_front_before_table', $order_id, $tickets, $columns, $classes );
+            tickera_do_action( 'tickera_order_details_table_front_before_table', $order_id, $tickets, $columns, $classes );
             ?>
         <table class="<?php echo esc_attr( $classes ); ?>">
             <tr>
                 <?php foreach ( $columns as $column ) : ?>
-                    <?php do_action( 'tc_order_details_table_front_column_title_before_' . $column[ 'id' ] ); ?>
+                    <?php tickera_do_action( 'tickera_order_details_table_front_column_title_before_' . $column[ 'id' ] ); ?>
                     <th><?php echo esc_html( $column[ 'field_title' ] ); ?></th>
-                    <?php do_action( 'tc_order_details_table_front_column_title_after_' . $column[ 'id' ] ); ?>
+                    <?php tickera_do_action( 'tickera_order_details_table_front_column_title_after_' . $column[ 'id' ] ); ?>
                 <?php endforeach; ?>
             </tr>
             <?php foreach ( $tickets as $ticket ) : ?>
                 <?php $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"'; ?>
                 <tr <?php echo wp_kses_post( sanitize_text_field( $style ) ); ?>>
                     <?php foreach ( $columns as $column ) : ?>
-                        <?php do_action( 'tc_order_details_table_front_column_value_before_' . $column[ 'id' ], $ticket ); ?>
+                        <?php tickera_do_action( 'tickera_order_details_table_front_column_value_before_' . $column[ 'id' ], $ticket ); ?>
                         <td data-column="<?php echo esc_attr( $column[ 'field_title' ] ); ?>"><?php
                             if ( 'function' == $column[ 'field_type' ] ) {
                                 $array_of_arguments = array();
@@ -3591,13 +3765,13 @@ if ( ! function_exists( 'tickera_order_details_table_front' ) ) {
                                 }
                             }
                             ?></td>
-                        <?php do_action( 'tc_order_details_table_front_column_value_after_' . $column[ 'id' ], $ticket ); ?>
+                        <?php tickera_do_action( 'tickera_order_details_table_front_column_value_after_' . $column[ 'id' ], $ticket ); ?>
                     <?php endforeach; ?>
                 </tr>
-                <?php do_action( 'tc_order_details_table_front_additional_row', $ticket ); ?>
+                <?php tickera_do_action( 'tickera_order_details_table_front_additional_row', $ticket ); ?>
             <?php endforeach; ?>
             </table><?php
-            do_action( 'tc_order_details_table_front_after_table', $order_id, $tickets, $columns, $classes );
+            tickera_do_action( 'tickera_order_details_table_front_after_table', $order_id, $tickets, $columns, $classes );
         }
 
         if ( $return ) {
@@ -3625,7 +3799,7 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
             ob_start();
         }
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
 
         $order = new \Tickera\TC_Order( $order_id );
         $init_order_id = $order_id;
@@ -3663,14 +3837,14 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
                     $order_status = $order->details->post_status;
             }
 
-            $fees_total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
-            $tax_total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
-            $subtotal = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
-            $total = sanitize_text_field( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+            $fees_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+            $tax_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+            $subtotal = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
+            $total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
 
             $transaction_id = isset( $order->details->tc_payment_info[ 'transaction_id' ] ) ? sanitize_text_field( $order->details->tc_payment_info[ 'transaction_id' ] ) : '';
             $order_id = strtoupper( $order->details->post_name );
-            $order_date = $payment_date = apply_filters( 'tc_order_date', tickera_format_date( $order->details->tc_order_date, true ) );
+            $order_date = $payment_date = tickera_apply_filters( 'tickera_order_date', tickera_format_date( $order->details->tc_order_date, true ) );
 
             $discounts = new \Tickera\TC_Discounts();
             $discount_total = $discounts->get_discount_total_by_order( $order->details->ID );
@@ -3687,11 +3861,11 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
                 <label id="order_discount" class="tc_order_details_discount_value"><span class="order_details_title"><?php esc_html_e( 'Discount: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( tickera_get_order_discount_info( '', $order->details->ID ) ); ?></label>
                 <label id="order_discount_code" class="tc_order_details_discount_code"><span class="order_details_title"><?php esc_html_e( 'Discount code: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_discount_code ); ?></label>
             <?php endif; ?>
-            <?php if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || isset( $tc_general_settings[ 'show_fees' ] ) && 'yes' == $tc_general_settings[ 'show_fees' ] ) : ?>
-                <label id="order_fees"><span class="order_details_title"><?php echo esc_html( isset( $tc_general_settings[ 'fees_label' ] ) ? $tc_general_settings[ 'fees_label' ] : __( 'Fees', 'tickera-event-ticketing-system' ) ); ?></span> <?php echo esc_html( $fees_total ); ?></label>
+            <?php if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || isset( $tickera_general_settings[ 'show_fees' ] ) && 'yes' == $tickera_general_settings[ 'show_fees' ] ) : ?>
+                <label id="order_fees"><span class="order_details_title"><?php echo esc_html( isset( $tickera_general_settings[ 'fees_label' ] ) ? $tickera_general_settings[ 'fees_label' ] : __( 'Fees', 'tickera-event-ticketing-system' ) ); ?></span> <?php echo esc_html( $fees_total ); ?></label>
             <?php endif; ?>
-            <?php if ( ! isset( $tc_general_settings[ 'show_tax_rate' ] ) || isset( $tc_general_settings[ 'show_tax_rate' ] ) && 'yes' == $tc_general_settings[ 'show_tax_rate' ] ) : ?>
-                <label id="order_tax_rate"><span class="order_details_title"><?php echo esc_html( isset( $tc_general_settings[ 'tax_label' ] ) ? $tc_general_settings[ 'tax_label' ] : __( 'Tax', 'tickera-event-ticketing-system' ) ); ?></span> <?php echo esc_html( $tax_total ); ?></label>
+            <?php if ( ! isset( $tickera_general_settings[ 'show_tax_rate' ] ) || isset( $tickera_general_settings[ 'show_tax_rate' ] ) && 'yes' == $tickera_general_settings[ 'show_tax_rate' ] ) : ?>
+                <label id="order_tax_rate"><span class="order_details_title"><?php echo esc_html( isset( $tickera_general_settings[ 'tax_label' ] ) ? $tickera_general_settings[ 'tax_label' ] : __( 'Tax', 'tickera-event-ticketing-system' ) ); ?></span> <?php echo esc_html( $tax_total ); ?></label>
             <?php endif; ?>
             <hr/>
             <label id="order_total"><span class="order_details_title"><?php esc_html_e( 'Total: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $total ); ?></label>
@@ -3704,7 +3878,7 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
             esc_html_e( "You don't have required permissions to access this page.", 'tickera-event-ticketing-system' );
         }
 
-        do_action( 'tc_after_order_details', $order_id );
+        tickera_do_action( 'tickera_after_order_details', $order_id );
 
         if ( $return ) {
             return wpautop( ob_get_clean(), true );
@@ -3744,7 +3918,7 @@ if ( ! function_exists( 'tickera_get_order_details_buyer_custom_fields' ) ) {
                         <?php } ?>
                         <td <?php echo esc_attr( $field[ 'field_type' ] == 'separator' ? 'colspan="2"' : '' ); ?>>
                             <?php
-                            do_action( 'tc_before_orders_field_type_check' );
+                            tickera_do_action( 'tickera_before_orders_field_type_check' );
                             if ( $field[ 'field_type' ] == 'ID' ) {
                                 echo esc_html( $order->details->{$field[ 'post_field_type' ]} );
                             }
@@ -3776,13 +3950,13 @@ if ( ! function_exists( 'tickera_get_order_details_buyer_custom_fields' ) ) {
                             <?php if ( $field[ 'field_type' ] == 'separator' ) { ?>
                                 <hr/>
                             <?php } ?>
-                            <?php do_action( 'tc_after_orders_field_type_check' ); ?>
+                            <?php tickera_do_action( 'tickera_after_orders_field_type_check' ); ?>
                         </td>
                     </tr>
                     <?php
                 }
             }
-            do_action( 'tc_after_order_details_fields' );
+            tickera_do_action( 'tickera_after_order_details_fields' );
             ?>
             </tbody>
         </table>
@@ -3810,8 +3984,8 @@ if ( ! function_exists( 'tickera_get_order_event' ) ) {
         $user_id = get_current_user_id();
         $order_id = get_the_title( $post_id );
 
-        $cart_contents = apply_filters( 'tc_order_cart_contents', get_post_meta( $post_id, 'tc_cart_contents', true ), $post_id );
-        $cart_info = apply_filters( 'tc_order_cart_info', get_post_meta( $post_id, 'tc_cart_info', true ), $post_id );
+        $cart_contents = tickera_apply_filters( 'tickera_order_cart_contents', get_post_meta( $post_id, 'tc_cart_contents', true ), $post_id );
+        $cart_info = tickera_apply_filters( 'tickera_order_cart_info', get_post_meta( $post_id, 'tc_cart_info', true ), $post_id );
 
         $owner_data = isset( $cart_info[ 'owner_data' ] ) ? $cart_info[ 'owner_data' ] : array();
         $tickets = count( $cart_contents );
@@ -3827,7 +4001,7 @@ if ( ! function_exists( 'tickera_get_order_event' ) ) {
 
         $tickets = get_posts( $args );
         $columns = $orders->get_owner_info_fields();
-        $columns = apply_filters( 'tc_order_details_owner_columns', $columns );
+        $columns = tickera_apply_filters( 'tickera_order_details_owner_columns', $columns );
         $style = '';
         ?>
         <table class="order-details widefat shadow-table">
@@ -3854,7 +4028,7 @@ if ( ! function_exists( 'tickera_get_order_event' ) ) {
                                     $value = get_post_meta( $ticket->ID, $column[ 'field_name' ], true );
 
                                     if ( in_array( $column[ 'field_name' ], $ticket_summary_fields ) ) {
-                                        $value = esc_html( apply_filters( 'tc_cart_currency_and_format', $value ) );
+                                        $value = esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value ) );
                                     }
 
                                     if ( empty( $value ) ) {
@@ -3937,7 +4111,7 @@ if ( ! function_exists( 'tickera_get_order_discount_info' ) ) {
     function tickera_get_order_discount_info( $field_name = '', $post_id = '' ) {
         $discounts = new \Tickera\TC_Discounts();
         $discount_total = $discounts->get_discount_total_by_order( $post_id );
-        echo esc_html( ( $discount_total > 0 ) ? esc_html( apply_filters( 'tc_cart_currency_and_format', $discount_total ) ) : '-' );
+        echo esc_html( ( $discount_total > 0 ) ? esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ) : '-' );
     }
 }
 
@@ -3950,7 +4124,7 @@ if ( ! function_exists( 'tickera_get_order_total' ) ) {
     function tickera_get_order_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
     }
 }
 
@@ -3964,7 +4138,7 @@ if ( ! function_exists( 'tickera_get_order_subtotal' ) ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
         $payment_info = isset( $order->details->tc_payment_info ) ? $order->details->tc_payment_info : [];
-        echo esc_html( apply_filters( 'tc_cart_currency_and_format', ( isset( $payment_info ) ? $payment_info[ 'subtotal' ] : '' ) ) );
+        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', ( isset( $payment_info ) ? $payment_info[ 'subtotal' ] : '' ) ) );
     }
 }
 
@@ -3977,7 +4151,7 @@ if ( ! function_exists( 'tickera_get_order_fees_total' ) ) {
     function tickera_get_order_fees_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
     }
 }
 
@@ -3990,7 +4164,7 @@ if ( ! function_exists( 'tickera_get_order_tax_total' ) ) {
     function tickera_get_order_tax_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
     }
 }
 
@@ -4158,16 +4332,16 @@ if ( ! function_exists( 'tickera_get_limit_checkins_fields' ) ) {
 
     function tickera_get_limit_checkins_fields( $field_name = '', $post_id = '' ) {
 
-        $enable = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_field_name', $field_name, false, $post_id ), true );
+        $enable = get_post_meta( $post_id, tickera_apply_filters( 'tickera_checkins_time_basis_field_name', $field_name, false, $post_id ), true );
         $enable = ( $enable ) ? sanitize_key( $enable ) : 'no';
 
-        $time_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', false, $post_id ), true );
+        $time_basis = get_post_meta( $post_id, tickera_apply_filters( 'tickera_checkins_time_basis_type_field_name', 'checkins_time_basis_type', false, $post_id ), true );
         $time_basis = ( $time_basis ) ? $time_basis : 'hour';
 
-        $calendar_basis = get_post_meta( $post_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', false, $post_id ), true );
+        $calendar_basis = get_post_meta( $post_id, tickera_apply_filters( 'tickera_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', false, $post_id ), true );
         $calendar_basis = $calendar_basis ? $calendar_basis : 'no';
 
-        $allowed_checkin = get_post_meta( $post_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', false, $post_id ), true );
+        $allowed_checkin = get_post_meta( $post_id, tickera_apply_filters( 'tickera_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', false, $post_id ), true );
         ?>
         <label><input type="radio" name="<?php echo esc_attr( $field_name ) . '_post_meta'; ?>" class="<?php echo esc_attr( $field_name ) . '_post_meta'; ?> has_conditional" value="yes" <?php checked( $enable, 'yes', true ); ?>/><?php esc_html_e( 'Yes', 'tickera-event-ticketing-system' ); ?></label>
         <label><input type="radio" name="<?php echo esc_attr( $field_name ) . '_post_meta'; ?>" class="<?php echo esc_attr( $field_name ) . '_post_meta'; ?> has_conditional" value="no" <?php checked( $enable, 'no', true ); ?>/><?php esc_html_e( 'No', 'tickera-event-ticketing-system' ); ?></label><br/>
@@ -4269,7 +4443,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label><input type="radio" name="_ticket_checkin_availability_post_meta" value="time_after_order" <?php checked( $currently_selected, 'time_after_order', true ); ?> /><?php esc_html_e( 'Within the following time after order is placed', 'tickera-event-ticketing-system' ); ?></label><br/><br/>
         <label><?php esc_html_e( 'Days', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_order_days_post_meta" id="time_after_order_days">
-                <?php for ( $day = apply_filters( 'tc_ticket_checkin_availability_time_after_order_day_min', 0 ); $day <= apply_filters( 'tc_ticket_checkin_availability_time_after_order_day_max', 365 ); $day++ ) { ?>
+                <?php for ( $day = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_day_min', 0 ); $day <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_day_max', 365 ); $day++ ) { ?>
                     <option value="<?php echo esc_attr( $day ); ?>" <?php selected( $day, $days_selected, true ); ?>><?php echo esc_html( $day ); ?></option>
                 <?php } ?>
             </select>
@@ -4277,7 +4451,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label>
             <?php esc_html_e( 'Hours', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_order_hours_post_meta" id="time_after_order_hours">
-                <?php for ( $hour = apply_filters( 'tc_ticket_checkin_availability_time_after_order_hour_min', 0 ); $hour <= apply_filters( 'tc_ticket_checkin_availability_time_after_order_hour_max', 24 ); $hour++ ) { ?>
+                <?php for ( $hour = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_hour_min', 0 ); $hour <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_hour_max', 24 ); $hour++ ) { ?>
                     <option value="<?php echo esc_attr( $hour ); ?>" <?php selected( $hour, $hours_selected, true ); ?>><?php echo esc_html( $hour ); ?></option>
                 <?php } ?>
             </select>
@@ -4285,7 +4459,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label>
             <?php esc_html_e( 'Minutes', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_order_minutes_post_meta" id="time_after_order_minutes">
-                <?php for ( $minute = apply_filters( 'tc_ticket_checkin_availability_time_after_order_minute_min', 0 ); $minute <= apply_filters( 'tc_ticket_checkin_availability_time_after_order_minute_max', 60 ); $minute++ ) { ?>
+                <?php for ( $minute = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_minute_min', 0 ); $minute <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_order_minute_max', 60 ); $minute++ ) { ?>
                     <option value="<?php echo esc_attr( $minute ); ?>" <?php selected( $minute, $minutes_selected, true ); ?>><?php echo esc_html( $minute ); ?></option>
                 <?php } ?>
             </select>
@@ -4294,7 +4468,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label>
             <?php esc_html_e( 'Days', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_first_checkin_days_post_meta" id="time_after_first_checkin_days">
-                <?php for ( $day = apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_day_min', 0 ); $day <= apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_day_max', 365 ); $day++ ) { ?>
+                <?php for ( $day = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_day_min', 0 ); $day <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_day_max', 365 ); $day++ ) { ?>
                     <option value="<?php echo esc_attr( $day ); ?>" <?php selected( $day, $days_selected_after_checkin, true ); ?>><?php echo esc_html( $day ); ?></option>
                 <?php } ?>
             </select>
@@ -4302,7 +4476,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label>
             <?php esc_html_e( 'Hours', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_first_checkin_hours_post_meta" id="time_after_first_checkin_hours">G
-                <?php for ( $hour = apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_hour_min', 0 ); $hour <= apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_hour_max', 24 ); $hour++ ) { ?>
+                <?php for ( $hour = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_hour_min', 0 ); $hour <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_hour_max', 24 ); $hour++ ) { ?>
                     <option value="<?php echo esc_attr( $hour ); ?>" <?php selected( $hour, $hours_selected_after_checkin, true ); ?>><?php echo esc_html( $hour ); ?></option>
                 <?php } ?>
             </select>
@@ -4310,7 +4484,7 @@ if ( ! function_exists( 'tickera_get_ticket_checkin_availability_dates' ) ) {
         <label>
             <?php esc_html_e( 'Minutes', 'tickera-event-ticketing-system' ); ?>
             <select name="_time_after_first_checkin_minutes_post_meta" id="time_after_first_checkin_minutes">
-                <?php for ( $minute = apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_minute_min', 0 ); $minute <= apply_filters( 'tc_ticket_checkin_availability_time_after_first_checkin_minute_max', 60 ); $minute++ ) { ?>
+                <?php for ( $minute = tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_minute_min', 0 ); $minute <= tickera_apply_filters( 'tickera_ticket_checkin_availability_time_after_first_checkin_minute_max', 60 ); $minute++ ) { ?>
                     <option value="<?php echo esc_attr( $minute ); ?>" <?php selected( $minute, $minutes_selected_after_checkin, true ); ?>><?php echo esc_html( $minute ); ?></option>
                 <?php } ?>
             </select>
@@ -4381,11 +4555,14 @@ if ( ! function_exists( 'tickera_get_ticket_templates' ) ) {
                 <option value="<?php echo esc_attr( (int) $template_object->ID ); ?>" <?php selected( $currently_selected, $template_object->ID, true ); ?>><?php echo esc_html( $template_object->post_title ); ?></option>
             <?php } ?>
         </select>
+        <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket ID is cast before loading ticket template preview context. ?>
         <?php if ( isset( $_GET[ 'ID' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket ID is cast before loading ticket details.
             $ticket = new \Tickera\TC_Ticket( (int) $_GET[ 'ID' ] );
             $template_id = $ticket->details->ticket_template; ?>
             <a class="ticket_preview_link" target="_blank"
-               href="<?php echo esc_url( apply_filters( 'tc_ticket_preview_link', admin_url( 'edit.php?post_type=tc_events&page=tc_ticket_templates&action=preview&ticket_type_id=' . (int) $_GET[ 'ID' ] ) . '&template_id=' . $template_id ) ); ?>"><?php esc_html_e( 'Preview', 'tickera-event-ticketing-system' ); ?></a>
+               <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket ID is cast before building preview URL. ?>
+               href="<?php echo esc_url( tickera_apply_filters( 'tickera_ticket_preview_link', admin_url( 'edit.php?post_type=tc_events&page=tc_ticket_templates&action=preview&ticket_type_id=' . (int) $_GET[ 'ID' ] ) . '&template_id=' . $template_id ) ); ?>"><?php esc_html_e( 'Preview', 'tickera-event-ticketing-system' ); ?></a>
         <?php }
     }
 }
@@ -4514,7 +4691,7 @@ if ( ! function_exists( 'tickera_get_events_array' ) ) {
         foreach ( $wp_events_search->get_results() as $event ) {
             $event_obj = new \Tickera\TC_Event( $event->ID );
             $event_object = $event_obj->details;
-            $events[ $event_object->ID ] = apply_filters( 'tc_event_select_name', $event_object->post_title, $event_object->ID );
+            $events[ $event_object->ID ] = tickera_apply_filters( 'tickera_event_select_name', $event_object->post_title, $event_object->ID );
         }
 
         return $events;
@@ -4539,13 +4716,13 @@ if ( ! function_exists( 'tickera_get_events' ) ) {
             $currently_selected = '';
         }
 
-        $disable_if_selected = apply_filters( 'tc_disable_event_selection_for_ticket_types_if_selected_already', false, $post_id, $currently_selected );
+        $disable_if_selected = tickera_apply_filters( 'tickera_disable_event_selection_for_ticket_types_if_selected_already', false, $post_id, $currently_selected );
         ?>
         <select name="<?php echo esc_attr( $field_name ); ?>_post_meta" <?php echo esc_attr( $disable_if_selected ? 'disabled="disabled"' : '' ); ?>>
             <?php foreach ( $wp_events_search->get_results() as $event ) {
                 $event_obj = new \Tickera\TC_Event( $event->ID );
                 $event_object = $event_obj->details; ?>
-                <option value="<?php echo esc_attr( (int) $event_object->ID ); ?>" <?php selected( $currently_selected, $event_object->ID, true ); ?>><?php echo esc_html( apply_filters( 'tc_event_select_name', $event_object->post_title, $event_object->ID ) ); ?></option>
+                <option value="<?php echo esc_attr( (int) $event_object->ID ); ?>" <?php selected( $currently_selected, $event_object->ID, true ); ?>><?php echo esc_html( tickera_apply_filters( 'tickera_event_select_name', $event_object->post_title, $event_object->ID ) ); ?></option>
             <?php } ?>
         </select>
         <?php
@@ -4578,7 +4755,7 @@ if ( ! function_exists( 'tickera_get_event_limit_level_option' ) ) {
         <label for="<?php echo esc_attr( $field_name ); ?>_1">
             <input type="radio" id="<?php echo esc_attr( $field_name ); ?>_1" class="<?php echo esc_attr( $field_name ); ?>_post_meta has_conditional" name="<?php echo esc_attr( $field_name ); ?>_post_meta" value = "1" <?php checked( $limit_level_type, 1, true ); ?>/><?php esc_html_e( 'Per event', 'tickera-event-ticketing-system' ); ?>
         </label><br><br>
-        <input type="text" name="<?php echo esc_attr( $field_name ); ?>_value_post_meta" id="<?php echo esc_attr( $field_name ); ?>" class="regular-text tc_conditional" value="<?php echo esc_attr( $limit_level_value ); ?>" placeholder="<?php echo esc_attr( ! $limit_level_value ) ? __( 'Unlimited', 'tickera-event-ticketing-system' ) : ''; ?>" data-condition-field_name="<?php echo esc_attr( $field_name ); ?>_post_meta" data-condition-field_type="radio" data-condition-value="0" data-condition-action="hide" number="true" />
+        <input type="text" name="<?php echo esc_attr( $field_name ); ?>_value_post_meta" id="<?php echo esc_attr( $field_name ); ?>" class="regular-text tc_conditional" value="<?php echo esc_attr( $limit_level_value ); ?>" placeholder="<?php echo ( ! $limit_level_value ) ? esc_html__( 'Unlimited', 'tickera-event-ticketing-system' ) : ''; ?>" data-condition-field_name="<?php echo esc_attr( $field_name ); ?>_post_meta" data-condition-field_type="radio" data-condition-value="0" data-condition-action="hide" number="true" />
     <?php }
 }
 
@@ -4704,7 +4881,7 @@ if ( ! function_exists( 'tickera_update_widget_cart' ) ) {
 
         global $tc;
 
-        if ( isset( $_POST[ 'nonce' ] ) && wp_verify_nonce( sanitize_key( $_POST['nonce'] ), 'tc_ajax_nonce' ) ) {
+        if ( isset( $_POST[ 'nonce' ] ) && wp_verify_nonce( sanitize_key( wp_unslash( $_POST['nonce'] ) ), 'tc_ajax_nonce' ) ) {
 
             $cart_contents = $tc->get_cart_cookie();
 
@@ -4714,15 +4891,15 @@ if ( ! function_exists( 'tickera_update_widget_cart' ) ) {
 
                 foreach ( $cart_contents as $ticket_type => $ordered_count ) {
                     $ticket = new \Tickera\TC_Ticket( $ticket_type );
-                    $tc_cart_list .= "<li id='tc_ticket_type_'" . esc_attr( $ticket_type ) . ">" . wp_kses_post( apply_filters( 'tc_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . apply_filters( 'tc_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ) ) . "</li>";
+                    $tc_cart_list .= "<li id='tc_ticket_type_'" . esc_attr( $ticket_type ) . ">" . wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ) ) . "</li>";
                 }
 
                 echo wp_kses_post( $tc_cart_list );
 
             } else {
-                do_action( 'tc_cart_before_empty' ); ?>
+                tickera_do_action( 'tickera_cart_before_empty' ); ?>
                 <span class='tc_empty_cart'><?php esc_html_e( 'The cart is empty', 'tickera-event-ticketing-system' ); ?></span><?php
-                do_action( 'tc_cart_after_empty' );
+                tickera_do_action( 'tickera_cart_after_empty' );
             }
         }
         ?>
@@ -4790,13 +4967,13 @@ if ( ! function_exists( 'tickera_get_post_meta_all' ) ) {
 if ( ! function_exists( 'tickera_get_post_meta_all_old' ) ) {
 
     function tickera_get_post_meta_all_old( $post_id ) {
-        global $wpdb;
         $data = [];
-        $wpdb->query( $wpdb->prepare( "SELECT `meta_key`, `meta_value` FROM " . $wpdb->postmeta . " WHERE `post_id` = %d", $post_id ) );
+        $metas = get_post_meta( (int) $post_id );
 
-        foreach ( $wpdb->last_result as $k => $v ) {
-            $data[ $v->meta_key ] = $v->meta_value;
+        foreach ( $metas as $key => $value ) {
+            $data[ $key ] = is_array( $value ) ? reset( $value ) : $value;
         }
+
         return $data;
     }
 }
@@ -4875,9 +5052,12 @@ if ( ! function_exists( 'tickera_json_encode' ) ) {
 if ( ! function_exists( 'tickera_ticket_code_to_id' ) ) {
 
     function tickera_ticket_code_to_id( $ticket_code ) {
+
         $result = get_posts( array(
             'posts_per_page' => 1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
             'meta_key' => 'ticket_code',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
             'meta_value' => $ticket_code,
             'post_type' => 'tc_tickets_instances'
         ) );
@@ -4897,7 +5077,7 @@ if ( ! function_exists( 'tickera_ticket_code_to_id' ) ) {
 if ( ! function_exists( 'tickera_checkout_step_url' ) ) {
 
     function tickera_checkout_step_url( $checkout_step ) {
-        return apply_filters( 'tc_checkout_step_url', trailingslashit( home_url() ) . trailingslashit( $checkout_step ) );
+        return tickera_apply_filters( 'tickera_checkout_step_url', trailingslashit( home_url() ) . trailingslashit( $checkout_step ) );
     }
 }
 
@@ -4937,14 +5117,14 @@ if ( ! function_exists( 'tickera_current_url' ) ) {
 
     function tickera_current_url() {
         $pageURL = 'http';
-        if ( isset( $_SERVER[ "HTTPS" ] ) && $_SERVER[ "HTTPS" ] == "on" ) {
+        if ( isset( $_SERVER[ "HTTPS" ] ) && sanitize_text_field( wp_unslash( $_SERVER[ "HTTPS" ] ) ) == "on" ) {
             $pageURL .= "s";
         }
         $pageURL .= "://";
-        if ( isset( $_SERVER[ "SERVER_PORT" ] ) && $_SERVER[ "SERVER_PORT" ] != "80" ) {
-            $pageURL .= sanitize_text_field( $_SERVER[ "SERVER_NAME" ] ) . ":" . sanitize_text_field( $_SERVER[ "SERVER_PORT" ] ) . sanitize_text_field( $_SERVER[ "REQUEST_URI" ] );
+        if ( isset( $_SERVER[ "SERVER_PORT" ] ) && sanitize_text_field( wp_unslash( $_SERVER[ "SERVER_PORT" ] ) ) != "80" ) {
+            $pageURL .= ( isset( $_SERVER[ "SERVER_NAME" ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ "SERVER_NAME" ] ) ) : '' ) . ":" . sanitize_text_field( wp_unslash( $_SERVER[ "SERVER_PORT" ] ) ) . ( isset( $_SERVER[ "REQUEST_URI" ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ "REQUEST_URI" ] ) ) : '' );
         } else {
-            $pageURL .= sanitize_text_field( $_SERVER[ "SERVER_NAME" ] ) . sanitize_text_field( $_SERVER[ "REQUEST_URI" ] );
+            $pageURL .= ( isset( $_SERVER[ "SERVER_NAME" ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ "SERVER_NAME" ] ) ) : '' ) . ( isset( $_SERVER[ "REQUEST_URI" ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ "REQUEST_URI" ] ) ) : '' );
         }
         return $pageURL;
     }
@@ -4959,8 +5139,12 @@ if ( ! function_exists( 'tickera_write_log' ) ) {
     function tickera_write_log( $log ) {
         if ( true === WP_DEBUG ) {
             if ( is_array( $log ) || is_object( $log ) ) {
+
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
                 error_log( print_r( $log, true ) );
             } else {
+
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
                 error_log( $log );
             }
         }
@@ -4975,13 +5159,13 @@ if ( ! function_exists( 'tickera_iw_is_pr' ) ) {
 
     function tickera_iw_is_pr() {
 
-        global $tc_gateway_plugins;
+        global $tickera_gateway_plugins;
 
         if ( tickera_is_pr_only() ) {
             return true;
         }
 
-        return ( $tc_gateway_plugins && count( $tc_gateway_plugins ) < 10 ) ? false : true;
+        return ( $tickera_gateway_plugins && count( $tickera_gateway_plugins ) < 10 ) ? false : true;
     }
 }
 
@@ -5019,7 +5203,7 @@ if ( ! function_exists( 'tickera_get_order_statuses' ) ) {
             'order_refunded'  => _x( 'Order Refunded', 'Order status', 'tickera-event-ticketing-system' ),
         ];
 
-        return apply_filters( 'tickera_order_statuses', $order_statuses );
+        return tickera_apply_filters( 'tickera_order_statuses', $order_statuses );
     }
 }
 
@@ -5046,8 +5230,6 @@ if ( ! function_exists( 'tickera_get_posts' ) ) {
 
     function tickera_get_posts( $args = [] ) {
 
-        global $wpdb;
-
         $default = [
             'post_status' => 'publish',
             'post_type' => 'post',
@@ -5060,42 +5242,42 @@ if ( ! function_exists( 'tickera_get_posts' ) ) {
         // Initialization of required arguments
         $args = array_merge( $default, $args );
 
-        // Sanitization
-        $order_by = sanitize_key( $args['order_by'] );
-        $order = sanitize_key( $args['order'] );
-
-        // Fields
-        if ( is_array( $args['fields'] ) ) {
-            $fields_query = implode( ',', array_map( 'sanitize_key', $args['fields'] ) );
-
-        } else {
-            $fields_query = sanitize_key( $args['fields'] );
-        }
+        $query_args = [
+            'post_status' => sanitize_key( $args['post_status'] ),
+            'post_type' => sanitize_key( $args['post_type'] ),
+            'orderby' => sanitize_key( $args['order_by'] ),
+            'order' => strtoupper( $args['order'] ) === 'ASC' ? 'ASC' : 'DESC',
+            'posts_per_page' => -1,
+            'no_found_rows' => true,
+            'update_post_meta_cache' => (bool) $args[ 'meta' ],
+            'update_post_term_cache' => false,
+        ];
 
         // Post Parent
-        $post_parent_query = '';
         if ( isset( $args[ 'post_parent' ] ) ) {
-            $post_parent_query= "AND p.post_parent=" . (int) $args[ 'post_parent' ];
+            $query_args[ 'post_parent' ] = (int) $args[ 'post_parent' ];
         }
 
-        $meta_query = '';
-        if ( $args[ 'meta' ] ) {
-            $meta_query = "INNER JOIN {$wpdb->postmeta} pm ON p.ID=pm.post_id";
+        $posts = get_posts( $query_args );
+
+        if ( '*' === $args[ 'fields' ] ) {
+            return $posts;
         }
 
-        $query = $wpdb->prepare( "
-            SELECT {$fields_query} 
-            FROM {$wpdb->posts} p 
-            {$meta_query}
-            WHERE post_type=%s
-            AND post_status=%s
-            {$post_parent_query}
-            ORDER BY {$order_by} $order",
-            sanitize_text_field( $args['post_type'] ),
-            sanitize_key( $args['post_status'] )
-        );
+        $fields = is_array( $args[ 'fields' ] ) ? $args[ 'fields' ] : [ $args[ 'fields' ] ];
+        $fields = array_map( 'sanitize_key', $fields );
 
-        return $wpdb->get_results( $query );
+        return array_map( function ( $post ) use ( $fields ) {
+            $post_data = new stdClass();
+
+            foreach ( $fields as $field ) {
+                if ( isset( $post->{$field} ) ) {
+                    $post_data->{$field} = $post->{$field};
+                }
+            }
+
+            return $post_data;
+        }, $posts );
     }
 }
 

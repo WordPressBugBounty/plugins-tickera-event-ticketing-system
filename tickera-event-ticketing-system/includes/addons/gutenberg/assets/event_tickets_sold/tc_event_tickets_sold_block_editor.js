@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_tickets_sold_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -70,6 +72,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/event-tickets-sold', {
+    apiVersion: 3,
     title: __( 'Event Tickets Sold', 'tc' ),
     description: __( 'Shows number of sold tickets for an event', 'tc' ),
     icon: 'info',
@@ -87,6 +90,7 @@ registerBlockType( 'tickera/event-tickets-sold', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_tickets_sold_block_editor.events );
 
         /**
@@ -129,10 +133,14 @@ registerBlockType( 'tickera/event-tickets-sold', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-tickets-sold",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-tickets-sold",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

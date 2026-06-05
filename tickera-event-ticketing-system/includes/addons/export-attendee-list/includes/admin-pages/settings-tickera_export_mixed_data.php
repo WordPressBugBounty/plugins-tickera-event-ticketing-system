@@ -1,4 +1,6 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly  ?>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly  ?>
 <div class="wrap tc_wrap">
     <div id="poststuff" class="metabox-holder tc-settings">
         <form action="" method="post" enctype="multipart/form-data">
@@ -73,7 +75,7 @@
                                         <input type="checkbox" name="col_checkins" id="col_checkins" checked="checked">
                                         <?php esc_html_e( 'Check-ins (list of all the check-ins)', 'tickera-event-ticketing-system' ); ?>
                                     </label>
-                                    <?php do_action( 'tc_pdf_admin_columns' ); ?>
+                                    <?php tickera_do_action( 'tickera_pdf_admin_columns' ); ?>
                                 </fieldset>
                             </td>
                         </tr>

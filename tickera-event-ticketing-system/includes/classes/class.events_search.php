@@ -42,8 +42,9 @@ if ( ! class_exists( '\Tickera\TC_Events_Search' ) ) {
                 'orderby' => $orderby,
                 'order' => $order,
                 'include' => '',
-                'exclude' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => '',
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',
@@ -55,7 +56,7 @@ if ( ! class_exists( '\Tickera\TC_Events_Search' ) ) {
                 $args[ 'search_columns' ] = $search_columns;
             }
 
-            $this->args = apply_filters( 'tc_events_search_args', $args );
+            $this->args = tickera_apply_filters( 'tickera_events_search_args', $args );
         }
 
         function TC_Events_Search( $search_term = '', $page_num = '' ) {
@@ -84,8 +85,9 @@ if ( ! class_exists( '\Tickera\TC_Events_Search' ) ) {
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'include' => '',
-                'exclude' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => '',
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',

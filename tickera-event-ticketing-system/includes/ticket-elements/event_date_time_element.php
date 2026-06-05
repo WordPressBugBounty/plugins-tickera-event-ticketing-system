@@ -22,21 +22,20 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
             $this->get_cell_alignment();
             $this->get_display_format();
             $this->get_element_margins();
-            return apply_filters( 'tc_ticket_admin_content', ob_get_clean() );
+            return tickera_apply_filters( 'tickera_ticket_admin_content', ob_get_clean() );
         }
 
         function get_display_format() { ?>
-            <label><?php _e( 'Display Format', 'tickera-event-ticketing-system' ) ?></label>
+            <label><?php esc_html_e( 'Display Format', 'tickera-event-ticketing-system' ) ?></label>
             <select name="<?php echo esc_attr( $this->element_name . '_display_format_post_meta' ) ?>">
-                <option value="0" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 0, true ); ?>><?php _e( 'Start/End Date & Time', 'tickera-event-ticketing-system' ) ?></option>
-                <option value="1" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 1, true ); ?>><?php _e( 'Start Date & Time', 'tickera-event-ticketing-system' ) ?></option>
-                <option value="2" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 2, true ); ?>><?php _e( 'End Date & Time', 'tickera-event-ticketing-system' ) ?></option>
+                <option value="0" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 0, true ); ?>><?php esc_html_e( 'Start/End Date & Time', 'tickera-event-ticketing-system' ) ?></option>
+                <option value="1" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 1, true ); ?>><?php esc_html_e( 'Start Date & Time', 'tickera-event-ticketing-system' ) ?></option>
+                <option value="2" <?php selected( isset( $this->template_metas[ $this->element_name . '_display_format' ] ) ? $this->template_metas[ $this->element_name . '_display_format' ] : 'left', 2, true ); ?>><?php esc_html_e( 'End Date & Time', 'tickera-event-ticketing-system' ) ?></option>
             </select>
-
         <?php }
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_event_date_time_element_title', __( 'Event Date & Time', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_event_date_time_element_title', __( 'Event Date & Time', 'tickera-event-ticketing-system' ) );
         }
 
         /**
@@ -113,9 +112,9 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
             if ( $ticket_instance_id ) {
                 $ticket_instance = new \Tickera\TC_Ticket( (int) $ticket_instance_id );
                 $ticket = new \Tickera\TC_Ticket();
-                $event_id = $ticket->get_ticket_event( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
+                $event_id = $ticket->get_ticket_event( tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
                 $event_date = $this->get_event_date( $event_id );
-                return '<br/>' . apply_filters( 'tc_event_date_time_element_ticket_type', $event_date, apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ), $ticket_instance_id );
+                return '<br/>' . tickera_apply_filters( 'tickera_event_date_time_element_ticket_type', $event_date, tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id ), $ticket_instance_id );
 
             } else {
 
@@ -126,7 +125,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
                     return '<br/>' . $event_date;
 
                 } else {
-                    return '<br/>' . apply_filters( 'tc_event_date_time_element_default', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) );
+                    return '<br/>' . tickera_apply_filters( 'tickera_event_date_time_element_default', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) );
                 }
             }
         }

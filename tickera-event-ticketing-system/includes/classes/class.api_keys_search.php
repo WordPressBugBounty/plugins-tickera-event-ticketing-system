@@ -46,8 +46,8 @@ if ( ! class_exists( '\Tickera\TC_API_Keys_Search' ) ) {
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'include' => '',
-                'exclude' => '',
                 'post_type' => $this->post_type,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => $tc_meta_query,
                 'post_mime_type' => '',
                 'post_parent' => '',
@@ -87,9 +87,9 @@ if ( ! class_exists( '\Tickera\TC_API_Keys_Search' ) ) {
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'include' => '',
-                'exclude' => '',
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => $tc_meta_query,
                 'post_parent' => '',
                 'post_status' => 'any'

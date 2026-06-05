@@ -31,7 +31,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
         }
 
         function add_tc_dashboard_widgets() {
-            if ( ! current_user_can( apply_filters( 'tc_can_view_dashboard_widgets_capability', 'manage_options' ) ) ) {
+            if ( ! current_user_can( tickera_apply_filters( 'tickera_can_view_dashboard_widgets_capability', 'manage_options' ) ) ) {
                 return;
             }
             wp_add_dashboard_widget( 'tc_store_report', $this->title, array( &$this, 'tc_store_report_display' ) );
@@ -43,37 +43,60 @@ if ( ! class_exists( '\Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
             if ( ! empty( $pagenow ) && ( 'index.php' === $pagenow ) ) {
                 wp_enqueue_style( 'tc-dashboard-widgets', $tc->plugin_url . 'includes/addons/' . $this->dir_name . '/css/dashboard-widgets.css', false, $tc->version );
                 wp_enqueue_style( 'tc-dashboard-widgets-font-awesome', $tc->plugin_url . '/css/font-awesome.min.css', array(), $tc->version );
-                wp_enqueue_script( 'tc-dashboard-widgets-peity', $tc->plugin_url . '/includes/addons/' . $this->dir_name . '/js/jquery.peity.min.js', array( 'jquery' ), $tc->version );
-                wp_enqueue_script( 'tc-dashboard-widgets', $tc->plugin_url . '/includes/addons/' . $this->dir_name . '/js/dashboard-widgets.js', array( 'jquery' ), $tc->version );
+                wp_enqueue_script( 'tc-dashboard-widgets-peity', $tc->plugin_url . '/includes/addons/' . $this->dir_name . '/js/jquery.peity.min.js', array( 'jquery' ), $tc->version, false );
+                wp_enqueue_script( 'tc-dashboard-widgets', $tc->plugin_url . '/includes/addons/' . $this->dir_name . '/js/dashboard-widgets.js', array( 'jquery' ), $tc->version, false );
             }
         }
 
         function tc_store_report_display() {
 
-            global $tc, $wpdb;
+            global $tc;
 
-            $days_range = apply_filters( 'ticketing_glance_days', 30 );
-            $days = $days_range * -1;
+            $days_range = tickera_apply_filters( 'tickera_ticketing_glance_days', 30 );
             $total_revenue = 0;
             $todays_revenue = 0;
             $count_of_paid_tickets = 0;
-            $todays_date = date( "Y-m-d" );
-            $totals_30 = $wpdb->get_results( $wpdb->prepare( "SELECT orders.post_date as order_date, orders.post_status as order_status, order_meta.meta_value FROM {$wpdb->prefix}posts as orders, {$wpdb->prefix}postmeta as order_meta WHERE orders.ID = order_meta.post_id AND orders.post_type = 'tc_orders' AND orders.post_status IN ('order_paid','order_received') AND order_meta.meta_key IN ( 'tc_cart_info' ) AND orders.post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
+            $pending_orders_count = 0;
+            $paid_orders_count = 0;
+            $todays_date = wp_date( "Y-m-d" );
+            $date_query = [
+                [
+                    'after'     => (int) $days_range . ' days ago',
+                    'before'    => 'tomorrow',
+                    'inclusive' => true,
+                ],
+            ];
+            $orders_query = new \WP_Query( [
+                'post_type'              => 'tc_orders',
+                'post_status'            => [ 'order_paid', 'order_received' ],
+                'posts_per_page'         => -1,
+                'fields'                 => 'ids',
+                'date_query'             => $date_query,
+                'no_found_rows'          => true,
+                'update_post_meta_cache' => false,
+                'update_post_term_cache' => false,
+            ] );
 
-            foreach ( $totals_30 as $total_record_30_init ) {
+            foreach ( $orders_query->posts as $order_id ) {
 
-                $total_record_30 = maybe_unserialize( $total_record_30_init->meta_value );
+                $total_record_30 = get_post_meta( $order_id, 'tc_cart_info', true );
+                $order_status = get_post_status( $order_id );
 
-                if ( 'order_paid' == $total_record_30_init->order_status ) {
+                if ( 'order_paid' == $order_status ) {
+
+                    $paid_orders_count++;
 
                     // Last 30 Days Earnings
                     $total_record_val = isset( $total_record_30[ 'total' ] ) ? (float) $total_record_30[ 'total' ] : 0;
                     $total_revenue += $total_record_val;
 
                     // Today's Earnings
-                    if ( date( 'Y-m-d', strtotime( $total_record_30_init->order_date ) ) == $todays_date ) {
+                    if ( wp_date( 'Y-m-d', strtotime( get_post_field( 'post_date', $order_id ) ) ) == $todays_date ) {
                         $todays_revenue += $total_record_val;
                     }
+
+                } elseif ( 'order_received' == $order_status ) {
+                    $pending_orders_count++;
                 }
 
                 // Tickets Sold
@@ -88,8 +111,6 @@ if ( ! class_exists( '\Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
             }
 
             $total_revenue = round( $total_revenue, 2 );
-            $pending_orders_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'tc_orders' AND post_status = 'order_received' AND post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
-            $paid_orders_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(ID) FROM {$wpdb->posts} WHERE post_type = 'tc_orders' AND post_status = 'order_paid' AND post_date BETWEEN (NOW() - INTERVAL %d DAY) AND (NOW() + INTERVAL %d DAY)", (int) $days_range, 1 ) );
             ?>
             <ul class="tc-status-list">
                 <li class="sales-this-month">
@@ -176,5 +197,5 @@ if ( ! class_exists( '\Tickera\Addons\TC_Stats_Dashboard_Widget' ) ) {
 }
 
 if ( is_admin() ) {
-    $tc_stats_dashboard_widget = new TC_Stats_Dashboard_Widget();
+    new TC_Stats_Dashboard_Widget();
 }

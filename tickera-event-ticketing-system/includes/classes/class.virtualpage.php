@@ -56,9 +56,10 @@ if ( ! class_exists( '\Tickera\TC_Virtual_Page' ) ) {
          * @return array
          */
         function virtualPage( $posts ) {
-            global $wp, $wp_query, $wpdb, $comment;
 
-            $old_post_slug_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s", sanitize_text_field( $wp->request ) ) ); // Check if slug already exists
+            global $wp, $wp_query, $wpdb, $comment;
+            $old_post = get_page_by_path( sanitize_title( $wp->request ), OBJECT, 'post' );
+            $old_post_slug_id = $old_post ? $old_post->ID : 0;
 
             if ( $old_post_slug_id == '' ) {
 

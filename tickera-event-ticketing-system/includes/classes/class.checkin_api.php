@@ -20,16 +20,24 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
 
             global $wp;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API debug flag only controls temporary error display.
             if ( defined( 'TC_DEBUG' ) || isset( $_GET[ 'tc_debug' ] ) ) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
                 error_reporting( E_ALL );
+
+                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
                 @ini_set( 'display_errors', 'On' );
             }
 
             $this->api_key = $api_key;
-            $checksum = isset( $wp->query_vars[ 'checksum' ] ) ? sanitize_text_field( $wp->query_vars[ 'checksum' ] ) : ( isset( $_REQUEST[ 'checksum' ] ) ? sanitize_text_field( $_REQUEST[ 'checksum' ] ) : '' );
-            $page_number = isset( $wp->query_vars[ 'page_number' ] ) ? (int) $wp->query_vars[ 'page_number' ] : ( isset( $_REQUEST[ 'page_number' ] ) ? (int) $_REQUEST[ 'page_number' ] : apply_filters( 'tc_ticket_info_default_page_number', 1 ) );
-            $results_per_page = isset( $wp->query_vars[ 'results_per_page' ] ) ? (int) $wp->query_vars[ 'results_per_page' ] : ( isset( $_REQUEST[ 'results_per_page' ] ) ? (int) $_REQUEST[ 'results_per_page' ] : apply_filters( 'tc_ticket_info_default_results_per_page', 50 ) );
-            $keyword = isset( $wp->query_vars[ 'keyword' ] ) ? sanitize_text_field( $wp->query_vars[ 'keyword' ] ) : ( isset( $_REQUEST[ 'keyword' ] ) ? sanitize_text_field( $_REQUEST[ 'keyword' ] ) : '' );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API checksum is sanitized and authenticated by API key/checksum flow.
+            $checksum = isset( $wp->query_vars[ 'checksum' ] ) ? sanitize_text_field( $wp->query_vars[ 'checksum' ] ) : ( isset( $_REQUEST[ 'checksum' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'checksum' ] ) ) : '' );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API pagination is cast and authenticated by API key/checksum flow.
+            $page_number = isset( $wp->query_vars[ 'page_number' ] ) ? (int) $wp->query_vars[ 'page_number' ] : ( isset( $_REQUEST[ 'page_number' ] ) ? (int) $_REQUEST[ 'page_number' ] : tickera_apply_filters( 'tickera_ticket_info_default_page_number', 1 ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API pagination size is cast and authenticated by API key/checksum flow.
+            $results_per_page = isset( $wp->query_vars[ 'results_per_page' ] ) ? (int) $wp->query_vars[ 'results_per_page' ] : ( isset( $_REQUEST[ 'results_per_page' ] ) ? (int) $_REQUEST[ 'results_per_page' ] : tickera_apply_filters( 'tickera_ticket_info_default_results_per_page', 50 ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API keyword filter is sanitized and authenticated by API key/checksum flow.
+            $keyword = isset( $wp->query_vars[ 'keyword' ] ) ? sanitize_text_field( $wp->query_vars[ 'keyword' ] ) : ( isset( $_REQUEST[ 'keyword' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'keyword' ] ) ) : '' );
 
             if ( $checksum !== '' ) {
 
@@ -52,10 +60,10 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 }
             }
 
-            $this->ticket_code = apply_filters( 'tc_ticket_code_var_name', isset( $ticket_code ) && $ticket_code != '' ? $this->extract_checksum_from_code( $ticket_code ) : $this->extract_checksum_from_code( $checksum ) );
-            $this->page_number = apply_filters( 'tc_tickets_info_page_number_var_name', $page_number );
-            $this->results_per_page = apply_filters( 'tc_tickets_info_results_per_page_var_name', $results_per_page );
-            $this->keyword = apply_filters( 'tc_tickets_info_keyword_var_name', $keyword );
+            $this->ticket_code = tickera_apply_filters( 'tickera_ticket_code_var_name', isset( $ticket_code ) && $ticket_code != '' ? $this->extract_checksum_from_code( $ticket_code ) : $this->extract_checksum_from_code( $checksum ) );
+            $this->page_number = tickera_apply_filters( 'tickera_tickets_info_page_number_var_name', $page_number );
+            $this->results_per_page = tickera_apply_filters( 'tickera_tickets_info_results_per_page_var_name', $results_per_page );
+            $this->keyword = tickera_apply_filters( 'tickera_tickets_info_keyword_var_name', $keyword );
             $this->return_method = $return_method;
 
             if ( $execute_request ) {
@@ -67,19 +75,19 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
 
                 // Allow from any origin
                 if ( isset( $_SERVER[ 'HTTP_ORIGIN' ] ) ) {
-                    header( "Access-Control-Allow-Origin: " . sanitize_text_field( $_SERVER['HTTP_ORIGIN'] ) );
+                    header( "Access-Control-Allow-Origin: " . sanitize_text_field( wp_unslash( $_SERVER['HTTP_ORIGIN'] ) ) );
                     header( 'Access-Control-Allow-Credentials: true' );
                     header( 'Access-Control-Max-Age: 86400' );    // cache for 1 day
                 }
 
                 // Access-Control headers are received during OPTIONS requests
-                if ( $_SERVER[ 'REQUEST_METHOD' ] == 'OPTIONS' ) {
+                if ( isset( $_SERVER[ 'REQUEST_METHOD' ] ) && sanitize_text_field( wp_unslash( $_SERVER[ 'REQUEST_METHOD' ] ) ) == 'OPTIONS' ) {
 
                     if ( isset( $_SERVER[ 'HTTP_ACCESS_CONTROL_REQUEST_METHOD' ] ) )
                         header( "Access-Control-Allow-Methods: GET, POST, OPTIONS" );
 
                     if ( isset( $_SERVER[ 'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' ] ) )
-                        header( "Access-Control-Allow-Headers: " . sanitize_text_field( $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ) );
+                        header( "Access-Control-Allow-Headers: " . sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ) ) );
                 }
 
                 try {
@@ -93,27 +101,27 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     // Do not compress
                 }
 
-                if ( $request == apply_filters( 'tc_translation_request_name', 'tickera_translation' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_translation_request_name', 'tickera_translation' ) ) {
                     $this->translation();
                 }
 
-                if ( $request == apply_filters( 'tc_check_credentials_request_name', 'tickera_check_credentials' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_check_credentials_request_name', 'tickera_check_credentials' ) ) {
                     $this->check_credentials();
                 }
 
-                if ( $request == apply_filters( 'tc_event_essentials_request_name', 'tickera_event_essentials' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_event_essentials_request_name', 'tickera_event_essentials' ) ) {
                     $this->get_event_essentials();
                 }
 
-                if ( $request == apply_filters( 'tc_checkins_request_name', 'tickera_checkins' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_checkins_request_name', 'tickera_checkins' ) ) {
                     $this->ticket_checkins();
                 }
 
-                if ( $request == apply_filters( 'tc_scan_request_name', 'tickera_scan' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_scan_request_name', 'tickera_scan' ) ) {
                     $this->ticket_checkin( $return_method );
                 }
 
-                if ( $request == apply_filters( 'tc_tickets_info_request_name', 'tickera_tickets_info' ) ) {
+                if ( $request == tickera_apply_filters( 'tickera_tickets_info_request_name', 'tickera_tickets_info' ) ) {
                     $this->tickets_info();
                 }
             }
@@ -168,7 +176,9 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 'post_type' => 'tc_api_keys',
                 'post_status' => 'publish',
                 'posts_per_page' => 1,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => 'api_key',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => $this->api_key,
                 'fields' => 'ids',
             );
@@ -225,7 +235,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 );
             }
 
-            $data = apply_filters( 'tc_translation_data_output', $data );
+            $data = tickera_apply_filters( 'tickera_translation_data_output', $data );
             $json = tickera_sanitize_array( $data );
 
             if ( $echo ) {
@@ -246,7 +256,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     'license_key' => tickera_get_license_key(),
                     'admin_email' => tickera_get_license_email(),
                     'tc_iw_is_pr' => tickera_iw_is_pr(),
-                    'check_type' => apply_filters( 'tc_checkinera_check_type', 'email' )
+                    'check_type' => tickera_apply_filters( 'tickera_checkinera_check_type', 'email' )
                 );
 
             } else {
@@ -259,7 +269,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
             $execution_time = ( $time_end - $time_start );
             $data[ 'execution_time' ] = $execution_time;
 
-            $data = apply_filters( 'tc_check_credentials_data_output', $data );
+            $data = tickera_apply_filters( 'tickera_check_credentials_data_output', $data );
             $json = tickera_sanitize_array( $data );
 
             if ( $echo ) {
@@ -287,7 +297,9 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $event_ids = (array) $this->get_api_event();
                 $event_ids = self::maybe_format_event_ids_array( $event_ids );
 
-                $order_statuses = apply_filters( 'tc_paid_post_statuses', [ 'order_paid' ] );
+                $order_statuses = tickera_apply_filters( 'tickera_paid_post_statuses', [ 'order_paid' ] );
+                $order_statuses = array_map( 'sanitize_text_field', $order_statuses );
+
                 $prepare_order_statuses_placeholder = implode( ',', array_fill( 0, count( $order_statuses ), '%s' ) );
 
                 if ( in_array( 'all', $event_ids ) ) {
@@ -296,14 +308,18 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                         unset( $event_ids[ $index ] );
                     }
 
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
                     $query = $wpdb->prepare( "SELECT ID, ( SELECT post_status FROM {$wpdb->posts} wp2 WHERE wp2.ID = wp.post_parent ) as parent_status FROM {$wpdb->posts} wp, {$wpdb->postmeta} wp_pm WHERE post_type = 'tc_tickets_instances' AND wp.ID = wp_pm.post_id AND wp_pm.meta_key = 'event_id' AND post_status = 'publish' GROUP BY wp.ID HAVING (parent_status IN ($prepare_order_statuses_placeholder))", $order_statuses );
 
                 } else {
                     $prepare_event_ids_placeholder = implode( ',', array_fill( 0, count( $event_ids ), '%d' ) );
                     $prepare_arguments = array_merge( $event_ids, $order_statuses );
+
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
                     $query = $wpdb->prepare( "SELECT ID, ( SELECT post_status FROM {$wpdb->posts} wp2 WHERE wp2.ID = wp.post_parent ) as parent_status FROM {$wpdb->posts} wp, {$wpdb->postmeta} wp_pm WHERE post_type = 'tc_tickets_instances' AND wp.ID = wp_pm.post_id AND wp_pm.meta_key = 'event_id' AND wp_pm.meta_value IN ($prepare_event_ids_placeholder) AND post_status = 'publish' GROUP BY wp.ID HAVING (parent_status IN ($prepare_order_statuses_placeholder))", $prepare_arguments );
                 }
 
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Query sanitized above.
                 $results = $wpdb->get_results( $query, ARRAY_A );
 
                 $event_tickets_total = 0;
@@ -345,7 +361,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     $data[ 'event_location' ] = stripslashes( get_post_meta( reset( $event_ids ), 'event_location', true ) );
                 }
 
-                $data = apply_filters( 'tc_get_event_essentials_data_output', $data, $event_ids, $this->get_api_key_id() );
+                $data = tickera_apply_filters( 'tickera_get_event_essentials_data_output', $data, $event_ids, $this->get_api_key_id() );
                 $json = tickera_sanitize_array( $data, true, true );
 
                 if ( $echo ) {
@@ -371,22 +387,22 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 return 0;
             }
 
-            $ticket_type_id = apply_filters( 'tc_ticket_type_id', $ticket_type->details->ID );
+            $ticket_type_id = tickera_apply_filters( 'tickera_ticket_type_id', $ticket_type->details->ID );
             $checkins_data = get_post_meta( $ticket_id, 'tc_checkins', true );
-            $pass_checkin_status = apply_filters( 'tc_checkin_status_title_get_number_of_allowed_checkins_for_ticket_instance', 'Pass' );
+            $pass_checkin_status = tickera_apply_filters( 'tickera_checkin_status_title_get_number_of_allowed_checkins_for_ticket_instance', 'Pass' );
 
             /**
              * Available Check-ins - Variables
              */
             $valid_checkins = 0;
-            $available_checkins = get_post_meta( $ticket_type_id, apply_filters( 'tc_available_checkins_per_ticket_field_name', 'available_checkins_per_ticket', $ticket_id, $ticket_type_id ), true );
+            $available_checkins = get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_available_checkins_per_ticket_field_name', 'available_checkins_per_ticket', $ticket_id, $ticket_type_id ), true );
             $available_checkins = ( is_numeric( $available_checkins ) ? (int) $available_checkins : 99999 ); // 99999 means unlimited check-ins but it's set for easier comparison
 
             /**
              * Checkins on Time Basis - Variables
              */
             $valid_time_base_checkins = 0;
-            $checkins_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_field_name', 'checkins_time_basis', $ticket_id, $ticket_type_id ), true );
+            $checkins_time_basis = get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_checkins_time_basis_field_name', 'checkins_time_basis', $ticket_id, $ticket_type_id ), true );
             $checkins_time_basis = ( $checkins_time_basis ) ? $checkins_time_basis : 'no';
 
             if ( 'no' == $checkins_time_basis ) {
@@ -395,14 +411,15 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $allowed_checkins_per_time_basis = 99999;
 
             } else {
-                $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id, $ticket_type_id ), true );
+                $allowed_checkins_per_time_basis = get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_allowed_checkins_per_time_basis_field_name', 'allowed_checkins_per_time_basis', $ticket_id, $ticket_type_id ), true );
                 $allowed_checkins_per_time_basis = ( is_numeric( $allowed_checkins_per_time_basis ) ) ? (int) $allowed_checkins_per_time_basis : 99999; // 99999 means unlimited check-ins but it's set for easier comparison
             }
 
-            $basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id, $ticket_type_id ), true );
-            $date_checked = isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local();
+            $basis = get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_checkins_time_basis_type_field_name', 'checkins_time_basis_type', $ticket_id, $ticket_type_id ), true );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized and used as the check-in time context.
+            $date_checked = isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) ) ) : tickera_timestamp_to_local();
 
-            $calendar_basis = get_post_meta( $ticket_type_id, apply_filters( 'tc_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $ticket_id, $ticket_type_id ), true );
+            $calendar_basis = get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_checkins_time_calendar_basis_field_name', 'checkins_time_calendar_basis', $ticket_id, $ticket_type_id ), true );
             $calendar_basis = $calendar_basis ? $calendar_basis : 'no';
 
             $interval = [
@@ -479,12 +496,12 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $check_ins = get_post_meta( $ticket_id, 'tc_checkins', true );
 
                 $rows = [];
-                $check_ins = apply_filters( 'tc_ticket_checkins_array', $check_ins );
+                $check_ins = tickera_apply_filters( 'tickera_ticket_checkins_array', $check_ins );
 
                 if ( isset( $check_ins ) && is_array( $check_ins ) && count( $check_ins ) > 0 ) {
                     foreach ( $check_ins as $check_in ) {
-                        $r[ 'date_checked' ] = apply_filters( 'tc_check_in_date_checked', tickera_format_date( $check_in[ 'date_checked' ], false, false ), $ticket_id, $this->get_api_key_id() );
-                        $r[ 'status' ] = apply_filters( 'tc_check_in_status_title', $check_in[ 'status' ], $ticket_id, $this->get_api_key_id() );
+                        $r[ 'date_checked' ] = tickera_apply_filters( 'tickera_check_in_date_checked', tickera_format_date( $check_in[ 'date_checked' ], false, false ), $ticket_id, $this->get_api_key_id() );
+                        $r[ 'status' ] = tickera_apply_filters( 'tickera_check_in_status_title', $check_in[ 'status' ], $ticket_id, $this->get_api_key_id() );
                         $rows[] = array( 'data' => $r );
                     }
                 }
@@ -565,7 +582,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     $globally_allow_ticket_checkout = isset( $tc_general_setting[ 'allow_global_ticket_checkout' ] ) ? $tc_general_setting[ 'allow_global_ticket_checkout' ] : 'no';
                     $ticket_type_id = get_post_meta( $ticket_instance_id, 'ticket_type_id', true );
                     $ticket_type_id = ( 'product_variation' == get_post_type( $ticket_type_id ) ) ? wp_get_post_parent_id( $ticket_type_id ) : $ticket_type_id;
-                    $allow_ticket_checkout_field_name = apply_filters( 'tc_allow_ticket_checkout_field_name', 'allow_ticket_checkout', $ticket_type_id );
+                    $allow_ticket_checkout_field_name = tickera_apply_filters( 'tickera_allow_ticket_checkout_field_name', 'allow_ticket_checkout', $ticket_type_id );
                     $allow_ticket_checkout = ( metadata_exists( 'post', $ticket_type_id, $allow_ticket_checkout_field_name ) ) ? get_post_meta( $ticket_type_id, $allow_ticket_checkout_field_name, true ) : 'no';
 
                     if ( 'yes' == $globally_allow_ticket_checkout || ( 'no' == $globally_allow_ticket_checkout && 'yes' == $allow_ticket_checkout ) ) {
@@ -601,7 +618,8 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                                  */
                                 $latest_checkin = end( $passed_checkins );
                                 $checkouts[ 'outs' ][] = [
-                                    'date_checked' => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local(),
+                                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized and used as the checkout time context.
+                                    'date_checked' => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) ) ) : tickera_timestamp_to_local(),
                                     'status' => $latest_checkin[ 'status' ],
                                     'api_key_id' => $latest_checkin[ 'api_key_id' ]
                                 ];
@@ -637,7 +655,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
              * Override Ticket Checkin Process.
              * @since 3.5.2.7
              */
-            $results = apply_filters( 'tc_results_before_ticket_checkin', [], $this);
+            $results = tickera_apply_filters( 'tickera_results_before_ticket_checkin', [], $this);
 
             if ( $results ) {
 
@@ -651,8 +669,8 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 }
             }
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $ean13_convert_enabled = isset( $tc_general_settings[ 'ean_13_checker' ] ) ? $tc_general_settings[ 'ean_13_checker' ] : 'no';
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
+            $ean13_convert_enabled = isset( $tickera_general_settings[ 'ean_13_checker' ] ) ? $tickera_general_settings[ 'ean_13_checker' ] : 'no';
 
             if ( $this->get_api_key_id() ) {
 
@@ -677,13 +695,13 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 if ( $ticket_id ) {
 
                     $ticket_instance = new \Tickera\TC_Ticket_Instance( $ticket_id );
-                    $ticket_type_id = apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id );
+                    $ticket_type_id = tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id );
 
                     $ticket_type = new \Tickera\TC_Ticket( $ticket_type_id );
                     $order = new \Tickera\TC_Order( $ticket_instance->details->post_parent );
 
                     $order_is_paid = ( 'order_paid' == $order->details->post_status ) ? true : false;
-                    $order_is_paid = apply_filters( 'tc_order_is_paid', $order_is_paid, $order->details->ID );
+                    $order_is_paid = tickera_apply_filters( 'tickera_order_is_paid', $order_is_paid, $order->details->ID );
 
                     // Only those paid orders is eligible for checkin
                     if ( ! $order_is_paid ) {
@@ -696,7 +714,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                         }
                     }
 
-                    $ticket_event_id = apply_filters( 'tc_ticket_checkin_ticket_type_event_id', $ticket_type->get_ticket_event( $ticket_type_id ), $ticket_type_id );
+                    $ticket_event_id = tickera_apply_filters( 'tickera_ticket_checkin_ticket_type_event_id', $ticket_type->get_ticket_event( $ticket_type_id ), $ticket_type_id );
 
                 } else {
 
@@ -729,17 +747,17 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $allowed_checkins = TC_Checkin_API::get_number_of_allowed_checkins_for_ticket_instance( $ticket_id, $ticket_type );
 
                 if ( $allowed_checkins > 0 ) {
-                    $check_in_status = apply_filters( 'tc_checkin_status_name', true );
+                    $check_in_status = tickera_apply_filters( 'tickera_checkin_status_name', true );
                     $check_in_status_bool = true;
-                    do_action( 'tc_check_in_notification', $ticket_id, $api_key_id );
+                    tickera_do_action( 'tickera_check_in_notification', $ticket_id, $api_key_id );
 
                 } else {
-                    $check_in_status = apply_filters( 'tc_checkin_status_name', false );
+                    $check_in_status = tickera_apply_filters( 'tickera_checkin_status_name', false );
                     $check_in_status_bool = false;
                 }
 
                 if ( ! \Tickera\TC_Ticket::is_checkin_available( $ticket_type_id, $order, $ticket_id ) ) {
-                    $check_in_status = apply_filters( 'tc_checkin_status_name', false );
+                    $check_in_status = tickera_apply_filters( 'tickera_checkin_status_name', false );
                     $check_in_status_bool = false;
                 }
 
@@ -751,14 +769,15 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 }
 
                 $new_checkin = [
-                    "date_checked" => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( $_GET[ 'timestamp' ] ) ) ) : tickera_timestamp_to_local(),
-                    "status" => $check_in_status ? apply_filters( 'tc_checkin_status_name', 'Pass' ) : apply_filters( 'tc_checkin_status_name', 'Fail' ),
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized and used as the check-in time context.
+                    "date_checked" => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) ) ) : tickera_timestamp_to_local(),
+                    "status" => $check_in_status ? tickera_apply_filters( 'tickera_checkin_status_name', 'Pass' ) : tickera_apply_filters( 'tickera_checkin_status_name', 'Fail' ),
                     "api_key_id" => (int) $api_key_id
                 ];
 
-                $new_checkins[] = apply_filters( 'tc_new_checkin_array', $new_checkin );
-                do_action( 'tc_before_checkin_array_update', $new_checkins );
-                $new_checkins = apply_filters( 'tc_all_attendee_checkin_records', $new_checkins );
+                $new_checkins[] = tickera_apply_filters( 'tickera_new_checkin_array', $new_checkin );
+                tickera_do_action( 'tickera_before_checkin_array_update', $new_checkins );
+                $new_checkins = tickera_apply_filters( 'tickera_all_attendee_checkin_records', $new_checkins );
                 update_post_meta( (int) $ticket_id, "tc_checkins", $new_checkins );
 
                 // When Check-out is activated, process validation.
@@ -768,24 +787,24 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     update_post_meta( $ticket_id, 'tc_checkouts', $_new_checkins[ 'outs' ] );
                 }
 
-                do_action( 'tc_after_checkin_array_update' );
+                tickera_do_action( 'tickera_after_checkin_array_update' );
 
-                $payment_date = apply_filters( 'tc_checkin_payment_date', tickera_format_date( apply_filters( 'tc_ticket_checkin_order_date', $order->details->tc_order_date, $order->details->ID ) ) );
+                $payment_date = tickera_apply_filters( 'tickera_checkin_payment_date', tickera_format_date( tickera_apply_filters( 'tickera_ticket_checkin_order_date', $order->details->tc_order_date, $order->details->ID ) ) );
                 $payment_date = ( ! $payment_date ) ? 'N/A' : $payment_date;
 
-                $name = apply_filters( 'tc_checkin_owner_name', $ticket_instance->details->first_name . ' ' . $ticket_instance->details->last_name );
+                $name = tickera_apply_filters( 'tickera_checkin_owner_name', $ticket_instance->details->first_name . ' ' . $ticket_instance->details->last_name );
                 $name = ( ! trim( $name ) ) ? 'N/A' : $name;
 
-                $address = apply_filters( 'tc_checkin_owner_address', $ticket_instance->details->address );
+                $address = tickera_apply_filters( 'tickera_checkin_owner_address', $ticket_instance->details->address );
                 $address = ( ! $address ) ? 'N/A' : $address;
 
-                $city = apply_filters( 'tc_checkin_owner_city', $ticket_instance->details->city );
+                $city = tickera_apply_filters( 'tickera_checkin_owner_city', $ticket_instance->details->city );
                 $city = ( ! $city ) ? 'N/A' : $city;
 
-                $state = apply_filters( 'tc_checkin_owner_state', $ticket_instance->details->state );
+                $state = tickera_apply_filters( 'tickera_checkin_owner_state', $ticket_instance->details->state );
                 $state = ( ! $state ) ? 'N/A' : $state;
 
-                $country = apply_filters( 'tc_checkin_owner_country', $ticket_instance->details->country );
+                $country = tickera_apply_filters( 'tickera_checkin_owner_country', $ticket_instance->details->country );
                 $country = ( ! $country ) ? 'N/A' : $country;
 
                 $data = [
@@ -801,21 +820,23 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     'checksum' => $this->ticket_code
                 ];
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized before being returned in the response.
                 if ( isset( $_GET[ 'timestamp' ] ) ) {
-                    $data[ 'timestamp' ] = intval( sanitize_text_field( $_GET[ 'timestamp' ] ) );
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized before being returned in the response.
+                    $data[ 'timestamp' ] = intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) );
                 }
 
                 $buyer_full_name = isset( $order->details->tc_cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] ) ? ( $order->details->tc_cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] . ' ' . $order->details->tc_cart_info[ 'buyer_data' ][ 'last_name_post_meta' ] ) : '';
                 $buyer_email = isset( $order->details->tc_cart_info[ 'buyer_data' ][ 'email_post_meta' ] ) ? $order->details->tc_cart_info[ 'buyer_data' ][ 'email_post_meta' ] : '';
 
                 $data[ 'custom_fields' ] = [
-                    array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Ticket Type' ), apply_filters( 'tc_checkout_owner_info_ticket_title', $ticket_type->details->post_title, $ticket_type->details->ID, array(), $ticket_instance->details->ID ) ),
-                    array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Buyer Name' ), apply_filters( 'tc_ticket_checkin_buyer_full_name', $buyer_full_name, $order->details->ID ) ),
-                    array( apply_filters( 'tc_ticket_checkin_custom_field_title', 'Buyer E-mail' ), apply_filters( 'tc_ticket_checkin_buyer_email', $buyer_email, $order->details->ID ) ),
+                    array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', 'Ticket Type' ), tickera_apply_filters( 'tickera_checkout_owner_info_ticket_title', $ticket_type->details->post_title, $ticket_type->details->ID, array(), $ticket_instance->details->ID ) ),
+                    array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', 'Buyer Name' ), tickera_apply_filters( 'tickera_ticket_checkin_buyer_full_name', $buyer_full_name, $order->details->ID ) ),
+                    array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', 'Buyer E-mail' ), tickera_apply_filters( 'tickera_ticket_checkin_buyer_email', $buyer_email, $order->details->ID ) ),
                 ];
 
-                $data[ 'custom_fields' ] = apply_filters( 'tc_checkin_custom_fields', $data[ 'custom_fields' ], $ticket_instance->details->ID, $ticket_event_id, $order, $ticket_type );
-                $data = apply_filters( 'tc_checkin_output_data', $data, $api_key_id );
+                $data[ 'custom_fields' ] = tickera_apply_filters( 'tickera_checkin_custom_fields', $data[ 'custom_fields' ], $ticket_instance->details->ID, $ticket_event_id, $order, $ticket_type );
+                $data = tickera_apply_filters( 'tickera_checkin_output_data', $data, $api_key_id );
                 $data = tickera_sanitize_array( $data, true, true );
 
                 if ( $echo === true || 'echo' == $echo ) {
@@ -833,7 +854,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
          */
         function tickets_info( $echo = true ) {
 
-            do_action( 'TC_Checkin_API_tickets_info', $echo, $this );
+            tickera_do_action( 'tickera_checkin_api_tickets_info', $echo, $this );
 
             $start = microtime( true );
 
@@ -844,20 +865,27 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $event_ids = (array) $this->get_api_event();
                 $event_ids = self::maybe_format_event_ids_array( $event_ids );
 
-                $order_statuses = apply_filters( 'tc_paid_post_statuses', [ 'order_paid' ] );
+                $order_statuses = tickera_apply_filters( 'tickera_paid_post_statuses', [ 'order_paid' ] );
+                $order_statuses = array_map( 'sanitize_text_field', $order_statuses );
+
                 $prepare_order_statuses_placeholder = implode( ',', array_fill( 0, count( $order_statuses ), '%s' ) );
                 $offset = ( ( $this->page_number - 1 ) * $this->results_per_page );
 
                 if ( in_array( 'all', $event_ids ) ) {
                     $prepare_arguments = array_merge( $order_statuses, [ $this->results_per_page ], [ $offset ] );
+
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
                     $query = $wpdb->prepare( "SELECT ID, post_parent as parent, post_status, ( SELECT post_status FROM {$wpdb->posts} wp2 WHERE wp2.ID = wp.post_parent ) as parent_status FROM {$wpdb->posts} wp, {$wpdb->postmeta} wp_pm WHERE post_type = 'tc_tickets_instances' AND wp.ID = wp_pm.post_id AND wp_pm.meta_key = 'event_id' AND post_status = 'publish' GROUP BY wp.ID HAVING (parent_status IN ($prepare_order_statuses_placeholder)) ORDER BY ID DESC LIMIT %d OFFSET %d", $prepare_arguments );
 
                 } else {
                     $prepare_event_ids_placeholder = implode( ',', array_fill( 0, count( $event_ids ), '%d' ) );
                     $prepare_arguments = array_merge( $event_ids, $order_statuses, [ $this->results_per_page ], [ $offset ] );
+
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
                     $query = $wpdb->prepare( "SELECT ID, post_parent as parent, post_status, ( SELECT post_status FROM {$wpdb->posts} wp2 WHERE wp2.ID = wp.post_parent ) as parent_status FROM {$wpdb->posts} wp, {$wpdb->postmeta} wp_pm WHERE post_type = 'tc_tickets_instances' AND wp.ID = wp_pm.post_id AND wp_pm.meta_key = 'event_id' AND wp_pm.meta_value IN ($prepare_event_ids_placeholder) AND post_status = 'publish' GROUP BY wp.ID HAVING (parent_status IN ($prepare_order_statuses_placeholder)) ORDER BY ID DESC LIMIT %d OFFSET %d", $prepare_arguments );
                 }
 
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $results = $wpdb->get_results( $query, ARRAY_A );
                 $results_count = 0;
 
@@ -910,27 +938,27 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
 
                     } else {
                         $buyer_data = ( isset( $order->details->tc_cart_info ) && is_array( $order->details->tc_cart_info ) && isset( $order->details->tc_cart_info[ 'buyer_data' ] ) ) ? $order->details->tc_cart_info[ 'buyer_data' ] : [];
-                        $r[ 'buyer_first' ] = apply_filters( 'tc_ticket_checkin_buyer_first_name', ( isset( $buyer_data[ 'first_name_post_meta' ] ) ? $buyer_data[ 'first_name_post_meta' ] : '' ), $order_id );
-                        $r[ 'buyer_last' ] = apply_filters( 'tc_ticket_checkin_buyer_last_name', ( isset( $buyer_data[ 'last_name_post_meta' ] ) ? $buyer_data[ 'last_name_post_meta' ] : '' ), $order_id );
+                        $r[ 'buyer_first' ] = tickera_apply_filters( 'tickera_ticket_checkin_buyer_first_name', ( isset( $buyer_data[ 'first_name_post_meta' ] ) ? $buyer_data[ 'first_name_post_meta' ] : '' ), $order_id );
+                        $r[ 'buyer_last' ] = tickera_apply_filters( 'tickera_ticket_checkin_buyer_last_name', ( isset( $buyer_data[ 'last_name_post_meta' ] ) ? $buyer_data[ 'last_name_post_meta' ] : '' ), $order_id );
                     }
 
                     $r[ 'custom_fields' ] = array(
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Ticket Type', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $result_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Event', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_checkout_owner_info_event_title', $event_title, $event_id, $result_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Buyer Name', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_buyer_full_name', $buyer_full_name, $order_id ) ),
-                        array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Buyer E-mail', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_buyer_email', $buyer_email, $order_id ) ),
+                        array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', __( 'Ticket Type', 'tickera-event-ticketing-system' ) ), tickera_apply_filters( 'tickera_checkout_owner_info_ticket_title', $ticket_type_title, $ticket_type_id, array(), $result_id ) ),
+                        array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', __( 'Event', 'tickera-event-ticketing-system' ) ), tickera_apply_filters( 'tickera_checkout_owner_info_event_title', $event_title, $event_id, $result_id ) ),
+                        array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', __( 'Buyer Name', 'tickera-event-ticketing-system' ) ), tickera_apply_filters( 'tickera_ticket_checkin_buyer_full_name', $buyer_full_name, $order_id ) ),
+                        array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', __( 'Buyer E-mail', 'tickera-event-ticketing-system' ) ), tickera_apply_filters( 'tickera_ticket_checkin_buyer_email', $buyer_email, $order_id ) ),
                     );
 
                     if ( isset( $attendee_email ) && ! empty( $attendee_email ) ) {
-                        $r[ 'custom_fields' ][] = array( apply_filters( 'tc_ticket_checkin_custom_field_title', __( 'Attendee E-mail', 'tickera-event-ticketing-system' ) ), apply_filters( 'tc_ticket_checkin_attendee_email', $attendee_email, $result_id ) );
+                        $r[ 'custom_fields' ][] = array( tickera_apply_filters( 'tickera_ticket_checkin_custom_field_title', __( 'Attendee E-mail', 'tickera-event-ticketing-system' ) ), tickera_apply_filters( 'tickera_ticket_checkin_attendee_email', $attendee_email, $result_id ) );
                     }
 
-                    $r = apply_filters( 'tc_checkins_row', $r, $result_id, $event_ids, $order, $ticket_type );
+                    $r = tickera_apply_filters( 'tickera_checkins_row', $r, $result_id, $event_ids, $order, $ticket_type );
 
-                    $r[ 'custom_fields' ] = apply_filters( 'tc_checkin_custom_fields', $r[ 'custom_fields' ], $result_id, $event_ids, $order, $ticket_type );
+                    $r[ 'custom_fields' ] = tickera_apply_filters( 'tickera_checkin_custom_fields', $r[ 'custom_fields' ], $result_id, $event_ids, $order, $ticket_type );
                     $r[ 'custom_field_count' ] = count( $r[ 'custom_fields' ] );
                     $r[ 'allowed_checkins' ] = TC_Checkin_API::get_number_of_allowed_checkins_for_ticket_instance( $result_id, $ticket_type );
-                    $r[ 'custom_ticket_info' ] = apply_filters( 'tc_checkin_custom_ticket_info', [], $r, $result_id );
+                    $r[ 'custom_ticket_info' ] = tickera_apply_filters( 'tickera_checkin_custom_ticket_info', [], $r, $result_id );
 
                     $rows[] = [ 'data' => $r ];
                     $results_count++;
@@ -975,9 +1003,8 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     ];
 
                     if ( 'all' != array_keys( $event_ids )[ 0 ] ) {
-                        $event_args[ 'tax_query' ] = [
-                            [ 'taxonomy' => 'event_category', 'terms' => $term_id ]
-                        ];
+                        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+                        $event_args[ 'tax_query' ] = [ [ 'taxonomy' => 'event_category', 'terms' => $term_id ] ];
                     }
 
                     $event_ids = get_posts( $event_args );

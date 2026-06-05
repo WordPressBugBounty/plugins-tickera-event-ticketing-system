@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -31,7 +31,7 @@ if ( ! function_exists( 'tickera_let_to_num' ) ) {
     }
 }
 
-$tc_general_settings = get_option( 'tickera_general_setting', false ); ?>
+$tickera_general_settings = get_option( 'tickera_general_setting', false ); ?>
 <div class="wrap tc_wrap" id="tc_system_info">
     <div id="poststuff" class="metabox-holder tc-settings">
         <form id="tc-system-info">
@@ -164,7 +164,7 @@ $tc_general_settings = get_option( 'tickera_general_setting', false ); ?>
                             <td><?php esc_html_e( 'Server info', 'tickera-event-ticketing-system' ); ?>:</td>
                             <td class="help"><?php echo wp_kses_post( tickera_tooltip( __( 'Info about the server where your website is hosted.', 'tickera-event-ticketing-system' ) ) ); ?></td>
                             <td><?php
-                                echo esc_html( sanitize_text_field( $_SERVER[ 'SERVER_SOFTWARE' ] ) ); ?></td>
+                                echo esc_html( isset( $_SERVER[ 'SERVER_SOFTWARE' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'SERVER_SOFTWARE' ] ) ) : '' ); ?></td>
                         </tr>
                         <tr>
                             <td><?php esc_html_e( 'PHP Version', 'tickera-event-ticketing-system' ); ?>:</td>
@@ -246,7 +246,7 @@ $tc_general_settings = get_option( 'tickera_general_setting', false ); ?>
                                 </mark>
                             </td>
                         </tr>
-                        <?php do_action( 'tc_system_info_server_environment_options' ); ?>
+                        <?php tickera_do_action( 'tickera_system_info_server_environment_options' ); ?>
                         </tbody>
                     </table>
                 </div>
@@ -446,7 +446,7 @@ $tc_general_settings = get_option( 'tickera_general_setting', false ); ?>
         <input type="submit" name="tc_system_info_button" id="tc_system_info_button" class="button button-primary" style="display: none;" value="Show Report">
     </div>
 </div>
-<?php do_action( 'tc_after_system' ); ?>
+<?php tickera_do_action( 'tickera_after_system' ); ?>
 </div>
 </div>
 <script type="text/javascript">

@@ -33,8 +33,8 @@ if ( ! class_exists( '\Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
 
             extract( $args, EXTR_SKIP );
             echo wp_kses_post( $before_widget );
-            $title = empty( $instance[ 'title' ] ) ? ' ' : apply_filters( 'tc_cart_widget_title', $instance[ 'title' ] );
-            $events_count = empty( $instance[ 'events_count' ] ) ? 10 : apply_filters( 'tc_events_count_widget_value', $instance[ 'events_count' ] );
+            $title = empty( $instance[ 'title' ] ) ? ' ' : tickera_apply_filters( 'tickera_cart_widget_title', $instance[ 'title' ] );
+            $events_count = empty( $instance[ 'events_count' ] ) ? 10 : tickera_apply_filters( 'tickera_events_count_widget_value', $instance[ 'events_count' ] );
 
             if ( ! empty( $title ) ) {
                 echo wp_kses_post( $before_title . $title . $after_title );
@@ -43,16 +43,18 @@ if ( ! class_exists( '\Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
             // event_date_time
             $tc_events_args = array(
                 'posts_per_page' => (int) $events_count,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => array(
                     array(
                         'key' => 'event_date_time',
-                        'value' => date( 'Y-m-d h:i' ),
+                        'value' => wp_date( 'Y-m-d H:i' ),
                         'type' => 'DATETIME',
                         'compare' => '>='
                     ),
                     'orderby' => 'event_date_time',
                 ),
                 'order' => 'ASC',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'orderby' => 'meta_value',
                 'post_type' => 'tc_events',
                 'post_status' => 'publish'
@@ -62,22 +64,22 @@ if ( ! class_exists( '\Tickera\Widget\TC_Upcoming_Events_Widget' ) ) {
 
             // Cart Contents
             if ( ! empty( $tc_events ) ) {
-                do_action( 'tc_upcoming_events_before_ul', $tc_events ); ?>
+                tickera_do_action( 'tickera_upcoming_events_before_ul', $tc_events ); ?>
                 <ul class='tc_upcoming_events_ul'>
                     <?php
                     foreach ( $tc_events as $tc_event ) {
                         $event_content = '<li id="tc_upcoming_event_' . esc_attr( $tc_event->ID ) . '"><a href="' . esc_url( get_post_permalink( $tc_event->ID ) ) . '">' . esc_html( get_the_title( $tc_event->ID ) ) . '</a><span class="tc_event_data_widget">' . esc_html( do_shortcode( '[tc_event_date id="' . $tc_event->ID . '"]' ) ) . '</span></li>';
-                        echo wp_kses_post( apply_filters( 'tc_upcoming_events_widget_event_content', $event_content, $tc_event->ID ) );
+                        echo wp_kses_post( tickera_apply_filters( 'tickera_upcoming_events_widget_event_content', $event_content, $tc_event->ID ) );
                     }
                     ?>
                 </ul>
                 <?php
-                do_action( 'tc_upcoming_events_after_ul', $tc_events );
+                tickera_do_action( 'tickera_upcoming_events_after_ul', $tc_events );
 
             } else {
-                do_action( 'tc_upcoming_events_before_empty' ); ?>
+                tickera_do_action( 'tickera_upcoming_events_before_empty' ); ?>
                 <span class='tc_empty_upcoming_events'><?php esc_html_e( 'There are no upcoming events at this time.', 'tickera-event-ticketing-system' ); ?></span>
-                <?php do_action( 'tc_upcoming_events_after_empty' );
+                <?php tickera_do_action( 'tickera_upcoming_events_after_empty' );
             }
             ?>
             <div class='tc-clearfix'></div>

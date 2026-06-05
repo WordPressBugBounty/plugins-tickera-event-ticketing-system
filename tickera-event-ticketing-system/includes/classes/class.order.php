@@ -97,7 +97,7 @@ if ( ! class_exists( '\Tickera\TC_Order' ) ) {
                 if ( ! TC_Order::same_order_note_exist( $order_id, $note ) ) {
                     $comment_author = $tc->title;
                     $comment_author_email = strtolower( $tc->title ) . '@';
-                    $comment_author_email .= isset( $_SERVER[ 'HTTP_HOST' ] ) ? str_replace( 'www.', '', sanitize_text_field( $_SERVER[ 'HTTP_HOST' ] ) ) : 'noreply.com';
+                    $comment_author_email .= isset( $_SERVER[ 'HTTP_HOST' ] ) ? str_replace( 'www.', '', sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_HOST' ] ) ) ) : 'noreply.com';
                     $comment_author_email = sanitize_email( $comment_author_email );
 
 
@@ -108,7 +108,7 @@ if ( ! class_exists( '\Tickera\TC_Order' ) ) {
                     $comment_type = 'tc_order_note';
                     $comment_parent = 0;
                     $comment_approved = 1;
-                    $commentdata = apply_filters( 'tc_new_order_note_data', compact( 'comment_post_ID', 'comment_author', 'comment_author_email', 'comment_author_url', 'comment_content', 'comment_agent', 'comment_type', 'comment_parent', 'comment_approved' ), array( 'order_id' => (int) $order_id ) );
+                    $commentdata = tickera_apply_filters( 'tickera_new_order_note_data', compact( 'comment_post_ID', 'comment_author', 'comment_author_email', 'comment_author_url', 'comment_content', 'comment_agent', 'comment_type', 'comment_parent', 'comment_approved' ), array( 'order_id' => (int) $order_id ) );
                     $comment_id = wp_insert_comment( $commentdata );
 
                     return $comment_id;
@@ -117,19 +117,22 @@ if ( ! class_exists( '\Tickera\TC_Order' ) ) {
         }
 
         public static function same_order_note_exist( $order_id, $note ) {
-            global $wpdb;
 
-            $comments_count = $wpdb->get_var( $wpdb->prepare(
-                'SELECT COUNT(*) FROM ' . $wpdb->comments . '
-				WHERE comment_content = %s
-				AND comment_post_ID = %s', $note, $order_id
+            $comments = get_comments( array(
+                'post_id' => (int) $order_id,
+                'status' => 'all',
+                'type' => 'tc_order_note',
+                'number' => 0,
             ) );
 
-            if ( $comments_count > 0 ) {
-                return true;
-            } else {
-                return false;
+            foreach ( $comments as $comment ) {
+
+                if ( $comment->comment_content === $note ) {
+                    return true;
+                }
             }
+
+            return false;
         }
 
         public static function get_order_notes( $order_id ) {
@@ -153,7 +156,7 @@ if ( ! class_exists( '\Tickera\TC_Order' ) ) {
                 );
             }
 
-            return array( 'tc_order_notes' => apply_filters( 'tc_order_notes_response', $order_notes, $order_id, $notes ) );
+            return array( 'tc_order_notes' => tickera_apply_filters( 'tickera_order_notes_response', $order_notes, $order_id, $notes ) );
         }
     }
 }

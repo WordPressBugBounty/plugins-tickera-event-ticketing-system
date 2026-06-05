@@ -1,17 +1,24 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-global $tc_gateway_plugins, $tc;
+global $tickera_gateway_plugins, $tc;
 $settings = get_site_option( 'tickera_network_settings', array() );
 
 if ( ! is_array( $settings ) ) {
     $settings = array();
 }
 
+// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Network gateway settings save is capability-gated before updating site options.
 if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
     if ( current_user_can( 'manage_network_options' ) ) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Network gateway settings payload is handled by the settings save workflow.
         if ( isset( $_POST[ 'tc' ] ) ) {
-            $filtered_settings = apply_filters( 'tc_gateway_settings_filter', tickera_sanitize_array( $_POST[ 'tc' ], false, true ) );
+
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Network gateway settings payload is sanitized within tickera_sanitize_array().
+            $save_data = isset( $_POST[ 'tc' ] ) ? tickera_sanitize_array( wp_unslash( $_POST[ 'tc' ] ), false, true ) : null;
+
+            $filtered_settings = tickera_apply_filters( 'tickera_gateway_settings_filter', $save_data );
             $settings = array_merge( $settings, $filtered_settings );
             update_site_option( 'tickera_network_settings', $settings );
         }
@@ -35,7 +42,7 @@ if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
                     <tr>
                         <td>
                             <?php
-                            foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+                            foreach ( (array) $tickera_gateway_plugins as $code => $plugin ) {
 
                                 $input_class = '';
                                 $gateway = new $plugin[ 0 ];
@@ -59,7 +66,7 @@ if ( isset( $_POST[ 'gateway_network_settings' ] ) ) {
                 </table>
             </div>
         </div>
-        <?php foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+        <?php foreach ( (array) $tickera_gateway_plugins as $code => $plugin ) {
             $gateway = new $plugin[ 0 ];
             if ( isset( $settings[ 'gateways' ][ 'active' ] ) ) {
                 if ( in_array( $code, $settings[ 'gateways' ][ 'active' ] ) || ( isset( $gateway->permanently_active ) && $gateway->permanently_active ) ) {

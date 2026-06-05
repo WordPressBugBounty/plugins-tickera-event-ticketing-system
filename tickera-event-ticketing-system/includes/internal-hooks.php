@@ -17,19 +17,20 @@ if ( ! function_exists( 'tickera_trash_post_before' ) ) {
 
         if ( ( current_user_can( 'delete_tc_ticket' ) || current_user_can( 'delete_tc_tickets' ) ) ) {
 
-            $btn_action = sanitize_text_field( $_POST[ 'btn_action' ] );
+            $btn_action = isset( $_POST[ 'btn_action' ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'btn_action' ] ) ) : '';
 
             if ( isset( $btn_action ) ) {
 
                 if ( $btn_action == 'trash' ) {
-                    $post_id = absint( (int) $_POST[ 'trash_id' ] );
+                    $post_id = isset( $_POST[ 'trash_id' ] ) ? absint(  wp_unslash( $_POST[ 'trash_id' ] ) ) : 0;
                     $ticket_type = new \Tickera\TC_Ticket( $post_id );//$99 = id of the ticket type
                     $sold_tickets = tickera_get_tickets_count_sold( $ticket_type->id );
                     $resp = $sold_tickets;
                     wp_send_json( wp_json_encode( $resp ) );
 
                 } elseif ( $btn_action == 'multi_trash' ) {
-                    $ids = tickera_sanitize_array( $_POST[ 'multi_trash_id' ] );
+                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                    $ids = isset( $_POST[ 'multi_trash_id' ] ) ? tickera_sanitize_array( wp_unslash( $_POST[ 'multi_trash_id' ] ) ) : [];
 
                     foreach ( $ids as $id ) {
                         $ticket_type = new \Tickera\TC_Ticket( $id );//$99 = id of the ticket type
@@ -73,23 +74,56 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
 
         if ( 'tc_number_of_orders' == $column_name ) {
 
-            global $wpdb;
-
             if ( user_can( $user_id, 'manage_options' ) && $user_id != 0 ) {
                 $value = '-';
 
             } else {
 
-                if ( ! apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) ) {
-                    $query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE {$wpdb->posts}.post_status <> 'trash' AND {$wpdb->posts}.post_author = %d AND {$wpdb->posts}.post_type = %s", $user_id, 'tc_orders' );
-                    $count = $wpdb->get_var( $query );
-                    $value = (int) $count;
+                if ( ! tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) ) {
+
+                    $orders_query = new WP_Query(
+                        array(
+                            'author'                 => (int) $user_id,
+                            'fields'                 => 'ids',
+                            'no_found_rows'          => false,
+                            'post_status'            => 'any',
+                            'post_type'              => 'tc_orders',
+                            'posts_per_page'         => 1,
+                            'update_post_meta_cache' => false,
+                            'update_post_term_cache' => false,
+                        )
+                    );
+
+                    $value = (int) $orders_query->found_posts;
 
                 } else {
-                    global $tc_woocommerce_bridge;
-                    $post_types = $tc_woocommerce_bridge->get_woo_order_types();
-                    $query = $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} INNER JOIN {$wpdb->postmeta} ON {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id WHERE {$wpdb->posts}.post_status <> 'trash' AND {$wpdb->postmeta}.meta_key = '_customer_user' AND {$wpdb->postmeta}.meta_value = %d AND {$wpdb->posts}.post_type IN ('" . implode( "','", $post_types ) . "')", $user_id );
-                    $count = $wpdb->get_var( $query );
+                    global $tickera_woocommerce_bridge;
+                    $post_types = $tickera_woocommerce_bridge->get_woo_order_types();
+                    $post_types = array_filter( array_map( 'sanitize_key', $post_types ) );
+
+                    if ( empty( $post_types ) ) {
+                        $count = 0;
+
+                    } else {
+                        $orders_query = new WP_Query(
+                            array(
+                                'fields'                 => 'ids',
+                                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required to count WooCommerce orders for this customer.
+                                'meta_key'               => '_customer_user',
+                                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required to count WooCommerce orders for this customer.
+                                'meta_value'             => (int) $user_id,
+                                'no_found_rows'          => false,
+                                'post_status'            => 'any',
+                                'post_type'              => $post_types,
+                                'posts_per_page'         => 1,
+                                'update_post_meta_cache' => false,
+                                'update_post_term_cache' => false,
+                            )
+                        );
+
+                        $count = $orders_query->found_posts;
+                    }
+
                     $value = "<a href='" . esc_url( admin_url( 'edit.php?s&post_type=shop_order&_customer_user=' . $user_id ) ) . "'>" . (int) $count . "</a>";
                 }
             }
@@ -159,7 +193,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
                                         echo wp_kses_post( sprintf(
                                             /* translators: 1: Order status color class identifier  2: Order status */
                                             __( '<span class="%1$s">%2$s</span>', 'tickera-event-ticketing-system' ),
-                                            esc_attr( apply_filters( 'tc_order_history_color', $color, $init_post_status ) ),
+                                            esc_attr( tickera_apply_filters( 'tickera_order_history_color', $color, $init_post_status ) ),
                                             esc_html( $post_status )
                                         ) );
                                         ?>
@@ -168,7 +202,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
                                         <?php echo esc_html( tickera_format_date( $order->details->tc_order_date, true ) ); ?>
                                     </td>
                                     <td>
-                                        <?php echo esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ); ?>
+                                        <?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ); ?>
                                     </td>
                                     <td>
                                         <?php
@@ -189,7 +223,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
     }
 }
 
-add_action( 'tc_cart_col_title_before_total_price', 'tickera_cart_col_title_before_total_price' );
+add_action( 'tickera_cart_col_title_before_total_price', 'tickera_cart_col_title_before_total_price', 10, 1 );
 
 /**
  * Deprecated function "tc_is_disabled_fee_column".
@@ -199,15 +233,15 @@ if ( ! function_exists( 'tickera_is_disabled_fee_column' ) ) {
 
     function tickera_is_disabled_fee_column() {
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $use_global_fees = isset( $tc_general_settings[ 'use_global_fees' ] ) ? $tc_general_settings[ 'use_global_fees' ] : 'no';
-        $show_fees = isset( $tc_general_settings[ 'show_fees' ] ) ? $tc_general_settings[ 'show_fees' ] : 'yes';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $use_global_fees = isset( $tickera_general_settings[ 'use_global_fees' ] ) ? $tickera_general_settings[ 'use_global_fees' ] : 'no';
+        $show_fees = isset( $tickera_general_settings[ 'show_fees' ] ) ? $tickera_general_settings[ 'show_fees' ] : 'yes';
 
         $disabled = true;
 
         if ( $use_global_fees == 'yes' ) {
-            $global_fee_type = $tc_general_settings[ 'global_fee_type' ];
-            $global_fee_scope = $tc_general_settings[ 'global_fee_scope' ];
+            $global_fee_type = $tickera_general_settings[ 'global_fee_type' ];
+            $global_fee_scope = $tickera_general_settings[ 'global_fee_scope' ];
 
             if ( empty( $global_fee_scope ) || $global_fee_scope == '' || $global_fee_scope == 'ticket' ) {
                 $global_fee_scope = 'ticket';
@@ -230,7 +264,7 @@ if ( ! function_exists( 'tickera_is_disabled_fee_column' ) ) {
         }
 
         if ( $disabled ) {
-            add_filter( 'tc_cart_table_colspan', 'tickera_cart_table_colspan_modify', 10, 1 );
+            tickera_add_filter( 'tickera_cart_table_colspan', 'tickera_cart_table_colspan_modify', 10, 1, array( 'tc_cart_table_colspan' ) );
         }
 
         return $disabled;
@@ -256,12 +290,12 @@ if ( ! function_exists( 'tickera_cart_col_title_before_total_price' ) ) {
 
     function tickera_cart_col_title_before_total_price() {
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $fees_label = isset( $tc_general_settings[ 'fees_label' ] ) ? $tc_general_settings[ 'fees_label' ] : 'FEES';
-        $use_global_fees = isset( $tc_general_settings[ 'use_global_fees' ] ) ? $tc_general_settings[ 'use_global_fees' ] : 'no';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $fees_label = isset( $tickera_general_settings[ 'fees_label' ] ) ? $tickera_general_settings[ 'fees_label' ] : 'FEES';
+        $use_global_fees = isset( $tickera_general_settings[ 'use_global_fees' ] ) ? $tickera_general_settings[ 'use_global_fees' ] : 'no';
         $disabled = tickera_is_disabled_fee_column();
 
-        if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || ( isset( $tc_general_settings[ 'show_fees' ] ) && $tc_general_settings[ 'show_fees' ] == 'yes' ) ) {
+        if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || ( isset( $tickera_general_settings[ 'show_fees' ] ) && $tickera_general_settings[ 'show_fees' ] == 'yes' ) ) {
             if ( ! $disabled ) {
                 ?>
                 <th><?php echo esc_html( $fees_label ); ?></th>
@@ -275,17 +309,17 @@ if ( ! function_exists( 'tickera_cart_col_title_before_total_price' ) ) {
  * Deprecated function "tc_cart_col_value_before_total_price".
  * @since 3.5.3.0
  */
-add_action( 'tc_cart_col_value_before_total_price', 'tickera_cart_col_value_before_total_price', 10, 3 );
+add_action( 'tickera_cart_col_value_before_total_price', 'tickera_cart_col_value_before_total_price', 10, 3 );
 if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
 
     function tickera_cart_col_value_before_total_price( $ticket_type, $ordered_count, $ticket_price ) {
 
-        global $tc, $total_fees;
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $use_global_fees = isset( $tc_general_settings[ 'use_global_fees' ] ) ? $tc_general_settings[ 'use_global_fees' ] : 'no';
+        global $tc, $tickera_total_fees;
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $use_global_fees = isset( $tickera_general_settings[ 'use_global_fees' ] ) ? $tickera_general_settings[ 'use_global_fees' ] : 'no';
 
-        if ( ! isset( $total_fees ) || ! is_numeric( $total_fees ) ) {
-            $total_fees = 0;
+        if ( ! isset( $tickera_total_fees ) || ! is_numeric( $tickera_total_fees ) ) {
+            $tickera_total_fees = 0;
         }
 
         $ticket = new \Tickera\TC_Ticket( $ticket_type );
@@ -298,7 +332,7 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
         } else {
 
             // Calculate cart fee value
-            if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+            if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
                 $fee = ( 'fixed' == $fee_type )
                     ? round( ( $ordered_count * $fee ), 2 )
                     : round( ( ( $ticket_price * $ordered_count ) / 100 ) * $fee, 2 );
@@ -311,9 +345,9 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
         }
 
         if ( 'yes' == $use_global_fees ) {
-            $global_fee_type = $tc_general_settings[ 'global_fee_type' ];
-            $global_fee_value = $tc_general_settings[ 'global_fee_value' ];
-            $global_fee_scope = $tc_general_settings[ 'global_fee_scope' ];
+            $global_fee_type = $tickera_general_settings[ 'global_fee_type' ];
+            $global_fee_value = $tickera_general_settings[ 'global_fee_value' ];
+            $global_fee_scope = $tickera_general_settings[ 'global_fee_scope' ];
 
             if ( empty( $global_fee_scope ) || '' == $global_fee_scope ) {
                 $global_fee_scope = 'ticket';
@@ -325,27 +359,27 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
             } else {
 
                 // Calculate cart fee value
-                if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+                if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
                     $fee = ( 'fixed' == $global_fee_type )
-                        ? apply_filters( 'tc_global_fixed_fee_value', round( ( $ordered_count * $global_fee_value ), 2 ), $ordered_count, $global_fee_value )
-                        : apply_filters( 'tc_global_percentage_fee_value', round( ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, 2 ), $ticket_price, $ordered_count, $global_fee_value );
+                        ? tickera_apply_filters( 'tickera_global_fixed_fee_value', round( ( $ordered_count * $global_fee_value ), 2 ), $ordered_count, $global_fee_value )
+                        : tickera_apply_filters( 'tickera_global_percentage_fee_value', round( ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, 2 ), $ticket_price, $ordered_count, $global_fee_value );
 
                 } else {
                     $fee = ( 'fixed' == $global_fee_type )
-                        ? apply_filters( 'tc_global_fixed_fee_value',  ( $ordered_count * $global_fee_value ), $ordered_count, $global_fee_value )
-                        : apply_filters( 'tc_global_percentage_fee_value', ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, $ticket_price, $ordered_count, $global_fee_value );
+                        ? tickera_apply_filters( 'tickera_global_fixed_fee_value',  ( $ordered_count * $global_fee_value ), $ordered_count, $global_fee_value )
+                        : tickera_apply_filters( 'tickera_global_percentage_fee_value', ( ( $ticket_price * $ordered_count ) / 100 ) * $global_fee_value, $ticket_price, $ordered_count, $global_fee_value );
                 }
             }
         }
 
-        $total_fees = apply_filters( 'tc_total_fees_value', $total_fees + $fee, $use_global_fees, isset( $global_fee_scope ) ? $global_fee_scope : 'ticket', $ordered_count, isset( $global_fee_value ) ? $global_fee_value : 0, $ticket_price, isset( $global_fee_type ) ? $global_fee_type : 'percentage' );
+        $tickera_total_fees = tickera_apply_filters( 'tickera_total_fees_value', $tickera_total_fees + $fee, $use_global_fees, isset( $global_fee_scope ) ? $global_fee_scope : 'ticket', $ordered_count, isset( $global_fee_value ) ? $global_fee_value : 0, $ticket_price, isset( $global_fee_type ) ? $global_fee_type : 'percentage' );
         $disabled = tickera_is_disabled_fee_column();
-        $tc->session->set( 'tc_total_fees', $total_fees );
+        $tc->session->set( 'tc_total_fees', $tickera_total_fees );
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || ( isset( $tc_general_settings[ 'show_fees' ] ) && $tc_general_settings[ 'show_fees' ] == 'yes' ) ) {
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || ( isset( $tickera_general_settings[ 'show_fees' ] ) && $tickera_general_settings[ 'show_fees' ] == 'yes' ) ) {
             if ( ! $disabled ) : ?>
-                <td class="ticket-fee" class="ticket_fee"><?php echo wp_kses_post( apply_filters( 'tc_cart_currency_and_format', $fee ) ); ?></td>
+                <td class="ticket-fee" class="ticket_fee"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $fee ) ); ?></td>
             <?php endif;
         }
     }
@@ -355,14 +389,14 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
  * Deprecated function "tc_total_fees_value_modify".
  * @since 3.5.3.0
  */
-add_filter( 'tc_total_fees_value', 'tickera_total_fees_value_modify', 10, 7 );
+tickera_add_filter( 'tickera_total_fees_value', 'tickera_total_fees_value_modify', 10, 7, array( 'tc_total_fees_value' ) );
 if ( ! function_exists( 'tickera_total_fees_value_modify' ) ) {
 
-    function tickera_total_fees_value_modify( $total_fees, $use_global_fees, $global_fee_scope, $ordered_count, $global_fee_value, $ticket_price, $global_fee_type ) {
+    function tickera_total_fees_value_modify( $tickera_total_fees, $use_global_fees, $global_fee_scope, $ordered_count, $global_fee_value, $ticket_price, $global_fee_type ) {
         if ( $use_global_fees == 'yes' && $global_fee_scope == 'order' && $global_fee_type == 'fixed' ) {
-            $total_fees = (float) $global_fee_value;
+            $tickera_total_fees = (float) $global_fee_value;
         }
-        return $total_fees;
+        return $tickera_total_fees;
     }
 }
 
@@ -394,25 +428,25 @@ if ( ! function_exists( 'tickera_global_percentage_fee_value' ) ) {
  * Deprecated function "tc_cart_col_value_before_total_price_total".
  * @since 3.5.3.0
  */
-add_action( 'tc_cart_col_value_before_total_price_total', 'tickera_cart_col_value_before_total_price_total', 11, 1 );
+add_action( 'tickera_cart_col_value_before_total_price_total', 'tickera_cart_col_value_before_total_price_total', 11, 1 );
 if ( ! function_exists( 'tickera_cart_col_value_before_total_price_total' ) ) {
 
     function tickera_cart_col_value_before_total_price_total( $total ) {
 
-        global $total_fees;
+        global $tickera_total_fees;
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $fees_label = isset( $tc_general_settings[ 'fees_label' ] ) ? $tc_general_settings[ 'fees_label' ] : 'FEES';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $fees_label = isset( $tickera_general_settings[ 'fees_label' ] ) ? $tickera_general_settings[ 'fees_label' ] : 'FEES';
 
-        do_action( 'tc_cart_col_value_before_total_price_fees' );
-        add_filter( 'tc_cart_total', function( $total_price ) {
-            global $total_fees, $subtotal_value;
-            return $subtotal_value + apply_filters( 'tc_discounted_fees_total', $total_fees );
-        }, 10, 1 );
+        tickera_do_action( 'tickera_cart_col_value_before_total_price_fees' );
+        tickera_add_filter( 'tickera_cart_total', function( $total_price ) {
+            global $tickera_total_fees, $tickera_subtotal_value;
+            return $tickera_subtotal_value + tickera_apply_filters( 'tickera_discounted_fees_total', $tickera_total_fees );
+        }, 10, 1, array( 'tc_cart_total' ) );
 
-        if ( ! isset( $tc_general_settings[ 'show_fees' ] ) || ( isset( $tc_general_settings[ 'show_fees' ] ) && 'yes' == $tc_general_settings[ 'show_fees' ] ) ) : ?>
+        if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || ( isset( $tickera_general_settings[ 'show_fees' ] ) && 'yes' == $tickera_general_settings[ 'show_fees' ] ) ) : ?>
             <div>
-                <span class="total_item_title"><?php echo esc_html( $fees_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( apply_filters( 'tc_cart_currency_and_format', $total_fees ) ); ?></span>
+                <span class="total_item_title"><?php echo esc_html( $fees_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $tickera_total_fees ) ); ?></span>
             </div>
         <?php endif;
     }
@@ -424,63 +458,63 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price_total' ) ) {
  * Deprecated function "tc_cart_tax".
  * @since 3.5.3.0
  */
-add_action( 'tc_cart_col_value_before_total_price_total', 'tickera_cart_tax', 12, 1 );
+add_action( 'tickera_cart_col_value_before_total_price_total', 'tickera_cart_tax', 12, 1 );
 if ( ! function_exists( 'tickera_cart_tax' ) ) {
 
     function tickera_cart_tax( $total ) {
 
-        global $tc, $total_fees, $tax_value, $subtotal_value;
+        global $tc, $tickera_total_fees, $tickera_tax_value, $tickera_subtotal_value;
 
-        $tc_general_settings = get_option( 'tickera_general_setting', false );
-        $tax_before_fees = ( isset( $tc_general_settings[ 'tax_before_fees' ] ) && $tc_general_settings[ 'tax_before_fees' ] ) ? $tc_general_settings[ 'tax_before_fees' ] : 'no';
+        $tickera_general_settings = get_option( 'tickera_general_setting', false );
+        $tax_before_fees = ( isset( $tickera_general_settings[ 'tax_before_fees' ] ) && $tickera_general_settings[ 'tax_before_fees' ] ) ? $tickera_general_settings[ 'tax_before_fees' ] : 'no';
         $tax_inclusive = tickera_is_tax_inclusive();
 
         // Calculate cart tax value
-        if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+        if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
 
             $total_cart = ( 'no' == $tax_before_fees )
-                ? round( $subtotal_value + $total_fees, 2 )
-                : round( $subtotal_value, 2 );
+                ? round( $tickera_subtotal_value + $tickera_total_fees, 2 )
+                : round( $tickera_subtotal_value, 2 );
 
-            $tax_value = ( $tax_inclusive )
+            $tickera_tax_value = ( $tax_inclusive )
                 ? round( $total_cart - ( $total_cart / ( ( $tc->get_tax_value() / 100 ) + 1 ) ), 2 )
                 : round( $total_cart * ( $tc->get_tax_value() / 100 ), 2 );
 
         } else {
 
             $total_cart = ( 'no' == $tax_before_fees )
-                ? $subtotal_value + $total_fees
-                : $subtotal_value;
+                ? $tickera_subtotal_value + $tickera_total_fees
+                : $tickera_subtotal_value;
 
-            $tax_value = ( $tax_inclusive )
+            $tickera_tax_value = ( $tax_inclusive )
                 ? $total_cart - ( $total_cart / ( ( $tc->get_tax_value() / 100 ) + 1 ) )
                 : $total_cart * ( $tc->get_tax_value() / 100 );
         }
 
-        $tax_label = isset( $tc_general_settings[ 'tax_label' ] ) ? $tc_general_settings[ 'tax_label' ] : 'TAX';
-        $tc->session->set( 'tc_tax_value', $tax_value );
+        $tax_label = isset( $tickera_general_settings[ 'tax_label' ] ) ? $tickera_general_settings[ 'tax_label' ] : 'TAX';
+        $tc->session->set( 'tc_tax_value', $tickera_tax_value );
 
         $session = $tc->session->get();
 
         $session[ 'cart_info' ][ 'total' ] = ( 'no' == $tax_before_fees )
-            ? ( $tax_inclusive ? $total_cart : ( $total_cart + $tax_value ) )
-            : ( $tax_inclusive ? $total_cart : ( $total_cart + $total_fees + $tax_value ) );
+            ? ( $tax_inclusive ? $total_cart : ( $total_cart + $tickera_tax_value ) )
+            : ( $tax_inclusive ? $total_cart : ( $total_cart + $tickera_total_fees + $tickera_tax_value ) );
 
         $tc->session->set( 'cart_info', $session[ 'cart_info' ] );
 
-        add_filter( 'tc_cart_total', function( $total_price ) {
-            global $tc, $tax_value;
+        tickera_add_filter( 'tickera_cart_total', function( $total_price ) {
+            global $tc, $tickera_tax_value;
             $tax_inclusive = tickera_is_tax_inclusive();
-            $cart_total = $tax_inclusive ? $total_price : ( $total_price + $tax_value );
+            $cart_total = $tax_inclusive ? $total_price : ( $total_price + $tickera_tax_value );
             $tc->session->set( 'tc_cart_total', $cart_total );
             return $cart_total;
-        }, 10, 1 );
+        }, 10, 1, array( 'tc_cart_total' ) );
 
-        do_action( 'tc_cart_col_value_before_total_price_tax' );
+        tickera_do_action( 'tickera_cart_col_value_before_total_price_tax' );
 
-        if ( ! isset( $tc_general_settings[ 'show_tax_rate' ] ) || ( isset( $tc_general_settings[ 'show_tax_rate' ] ) && 'yes' == $tc_general_settings[ 'show_tax_rate' ] ) ) : ?>
+        if ( ! isset( $tickera_general_settings[ 'show_tax_rate' ] ) || ( isset( $tickera_general_settings[ 'show_tax_rate' ] ) && 'yes' == $tickera_general_settings[ 'show_tax_rate' ] ) ) : ?>
             <div>
-                <span class="total_item_title"><?php echo esc_html( $tax_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( apply_filters( 'tc_cart_currency_and_format', $tax_value ) ); ?></span>
+                <span class="total_item_title"><?php echo esc_html( $tax_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $tickera_tax_value ) ); ?></span>
             </div>
         <?php endif;
     }
@@ -490,25 +524,25 @@ if ( ! function_exists( 'tickera_cart_tax' ) ) {
  * Deprecated function "tc_discounted_total".
  * @since 3.5.3.0
  */
-add_filter( 'tc_discounted_total', 'tickera_discounted_total', 10, 1 );
+add_filter( 'tickera_discounted_total', 'tickera_discounted_total', 10, 1 );
 if ( ! function_exists( 'tickera_discounted_total' ) ) {
 
     function tickera_discounted_total( $total ) {
 
         global $tc;
         $session = $tc->session->get();
-        $tax_value = isset( $session[ 'tc_tax_value' ] ) ? (float) $session[ 'tc_tax_value' ] : 0;
-        $total_fees = isset( $session[ 'tc_total_fees' ] ) ? (float) $session[ 'tc_total_fees' ] : 0;
+        $tickera_tax_value = isset( $session[ 'tc_tax_value' ] ) ? (float) $session[ 'tc_tax_value' ] : 0;
+        $tickera_total_fees = isset( $session[ 'tc_total_fees' ] ) ? (float) $session[ 'tc_total_fees' ] : 0;
 
-        if ( apply_filters( 'tc_round_cart_total_value', true ) ) {
+        if ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) {
             return ( tickera_is_tax_inclusive() )
-                ? round( $total + $total_fees, 2 )
-                : round( $total + $total_fees + $tax_value, 2 );
+                ? round( $total + $tickera_total_fees, 2 )
+                : round( $total + $tickera_total_fees + $tickera_tax_value, 2 );
 
         } else {
             return ( tickera_is_tax_inclusive() )
-                ? $total + $total_fees
-                : $total + $total_fees + $tax_value;
+                ? $total + $tickera_total_fees
+                : $total + $tickera_total_fees + $tickera_tax_value;
         }
     }
 }
@@ -517,7 +551,7 @@ if ( ! function_exists( 'tickera_discounted_total' ) ) {
  * Deprecated function "tc_event_date_time_element".
  * @since 3.5.3.0
  */
-add_filter( 'tc_event_date_time_element', 'tickera_event_date_time_element', 10, 1 );
+tickera_add_filter( 'tickera_event_date_time_element', 'tickera_event_date_time_element', 10, 1, [ 'tc_event_date_time_element' ] );
 if ( ! function_exists( 'tickera_event_date_time_element' ) ) {
 
     function tickera_event_date_time_element( $date ) {
@@ -529,7 +563,7 @@ if ( ! function_exists( 'tickera_event_date_time_element' ) ) {
  * Deprecated function "tc_checkins_date_checked".
  * @since 3.5.3.0
  */
-add_filter( 'tc_checkins_date_checked', 'tickera_checkins_date_checked', 10, 1 );
+tickera_add_filter( 'tickera_checkins_date_checked', 'tickera_checkins_date_checked', 10, 1, [ 'tc_checkins_date_checked' ] );
 if ( ! function_exists( 'tickera_checkins_date_checked' ) ) {
 
     function tickera_checkins_date_checked( $date ) {
@@ -541,7 +575,7 @@ if ( ! function_exists( 'tickera_checkins_date_checked' ) ) {
  * Deprecated function "tc_checkins_status".
  * @since 3.5.3.0
  */
-add_filter( 'tc_checkins_status', 'tickera_checkins_status', 10, 1 );
+tickera_add_filter( 'tickera_checkins_status', 'tickera_checkins_status', 10, 1, array( 'tc_checkins_status' ) );
 if ( ! function_exists( 'tickera_checkins_status' ) ) {
 
     function tickera_checkins_status( $status ) {
@@ -561,7 +595,7 @@ if ( ! function_exists( 'tickera_checkins_status' ) ) {
  * Deprecated function "tc_checkins_api_key_id".
  * @since 3.5.3.0
  */
-add_filter( 'tc_checkins_api_key_id', 'tickera_checkins_api_key_id', 10, 1 );
+tickera_add_filter( 'tickera_checkins_api_key_id', 'tickera_checkins_api_key_id', 10, 1, array( 'tc_checkins_api_key_id' ) );
 if ( ! function_exists( 'tickera_checkins_api_key_id' ) ) {
 
     function tickera_checkins_api_key_id( $api_key_id ) {
@@ -576,7 +610,7 @@ if ( ! function_exists( 'tickera_checkins_api_key_id' ) ) {
  * Deprecated function "tc_order_field_value".
  * @since 3.5.3.0
  */
-add_filter( 'tc_order_field_value', 'tickera_order_field_value', 10, 5 );
+add_filter( 'tickera_order_field_value', 'tickera_order_field_value', 10, 5 );
 if ( ! function_exists( 'tickera_order_field_value' ) ) {
 
     function tickera_order_field_value( $order_id, $value, $meta_key, $field_type, $field_id = false ) {
@@ -684,16 +718,16 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
 
             $discount_code = ( isset( $value[ 'coupon_code' ] ) && $value[ 'coupon_code' ] ) ? $value[ 'coupon_code' ] : get_post_meta( $order_id, 'tc_discount_code', true );
 
-            $discount = new \Tickera\TC_Discount();
-            $discount = $discount->get_discount_by_code( $discount_code );
+            $tickera_discount = new \Tickera\TC_Discount();
+            $tickera_discount = $tickera_discount->get_discount_by_code( $discount_code );
 
-            if ( $discount ) {
+            if ( $tickera_discount ) {
 
                 return sprintf(
                     /* translators: 1: Discount amount 2: Discount ID 3: Discount Code */
                     __( '%1$s<br/>Code: <a href="edit.php?post_type=tc_events&page=tc_discount_codes&action=edit&ID=%2$s">%3$s</a>', 'tickera-event-ticketing-system' ),
-                    esc_html( apply_filters( 'tc_cart_currency_and_format', $discount_total ) ),
-                    (int) $discount->ID,
+                    esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ),
+                    (int) $tickera_discount->ID,
                     esc_html( $discount_code ) );
 
             } else {
@@ -701,16 +735,16 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
             }
 
         } elseif ( 'total' == $field_id && isset( $value[ 'total' ] ) ) {
-            return esc_html( apply_filters( 'tc_cart_currency_and_format', $value[ 'total' ] ) );
+            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'total' ] ) );
 
         } elseif ( 'subtotal' == $field_id && isset( $value[ 'subtotal' ] ) ) {
-            return esc_html( apply_filters( 'tc_cart_currency_and_format', $value[ 'subtotal' ] ) );
+            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'subtotal' ] ) );
 
         } elseif ( 'fees_total' == $field_id && isset( $value[ 'fees_total' ] ) ) {
-            return esc_html( apply_filters( 'tc_cart_currency_and_format', $value[ 'fees_total' ] ) );
+            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'fees_total' ] ) );
 
         } elseif ( 'tax_total' == $field_id && isset( $value[ 'tax_total' ] ) ) {
-            return esc_html( apply_filters( 'tc_cart_currency_and_format', $value[ 'tax_total' ] ) );
+            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'tax_total' ] ) );
 
         } else {
             return $value;
@@ -724,7 +758,7 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
  * Deprecated function "my_custom_events_admin_fields".
  * @since 3.5.3.0
  */
-add_filter( 'tc_event_fields', 'tickera_events_admin_fields' );
+add_filter( 'tickera_event_fields', 'tickera_events_admin_fields', 10, 1 );
 if ( ! function_exists( 'tickera_events_admin_fields' ) ) {
 
     function tickera_events_admin_fields( $event_fields ) {
@@ -737,7 +771,7 @@ if ( ! function_exists( 'tickera_events_admin_fields' ) ) {
             'show_in_post_type' => false
         );
 
-        if ( current_user_can( apply_filters( 'tc_event_activation_capability', 'edit_others_tc_events' ) ) || current_user_can( 'manage_options' ) ) {
+        if ( current_user_can( tickera_apply_filters( 'tickera_event_activation_capability', 'edit_others_tc_events' ) ) || current_user_can( 'manage_options' ) ) {
             $event_fields[] = array(
                 'field_name' => 'event_active',
                 'field_title' => __( 'Active', 'tickera-event-ticketing-system' ),
@@ -756,7 +790,7 @@ if ( ! function_exists( 'tickera_events_admin_fields' ) ) {
  * Deprecated function "my_custom_tc_event_object_details".
  * @since 3.5.3.0
  */
-add_filter( 'tc_event_object_details', 'tickera_event_object_details' );
+tickera_add_filter( 'tickera_event_object_details', 'tickera_event_object_details', 10, 1, [ 'tc_event_object_details' ] );
 if ( ! function_exists( 'tickera_event_object_details' ) ) {
 
     function tickera_event_object_details( $object_details ) {
@@ -774,7 +808,7 @@ if ( ! function_exists( 'tickera_event_object_details' ) ) {
  * Deprecated function "my_custom_tickets_admin_fields".
  * @since 3.5.3.0
  */
-add_filter( 'tc_ticket_fields', 'tickera_tickets_admin_fields' );
+add_filter( 'tickera_ticket_fields', 'tickera_tickets_admin_fields', 10, 1 );
 if ( ! function_exists( 'tickera_tickets_admin_fields' ) ) {
 
     function tickera_tickets_admin_fields( $ticket_fields ) {
@@ -795,18 +829,35 @@ if ( ! function_exists( 'tickera_tickets_admin_fields' ) ) {
  * Deprecated function "my_custom_tc_ticket_object_details".
  * @since 3.5.3.0
  */
-add_filter( 'tc_ticket_object_details', 'tickera_ticket_object_details' );
+add_filter( 'tickera_ticket_object_details', 'tickera_ticket_object_details', 10, 1 );
 if ( ! function_exists( 'tickera_ticket_object_details' ) ) {
 
     function tickera_ticket_object_details( $object_details ) {
         $object_details->ticket_shortcode = '[ticket id="' . (int) $object_details->ID . '"]';
 
-        global $wpdb;
-        $sold_records = $wpdb->get_results( $wpdb->prepare( "SELECT COUNT(*) as cnt, p.post_parent FROM {$wpdb->posts} p, {$wpdb->postmeta} pm WHERE p.ID = pm.post_id AND pm.meta_key = 'ticket_type_id' AND pm.meta_value = %d GROUP BY p.post_parent", $object_details->ID ) );
+        $sold_records = get_posts( array(
+            'post_type'              => 'tc_tickets_instances',
+            'post_status'            => 'any',
+            'posts_per_page'         => -1,
+            'fields'                 => 'id=>parent',
+            'no_found_rows'          => true,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required to count sold instances for this ticket type.
+            'meta_query'             => array(
+                array(
+                    'key'     => 'ticket_type_id',
+                    'value'   => (int) $object_details->ID,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC',
+                ),
+            ),
+        ) );
+
         $sold_count = 0;
-        foreach ( $sold_records as $sold_record ) {
-            if ( get_post_status( $sold_record->post_parent ) == 'order_paid' ) {
-                $sold_count = $sold_count + $sold_record->cnt;
+        foreach ( $sold_records as $sold_record_parent_id ) {
+            if ( get_post_status( $sold_record_parent_id ) == 'order_paid' ) {
+                $sold_count++;
             }
         }
 
@@ -823,7 +874,7 @@ if ( ! function_exists( 'tickera_ticket_object_details' ) ) {
  * Deprecated function "tc_ticket_instance_field_value".
  * @since 3.5.3.0
  */
-add_filter( 'tc_ticket_instance_field_value', 'tickera_ticket_instance_field_value', 10, 5 );
+add_filter( 'tickera_ticket_instance_field_value', 'tickera_ticket_instance_field_value', 10, 5 );
 if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
 
     function tickera_ticket_instance_field_value( $value = false, $field_value = false, $post_field_type = false, $col_field_id = false, $field_id = false ) {//$value, $post_field_type, $var_name
@@ -843,12 +894,12 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
                 $order_found = true;
             }
 
-            $order_found = apply_filters( 'tc_order_found', $order_found, $order->details->ID );
+            $order_found = tickera_apply_filters( 'tickera_order_found', $order_found, $order->details->ID );
 
             if ( $order_found ) {
 
                 if ( current_user_can( 'manage_orders_cap' ) ) {
-                    $value = wp_kses_post( apply_filters( 'tc_ticket_instance_order_admin_url', '<a target="_blank" href="' . esc_url( admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' ) ) . '">' . esc_html( $order->details->post_title ) . '</a>', $parent_post, $order->details->post_title ) );
+                    $value = wp_kses_post( tickera_apply_filters( 'tickera_ticket_instance_order_admin_url', '<a target="_blank" href="' . esc_url( admin_url( 'post.php?post=' . $order->details->ID . '&action=edit' ) ) . '">' . esc_html( $order->details->post_title ) . '</a>', $parent_post, $order->details->post_title ) );
                 } else {
                     $value = $order->details->post_title;
                 }
@@ -864,7 +915,7 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
 
         } elseif ( 'ticket_type_id' == $field_id ) {
             $ticket_type = new \Tickera\TC_Ticket( $field_value );
-            $value = apply_filters( 'tc_checkout_owner_info_ticket_title', isset( $ticket_type->details->post_title ) ? $ticket_type->details->post_title : __( 'N/A', 'tickera-event-ticketing-system' ), $field_value, array(), $value );
+            $value = tickera_apply_filters( 'tickera_checkout_owner_info_ticket_title', isset( $ticket_type->details->post_title ) ? $ticket_type->details->post_title : __( 'N/A', 'tickera-event-ticketing-system' ), $field_value, array(), $value );
 
         } elseif ( 'ticket' == $field_id ) {
             $value = '<a target="_blank" href="' . esc_url( admin_url( 'edit.php?post_type=tc_tickets_instances&tc_preview&ticket_instance_id=' . $field_value ) ) . '">' . esc_html__( 'View', 'tickera-event-ticketing-system' ) . '</a> | <a target="_top" href="' . esc_url( admin_url( 'edit.php?post_type=tc_tickets_instances&tc_download&ticket_instance_id=' . $field_value ) ) . '">' . esc_html__( 'Download', 'tickera-event-ticketing-system' ) . '</a>';
@@ -894,14 +945,14 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
                 $buyer_full_name = isset( $order->details->tc_cart_info[ 'buyer_data' ] ) ? ( isset( $order->details->tc_cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] ) ? $order->details->tc_cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] : '' ) . ' ' . ( isset( $order->details->tc_cart_info[ 'buyer_data' ][ 'last_name_post_meta' ] ) ? $order->details->tc_cart_info[ 'buyer_data' ][ 'last_name_post_meta' ] : '' ) : __( 'N/A', 'tickera-event-ticketing-system' );
 
                 if ( trim( $buyer_full_name ) !== '' ) {
-                    $value = apply_filters( 'tc_ticket_buyer_name_element', $buyer_full_name, $parent_post );
+                    $value = tickera_apply_filters( 'tickera_ticket_buyer_name_element', $buyer_full_name, $parent_post );
                     $value = trim( $value );
                     if ( empty( $value ) ) {
                         $value = '-';
                     }
 
                 } else {
-                    $value = apply_filters( 'tc_ticket_buyer_name_element', '-', $parent_post );
+                    $value = tickera_apply_filters( 'tickera_ticket_buyer_name_element', '-', $parent_post );
                     $value = trim( $value );
                     if ( empty( $value ) ) {
                         $value = '-';
@@ -969,7 +1020,7 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
             }
         }
 
-        return apply_filters( 'tc_tickets_instances_column_value', $value, $field_id, $initial_value );
+        return tickera_apply_filters( 'tickera_tickets_instances_column_value', $value, $field_id, $initial_value );
     }
 }
 
@@ -979,7 +1030,7 @@ if ( ! function_exists( 'tickera_ticket_instance_field_value' ) ) {
  * Deprecated function "tc_api_key_field_value".
  * @since 3.5.3.0
  */
-add_filter( 'tc_api_key_field_value', 'tickera_api_key_field_value', 10, 3 );
+add_filter( 'tickera_api_key_field_value', 'tickera_api_key_field_value', 10, 3 );
 if ( ! function_exists( 'tickera_api_key_field_value' ) ) {
 
     function tickera_api_key_field_value( $value, $post_field_type, $var_name ) {
@@ -1036,10 +1087,11 @@ if ( ! function_exists( 'tickera_api_key_field_value' ) ) {
  * Deprecated function "tc_ticket_field_value".
  * @since 3.5.3.0
  */
-add_filter( 'tc_ticket_field_value', 'tickera_ticket_field_value', 10, 3 );
+add_filter( 'tickera_ticket_field_value', 'tickera_ticket_field_value', 10, 3 );
 if ( ! function_exists( 'tickera_ticket_field_value' ) ) {
 
-    function tickera_ticket_field_value( $value, $post_field_type, $var_name ) {
+    function tickera_ticket_field_value( $value, $post_field_type, $var_name ): mixed
+    {
 
         $quantity_available = 0;
 
@@ -1093,16 +1145,16 @@ if ( ! function_exists( 'tickera_ticket_field_value' ) ) {
  * Deprecated function "tc_discount_values".
  * @since 3.5.3.0
  */
-add_filter( 'tc_discount_field_value', 'tickera_discount_values', 10, 3 );
+add_filter( 'tickera_discount_field_value', 'tickera_discount_values', 10, 3 );
 if ( ! function_exists( 'tickera_discount_values' ) ) {
 
     function tickera_discount_values( $value, $post_field_type, $var_name ) {
-        global $tc_last_discount_code;
+        global $tickera_last_discount_code;
 
         switch ( $var_name ) {
 
             case 'post_title':
-                $tc_last_discount_code = $value;
+                $tickera_last_discount_code = $value;
                 break;
 
             case 'usage_limit':

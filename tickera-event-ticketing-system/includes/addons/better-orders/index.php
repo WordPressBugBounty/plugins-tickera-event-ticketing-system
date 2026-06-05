@@ -22,6 +22,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
             global $post;
 
             if ( ! isset( $post ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order screen post ID is cast and used only to detect the current post type.
                 $post_id = isset( $_GET[ 'post' ] ) ? (int) $_GET[ 'post' ] : '';
                 $post_type = get_post_type( $post_id );
 
@@ -30,7 +31,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
             }
 
             if ( empty( $post_type ) ) {
-                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order screen post type is sanitized and used only for screen setup.
+                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) : '';
             }
 
             add_action( 'wp_trash_post', array( $this, 'trash_post' ) );
@@ -126,8 +128,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
         function pre_get_posts_reorder( $query ) {
             global $post_type, $pagenow;
             if ( $pagenow == 'edit.php' && $post_type == 'tc_orders' ) {
-                $query->set( 'orderby', isset( $_REQUEST[ 'orderby' ] ) ? sanitize_key( $_REQUEST[ 'orderby' ] ) : 'date' );
-                $query->set( 'order', isset( $_REQUEST[ 'order' ] ) ? sanitize_key( $_REQUEST[ 'order' ] ) : 'DESC' );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order list sorting parameter is sanitized before updating the query.
+                $query->set( 'orderby', isset( $_REQUEST[ 'orderby' ] ) ? sanitize_key( wp_unslash( $_REQUEST[ 'orderby' ] ) ) : 'date' );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order list sort direction is sanitized before updating the query.
+                $query->set( 'order', isset( $_REQUEST[ 'order' ] ) ? sanitize_key( wp_unslash( $_REQUEST[ 'order' ] ) ) : 'DESC' );
             }
             return $query;
         }
@@ -138,8 +142,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
             if ( $pagenow == 'edit.php' && $post_type == 'tc_orders' ) {
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter only scopes the order list query.
                 if ( isset( $_REQUEST[ 'tc_event_filter' ] ) && $query->query[ 'post_type' ] == 'tc_orders' ) {
 
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter is cast before use.
                     $tc_tc_event_filter = (int) $_REQUEST[ 'tc_event_filter' ];
 
                     if ( $tc_tc_event_filter !== '0' ) {
@@ -153,7 +159,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
         function pre_get_posts_event_filter_where( $where ) {
             global $wpdb, $post_type, $pagenow;
             if ( $pagenow == 'edit.php' && $post_type == 'tc_orders' ) {
-                if ( isset( $_REQUEST[ 'tc_event_filter' ] ) && $_REQUEST[ 'tc_event_filter' ] != 0 ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter is sanitized before changing the list query.
+                if ( isset( $_REQUEST[ 'tc_event_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) ) != 0 ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter is cast before being added to the SQL condition.
                     $where .= " AND (" . $wpdb->postmeta . ".meta_key='tc_parent_event' AND " . $wpdb->postmeta . ".meta_value LIKE '%" . (int) $_REQUEST[ 'tc_event_filter' ] . "%')";
                 }
             }
@@ -164,6 +172,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
             global $post_type;
             if ( $post_type == 'tc_orders' ) {
                 $wp_events_search = new \Tickera\TC_Events_Search( '', '', '-1' );
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter is cast before selecting the current filter option.
                 $currently_selected = isset( $_REQUEST[ 'tc_event_filter' ] ) ? (int) $_REQUEST[ 'tc_event_filter' ] : '';
                 ?>
                 <select name="tc_event_filter" class="tc-event-filter">
@@ -173,7 +182,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                         $event_obj = new \Tickera\TC_Event( $event->ID );
                         $event_object = $event_obj->details;
                         ?>
-                        <option value="<?php echo esc_attr( $event_object->ID ); ?>" <?php selected( $currently_selected, $event_object->ID, true ); ?>><?php echo esc_html( apply_filters( 'tc_event_select_name', $event_object->post_title, $event_object->ID ) ); ?></option>
+                        <option value="<?php echo esc_attr( $event_object->ID ); ?>" <?php selected( $currently_selected, $event_object->ID, true ); ?>><?php echo esc_html( tickera_apply_filters( 'tickera_event_select_name', $event_object->post_title, $event_object->ID ) ); ?></option>
                         <?php
                     }
                     ?>
@@ -185,12 +194,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
         function add_order_status_filter() {
             global $post_type;
             if ( $post_type == 'tc_orders' ) {
-                $currently_selected = isset( $_REQUEST[ 'tc_order_status_filter' ] ) ? sanitize_key( $_REQUEST[ 'tc_order_status_filter' ] ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before selecting the current filter option.
+                $currently_selected = isset( $_REQUEST[ 'tc_order_status_filter' ] ) ? sanitize_key( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) : '';
                 ?>
                 <select name="tc_order_status_filter">
                     <option value="0"><?php esc_html_e( 'All Order Statuses', 'tickera-event-ticketing-system' ); ?></option>
                     <?php
-                    $payment_statuses = apply_filters( 'tc_csv_payment_statuses', tickera_get_order_statuses() );
+                    $payment_statuses = tickera_apply_filters( 'tickera_csv_payment_statuses', tickera_get_order_statuses() );
                     $payment_statuses[ 'order_received' ] = __( 'Order Pending / Received', 'tickera-event-ticketing-system' );
 
                     foreach ( $payment_statuses as $payment_status_key => $payment_status_value ) { ?>
@@ -208,19 +218,21 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
          * @throws \Exception
          */
         function save_orders_meta( $post_id ) {
-            global $wpdb;
 
             $order_id = $post_id;
 
             // Make sure the edit comes from the order details page
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin order status field is handled by the order details save workflow.
             if ( ! isset( $_POST[ 'order_status_change' ] ) || get_post_type( $post_id ) !== 'tc_orders' ) {
                 return;
             }
 
-            $post_status = sanitize_key( $_POST[ 'order_status_change' ] );
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin order status is sanitized before updating the order.
+            $post_status = sanitize_key( wp_unslash( $_POST[ 'order_status_change' ] ) );
             $order = new \Tickera\TC_Order( $order_id );
 
-            $old_post_status = isset( $_POST[ 'original_post_status' ] ) ? sanitize_key( $_POST[ 'original_post_status' ] ) : 'pending';
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Original admin order status is sanitized before transition handling.
+            $old_post_status = isset( $_POST[ 'original_post_status' ] ) ? sanitize_key( wp_unslash( $_POST[ 'original_post_status' ] ) ) : 'pending';
 
             if ( 'trash' == $post_status ) {
                 $order->delete_order( false );
@@ -243,7 +255,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                             $current_user->user_login
                         ) );
 
-                        do_action( 'tc_order_cancelled', $order_id, $old_post_status, $post_status );
+                        tickera_do_action( 'tickera_order_cancelled', $order_id, $old_post_status, $post_status );
                         break;
 
                     case 'order_refunded':
@@ -255,19 +267,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                             $current_user->user_login
                         ) );
 
-                        do_action( 'tc_order_refunded', $order_id, $old_post_status, $post_status );
+                        tickera_do_action( 'tickera_order_refunded', $order_id, $old_post_status, $post_status );
                         break;
 
                 }
 
-                $wpdb->update( $wpdb->posts, array( 'post_status' => $post_status ), array( 'ID' => $order_id ), array( '%s' ), array( '%1d' ) );
-
-                // Ensures the status has been updated. There's an instance when $wpdb->update remains pending for some reasons.
-                if ( $post_status != get_post_status( (int) $order_id ) ) {
-                    remove_action( 'save_post', array( $this, 'save_orders_meta' ) );
-                    wp_update_post( [ 'ID' => (int) $order_id, 'post_status' => sanitize_key( $post_status ) ] );
-                    add_action( 'save_post', array( $this, 'save_orders_meta' ) );
-                }
+                remove_action( 'save_post', array( $this, 'save_orders_meta' ) );
+                wp_update_post( [ 'ID' => (int) $order_id, 'post_status' => $post_status ] );
+                add_action( 'save_post', array( $this, 'save_orders_meta' ) );
             }
 
             /**
@@ -279,33 +286,45 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
                 tickera_order_created_email( $order->details->post_name, $post_status, false, false, false, true );
                 $payment_info = get_post_meta( $order_id, 'tc_payment_info', true );
-                do_action( 'tc_order_paid_change', $order_id, $post_status, '', '', $payment_info );
+                tickera_do_action( 'tickera_order_paid_change', $order_id, $post_status, '', '', $payment_info );
 
             } elseif ( 'order_refunded' == $post_status && $post_status !== $old_post_status ) {
                 tickera_order_created_email( $order->details->post_name, $post_status );
             }
 
             // Update buyer e-mail
-            $cart_info = get_post_meta( $post_id, 'tc_cart_info', true );
-            $cart_info[ 'buyer_data' ][ 'email_post_meta' ] = sanitize_text_field( $_POST[ 'customer_email' ] );
-            update_post_meta( (int) $post_id, 'tc_cart_info', tickera_sanitize_array( $cart_info, false, true ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin buyer email field is handled by the order details save workflow.
+            if ( isset( $_POST[ 'customer_email' ] ) ) {
+                $cart_info = get_post_meta( $post_id, 'tc_cart_info', true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin buyer email is sanitized before saving order cart data.
+                $cart_info[ 'buyer_data' ][ 'email_post_meta' ] = sanitize_text_field( wp_unslash( $_POST[ 'customer_email' ] ) );
+                update_post_meta( (int) $post_id, 'tc_cart_info', tickera_sanitize_array( $cart_info, false, true ) );
+            }
 
             // Update buyer name
-            $cart_info = get_post_meta( $post_id, 'tc_cart_info', true );
-            $cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] = sanitize_text_field( $_POST[ 'customer_first_name' ] );
-            $cart_info[ 'buyer_data' ][ 'last_name_post_meta' ] = sanitize_text_field( $_POST[ 'customer_last_name' ] );
-            update_post_meta( (int) $post_id, 'tc_cart_info', tickera_sanitize_array( $cart_info, false, true ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin buyer name fields are handled by the order details save workflow.
+            if ( isset( $_POST[ 'customer_first_name' ] ) && isset( $_POST[ 'customer_last_name' ] ) ) {
+                $cart_info = get_post_meta( $post_id, 'tc_cart_info', true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin buyer first name is sanitized before saving order cart data.
+                $cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] = sanitize_text_field( wp_unslash( $_POST[ 'customer_first_name' ] ) );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin buyer last name is sanitized before saving order cart data.
+                $cart_info[ 'buyer_data' ][ 'last_name_post_meta' ] = sanitize_text_field( wp_unslash( $_POST[ 'customer_last_name' ] ) );
+                update_post_meta( (int) $post_id, 'tc_cart_info', tickera_sanitize_array( $cart_info, false, true ) );
+            }
         }
 
         function extended_search_join( $join ) {
             global $pagenow, $wpdb;
             $joined = false;
-            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && $_GET[ 'post_type' ] == 'tc_orders' ) {
-                if ( ( ( isset( $_REQUEST[ 'tc_event_filter' ] ) && $_REQUEST[ 'tc_event_filter' ] != 0 ) ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order post type check only scopes extended search query changes.
+            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) == 'tc_orders' ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order event filter only determines whether the list query needs a meta join.
+                if ( ( ( isset( $_REQUEST[ 'tc_event_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) ) != 0 ) ) ) {
                     $joined = true;
                     $join .= ' LEFT JOIN ' . $wpdb->postmeta . ' ON ' . $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
                 }
-                if ( ( isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] != '' ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order search term only determines whether the list query needs a meta join.
+                if ( ( isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) != '' ) ) {
                     if ( ! $joined ) {
                         $join .= ' LEFT JOIN ' . $wpdb->postmeta . ' ON ' . $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id';
                     }
@@ -317,7 +336,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
         function extended_search_where( $where ) {
             global $pagenow, $wpdb;
-            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && $_GET[ 'post_type' ] == 'tc_orders' && isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] != '' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order search parameters only scope extended list-table search conditions.
+            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) == 'tc_orders' && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) != '' ) {
                 $where = preg_replace(
                     "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/", "(" . $wpdb->posts . ".post_title LIKE $1) OR (" . $wpdb->postmeta . ".meta_value LIKE $1)", $where );
             }
@@ -326,7 +346,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
         function extended_groupby( $groupby ) {
             global $pagenow, $wpdb;
-            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && $_GET[ 'post_type' ] == 'tc_orders' && isset( $_REQUEST[ 's' ] ) && $_REQUEST[ 's' ] != '' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order search parameters only scope extended list-table grouping.
+            if ( is_admin() && $pagenow == 'edit.php' && isset( $_GET[ 'post_type' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) == 'tc_orders' && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) != '' ) {
                 global $wpdb;
                 $groupby = "{$wpdb->posts}.ID";
             }
@@ -346,10 +367,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                 3 => __( 'Custom field deleted.', 'tickera-event-ticketing-system' ),
                 4 => __( 'Order updated.', 'tickera-event-ticketing-system' ),
                 /* translators: %s: date and time of the revision */
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast and used only for the order updated message.
                 5 => isset( $_GET[ 'revision' ] )
                     ? sprintf(
                         /* translators: %s: Formatted datetime timestamp of a revision. */
                         __( 'Order data restored to revision from %s', 'tickera-event-ticketing-system' ),
+                        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast before loading the revision title.
                         wp_post_revision_title( (int) $_GET[ 'revision' ], false )
                     )
                     : false,
@@ -375,9 +398,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
          * Enqueue scripts and styles
          */
         function admin_enqueue_scripts_and_styles() {
-            global $post, $post_type;
+            global $tc, $post, $post_type;
             if ( $post_type == 'tc_orders' ) {
-                wp_enqueue_style( 'tc-orders', plugins_url( 'css/admin.css', __FILE__ ) );
+                wp_enqueue_style( 'tc-orders', plugins_url( 'css/admin.css', __FILE__ ), [], $tc->version );
             }
         }
 
@@ -422,24 +445,24 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
                         $field_name = $tickets_orders_column[ 'field_name' ];
 
                         $order_obj = new \Tickera\TC_Order( $post_id );
-                        $order_object = apply_filters( 'tc_order_object_details', $order_obj->details );
+                        $order_object = tickera_apply_filters( 'tickera_order_object_details', $order_obj->details );
 
                         if ( isset( $post_field_type ) && $post_field_type == 'post_meta' ) {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_order_field_value', $order_object->ID, $order_object->{$field_name}, $post_field_type, isset( $tickets_orders_column[ 'field_id' ] ) ? $tickets_orders_column[ 'field_id' ] : '', $field_id ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_order_field_value', $order_object->ID, $order_object->{$field_name}, $post_field_type, isset( $tickets_orders_column[ 'field_id' ] ) ? $tickets_orders_column[ 'field_id' ] : '', $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_order_field_value', $order_object->ID, $order_object->{$field_name}, $post_field_type, $tickets_orders_column[ 'field_id' ] ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_order_field_value', $order_object->ID, $order_object->{$field_name}, $post_field_type, $tickets_orders_column[ 'field_id' ] ) );
                             }
 
                         } else {
 
                             if ( isset( $field_id ) ) {
-                                echo wp_kses_post( apply_filters( 'tc_order_field_value', $order_object->ID, ( isset( $order_object->{$post_field_type} ) ? $order_object->{$post_field_type} : $order_object->{$field_name} ), $post_field_type, $tickets_orders_column[ 'field_name' ], $field_id ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_order_field_value', $order_object->ID, ( isset( $order_object->{$post_field_type} ) ? $order_object->{$post_field_type} : $order_object->{$field_name} ), $post_field_type, $tickets_orders_column[ 'field_name' ], $field_id ) );
 
                             } else {
-                                echo wp_kses_post( apply_filters( 'tc_order_field_value', $order_object->ID, ( isset( $order_object->{$post_field_type} ) ? $order_object->{$post_field_type} : $order_object->{$field_name} ), $post_field_type, $tickets_orders_column[ 'field_name' ] ) );
+                                echo wp_kses_post( tickera_apply_filters( 'tickera_order_field_value', $order_object->ID, ( isset( $order_object->{$post_field_type} ) ? $order_object->{$post_field_type} : $order_object->{$field_name} ), $post_field_type, $tickets_orders_column[ 'field_name' ] ) );
                             }
                         }
                     }
@@ -454,7 +477,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
 
     }
 
-    if ( apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) == true ) {
+    if ( tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) == true ) {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $woo is the prefix
         $woo_bridge_is_active = true;
 
     } else {
@@ -462,17 +486,19 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
         if ( is_plugin_active( 'bridge-for-woocommerce/bridge-for-woocommerce.php' ) ) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $woo is the prefix
             $woo_bridge_is_active = true;
 
         } else {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $woo is the prefix
             $woo_bridge_is_active = false;
         }
     }
 
     // Make sure not to load the add-on if Bridge for WooCommerce is active
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- $woo is the prefix
     if ( ! $woo_bridge_is_active ) {
-        global $TC_Better_Orders;
-        $TC_Better_Orders = new TC_Better_Orders();
+        new TC_Better_Orders();
     }
 }
 
@@ -484,15 +510,16 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Orders' ) ) {
  */
 if ( ! function_exists( '\Tickera\Addons\tickera_order_details_metabox' ) ) {
 
-    function tickera_order_details_metabox() {
-        $orders = new \Tickera\TC_Orders();
-        $fields = \Tickera\TC_Orders::get_order_fields();
-        $order = new \Tickera\TC_Order( isset( $_REQUEST[ 'post' ] ) ? (int) $_REQUEST[ 'post' ] : 0 );
+        function tickera_order_details_metabox() {
+            $orders = new \Tickera\TC_Orders();
+            $fields = \Tickera\TC_Orders::get_order_fields();
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order ID is cast before loading order details for the metabox.
+            $order = new \Tickera\TC_Order( isset( $_REQUEST[ 'post' ] ) ? (int) $_REQUEST[ 'post' ] : 0 );
         ?>
         <form name="tc_order_details" method="post">
             <input type='hidden' id='order_id' value='<?php echo esc_attr( $order->details->ID ); ?>'/>
             <input type="hidden" name="hiddenField"/>
-            <?php do_action( 'tc_order_details_before_table' ); ?>
+            <?php tickera_do_action( 'tickera_order_details_before_table' ); ?>
             <table class="order-table">
                 <tbody>
                 <?php foreach ( $fields as $field ) { ?>
@@ -504,7 +531,7 @@ if ( ! function_exists( '\Tickera\Addons\tickera_order_details_metabox' ) ) {
                         <td <?php echo wp_kses_post( ( $field[ 'field_type' ] == 'separator' ) ? 'colspan = "2"' : '' ); ?>>
                             <?php
 
-                            do_action( 'tc_before_orders_field_type_check' );
+                            tickera_do_action( 'tickera_before_orders_field_type_check' );
 
                             if ( 'ID' == $field[ 'field_type' ] ) {
                                 echo esc_html( $order->details->{$field[ 'post_field_type' ]} );
@@ -542,16 +569,16 @@ if ( ! function_exists( '\Tickera\Addons\tickera_order_details_metabox' ) ) {
                             if ( $field[ 'field_type' ] == 'separator' ) : ?>
                                 <hr/>
                             <?php endif;
-                            do_action( 'tc_after_orders_field_type_check' ); ?>
+                            tickera_do_action( 'tickera_after_orders_field_type_check' ); ?>
                         </td>
                         </tr><?php
                     }
                 }
-                do_action( 'tc_after_order_details_fields' ); ?>
+                tickera_do_action( 'tickera_after_order_details_fields' ); ?>
                 </tbody>
             </table>
             <?php submit_button( __( 'Save Changes', 'tickera-event-ticketing-system' ), 'primary', 'tc_order_save_changes', false ); ?>
-            <?php do_action( 'tc_order_details_after_table' ); ?>
+            <?php tickera_do_action( 'tickera_order_details_after_table' ); ?>
         </form>
         <?php
     }

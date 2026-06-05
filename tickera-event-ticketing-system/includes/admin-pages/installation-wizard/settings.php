@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $tc;
 ?>
@@ -14,11 +15,11 @@ global $tc;
             <div class="tc-wiz-screen-content">
                 <p><?php echo esc_html( sprintf( /* translators: %s: Tickera */ __( 'Set some crucial settings for your event ticketing store bellow. All the setting could be changed later from within your %s Settings panel.', 'tickera-event-ticketing-system' ), esc_html( $tc->title ) ) ); ?></p>
                 <?php
-                $tc_general_settings = get_option( 'tickera_general_setting', false );
+                $tickera_general_settings = get_option( 'tickera_general_setting', false );
                 $settings = get_option( 'tickera_settings' );
                 $currencies = $settings[ 'gateways' ][ 'currencies' ];
                 ksort( $currencies );
-                $checked = ( isset( $tc_general_settings[ 'currencies' ] ) ) ? $tc_general_settings[ 'currencies' ] : 'USD';
+                $checked = ( isset( $tickera_general_settings[ 'currencies' ] ) ) ? $tickera_general_settings[ 'currencies' ] : 'USD';
                 ?>
                 <div class="tc-setting-wrap">
                     <div class="tc-setting-label"><label for="tc_select_currency"><?php esc_html_e( 'Currency', 'tickera-event-ticketing-system' ); ?></label></div>
@@ -33,39 +34,39 @@ global $tc;
                 <div class="tc-setting-wrap">
                     <div class="tc-setting-label"><label for="tc_select_currency_symbol"><?php esc_html_e( 'Currency Symbol', 'tickera-event-ticketing-system' ); ?></label></div>
                     <div class="tc-setting-field">
-                        <input type="text" id="tc_select_currency_symbol" name="currency_symbol" class="tc_currency_symbol" value="<?php echo esc_attr( isset( $tc_general_settings[ 'currency_symbol' ] ) ? $tc_general_settings[ 'currency_symbol' ] : '$' ) ?>"/>
+                        <input type="text" id="tc_select_currency_symbol" name="currency_symbol" class="tc_currency_symbol" value="<?php echo esc_attr( isset( $tickera_general_settings[ 'currency_symbol' ] ) ? $tickera_general_settings[ 'currency_symbol' ] : '$' ) ?>"/>
                     </div><!-- .tc-setting-field -->
                 </div><!-- .tc-setting-wrap -->
                 <div class="tc-setting-wrap">
                     <div class="tc-setting-label"><label for="tc_select_currency_position"><?php esc_html_e( 'Currency Position', 'tickera-event-ticketing-system' ); ?></label></div>
                     <div class="tc-setting-field">
                         <?php
-                        $checked = ( isset( $tc_general_settings[ 'currency_position' ] ) ) ? $tc_general_settings[ 'currency_position' ] : 'pre_nospace';
-                        $symbol = ( isset( $tc_general_settings[ 'currency_symbol' ] ) && $tc_general_settings[ 'currency_symbol' ] != '' ? $tc_general_settings[ 'currency_symbol' ] : ( isset( $tc_general_settings[ 'currencies' ] ) ? $tc_general_settings[ 'currencies' ] : '$' ) );
+                        $checked = ( isset( $tickera_general_settings[ 'currency_position' ] ) ) ? $tickera_general_settings[ 'currency_position' ] : 'pre_nospace';
+                        $symbol = ( isset( $tickera_general_settings[ 'currency_symbol' ] ) && $tickera_general_settings[ 'currency_symbol' ] != '' ? $tickera_general_settings[ 'currency_symbol' ] : ( isset( $tickera_general_settings[ 'currencies' ] ) ? $tickera_general_settings[ 'currencies' ] : '$' ) );
                         ?>
                         <select name="currency_position" class="tc_currency_position">
                             <option value="pre_space" <?php selected( $checked, 'pre_space', true ); ?>><?php echo esc_html( $symbol . ' 10' ); ?></option>
                             <option value="pre_nospace" <?php selected( $checked, 'pre_nospace', true ); ?>><?php echo esc_html( $symbol . '10' ); ?></option>
                             <option value="post_nospace" <?php selected( $checked, 'post_nospace', true ); ?>><?php echo esc_html( '10' . $symbol ); ?></option>
                             <option value="post_space" <?php selected( $checked, 'post_space', true ); ?>><?php echo esc_html( '10 ' . $symbol ); ?></option>
-                            <?php do_action( 'tc_currencies_position' ); ?>
+                            <?php tickera_do_action( 'tickera_currencies_position' ); ?>
                         </select>
                     </div><!-- .tc-setting-field -->
                 </div><!-- .tc-setting-wrap -->
                 <div class="tc-setting-wrap">
                     <div class="tc-setting-label"><label for="tc_select_currency_position"><?php esc_html_e( 'Price Format', 'tickera-event-ticketing-system' ); ?></label></div>
                     <div class="tc-setting-field">
-                        <?php $checked = ( isset( $tc_general_settings[ 'price_format' ] ) ) ? $tc_general_settings[ 'price_format' ] : 'us'; ?>
+                        <?php $checked = ( isset( $tickera_general_settings[ 'price_format' ] ) ) ? $tickera_general_settings[ 'price_format' ] : 'us'; ?>
                         <select name="price_format" class="tc_price_format">
                             <option value="us" <?php selected( $checked, 'us', true ); ?>><?php esc_html_e( '1,234.56', 'tickera-event-ticketing-system' ); ?></option>
                             <option value="eu" <?php selected( $checked, 'eu', true ); ?>><?php esc_html_e( '1.234,56', 'tickera-event-ticketing-system' ); ?></option>
                             <option value="french_comma" <?php selected( $checked, 'french_comma', true ); ?>><?php esc_html_e( '1 234,56', 'tickera-event-ticketing-system' ); ?></option>
                             <option value="french_dot" <?php selected( $checked, 'french_dot', true ); ?>><?php esc_html_e( '1 234.56', 'tickera-event-ticketing-system' ); ?></option>
-                            <?php do_action( 'tc_price_formats' ); ?>
+                            <?php tickera_do_action( 'tickera_price_formats' ); ?>
                         </select>
                     </div><!--.tc-setting-field -->
                 </div><!--.tc-setting-wrap -->
-                <?php $checked_show_tax_rate = ( isset( $tc_general_settings[ 'show_tax_rate' ] ) ) ? $tc_general_settings[ 'show_tax_rate' ] : 'no'; ?>
+                <?php $checked_show_tax_rate = ( isset( $tickera_general_settings[ 'show_tax_rate' ] ) ) ? $tickera_general_settings[ 'show_tax_rate' ] : 'no'; ?>
                 <div class="tc-setting-wrap">
                     <div class="tc-setting-label"><label for="use_taxes"><?php esc_html_e( 'Use Taxes', 'tickera-event-ticketing-system' ); ?></label></div>
                     <div class="tc-setting-field">
@@ -81,10 +82,10 @@ global $tc;
                 <div class="tc-setting-wrap tc-taxes-fields-wrap"<?php echo esc_html($show_taxes_fields); ?>>
                     <div class="tc-setting-label"><?php esc_html_e( 'Tax Rate (%)', 'tickera-event-ticketing-system' ); ?></div>
                     <div class="tc-setting-field">
-                        <input type="text" class="tc_tax_rate" id="tax_rate" name="show_tax_rate" value="<?php echo esc_attr( isset( $tc_general_settings[ 'tax_rate' ] ) ? $tc_general_settings[ 'tax_rate' ] : 0 ); ?>">
+                        <input type="text" class="tc_tax_rate" id="tax_rate" name="show_tax_rate" value="<?php echo esc_attr( isset( $tickera_general_settings[ 'tax_rate' ] ) ? $tickera_general_settings[ 'tax_rate' ] : 0 ); ?>">
                     </div><!--.tc-setting-field -->
                 </div><!--.tc-setting-wrap -->
-                <?php $checked = ( isset( $tc_general_settings[ 'tax_inclusive' ] ) ) ? $tc_general_settings[ 'tax_inclusive' ] : 'no'; ?>
+                <?php $checked = ( isset( $tickera_general_settings[ 'tax_inclusive' ] ) ) ? $tickera_general_settings[ 'tax_inclusive' ] : 'no'; ?>
                 <div class="tc-setting-wrap tc-taxes-fields-wrap"<?php echo esc_html($show_taxes_fields); ?>>
                     <div class="tc-setting-label"><?php esc_html_e( 'Prices inclusive of tax?', 'tickera-event-ticketing-system' ); ?></div>
                     <div class="tc-setting-field">
@@ -99,7 +100,7 @@ global $tc;
                 <div class="tc-setting-wrap tc-taxes-fields-wrap"<?php echo esc_html($show_taxes_fields); ?>>
                     <div class="tc-setting-label"><?php esc_html_e( 'Tax Label', 'tickera-event-ticketing-system' ); ?></div>
                     <div class="tc-setting-field">
-                        <input type="text" class="tc_tax_label" id="tax_label" name="tax_label" value="<?php echo esc_attr( isset( $tc_general_settings[ 'tax_label' ] ) ? $tc_general_settings[ 'tax_label' ] : 'Tax' ); ?>"/>
+                        <input type="text" class="tc_tax_label" id="tax_label" name="tax_label" value="<?php echo esc_attr( isset( $tickera_general_settings[ 'tax_label' ] ) ? $tickera_general_settings[ 'tax_label' ] : 'Tax' ); ?>"/>
                     </div><!--.tc-setting-field -->
                 </div><!--.tc-setting-wrap -->
                 <?php tickera_wizard_navigation(); ?>

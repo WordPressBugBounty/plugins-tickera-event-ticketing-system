@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_location_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -70,6 +72,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/event-location', {
+    apiVersion: 3,
     title: __( 'Event Location', 'tickera-event-ticketing-system' ),
     description: __( 'Shows location of an event', 'tickera-event-ticketing-system' ),
     icon: 'location',
@@ -86,6 +89,7 @@ registerBlockType( 'tickera/event-location', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_location_block_editor.events );
 
         /**
@@ -128,10 +132,14 @@ registerBlockType( 'tickera/event-location', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-location",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-location",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

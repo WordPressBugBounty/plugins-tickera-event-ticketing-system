@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_logo_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -22,6 +24,7 @@ var AlignmentToolbar = wp.editor.AlignmentToolbar,
 var __ = wp.i18n.__;
 
 registerBlockType( 'tickera/event-logo', {
+    apiVersion: 3,
     title: __( 'Event Logo', 'tc' ),
     description: __( 'Shows logo of an event', 'tc' ),
     icon: 'format-image',
@@ -40,6 +43,7 @@ registerBlockType( 'tickera/event-logo', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_logo_block_editor.events );
 
         /**
@@ -82,10 +86,14 @@ registerBlockType( 'tickera/event-logo', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-logo",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-logo",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

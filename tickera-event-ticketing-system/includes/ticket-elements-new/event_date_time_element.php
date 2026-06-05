@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
         var $font_awesome_icon = '<span class="tti-date_schedule_calendar_event_icon-1"></span>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_event_date_time_element_title', __( 'Event Date & Time', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_event_date_time_element_title', __( 'Event Date & Time', 'tickera-event-ticketing-system' ) );
         }
 
         function get_event_date( $event_id ) {
@@ -60,9 +60,9 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
             if ( $ticket_instance_id ) {
                 $ticket_instance = new \Tickera\TC_Ticket( (int) $ticket_instance_id );
                 $ticket = new \Tickera\TC_Ticket();
-                $event_id = $ticket->get_ticket_event( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
+                $event_id = $ticket->get_ticket_event( tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
                 $event_date = $this->get_event_date( $event_id );
-                return '<br/>' . apply_filters( 'tc_event_date_time_element_ticket_type', $event_date, apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ), $ticket_instance_id );
+                return '<br/>' . tickera_apply_filters( 'tickera_event_date_time_element_ticket_type', $event_date, tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id ), $ticket_instance_id );
 
             } else {
 
@@ -73,7 +73,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_event_date_time_element' ) ) {
                     return '<br/>' . $event_date;
 
                 } else {
-                    return '<br/>' . apply_filters( 'tc_event_date_time_element_default', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) );
+                    return '<br/>' . tickera_apply_filters( 'tickera_event_date_time_element_default', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) );
                 }
             }
         }

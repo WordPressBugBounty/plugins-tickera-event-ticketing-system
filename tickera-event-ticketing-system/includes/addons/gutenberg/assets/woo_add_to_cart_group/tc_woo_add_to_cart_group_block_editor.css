@@ -53,3 +53,7 @@ input[type="number"].tc-wb-quantity-selector {
     margin-left: 10px;
     box-sizing: border-box;
 }
+
+.wp-block-tc-woo-event-add-to-cart-group > * {
+    max-width: unset;
+}

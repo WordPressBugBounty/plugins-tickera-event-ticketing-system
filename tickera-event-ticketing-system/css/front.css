@@ -260,6 +260,16 @@ form.checkout .tickera-input-field.valid:not(.coupon_code) /* Woocommerce + Brid
     margin: 0 auto 0 auto;
 }
 
+.event_tickets.tickera th:last-child,
+.event_tickets.tickera td:last-child {
+    white-space: nowrap;
+}
+
+.event_tickets.tickera th:nth-last-child(2),
+.event_tickets.tickera td:nth-last-child(2) {
+    white-space: nowrap;
+}
+
 .event_tickets.tickera input[type="number"]::-webkit-inner-spin-button,
 .event_tickets.tickera input[type="number"]::-webkit-outer-spin-button,
 .tickera-checkout input[type="number"]::-webkit-inner-spin-button,

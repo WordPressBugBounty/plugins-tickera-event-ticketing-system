@@ -270,7 +270,7 @@ if ( ! class_exists( '\Tickera\TC_Fields' ) ) {
 
             global $tc;
             wp_enqueue_script( 'jquery-ui-datepicker' );
-            wp_enqueue_style( 'jquery-style', $tc->plugin_url . 'css/jquery-ui-smoothness.css' );
+            wp_enqueue_style( 'jquery-style', $tc->plugin_url . 'css/jquery-ui-smoothness.css', [], $tc->version );
             ?>
             <input type="text" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" value=""/>
             <input type="hidden" name="<?php echo esc_attr( $field[ 'field_name' ] ); ?>_raw" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>_raw" value=""/>
@@ -312,12 +312,7 @@ if ( ! class_exists( '\Tickera\TC_Fields' ) ) {
             foreach ( $field[ 'values' ] as $index => $val ) {
 
                 $checked = ( $val == $value ) ? 'checked="checked"' : '';
-
-                $label = sprintf(
-                    /* translators: %s: Label of a radio button. */
-                    __( '%s', 'tickera-event-ticketing-system' ),
-                    ucfirst( $val )
-                );
+                $label = ucfirst( $val );
 
                 $html .= '<label>';
                 $html .= '<input type="radio" class="' . esc_attr( $field[ 'field_name' ] ) . '" name="' . esc_attr( $key . $group_name ) . '[' . esc_attr( $field[ 'field_name' ] ) . ']" value = "' . esc_attr( $val ) . '" ' . $checked . '/>' . esc_html( $label ) . ' ';

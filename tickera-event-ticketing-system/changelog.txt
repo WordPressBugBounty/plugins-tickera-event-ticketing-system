@@ -1,6 +1,10 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.7.2 05/06/2026 =
+* Add block alignment support for "Event - Add to Cart" block.
+* WP 7.0 Compliance
+
 = 3.5.7.1 12/05/2026 =
 * Added support for the <p> tag in the "Event Terms & Conditions" Ticket Template element.
 * Adjusted the session handler to execute within Tickera core pages only.

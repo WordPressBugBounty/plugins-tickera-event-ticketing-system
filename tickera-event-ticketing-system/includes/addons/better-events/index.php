@@ -22,6 +22,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
             global $post;
 
             if ( ! isset( $post ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event screen post ID is cast and used only to detect the current post type.
                 $post_id = isset( $_GET[ 'post' ] ) ? (int) $_GET[ 'post' ] : '';
                 $post_type = get_post_type( $post_id );
 
@@ -30,18 +31,19 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
             }
 
             if ( empty( $post_type ) ) {
-                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event screen post type is sanitized and used only for screen setup.
+                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) : '';
             }
 
-            add_filter( 'tc_settings_general_sections', array( $this, 'tc_settings_general_sections' ) );
-            add_filter( 'tc_general_settings_page_fields', array( $this, 'tc_general_settings_page_fields' ) );
+            add_filter( 'tickera_settings_general_sections', array( $this, 'tc_settings_general_sections' ), 10, 1 );
+            add_filter( 'tickera_general_settings_page_fields', array( $this, 'tc_general_settings_page_fields' ), 10, 1 );
             add_filter( 'manage_tc_events_posts_columns', array( $this, 'manage_tc_events_columns' ) );
             add_action( 'manage_tc_events_posts_custom_column', array( $this, 'manage_tc_events_posts_custom_column' ) );
             add_filter( 'manage_edit-tc_events_sortable_columns', array( $this, 'manage_edit_tc_events_sortable_columns' ) );
             add_action( 'post_submitbox_misc_actions', array( $this, 'post_submitbox_misc_actions' ) );
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts_and_styles' ) );
-            add_filter( 'tc_add_admin_menu_page', array( $this, 'tc_add_admin_menu_page' ) );
-            add_filter( 'first_tc_menu_handler', array( $this, 'first_tc_menu_handler' ) );
+            tickera_add_filter( 'tickera_add_admin_menu_page', array( $this, 'tc_add_admin_menu_page' ), 10, 1, [ 'tc_add_admin_menu_page' ] );
+            tickera_add_filter( 'tickera_first_menu_handler', array( $this, 'first_tc_menu_handler' ), 10, 1, array( 'tc_first_menu_handler' ) );
             add_action( 'admin_menu', array( $this, 'rename_events_menu_item' ) );
             add_action( 'add_meta_boxes', array( $this, 'add_events_metaboxes' ), 10, 2 );
             add_action( 'save_post', array( $this, 'save_metabox_values' ) );
@@ -68,16 +70,23 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
 
             global $post_type;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event list orderby parameter only controls list-table sorting.
             if ( 'tc_events' == $post_type && is_admin() && $query->is_main_query() && isset( $_GET[ 'orderby' ] ) ) {
 
-                if ( 'event_date_time' == $_GET[ 'orderby' ] ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event list orderby parameter is sanitized before changing the query.
+                if ( 'event_date_time' == sanitize_text_field( wp_unslash( $_GET[ 'orderby' ] ) ) ) {
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                     $query->set( 'meta_key', 'event_date_time' );
                     $query->set( 'meta_type', 'DATE' );
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                     $query->set( 'orderby', 'meta_value' );
 
-                } elseif ( 'event_end_date_time' == $_GET[ 'orderby' ] ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event list orderby parameter is sanitized before changing the query.
+                } elseif ( 'event_end_date_time' == sanitize_text_field( wp_unslash( $_GET[ 'orderby' ] ) ) ) {
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                     $query->set( 'meta_key', 'event_end_date_time' );
                     $query->set( 'meta_type', 'DATE' );
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                     $query->set( 'orderby', 'meta_value' );
                 }
             }
@@ -117,15 +126,15 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
 
         public static function tc_duplicate_event_as_draft( $post_id = false, $duplicate_title_extension = ' [duplicate]', $caller = 'standard', $caller_id = false, $old_caller_id = false, $redirect = true ) {
 
-            global $wpdb;
-
             if ( $post_id !== false ) {
-                if ( ! ( isset( $_GET[ 'post' ] ) || isset( $_POST[ 'post' ] ) || ( isset( $_REQUEST[ 'action' ] ) && 'tc_duplicate_event_as_draft' == $_REQUEST[ 'action' ] ) || current_user_can( 'manage_options' ) ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- Event duplication request parameters are validated before duplicating the selected event.
+                if ( ! ( isset( $_GET[ 'post' ] ) || isset( $_POST[ 'post' ] ) || ( isset( $_REQUEST[ 'action' ] ) && 'tc_duplicate_event_as_draft' == sanitize_text_field( wp_unslash( $_REQUEST[ 'action' ] ) ) ) || current_user_can( 'manage_options' ) ) ) {
                     wp_die( 'No event to duplicate has been supplied!' );
                 }
             }
 
             // Get the original post id
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- Event duplication post ID is cast before loading the source event.
             $post_id = $post_id ? $post_id : ( isset( $_GET[ 'post' ] ) ? absint( (int) $_GET[ 'post' ] ) : absint( (int) $_POST[ 'post' ] ) );
             $show_tickets_automatically_old = get_post_meta( $post_id, 'show_tickets_automatically', true );
 
@@ -147,7 +156,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 $new_post_date = current_time( 'mysql' );
                 $new_post_date_gmt = get_gmt_from_date( $new_post_date );
 
-                $args = apply_filters( 'tc_duplicate_event_args', [
+                $args = tickera_apply_filters( 'tickera_duplicate_event_args', [
                     'post_author'               => (int) $new_post_author->ID,
                     'post_date'                 => $new_post_date,
                     'post_date_gmt'             => $new_post_date_gmt,
@@ -182,23 +191,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                     wp_set_object_terms( $new_post_id, $post_terms, $taxonomy, false );
                 }
 
-                // Duplicate all post meta just in two SQL queries
-                $post_meta_infos = $wpdb->get_results( $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id=%d", (int) $post_id ) );
+                $post_meta = get_post_meta( (int) $post_id );
 
-                if ( count( $post_meta_infos ) != 0 ) {
-
-                    $sql_query_sel = [];
-                    $table_columns = [ 'post_id', 'meta_key', 'meta_value' ];
-                    $prepare_table_columns_placeholder = implode( ',', array_fill( 0, count( $table_columns ), '%1s' ) );
-                    $sql_query = $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} ($prepare_table_columns_placeholder) ", $table_columns );
-
-                    foreach ( $post_meta_infos as $meta_info ) {
-                        $meta_key = $meta_info->meta_key;
-                        $meta_value = addslashes( $meta_info->meta_value );
-                        $sql_query_sel[] = $wpdb->prepare( "SELECT %d, %s, %s", $new_post_id, $meta_key, $meta_value );
+                if ( ! empty( $post_meta ) ) {
+                    foreach ( $post_meta as $meta_key => $meta_values ) {
+                        foreach ( $meta_values as $meta_value ) {
+                            add_post_meta( $new_post_id, $meta_key, maybe_unserialize( $meta_value ) );
+                        }
                     }
-                    $sql_query .= implode( " UNION ALL ", $sql_query_sel );
-                    $wpdb->query( $sql_query );
                 }
 
                 delete_post_meta( $new_post_id, 'show_tickets_automatically' );
@@ -207,7 +207,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 // Create new api access
                 TC_Better_Events::create_event_api_key( $new_post_id );
 
-                do_action( 'tc_after_event_duplication', $new_post_id, $post_id, $caller, $caller_id, $old_caller_id );
+                tickera_do_action( 'tickera_after_event_duplication', $new_post_id, $post_id, $caller, $caller_id, $old_caller_id );
 
                 // Finally, redirect to the edit post screen for the new draft
                 $new_post_url = add_query_arg( [
@@ -221,7 +221,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 }
 
             } else {
-                wp_die( 'Post creation failed, could not find original post: ' . $post_id );
+                wp_die( 'Post creation failed, could not find original post: ' . (int) $post_id );
             }
         }
 
@@ -245,7 +245,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
 
         public static function get_creation_messages() {
 
-            $ticket_type_admin_url = apply_filters( 'tc_ticket_type_admin_url', admin_url( 'edit.php?post_type=tc_tickets' ) );
+            $ticket_type_admin_url = tickera_apply_filters( 'tickera_ticket_type_admin_url', admin_url( 'edit.php?post_type=tc_tickets' ) );
 
             $creation_messages[] = sprintf(
                 /* translators: %s: Admin url of Tickera > Ticket Type. */
@@ -319,7 +319,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 esc_url( $ticket_type_admin_url )
             );
 
-            return apply_filters( 'tc_event_no_ticket_types_creation_messages', $creation_messages );
+            return tickera_apply_filters( 'tickera_event_no_ticket_types_creation_messages', $creation_messages );
         }
 
         function post_updated_messages( $messages ) {
@@ -330,7 +330,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
             $no_ticket_types = ( count( $event_ticket_types ) == 0 ) ? true : false;
 
             $creation_messages = TC_Better_Events::get_creation_messages();
-            $random_creation_message = $creation_messages[ rand( 0, count( $creation_messages ) - 1 ) ];
+            $random_creation_message = $creation_messages[ wp_rand( 0, count( $creation_messages ) - 1 ) ];
 
             $messages[ 'tc_events' ] = array(
                 0 => '', // Unused. Messages start at index 1.
@@ -344,10 +344,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 2 => __( 'Custom field updated.', 'tickera-event-ticketing-system' ),
                 3 => __( 'Custom field deleted.', 'tickera-event-ticketing-system' ),
                 4 => $no_ticket_types ? $random_creation_message : __( 'Event post updated.', 'tickera-event-ticketing-system' ),
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast and used only for the event updated message.
                 5 => isset( $_GET[ 'revision' ] )
                     ? sprintf(
                         /* translators: %s: Formatted datetime timestamp of a revision. */
                         __( 'Event post restored to revision from %s', 'tickera-event-ticketing-system' ),
+                        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast before loading the revision title.
                         wp_post_revision_title( (int) $_GET[ 'revision' ], false )
                     )
                     : false,
@@ -401,12 +403,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
             if ( ! is_admin() && ( is_object( $post ) && 'tc_events' == $post->post_type ) && ( ( $post_type && 'tc_events' == $post_type ) || is_tax( 'event_category' ) ) ) {
 
                 $new_content = '';
-                $has_active_blocks = apply_filters( 'tc_lock_event_single_content', false );
+                $has_active_blocks = tickera_apply_filters( 'tickera_lock_event_single_content', false );
 
                 // Add date and location to the top of the content if needed
-                $tc_general_settings = get_option( 'tickera_general_setting', false );
-                $tc_attach_event_date_to_title = isset( $tc_general_settings[ 'tc_attach_event_date_to_title' ] ) && ! empty( $tc_general_settings[ 'tc_attach_event_date_to_title' ] ) ? $tc_general_settings[ 'tc_attach_event_date_to_title' ] : 'yes';
-                $tc_attach_event_location_to_title = isset( $tc_general_settings[ 'tc_attach_event_location_to_title' ] ) && ! empty( $tc_general_settings[ 'tc_attach_event_location_to_title' ] ) ? $tc_general_settings[ 'tc_attach_event_location_to_title' ] : 'yes';
+                $tickera_general_settings = get_option( 'tickera_general_setting', false );
+                $tc_attach_event_date_to_title = isset( $tickera_general_settings[ 'tc_attach_event_date_to_title' ] ) && ! empty( $tickera_general_settings[ 'tc_attach_event_date_to_title' ] ) ? $tickera_general_settings[ 'tc_attach_event_date_to_title' ] : 'yes';
+                $tc_attach_event_location_to_title = isset( $tickera_general_settings[ 'tc_attach_event_location_to_title' ] ) && ! empty( $tickera_general_settings[ 'tc_attach_event_location_to_title' ] ) ? $tickera_general_settings[ 'tc_attach_event_location_to_title' ] : 'yes';
 
                 if ( ! $has_active_blocks && 'yes' == $tc_attach_event_date_to_title ) {
                     $new_content .= '<span class="tc_event_date_title_front"><i class="fa fa-clock-o"></i>' . esc_html( do_shortcode( '[tc_event_date]' ) ) . '</span>';
@@ -418,7 +420,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                     $new_content .= '<span class="tc_event_location_title_front"><i class="fa fa-map-marker"></i>' . '&nbsp;' . wp_kses_post( $event_location ) . '</span>';
                 }
 
-                $pre_content = apply_filters( 'tc_the_content_pre', $new_content );
+                $pre_content = tickera_apply_filters( 'tickera_the_content_pre', $new_content );
                 if ( $pre_content ) {
                     $content = '<div class="tc_the_content_pre">' . $pre_content . '</div>' . $content;
                 }
@@ -438,7 +440,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                          * Bridge for Woocommerce
                          * Notice to add ticket types/product.
                          */
-                        $ticket_types_admin_url = ( apply_filters( 'tc_is_woo', false ) == true )
+                        $ticket_types_admin_url = ( tickera_apply_filters( 'tickera_is_woo', false ) == true )
                             ? admin_url( 'post-new.php?post_type=product' )
                             : admin_url( 'post-new.php?post_type=tc_tickets' );
 
@@ -488,8 +490,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                             'tc_order_history' => 'tickera/order-history'
                         ];
 
-                        $shortcodes = apply_filters( 'tc_shortcodes', $shortcodes );
-                        $blocks = apply_filters( 'tc_gutenberg_blocks', $blocks );
+                        $shortcodes = tickera_apply_filters( 'tickera_shortcodes', $shortcodes );
+                        $blocks = tickera_apply_filters( 'tickera_gutenberg_blocks', $blocks );
 
                         $has_required_shortcodes = false;
 
@@ -516,10 +518,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 }
 
                 if ( $show_tickets_automatically ) {
-                    $content .= do_shortcode( apply_filters( 'tc_event_shortcode', '[tc_event]', (int) $post->ID ) );
+                    $content .= do_shortcode( tickera_apply_filters( 'tickera_event_shortcode', '[tc_event]', (int) $post->ID ) );
                 }
 
-                return apply_filters( 'tc_the_content', $content );
+                return tickera_apply_filters( 'tickera_the_content', $content );
             }
 
             return $content;
@@ -532,7 +534,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 'post_content' => '',
                 'post_status' => 'publish',
                 'post_type' => 'tc_api_keys',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => 'event_name',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => $post_id,
             );
 
@@ -556,7 +560,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 $metas = [];
                 $metas[ 'event_presentation_page' ] = $post_id; // Event calendar support URL for better events interface
 
-                $post_data = tickera_sanitize_array( $_POST, true, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Admin event metadata payload is unslashed and sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -585,7 +590,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                     }
                 }
 
-                $metas = apply_filters( 'events_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_events_metas', $metas );
 
                 if ( $post_data && isset( $post_data[ 'action' ] ) && 'change_event_status' == $post_data[ 'action' ] ) {
                     $metas[ 'show_tickets_automatically' ] = get_post_meta( $post_id, 'show_tickets_automatically', true );
@@ -597,7 +602,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                      * Manually update Show Tickets and Hide Event fields.
                      * Please don't remove the following lines. Otherwise, recreate the process in the post_submitbox_misc_actions method.
                      */
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event metadata save defaults unchecked checkbox fields.
                     if ( $_POST && ! isset( $metas[ 'show_tickets_automatically' ] ) ) $metas[ 'show_tickets_automatically' ] = 0;
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event metadata save defaults unchecked checkbox fields.
                     if ( $_POST && ! isset( $metas[ 'hide_event_after_expiration' ] ) ) $metas[ 'hide_event_after_expiration' ] = 0;
                 }
 
@@ -621,7 +628,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
          */
         public static function create_event_api_key( $event_id ) {
 
-            if ( apply_filters( 'tc_create_event_api_key_automatically', true ) == true ) {
+            if ( tickera_apply_filters( 'tickera_create_event_api_key_automatically', true ) == true ) {
 
                 $event_id = (int) $event_id;
                 $status = get_post_status( $event_id );
@@ -643,7 +650,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                         'post_type' => 'tc_api_keys',
                     );
 
-                    $api_key_post = apply_filters( 'tc_event_api_key_post', $api_key_post );
+                    $api_key_post = tickera_apply_filters( 'tickera_event_api_key_post', $api_key_post );
                     $api_key_post_id = wp_insert_post( tickera_sanitize_array( $api_key_post, true ) );
 
                     // Add post metas for the API Key
@@ -714,10 +721,10 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
          */
         function admin_enqueue_scripts_and_styles() {
 
-            global $post, $post_type;
+            global $tc, $post, $post_type;
 
             if ( 'tc_events' == $post_type ) {
-                wp_enqueue_style( 'tc-better-events', plugins_url( 'css/admin.css', __FILE__ ) );
+                wp_enqueue_style( 'tc-better-events', plugins_url( 'css/admin.css', __FILE__ ), [], $tc->version );
             }
         }
 
@@ -740,7 +747,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 'description' => '',
             ];
 
-            return apply_filters( 'tc_settings_gdpr_sections', $sections );
+            return tickera_apply_filters( 'tickera_settings_gdpr_sections', $sections );
         }
 
         /**
@@ -873,7 +880,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                             echo wp_kses( '<div class="tc-control ' . esc_attr( $on ) . '" event_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>', wp_kses_allowed_html( 'tickera_toggle' ) );
 
                         } elseif ( 'event_shortcode' == $events_column[ 'field_name' ] ) {
-                            echo esc_html( apply_filters( 'tc_event_shortcode_column', '[tc_event id="' . esc_attr( $post->ID ) . '"]', $post->ID ) );
+                            echo esc_html( tickera_apply_filters( 'tickera_event_shortcode_column', '[tc_event id="' . esc_attr( $post->ID ) . '"]', $post->ID ) );
                         }
                     }
                 }
@@ -968,6 +975,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event post ID is cast before loading event field settings.
             $post_id = isset( $_GET[ 'post' ] ) ? (int) $_GET[ 'post' ] : 0;
             $events_columns = \Tickera\TC_Events::get_event_fields();
 
@@ -1026,8 +1034,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Events' ) ) {
         }
     }
 
-    global $better_events;
-    $better_events = new TC_Better_Events();
+    new TC_Better_Events();
 }
 
 /**

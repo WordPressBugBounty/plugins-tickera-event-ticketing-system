@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_terms_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -72,6 +74,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/event-terms', {
+    apiVersion: 3,
     title: __( 'Event Terms & Conditions', 'tc' ),
     description: __( 'Shows event Terms & Conditions', 'tc' ),
     icon: 'welcome-write-blog',
@@ -90,6 +93,7 @@ registerBlockType( 'tickera/event-terms', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_terms_block_editor.events );
 
         /**
@@ -132,10 +136,14 @@ registerBlockType( 'tickera/event-terms', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-terms",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-terms",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

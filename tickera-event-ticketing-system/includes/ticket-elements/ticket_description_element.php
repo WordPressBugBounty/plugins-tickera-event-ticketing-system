@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_description_element' ) )
         var $font_awesome_icon = '<i class="fa fa-file-text-o"></i>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_description_element_title', __( 'Ticket Description', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_description_element_title', __( 'Ticket Description', 'tickera-event-ticketing-system' ) );
         }
 
         function admin_content() {
@@ -41,19 +41,19 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_description_element' ) )
 
             if ( $ticket_instance_id ) {
                 $ticket_instance = new \Tickera\TC_Ticket( (int) $ticket_instance_id );
-                $ticket = new \Tickera\TC_Ticket( apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
+                $ticket = new \Tickera\TC_Ticket( tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id ) );
 
                 $line_breaks = isset( $this->template_metas[ $this->element_name . '_enable_line_breaks' ] ) ? $this->template_metas[ $this->element_name . '_enable_line_breaks' ] : 'no';
-                return apply_filters( 'tc_ticket_description_element', ( ( 'yes' == $line_breaks ) ? tickera_the_content( $ticket->details->post_content ) : $ticket->details->post_content ), $ticket_instance );
+                return tickera_apply_filters( 'tickera_ticket_description_element', ( ( 'yes' == $line_breaks ) ? tickera_the_content( $ticket->details->post_content ) : $ticket->details->post_content ), $ticket_instance );
 
             } else {
 
                 if ( $ticket_type_id ) {
                     $ticket_type = new \Tickera\TC_Ticket( (int) $ticket_type_id );
-                    return apply_filters( 'tc_ticket_description_element', apply_filters( 'tc_the_content', $ticket_type->details->post_content ) );
+                    return tickera_apply_filters( 'tickera_ticket_description_element', tickera_apply_filters( 'tickera_the_content', $ticket_type->details->post_content ) );
 
                 } else {
-                    return apply_filters( 'tc_ticket_description_element_default', '<ul>
+                    return tickera_apply_filters( 'tickera_ticket_description_element_default', '<ul>
 				<li>AGES 21+ (with valid state-issued photo ID)</li>
 				<li>Includes transportation via Ferry or Shuttle Bus (you choose during purchase process)</li>
 				<li>Express Festival Entry</li>

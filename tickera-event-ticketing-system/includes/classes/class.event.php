@@ -63,6 +63,7 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
                 'post_type' => 'tc_tickets',
                 'post_status' => $post_status,
                 'posts_per_page' => -1,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => [
                     'relation' => 'AND',
                     [ 'key' => 'event_name', 'value' => (string) $event_id, 'compare' => '=' ],
@@ -72,6 +73,7 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
             );
 
             if ( ! $show_seats ) {
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 $args[ 'meta_query' ][] = [
                     'relation' => 'OR',
                     [ 'key' => '_tc_used_for_seatings', 'compare' => 'NOT EXISTS' ],
@@ -79,8 +81,8 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
                 ];
             }
 
-            $args = apply_filters( 'tc_get_event_ticket_types_args', $args );
-            $ticket_types = apply_filters( 'tc_get_event_ticket_types', get_posts( $args ), $event_id, $show_variations );
+            $args = tickera_apply_filters( 'tickera_get_event_ticket_types_args', $args );
+            $ticket_types = tickera_apply_filters( 'tickera_get_event_ticket_types', get_posts( $args ), $event_id, $show_variations );
 
             foreach ( $ticket_types as $ticket_type ) {
                 $ticket_ids[] = (int) $ticket_type->ID;
@@ -100,7 +102,9 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
             $args = array(
                 'posts_per_page' => -1,
                 'post_type' => 'tc_tickets',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => 'event_name',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => $this->id
             );
 
@@ -125,7 +129,7 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
             $end_date = date_i18n( get_option( 'date_format' ), strtotime( $event_end_date ) );
             $end_time = date_i18n( get_option( 'time_format' ), strtotime( $event_end_date ) );
 
-            $show_time = apply_filters( 'tc_get_event_date_show_time', true );
+            $show_time = tickera_apply_filters( 'tickera_get_event_date_show_time', true );
 
             if ( ! empty( $event_end_date ) ) {
                 if ( $start_date == $end_date ) {
@@ -155,7 +159,9 @@ if ( ! class_exists( '\Tickera\TC_Event' ) ) {
             $args = array(
                 'posts_per_page' => -1,
                 'post_type' => 'tc_tickets',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => 'event_name',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => $event_id
             );
 

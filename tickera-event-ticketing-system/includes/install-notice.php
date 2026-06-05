@@ -15,5 +15,5 @@ global $tc; ?>
             esc_html( $tc->title )
         ) );
     ?></p>
-    <p class="submit"><a href="<?php echo esc_url( add_query_arg( 'install_tickera_pages', 'true', admin_url( 'edit.php?post_type=tc_events&page=tc_settings' ) ) ); ?>" class="button-primary"><?php echo esc_html( sprintf( /* translators: %s: Tickera. */ __( 'Install %s Pages', 'tickera-event-ticketing-system' ), esc_html( $tc->title ) ) ); ?></a></p>
+    <p class="submit"><a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'install_tickera_pages', 'true', admin_url( 'edit.php?post_type=tc_events&page=tc_settings' ) ), 'install_tickera_pages' ) ); ?>" class="button-primary"><?php echo esc_html( sprintf( /* translators: %s: Tickera. */ __( 'Install %s Pages', 'tickera-event-ticketing-system' ), esc_html( $tc->title ) ) ); ?></a></p>
 </div><?php

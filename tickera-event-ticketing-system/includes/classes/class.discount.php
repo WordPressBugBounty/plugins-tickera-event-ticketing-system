@@ -11,7 +11,7 @@ if ( ! class_exists( '\Tickera\TC_Discount' ) ) {
 
         var $id = '';
         var $output = 'OBJECT';
-        var $discount = array();
+        var $tickera_discount = array();
         var $details;
 
         function __construct( $id = '', $output = 'OBJECT' ) {
@@ -34,8 +34,8 @@ if ( ! class_exists( '\Tickera\TC_Discount' ) ) {
         }
 
         function get_discount() {
-            $discount = get_post_custom( $this->id, $this->output );
-            return $discount;
+            $tickera_discount = get_post_custom( $this->id, $this->output );
+            return $tickera_discount;
         }
 
         function delete_discount( $force_delete = false ) {

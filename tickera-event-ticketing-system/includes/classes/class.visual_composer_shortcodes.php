@@ -25,5 +25,5 @@ if ( ! class_exists( '\Tickera\TC_VC_Shortcodes' ) ) {
         }
     }
 
-    $TC_VC_Shortcodes = new TC_VC_Shortcodes();
+    new TC_VC_Shortcodes();
 }

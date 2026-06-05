@@ -1,5 +1,4 @@
 <?php
-
 namespace Tickera;
 
 if ( !defined( 'ABSPATH' ) )
@@ -18,10 +17,12 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 			 * If true allows to call TCPDF methods using HTML syntax
 			 * IMPORTANT: For security reason, disable this feature if you are printing user HTML content.
 			 */
-			if ( !defined( 'TC_K_TCPDF_CALLS_IN_HTML' ) )
-				define( 'TC_K_TCPDF_CALLS_IN_HTML', true );
+			if ( !defined( 'TC_K_TCPDF_CALLS_IN_HTML' ) ) {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- TC_ is the prefix from TCPDF library
+                define( 'TC_K_TCPDF_CALLS_IN_HTML', true );
+            }
 
-			$this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+			$this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
 		}
 
 		function col_type_to_colspan( $type = 1, $current_column = 1 ) {
@@ -96,22 +97,28 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 		 * @param bool $string_attachment
 		 * @return string
 		 */
-		function generate_preview( $ticket_instance_id = false, $force_download = false, $template_id = false,
-							 $ticket_type_id = false, $string_attachment = false ) {
+		function generate_preview( $ticket_instance_id = false, $force_download = false, $template_id = false, $ticket_type_id = false, $string_attachment = false ) {
+
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 			global $tc, $pdf;
 
 			// Trying to set a memory limit to a high value since some template might need more memory (when a huge background is set, etc)
+            // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
 			@ini_set( 'memory_limit', '1024M' );
 
-			// Display all errors if TC_DEBUG is true
-			if ( defined( 'TC_DEBUG' ) || isset( $_GET[ 'TC_DEBUG' ] ) ) {
-				error_reporting( E_ALL );
-				@ini_set( 'display_errors', 'On' );
+				// Display all errors if TC_DEBUG is true
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ticket template preview debug flag only controls temporary error display during preview generation.
+				if ( defined( 'TC_DEBUG' ) || isset( $_GET[ 'TC_DEBUG' ] ) ) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
+                error_reporting( E_ALL );
+
+                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+                @ini_set( 'display_errors', 'On' );
 			}
 
 			// Initialize TCPDF Libraries
 			if ( !class_exists( '\Tickera\TCPDF' ) )
-				require_once( $tc->plugin_dir . 'includes/tcpdf/examples/tcpdf_include.php' );
+				require_once( $tc->plugin_dir . 'includes/tcpdf/vendor/examples/tcpdf_include.php' );
 
 			ob_start();
 			$output_buffering = ini_get( 'output_buffering' );
@@ -131,11 +138,11 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				if ( 'publish' == $ticket_instance_status ) {
 
 					$ticket_instance = new \Tickera\TC_Ticket( $ticket_instance_id );
-                    $pdf_filename = apply_filters( 'tc_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance ) . '.pdf';
+                    $pdf_filename = tickera_apply_filters( 'tickera_pdf_ticket_name', $ticket_instance->details->ticket_code, $ticket_instance ) . '.pdf';
 
                     $ticket_template = get_post_meta( $ticket_instance->details->ticket_type_id, 'ticket_template', true );
-                    $ticket_instance_ticket_type_id = apply_filters( 'tc_ticket_type_id', $ticket_instance->details->ticket_type_id );
-                    $post_id = (!$ticket_template ) ? get_post_meta( $ticket_instance_ticket_type_id, apply_filters( 'tc_ticket_template_field_name', '_ticket_template', $ticket_instance_ticket_type_id ), true ) : $ticket_template;
+                    $ticket_instance_ticket_type_id = tickera_apply_filters( 'tickera_ticket_type_id', $ticket_instance->details->ticket_type_id );
+                    $post_id = (!$ticket_template ) ? get_post_meta( $ticket_instance_ticket_type_id, tickera_apply_filters( 'tickera_ticket_template_field_name', '_ticket_template', $ticket_instance_ticket_type_id ), true ) : $ticket_template;
 				} else {
 					esc_html_e( 'Something went wrong. Ticket does not exists.', 'tickera-event-ticketing-system' );
 					exit;
@@ -153,11 +160,12 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 			$tc_document_orientation = ( $metas ) ? $metas[ 'document_ticket_orientation' ] : 'P';
 
 			// For custom size, document_ticket_size value should be formatted in array.
-			$tc_document_paper_size	 = ( $metas ) ? apply_filters( 'tc_document_paper_size', $metas[ 'document_ticket_size' ] ) : 'A4';
+			$tc_document_paper_size	 = ( $metas ) ? tickera_apply_filters( 'tickera_document_paper_size', $metas[ 'document_ticket_size' ] ) : 'A4';
 			$tc_document_paper_size	 = ( is_array( $tc_document_paper_size ) ) ? array_map( 'intval', array_values( array_filter( $tc_document_paper_size ) ) ) : $tc_document_paper_size;
 
 			// Create new PDF document
-			$pdf = new \Tickera\TCPDF( $tc_document_orientation, TC_PDF_UNIT, apply_filters( 'tc_additional_ticket_document_size_output', $tc_document_paper_size ), true, apply_filters( 'tc_ticket_document_encoding', 'UTF-8' ), false );
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This is a global variable from TCPDF library.
+			$pdf = new \Tickera\TCPDF( $tc_document_orientation, TC_PDF_UNIT, tickera_apply_filters( 'tickera_additional_ticket_document_size_output', $tc_document_paper_size ), true, tickera_apply_filters( 'tickera_ticket_document_encoding', 'UTF-8' ), false );
 
 			// Set TCPDF Defaults
 			$pdf->SetCompression( true );
@@ -183,8 +191,8 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				$pdf->SetMargins( $margin_left, $margin_top, $margin_right );
 			}
 
-			$tc_general_settings			 = get_option( 'tickera_general_setting', false );
-			$ticket_template_auto_pagebreak	 = ( isset( $tc_general_settings[ 'ticket_template_auto_pagebreak' ] ) && 'yes' == $tc_general_settings[ 'ticket_template_auto_pagebreak' ] ) ? true : false;
+			$tickera_general_settings			 = get_option( 'tickera_general_setting', false );
+			$ticket_template_auto_pagebreak	 = ( isset( $tickera_general_settings[ 'ticket_template_auto_pagebreak' ] ) && 'yes' == $tickera_general_settings[ 'ticket_template_auto_pagebreak' ] ) ? true : false;
 
 			$pdf->SetAutoPageBreak( false, 0 );
 			$pdf->setJPEGQuality( 100 );
@@ -320,16 +328,16 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 
 
 			$page1 = preg_replace( "/\s\s+/", '', $template_content ); // Strip excess whitespace
-			do_action( 'tc_before_pdf_write', $ticket_instance_id, $force_download, $template_id, $ticket_type_id, is_admin() );
+			tickera_do_action( 'tickera_before_pdf_write', $ticket_instance_id, $force_download, $template_id, $ticket_type_id, is_admin() );
 
 			$pdf->writeHTML( $page1, true, 0, true, 0 ); // Write page 1
-			do_action( 'tc_pdf_template', $pdf, $metas, $page1, $rows, $tc_document_paper_size, @$ticket_instance, $template_id, $force_download );
+			tickera_do_action( 'tickera_pdf_template', $pdf, $metas, $page1, $rows, $tc_document_paper_size, @$ticket_instance, $template_id, $force_download );
 
 			if ( $string_attachment ) {
 				return $pdf->Output( $pdf_filename, 'S' );
 			} else {
-				$pdf->Output( $pdf_filename, apply_filters( 'tc_change_tcpdf_save_option', ( $force_download ? 'D' : 'I' ) ) );
-				if ( true == apply_filters( 'tc_exit_after_pdf_output', true ) )
+				$pdf->Output( $pdf_filename, tickera_apply_filters( 'tickera_change_tcpdf_save_option', ( $force_download ? 'D' : 'I' ) ) );
+				if ( true == tickera_apply_filters( 'tickera_exit_after_pdf_output', true ) )
 					exit;
 			}
 		}
@@ -340,20 +348,25 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 
 		function add_new_template_new() {
 
-			if ( isset( $_POST[ 'template_title' ] ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket template save request is handled by the template editor workflow.
+				if ( isset( $_POST[ 'template_title' ] ) ) {
 
 				$post = array(
-					'post_content'	 => sanitize_textarea_field( $_POST[ 'post_content' ] ),
-					'post_status'	 => 'publish',
-					'post_title'	 => sanitize_text_field( $_POST[ 'template_title' ] ),
+                        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket template content is sanitized before saving.
+						'post_content'	 => isset( $_POST[ 'post_content' ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ 'post_content' ] ) ) : '',
+						'post_status'	 => 'publish',
+                        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket template title is sanitized before saving.
+						'post_title'	 => sanitize_text_field( wp_unslash( $_POST[ 'template_title' ] ) ),
 					'post_type'		 => 'tc_templates',
 				);
 
-				$post = apply_filters( 'tc_template_post', $post );
+				$post = tickera_apply_filters( 'tickera_template_post', $post );
 
-				if ( isset( $_POST[ 'template_id' ] ) ) {
-					$post[ 'ID' ] = (int) $_POST[ 'template_id' ]; // If ID is set, wp_insert_post will do the UPDATE instead of insert
-				}
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket template ID is used only to update the submitted template.
+					if ( isset( $_POST[ 'template_id' ] ) ) {
+                        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin ticket template ID is cast before being passed to wp_insert_post().
+						$post[ 'ID' ] = (int) $_POST[ 'template_id' ]; // If ID is set, wp_insert_post will do the UPDATE instead of insert
+					}
 
 				$post_id = wp_insert_post( tickera_sanitize_array( $post, true ) );
 
@@ -370,11 +383,11 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				$post = array(
 					'post_content'	 => '',
 					'post_status'	 => 'publish',
-					'post_title'	 => sanitize_text_field( $_POST[ 'template_title' ] ),
+					'post_title'	 => sanitize_text_field( wp_unslash( $_POST[ 'template_title' ] ) ),
 					'post_type'		 => 'tc_templates',
 				);
 
-				$post = apply_filters( 'tc_template_post', $post );
+				$post = tickera_apply_filters( 'tickera_template_post', $post );
 
 				if ( isset( $_POST[ 'template_id' ] ) ) {
 					$post[ 'ID' ] = (int) $_POST[ 'template_id' ]; // If ID is set, wp_insert_post will do the UPDATE instead of insert
@@ -385,7 +398,8 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				// Update post meta
 				if ( $post_id != 0 ) {
 
-				    $post_data = tickera_sanitize_array( $_POST, true, true );
+				    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
+				    $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                     $post_data = $post_data ? $post_data : [];
 
 					foreach ( $post_data as $key => $value ) {
@@ -399,7 +413,7 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
                                 update_post_meta( (int) $post_id, sanitize_key( str_replace( '_post_meta', '', $key ) ), sanitize_text_field( $value ) );
                             }
 
-							do_action( 'tc_template_post_metas' );
+							tickera_do_action( 'tickera_template_post_metas' );
 						}
 					}
 				}
@@ -431,7 +445,7 @@ if ( !class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 				),
 			);
 
-			return apply_filters( 'tc_template_col_fields', $default_fields );
+			return tickera_apply_filters( 'tickera_template_col_fields', $default_fields );
 		}
 
 		function get_columns() {

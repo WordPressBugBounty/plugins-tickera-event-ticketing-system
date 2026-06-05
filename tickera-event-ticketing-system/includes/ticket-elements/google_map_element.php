@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_google_map_element' ) ) {
         var $font_awesome_icon = '<i class="fa fa-map-marker"></i>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_google_map_element_title', __( 'Google Map', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_google_map_element_title', __( 'Google Map', 'tickera-event-ticketing-system' ) );
         }
 
         function admin_content() {
@@ -35,7 +35,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_google_map_element' ) ) {
             <label><?php esc_html_e( 'Zoom Level', 'tickera-event-ticketing-system' ); ?></label>
             <?php $selected_zoom = isset( $this->template_metas[ $this->element_name . '_google_map_zoom' ] ) ? $this->template_metas[ $this->element_name . '_google_map_zoom' ] : '13'; ?>
             <select name="<?php echo esc_attr( $this->element_name ); ?>_google_map_zoom_post_meta">
-                <?php for ( $i = apply_filters( 'tc_google_map_element_minimum_zoom_level', 10 ); $i <= 22; $i++ ) { ?>
+                <?php for ( $i = tickera_apply_filters( 'tickera_google_map_element_minimum_zoom_level', 10 ); $i <= 22; $i++ ) { ?>
                     <option value="<?php echo esc_attr( $i ); ?>" <?php selected( $selected_zoom, $i, true ); ?>><?php echo esc_html( $i ); ?></option>
                 <?php } ?>
             </select>
@@ -52,8 +52,8 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_google_map_element' ) ) {
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $google_maps_api_key = isset( $tc_general_settings[ 'google_maps_api_key' ] ) && ! empty( $tc_general_settings[ 'google_maps_api_key' ] ) ? $tc_general_settings[ 'google_maps_api_key' ] : '';
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
+            $google_maps_api_key = isset( $tickera_general_settings[ 'google_maps_api_key' ] ) && ! empty( $tickera_general_settings[ 'google_maps_api_key' ] ) ? $tickera_general_settings[ 'google_maps_api_key' ] : '';
 
             if ( ! empty( $google_maps_api_key ) ) {
 
@@ -62,14 +62,14 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_google_map_element' ) ) {
                 $height = isset( $this->template_metas[ $this->element_name . '_google_map_height' ] ) ? $this->template_metas[ $this->element_name . '_google_map_height' ] : '300';
                 $zoom = isset( $this->template_metas[ $this->element_name . '_google_map_zoom' ] ) ? $this->template_metas[ $this->element_name . '_google_map_zoom' ] : '13';
                 $map_type = isset( $this->template_metas[ $this->element_name . '_google_map_type' ] ) ? $this->template_metas[ $this->element_name . '_google_map_type' ] : 'roadmap';
-                $google_map_url = 'http://maps.googleapis.com/maps/api/staticmap?center=' . urlencode( $address ) . '&zoom=' . $zoom . '&scale=2&size=' . $width . 'x' . $height . '&maptype=' . $map_type . '&format=jpg&visual_refresh=false&markers=size:mid%7Ccolor:' . apply_filters( 'tc_google_map_element_marker_color', '0xff0000' ) . '%7Clabel:1%7C' . urlencode( $address ) . '&key=' . $google_maps_api_key;
+                $google_map_url = 'http://maps.googleapis.com/maps/api/staticmap?center=' . urlencode( $address ) . '&zoom=' . $zoom . '&scale=2&size=' . $width . 'x' . $height . '&maptype=' . $map_type . '&format=jpg&visual_refresh=false&markers=size:mid%7Ccolor:' . tickera_apply_filters( 'tickera_google_map_element_marker_color', '0xff0000' ) . '%7Clabel:1%7C' . urlencode( $address ) . '&key=' . $google_maps_api_key;
 
                 $response = wp_remote_request( $google_map_url );
                 if ( $response && is_array( $response ) && isset( $response[ 'response' ] ) && isset( $response[ 'response' ][ 'code' ] ) && '200' != $response[ 'response' ][ 'code' ] ) {
-                    return sprintf( /* translators: %s: Google Map API response. */__( '%s', 'tickera-event-ticketing-system' ), (string) $response[ 'body' ] );
+                    return (string) $response[ 'body' ];
 
                 } else {
-                    return '<br/>' . wp_kses( apply_filters( 'tc_google_map_image_element', '<img width="' . esc_attr( $width ) . '" src="' . esc_url( $google_map_url ) . '">' ), wp_kses_allowed_html( 'tickera' ) );
+                    return '<br/>' . wp_kses( tickera_apply_filters( 'tickera_google_map_image_element', '<img width="' . esc_attr( $width ) . '" src="' . esc_url( $google_map_url ) . '">' ), wp_kses_allowed_html( 'tickera' ) );
                 }
 
             } else {

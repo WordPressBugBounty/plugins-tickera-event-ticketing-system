@@ -10,11 +10,13 @@ if ( ! class_exists( '\Tickera\TC_Divi_Shortcode_Builder' ) ) {
 
         function __construct() {
 
-            if ( isset( $_GET[ 'page' ] ) && 'et_theme_builder' == $_GET[ 'page' ] ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Divi theme builder page check only controls builder asset loading.
+            if ( isset( $_GET[ 'page' ] ) && 'et_theme_builder' == sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) ) {
                 add_action( 'admin_enqueue_scripts', array( $this, 'divi_builder_enqueue_styles_scripts' ), 20 );
             }
 
-            if ( ( isset( $_GET[ 'et_fb' ] ) && $_GET[ 'et_fb' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Divi frontend builder flag only controls builder asset loading and shortcode preview output.
+            if ( ( isset( $_GET[ 'et_fb' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'et_fb' ] ) ) ) ) {
                 add_action( 'et_fb_enqueue_assets', array( $this, 'divi_builder_enqueue_styles_scripts' ), 20 );
                 add_action( 'et_before_main_content', array( $this, 'show_shortcodes' ) );
             }
@@ -36,5 +38,5 @@ if ( ! class_exists( '\Tickera\TC_Divi_Shortcode_Builder' ) ) {
         }
     }
 
-    $divi_shortcode_builder = new TC_Divi_Shortcode_Builder();
+    new TC_Divi_Shortcode_Builder();
 }

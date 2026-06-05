@@ -1,11 +1,12 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( !defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-global $tc_template_elements, $tc_gateway_plugins, $wpdb;
+global $tickera_template_elements, $tickera_gateway_plugins, $wpdb;
 
 $templates = new \Tickera\TC_Ticket_Templates();
 $template_elements = new \Tickera\TC_Ticket_Template_Elements();
 $template_elements_set = array();
-$page = sanitize_key( $_GET[ 'page' ] );
+$page = isset( $_GET[ 'page' ] ) ? sanitize_key( wp_unslash( $_GET[ 'page' ] ) ) : '';
 
 if ( isset( $_POST[ 'add_new_template' ] ) ) {
 
@@ -21,14 +22,14 @@ if ( isset( $_POST[ 'add_new_template' ] ) ) {
     }
 }
 
-if ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'edit' ) {
+if ( isset( $_GET[ 'action' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'edit' && isset( $_GET[ 'ID' ] ) ) {
     $post_id = (int)$_GET[ 'ID' ];
     $template = new \Tickera\TC_Template( $post_id );
     $template_elements = new \Tickera\TC_Ticket_Template_Elements( $post_id );
     $template_elements_set = $template_elements->get_all_set_elements();
 }
 
-if ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'delete' ) {
+if ( isset( $_GET[ 'action' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'delete' && isset( $_GET[ 'ID' ] ) ) {
 
     if ( !isset( $_POST[ '_wpnonce' ] ) ) {
         check_admin_referer( 'delete_' . (int)$_GET[ 'ID' ] );
@@ -47,7 +48,9 @@ if ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'delete' ) {
 /**
  * Click to duplicate ticket template start
  */
-if ( ( isset( $_GET[ 'action' ] ) ) && $_GET[ 'action' ] == 'tc_duplicate' ) {
+if ( ( isset( $_GET[ 'action' ] ) ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'tc_duplicate' && isset( $_GET[ 'ID' ] ) && isset( $_GET[ 'post_type' ] ) ) {
+
+    check_admin_referer( 'tc_duplicate' . (int) $_GET[ 'ID' ] );
 
     // Get the original post ID
     $post_id = (int)$_GET[ 'ID' ];
@@ -73,7 +76,7 @@ if ( ( isset( $_GET[ 'action' ] ) ) && $_GET[ 'action' ] == 'tc_duplicate' ) {
         $new_post_date_gmt = get_gmt_from_date( $new_post_date );
         $duplicate_title_extension = ' [duplicate]';
 
-        $args = apply_filters( 'tc_duplicate_template_args', array(
+        $args = tickera_apply_filters( 'tickera_duplicate_template_args', array(
             'post_author'               => (int) $new_post_author->ID,
             'post_date'                 => $new_post_date,
             'post_date_gmt'             => $new_post_date_gmt,
@@ -117,7 +120,7 @@ if ( ( isset( $_GET[ 'action' ] ) ) && $_GET[ 'action' ] == 'tc_duplicate' ) {
 
         // Finally, redirect to the edit post screen for the new draft
         $new_post_url = add_query_arg( array(
-            'post_type' => sanitize_text_field( $_GET[ 'post_type' ] ),
+            'post_type' => sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ),
             'page' => $page,
             'action' => 'edit',
             'ID' => $new_post_id
@@ -127,7 +130,7 @@ if ( ( isset( $_GET[ 'action' ] ) ) && $_GET[ 'action' ] == 'tc_duplicate' ) {
         tickera_redirect( $new_post_url, true, false );
 
     } else {
-        wp_die( 'Post creation failed, could not find original post: ' . $post_id );
+        wp_die( esc_html__( 'Post creation failed, could not find original post: ', 'tickera-event-ticketing-system' ) . (int) $post_id );
     }
 }
 
@@ -140,7 +143,7 @@ if ( isset( $_GET[ 'page_num' ] ) ) {
 }
 
 if ( isset( $_GET[ 's' ] ) ) {
-    $templatessearch = sanitize_text_field( $_GET[ 's' ] );
+    $templatessearch = sanitize_text_field( wp_unslash( $_GET[ 's' ] ) );
 
 } else {
     $templatessearch = '';
@@ -162,7 +165,7 @@ $templates_add_new_url = add_query_arg( array(
 ), admin_url( 'edit.php' ) ); ?>
     <div id="ticket_templates" class="wrap tc_wrap">
     <h2><?php esc_html_e( 'Ticket Templates', 'tickera-event-ticketing-system' ); ?>
-        <?php if ( isset( $_GET[ 'action' ] ) && ( $_GET[ 'action' ] == 'edit' || $_GET[ 'action' ] == 'add_new' ) ) : ?>
+        <?php if ( isset( $_GET[ 'action' ] ) && ( sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'edit' || sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'add_new' ) ) : ?>
             <a href="<?php echo esc_url( $templates_url ); ?>"
                class="add-new-h2"><?php esc_html_e( 'Back', 'tickera-event-ticketing-system' ); ?></a>
         <?php elseif ( tickera_iw_is_pr() && !\Tickera\tets_fs()->is_free_plan() ) : ?>
@@ -173,7 +176,7 @@ $templates_add_new_url = add_query_arg( array(
 <?php if ( isset( $message ) ) : ?>
     <div id="message" class="updated fade"><p><?php echo esc_html( $message ); ?></p></div>
 <?php endif;
-if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'delete' ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'add_new' && isset( $_POST[ 'add_new_template' ] ) ) ) { ?>
+if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'delete' ) || ( isset( $_GET[ 'action' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'add_new' && isset( $_POST[ 'add_new_template' ] ) ) ) { ?>
     <div class="tablenav">
         <div class="alignright actions new-actions">
             <form method="get" action="edit.php?post_type=tc_events&page=<?php echo esc_attr( $page ); ?>"
@@ -209,7 +212,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
         foreach ( $wp_templates_search->get_results() as $template ) {
             if ( $template->post_status !== 'trash' ) {
                 $template_obj = new \Tickera\TC_Template( $template->ID );
-                $template_object = apply_filters( 'tc_template_object_details', $template_obj->details );
+                $template_object = tickera_apply_filters( 'tickera_template_object_details', $template_obj->details );
                 $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"';
                 ?>
                 <tr id='user-<?php echo esc_attr( $template_object->ID ); ?>' <?php echo wp_kses_post( ( ' class="alternate"' == $style ) ? '' : ' class="alternate"' ); ?>>
@@ -235,7 +238,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                             </td><?php
                         } else { ?>
                             <td>
-                                <?php echo esc_html( apply_filters( 'tc_template_field_value', $template_object->{$key} ) ); ?>
+                                <?php echo esc_html( tickera_apply_filters( 'tickera_template_field_value', $template_object->{$key} ) ); ?>
                             </td>
                             <?php
                         }
@@ -276,7 +279,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
             <input type="hidden" name="template_id"
                    value="<?php echo esc_attr( isset( $_GET[ 'ID' ] ) ? (int)$_GET[ 'ID' ] : '' ); ?>"/>
             <ul class="sortables droptrue" id="ticket_elements">
-                <?php foreach ( $tc_template_elements as $element ) {
+                <?php foreach ( $tickera_template_elements as $element ) {
                     $element_class = new $element[ 0 ];
                     if ( !in_array( $element[ 0 ], $template_elements_set ) ) { ?>
                         <li class="ui-state-default" data-class="<?php echo esc_attr( $element[ 0 ] ); ?>" tabindex="0">
@@ -304,7 +307,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
             <br clear="all"/>
             <h4><?php esc_html_e( 'Ticket', 'tickera-event-ticketing-system' ); ?></h4>
             <div class="rows ticket-elements-drop-area">
-                <?php for ( $i = 1; $i <= apply_filters( 'tc_ticket_template_row_number', 10 ); $i++ ) { ?>
+                <?php for ( $i = 1; $i <= tickera_apply_filters( 'tickera_ticket_template_row_number', 10 ); $i++ ) { ?>
                     <ul id="row_<?php echo esc_attr( $i ); ?>" class="sortables droptrue">
                         <span class="row_num_info"><?php esc_html_e( 'Row', 'tickera-event-ticketing-system' ); ?><?php echo esc_html( $i ); ?></span>
                         <input type="hidden" class="rows_classes" name="rows_<?php echo esc_attr( $i ); ?>_post_meta"
@@ -355,26 +358,26 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                 <br style="clear:both">
             </div>
             <input type="hidden" name="rows_number_post_meta"
-                   value="<?php echo esc_attr( (int) apply_filters( 'tc_ticket_template_row_number', 10 ) ); ?>"/>
+                   value="<?php echo esc_attr( (int) tickera_apply_filters( 'tickera_ticket_template_row_number', 10 ) ); ?>"/>
             <br clear="all"/>
             <?php submit_button( __( 'Save', 'tickera-event-ticketing-system' ), 'primary', 'add_new_template', true ); ?>
         </div>
         <div class="right-holder">
             <h4><?php esc_html_e( 'Ticket PDF Settings', 'tickera-event-ticketing-system' ); ?></h4>
             <div id="template_document_settings"><?php
-                do_action( 'tc_template_elements_side_bar_before_fonts', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_fonts', $template_elements );
                 $template_elements->tcpdf_get_fonts();
-                do_action( 'tc_template_elements_side_bar_before_document_sizes', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_document_sizes', $template_elements );
                 $template_elements->get_document_sizes();
-                do_action( 'tc_template_elements_side_bar_before_orientation', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_orientation', $template_elements );
                 $template_elements->get_document_orientation();
-                do_action( 'tc_template_elements_side_bar_before_margins', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_margins', $template_elements );
                 $template_elements->get_document_margins();
-                do_action( 'tc_template_elements_side_bar_before_background_image', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_background_image', $template_elements );
                 $template_elements->get_full_background_image();
-                do_action( 'tc_template_elements_side_bar_before_background_image_placement', $template_elements );
+                tickera_do_action( 'tickera_template_elements_side_bar_before_background_image_placement', $template_elements );
                 $template_elements->get_background_image_placement();
-                do_action( 'tc_template_document_settings', $template_elements ); ?>
+                tickera_do_action( 'tickera_template_document_settings', $template_elements ); ?>
                 <br/>
                 <br>
                 <?php submit_button( __( 'Save', 'tickera-event-ticketing-system' ), 'primary', 'add_new_template', false ); ?>
@@ -386,7 +389,7 @@ if ( !isset( $_GET[ 'action' ] ) || ( isset( $_GET[ 'action' ] ) && $_GET[ 'acti
                 <p><?php esc_html_e( 'NOTE: After saving, you will have an option to see a preview of the ticket.', 'tickera-event-ticketing-system' ); ?></p>
             <?php } else { ?>
                 <p><?php echo wp_kses_post( __( 'NOTE: Save changes first, then check the preview.</br></br><strong>Important:</strong> Once done with creating a ticket template, make a test purchase of a ticket that is using this template and test ticket scanning functionality prior to going live with the ticket sales.', 'tickera-event-ticketing-system' ) ); ?></p>
-                <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=tc_events&page=' . sanitize_text_field( $_GET[ 'page' ] ) . '&action=preview&ID=' . (int)$_GET[ 'ID' ] ) ); ?>"
+                <a href="<?php echo esc_url( admin_url( 'edit.php?post_type=tc_events&page=' . ( isset( $_GET[ 'page' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) : '' ) . '&action=preview&ID=' . (int)$_GET[ 'ID' ] ) ); ?>"
                    class="button button-secondary"
                    target="_blank"><?php esc_html_e( 'Preview', 'tickera-event-ticketing-system' ); ?></a>
             <?php } ?>

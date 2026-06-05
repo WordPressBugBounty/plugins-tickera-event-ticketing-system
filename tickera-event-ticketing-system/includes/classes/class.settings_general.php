@@ -40,7 +40,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 )
             );
 
-            return apply_filters( 'tc_settings_general_sections', $sections );
+            return tickera_apply_filters( 'tickera_settings_general_sections', $sections );
         }
 
         function get_settings_general_fields() {
@@ -357,7 +357,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 )
             );
 
-            $store_settings_default_fields = apply_filters( 'tc_general_settings_store_fields', $store_settings_default_fields );
+            $store_settings_default_fields = tickera_apply_filters( 'tickera_general_settings_store_fields', $store_settings_default_fields );
 
             $pages_settings_default_fields = array(
                 array(
@@ -455,7 +455,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 ),
             );
 
-            $pages_settings_default_fields = apply_filters( 'tc_general_settings_page_fields', $pages_settings_default_fields );
+            $pages_settings_default_fields = tickera_apply_filters( 'tickera_general_settings_page_fields', $pages_settings_default_fields );
 
             $menu_settings_default_fields = array(
                 array(
@@ -469,7 +469,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 ),
             );
 
-            $menu_settings_default_fields = apply_filters( 'tc_general_settings_menu_fields', $menu_settings_default_fields );
+            $menu_settings_default_fields = tickera_apply_filters( 'tickera_general_settings_menu_fields', $menu_settings_default_fields );
 
             $miscellaneous_settings_default_fields = array(
                 array(
@@ -582,7 +582,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 )
             );
 
-            $miscellaneous_settings_default_fields = apply_filters( 'tc_general_settings_miscellaneous_fields', $miscellaneous_settings_default_fields );
+            $miscellaneous_settings_default_fields = tickera_apply_filters( 'tickera_general_settings_miscellaneous_fields', $miscellaneous_settings_default_fields );
 
             $default_fields = array_merge( $store_settings_default_fields, $pages_settings_default_fields );
             $default_fields = array_merge( $menu_settings_default_fields, $default_fields );
@@ -592,7 +592,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_General' ) ) {
                 $default_fields = array_merge( $license_settings_default_fields, $default_fields );
             }
 
-            return apply_filters( 'tc_settings_general_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_settings_general_fields', $default_fields );
         }
     }
 }

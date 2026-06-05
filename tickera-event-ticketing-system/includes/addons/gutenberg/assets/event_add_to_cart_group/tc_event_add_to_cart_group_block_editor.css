@@ -71,3 +71,7 @@ div.components-tab-panel__tabs {
     text-align: center;
     padding: 0.5rem;
 }
+
+.wp-block-tc-event-add-to-cart-group > * {
+    max-width: unset;
+}

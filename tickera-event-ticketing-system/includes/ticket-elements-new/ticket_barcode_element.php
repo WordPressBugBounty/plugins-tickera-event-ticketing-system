@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) 
         var $font_awesome_icon	 = '<span class="tti-barcode_e-commerce_scanning_shopping_icon"></span>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_barcode_element_title', __( 'Barcode', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_barcode_element_title', __( 'Barcode', 'tickera-event-ticketing-system' ) );
         }
 
         function admin_content() {
@@ -77,7 +77,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) 
                 <option value="MSI+" <?php selected( $barcode_type, 'MSI+', true ); ?>><?php esc_html_e( 'MSI+', 'tickera-event-ticketing-system' ); ?></option>
                 <option value="RMS4CC" <?php selected( $barcode_type, 'RMS4CC', true ); ?>><?php esc_html_e( 'RMS4CC', 'tickera-event-ticketing-system' ); ?></option>
                 <option value="IMB" <?php selected( $barcode_type, 'IMB', true ); ?>><?php esc_html_e( 'IMB', 'tickera-event-ticketing-system' ); ?></option>
-                <?php do_action( 'tc_ticket_barcode_element_after_types_options', $barcode_type ); ?>
+                <?php tickera_do_action( 'tickera_ticket_barcode_element_after_types_options', $barcode_type ); ?>
             </select>
             <span class="description"><?php echo wp_kses_post( __( 'Following Barcode types are supported by the iOS check-in app: EAN-13, UPCA, C93, C128 </br><hr><strong>IMPORTANT:</strong> EAN-13 barcode type supports numeric characters only!</br>If you intend on using this barcode type, you must utilize <strong><a href="https://tickera.com/addons/serial-ticket-codes/">Serial Ticket Codes</a></strong> add-on and set ticket codes with maximum of 12 characters, without prefix and suffix.</br>For more information, please read <strong><a href="https://tickera.com/tickera-documentation/barcode-reader/">documentation</a></strong> on Barcode Reader add-on and always test ticket scanning prior going live with ticket sales.<hr>', 'tickera-event-ticketing-system' ) ); ?></span>
             <?php
@@ -131,28 +131,28 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) 
             $barcode_params = $pdf->serializeTCPDFtagParameters( [
                 $ticket_code,
                 ( isset( $this->template_metas[ $this->element_name . '_barcode_type' ] ) ? $this->template_metas[ $this->element_name . '_barcode_type' ] : 'C128' ), // Type
-                apply_filters( 'tc_barcode_element_x', '' ), // X
-                apply_filters( 'tc_barcode_element_y', '' ), // Y
+                tickera_apply_filters( 'tickera_barcode_element_x', '' ), // X
+                tickera_apply_filters( 'tickera_barcode_element_y', '' ), // Y
                 isset( $this->template_metas[ $this->element_name . '_1d_barcode_size' ] ) ? $this->template_metas[ $this->element_name . '_1d_barcode_size' ] : 50, // W
-                apply_filters( 'tc_barcode_element_h', 0 ), // H
-                apply_filters( 'tc_barcode_element_xres', 0.4 ), // Xres
+                tickera_apply_filters( 'tickera_barcode_element_h', 0 ), // H
+                tickera_apply_filters( 'tickera_barcode_element_xres', 0.4 ), // Xres
                 [
-                    'position'		 => apply_filters( 'tc_barcode_element_cell_alignment', $cell_alignment ),
-                    'border'		 => apply_filters( 'tc_show_barcode_border', true ),
-                    'padding'		 => apply_filters( 'tc_barcode_padding', 2 ),
+                    'position'		 => tickera_apply_filters( 'tickera_barcode_element_cell_alignment', $cell_alignment ),
+                    'border'		 => tickera_apply_filters( 'tickera_show_barcode_border', true ),
+                    'padding'		 => tickera_apply_filters( 'tickera_barcode_padding', 2 ),
                     'fgcolor'		 => tickera_hex2rgb( '#000000' ), // Black (don't change it or won't be readable by the barcode reader)
                     'bgcolor'		 => tickera_hex2rgb( '#ffffff' ), // White (don't change it or won't be readable by the barcode reader)
                     'text'			 => $text_visibility,
-                    'font'			 => apply_filters( 'tc_1d_barcode_font', 'helvetica' ),
+                    'font'			 => tickera_apply_filters( 'tickera_1d_barcode_font', 'helvetica' ),
                     'fontsize'		 => isset( $this->template_metas[ $this->element_name . '_font_size' ] ) ? $this->template_metas[ $this->element_name . '_font_size' ] : 8,
-                    'cellfitalign'	 => apply_filters( 'tc_barcode_element_cellfitalign', true ),
-                    'stretchtext'	 => apply_filters( 'tc_barcode_element_stretchtext', 0 ),
-                    'label'			 => apply_filters( 'tc_barcode_element_label', $ticket_code, $ticket_instance )
+                    'cellfitalign'	 => tickera_apply_filters( 'tickera_barcode_element_cellfitalign', true ),
+                    'stretchtext'	 => tickera_apply_filters( 'tickera_barcode_element_stretchtext', 0 ),
+                    'label'			 => tickera_apply_filters( 'tickera_barcode_element_label', $ticket_code, $ticket_instance )
                 ],
                 'N'
             ] );
 
-            return '<div><tcpdf method="write1DBarcode" params="' . esc_attr( apply_filters( 'tc_barcode_element_params', $barcode_params ) ) . '" /></div>';
+            return '<div><tcpdf method="write1DBarcode" params="' . esc_attr( tickera_apply_filters( 'tickera_barcode_element_params', $barcode_params ) ) . '" /></div>';
         }
 
         function ticket_content_v2( $element_default_values = false, $ticket_instance_id = false, $ticket_type_id = false ) {
@@ -203,30 +203,30 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_barcode_element_core' ) 
             $barcode_params = $pdf->serializeTCPDFtagParameters( [
                 $ticket_code,
                 ( isset( $element_default_values[ $this->element_name . '_barcode_type' ] ) ? $element_default_values[ $this->element_name . '_barcode_type' ] : 'C128' ), // Type
-                apply_filters( 'tc_barcode_element_x', '' ), // X
-                apply_filters( 'tc_barcode_element_y', '' ), // Y
+                tickera_apply_filters( 'tickera_barcode_element_x', '' ), // X
+                tickera_apply_filters( 'tickera_barcode_element_y', '' ), // Y
                 isset( $element_default_values[ $this->element_name . '_1d_barcode_size' ] ) ? $element_default_values[ $this->element_name . '_1d_barcode_size' ] : 50, // W
-                apply_filters( 'tc_barcode_element_h', 0 ), // H
-                apply_filters( 'tc_barcode_element_xres', 0.4 ), // Xres
+                tickera_apply_filters( 'tickera_barcode_element_h', 0 ), // H
+                tickera_apply_filters( 'tickera_barcode_element_xres', 0.4 ), // Xres
                 [
-                    'position'		 => apply_filters( 'tc_barcode_element_cell_alignment', $cell_alignment ),
-                    'border'		 => apply_filters( 'tc_show_barcode_border', true ),
-                    'padding'		 => apply_filters( 'tc_barcode_padding', 2 ),
+                    'position'		 => tickera_apply_filters( 'tickera_barcode_element_cell_alignment', $cell_alignment ),
+                    'border'		 => tickera_apply_filters( 'tickera_show_barcode_border', true ),
+                    'padding'		 => tickera_apply_filters( 'tickera_barcode_padding', 2 ),
                     'fgcolor'		 => tickera_hex2rgb( '#000000' ), // Black (don't change it or won't be readable by the barcode reader)
                     'bgcolor'		 => tickera_hex2rgb( '#ffffff' ), // White (don't change it or won't be readable by the barcode reader)
                     'text'			 => $text_visibility,
-                    'font'			 => apply_filters( 'tc_1d_barcode_font', 'helvetica' ),
+                    'font'			 => tickera_apply_filters( 'tickera_1d_barcode_font', 'helvetica' ),
                     'fontsize'		 => isset( $element_default_values[ $this->element_name . '_font_size' ] ) ? $element_default_values[ $this->element_name . '_font_size' ] : 8,
-                    'cellfitalign'	 => apply_filters( 'tc_barcode_element_cellfitalign', true ),
-                    'stretchtext'	 => apply_filters( 'tc_barcode_element_stretchtext', 0 ),
-                    'label'			 => apply_filters( 'tc_barcode_element_label', $ticket_code, $ticket_instance ),
+                    'cellfitalign'	 => tickera_apply_filters( 'tickera_barcode_element_cellfitalign', true ),
+                    'stretchtext'	 => tickera_apply_filters( 'tickera_barcode_element_stretchtext', 0 ),
+                    'label'			 => tickera_apply_filters( 'tickera_barcode_element_label', $ticket_code, $ticket_instance ),
                     'stretch'		 => true,//new
                     //'fitwidth' => true,
                 ],
                 'N'
             ] );
 
-            return '<div><tcpdf method="write1DBarcode" params="' . esc_attr( apply_filters( 'tc_barcode_element_params', $barcode_params ) ) . '" /></div>';
+            return '<div><tcpdf method="write1DBarcode" params="' . esc_attr( tickera_apply_filters( 'tickera_barcode_element_params', $barcode_params ) ) . '" /></div>';
         }
 
     }

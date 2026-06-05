@@ -21,6 +21,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             global $post;
 
             if ( ! isset( $post ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type screen post ID is cast and used only to detect the current post type.
                 $post_id = isset( $_GET[ 'post' ] ) ? (int) $_GET[ 'post' ] : '';
                 $post_type = get_post_type( $post_id );
 
@@ -29,7 +30,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             }
 
             if ( empty( $post_type ) ) {
-                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( $_GET[ 'post_type' ] ) : '';
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type screen post type is sanitized and used only for screen setup.
+                $post_type = isset( $_GET[ 'post_type' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) : '';
             }
 
             add_filter( 'manage_tc_tickets_posts_columns', array( $this, 'manage_tc_tickets_columns' ) );
@@ -49,13 +51,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             add_filter( 'post_updated_messages', array( $this, 'post_updated_messages' ) );
             add_action( 'save_post', array( $this, 'save_metabox_values' ) );
 
-            if ( apply_filters( 'tc_is_woo', false ) == false ) {//make sure to duplicate ticket types for standaline version only
-                add_action( 'tc_after_event_duplication', array( $this, 'duplicate_event_ticket_types' ), 10, 5 );
+            if ( tickera_apply_filters( 'tickera_is_woo', false ) == false ) {//make sure to duplicate ticket types for standaline version only
+                add_action( 'tickera_after_event_duplication', array( $this, 'duplicate_event_ticket_types' ), 10, 5 );
             }
         }
 
         function duplicate_event_ticket_types( $new_event_id, $old_event_id, $caller, $caller_id, $old_caller_id ) {
-            global $wpdb;
 
             /*
              * Backward Compatibility
@@ -82,7 +83,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 /*
                  * new post data array
                  */
-                $args = apply_filters( 'tc_duplicate_event_ticket_types_args', array(
+                $args = tickera_apply_filters( 'tickera_duplicate_event_ticket_types_args', array(
                     'post_author'               => (int) $new_post_author->ID,
                     'post_date'                 => $new_post_date,
                     'post_date_gmt'             => $new_post_date_gmt,
@@ -109,12 +110,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 $new_post_id = wp_insert_post( tickera_sanitize_array( $args, true ) );
                 $old_and_new_ticket_types[] = array( $old_ticket_type_id, $new_post_id );
 
-                $wpdb->update(
-                    $wpdb->posts, array(
-                        'post_name' => wp_unique_post_slug( sanitize_title( $post_title, $new_post_id ), $new_post_id, $post_status, $post->post_type, 0 ),
-                        'guid' => get_permalink( $new_post_id ),
-                    ), array( 'ID' => $new_post_id )
-                );
+                remove_action( 'save_post', array( $this, 'save_metabox_values' ) );
+                wp_update_post( array(
+                    'ID' => (int) $new_post_id,
+                    'post_name' => wp_unique_post_slug( sanitize_title( $post_title, $new_post_id ), $new_post_id, $post_status, $post->post_type, 0 ),
+                    'guid' => get_permalink( $new_post_id ),
+                ) );
+                add_action( 'save_post', array( $this, 'save_metabox_values' ) );
 
                 /*
                  * Get all current post terms ad set them to the new post draft
@@ -131,38 +133,29 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 $this->duplicate_post_meta( $post_id, (int) $new_post_id );
 
                 // Replace event ids
-                update_post_meta( (int) $new_post_id, apply_filters( 'tc_event_name_field_name', 'event_name', $new_post_id ), (int) $new_event_id );
+                update_post_meta( (int) $new_post_id, tickera_apply_filters( 'tickera_event_name_field_name', 'event_name', $new_post_id ), (int) $new_event_id );
             }
 
-            do_action( 'tc_after_ticket_type_duplication', $new_event_id, $old_event_id, $caller, $caller_id, $old_caller_id, $old_and_new_ticket_types );
+            tickera_do_action( 'tickera_after_ticket_type_duplication', $new_event_id, $old_event_id, $caller, $caller_id, $old_caller_id, $old_and_new_ticket_types );
         }
 
         function duplicate_post_meta( $id, $new_id ) {
-            global $wpdb;
 
-            $sql = $wpdb->prepare( "SELECT meta_key, meta_value FROM {$wpdb->postmeta} WHERE post_id = %d", absint( $id ) );
+            $post_meta = get_post_meta( absint( $id ) );
 
             /*
              * $exclude = array_map('esc_sql', array('_edit_lock', '_edit_last'));
              * if (sizeof($exclude)) {
-             *  $sql .= " AND meta_key NOT IN ( '" . implode("','", $exclude) . "' )";
+             *  Skip excluded meta keys.
              * }
              */
 
-            $post_meta = $wpdb->get_results( $sql );
-
-            if ( sizeof( $post_meta ) ) {
-                $sql_query_sel = [];
-                $table_columns = [ 'post_id', 'meta_key', 'meta_value' ];
-                $prepare_table_columns_placeholder = implode( ',', array_fill( 0, count( $table_columns ), '%1s' ) );
-                $sql_query = $wpdb->prepare( "INSERT INTO {$wpdb->postmeta} ($prepare_table_columns_placeholder) ", $table_columns );
-
-                foreach ( $post_meta as $post_meta_row ) {
-                    $sql_query_sel[] = $wpdb->prepare( "SELECT %d, %s, %s", $new_id, $post_meta_row->meta_key, $post_meta_row->meta_value );
+            if ( ! empty( $post_meta ) ) {
+                foreach ( $post_meta as $meta_key => $meta_values ) {
+                    foreach ( $meta_values as $meta_value ) {
+                        add_post_meta( absint( $new_id ), $meta_key, maybe_unserialize( $meta_value ) );
+                    }
                 }
-
-                $sql_query .= implode( " UNION ALL ", $sql_query_sel );
-                $wpdb->query( $sql_query );
             }
         }
 
@@ -179,10 +172,12 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 3 => __( 'Custom field deleted.', 'tickera-event-ticketing-system' ),
                 4 => __( 'Ticket Type updated.', 'tickera-event-ticketing-system' ),
                 /* translators: %s: date and time of the revision */
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast and used only for the ticket type updated message.
                 5 => isset( $_GET[ 'revision' ] )
                     ? sprintf(
                         /* translators: %s: Formatted datetime timestamp of a revision. */
                         __( 'Ticket Type restored to revision from %s', 'tickera-event-ticketing-system' ),
+                        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin revision ID is cast before loading the revision title.
                         wp_post_revision_title( (int) $_GET[ 'revision' ], false )
                     )
                     : false,
@@ -241,7 +236,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, true, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Admin ticket type metadata payload is unslashed and sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -251,7 +247,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                     }
                 }
 
-                $metas = apply_filters( 'tc_ticket_type_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_ticket_type_metas', $metas );
 
                 foreach ( $metas as $key => $value ) {
                     update_post_meta( (int) $post_id, $key, tickera_sanitize_array( $value, true, true ) );
@@ -263,9 +259,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
          * Enqueue scripts and styles
          */
         function admin_enqueue_scripts_and_styles() {
-            global $post, $post_type;
+            global $tc, $post, $post_type;
             if ( 'tc_tickets' == $post_type ) {
-                wp_enqueue_style( 'tc-better-ticket-types', plugins_url( 'css/admin.css', __FILE__ ) );
+                wp_enqueue_style( 'tc-better-ticket-types', plugins_url( 'css/admin.css', __FILE__ ), [], $tc->version );
             }
         }
 
@@ -430,13 +426,16 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
             $on = $ticket_type_status == 'publish' ? 'tc-on' : '';
             ?>
             <div class="misc-pub-section misc-pub-visibility-activity" id="visibility">
-                <?php if ( current_user_can( apply_filters( 'tc_ticket_type_activation_capability', 'edit_others_ticket_types' ) ) || current_user_can( 'manage_options' ) ) { ?>
+                <?php if ( current_user_can( tickera_apply_filters( 'tickera_ticket_type_activation_capability', 'edit_others_ticket_types' ) ) || current_user_can( 'manage_options' ) ) { ?>
                     <span id="post-visibility-display"><?php echo wp_kses( '<div class="tc-control ' . esc_attr( $on ) . '" ticket_id="' . esc_attr( $post->ID ) . '"><div class="tc-toggle"></div></div>', wp_kses_allowed_html( 'tickera_toggle' ) ); ?></span>
                 <?php }
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type post ID is cast before loading the ticket preview context.
                 if ( isset( $_GET[ 'post' ] ) ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type post ID is cast before loading ticket details.
                     $ticket = new \Tickera\TC_Ticket( (int) $_GET[ 'post' ] );
                     $template_id = $ticket->details->ticket_template; ?>
-                    <a class="ticket_preview_link" target="_blank" href="<?php echo esc_url( apply_filters( 'tc_ticket_preview_link', admin_url( 'edit.php?post_type=tc_events&page=tc_ticket_templates&action=preview&ticket_type_id=' . (int) $_GET[ 'post' ] ) . '&template_id=' . $template_id ) ); ?>"><?php esc_html_e( 'Preview', 'tickera-event-ticketing-system' ); ?></a>
+                    <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type post ID is cast before building the preview URL. ?>
+                    <a class="ticket_preview_link" target="_blank" href="<?php echo esc_url( tickera_apply_filters( 'tickera_ticket_preview_link', admin_url( 'edit.php?post_type=tc_events&page=tc_ticket_templates&action=preview&ticket_type_id=' . (int) $_GET[ 'post' ] ) . '&template_id=' . $template_id ) ); ?>"><?php esc_html_e( 'Preview', 'tickera-event-ticketing-system' ); ?></a>
                 <?php } ?>
             </div>
             <?php
@@ -466,13 +465,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
                 return;
             }
 
-            $tc_general_settings = get_option( 'tickera_general_setting', false );
-            $force_login = ( isset( $tc_general_settings[ 'force_login' ] ) ) ? $tc_general_settings[ 'force_login' ] : 'no';
+            $tickera_general_settings = get_option( 'tickera_general_setting', false );
+            $force_login = ( isset( $tickera_general_settings[ 'force_login' ] ) ) ? $tickera_general_settings[ 'force_login' ] : 'no';
 
             if ( ( 'edit.php' == $pagenow ) || ( $post->post_type !== 'tc_tickets' ) ) {
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin ticket type post ID is cast before loading ticket field settings.
             $post_id = isset( $_GET[ 'post' ] ) ? (int) $_GET[ 'post' ] : 0;
             $ticket_types_columns = \Tickera\TC_Tickets::get_ticket_fields();
 
@@ -496,8 +496,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Ticket_Types' ) ) {
         }
     }
 
-    global $better_ticket_types;
-    $better_ticket_types = new TC_Better_Ticket_Types();
+    new TC_Better_Ticket_Types();
 }
 
 /**

@@ -41,8 +41,9 @@ if ( ! class_exists( '\Tickera\TC_Tickets_Search' ) ) {
                 'orderby' => $orderby,
                 'order' => $order,
                 'include' => '',
-                'exclude' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => '',
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',
@@ -83,8 +84,9 @@ if ( ! class_exists( '\Tickera\TC_Tickets_Search' ) ) {
                 'orderby' => 'post_date',
                 'order' => 'DESC',
                 'include' => '',
-                'exclude' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Must resolve the existing posts and meta.
                 'meta_key' => '',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Must resolve the existing posts and meta.
                 'meta_value' => '',
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',

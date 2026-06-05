@@ -1,5 +1,4 @@
 <?php
-
 namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) )
@@ -14,7 +13,7 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
 
         function __construct() {
             $this->form_title = __( 'Events', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Events() {
@@ -137,7 +136,7 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_event_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_event_fields', $default_fields );
         }
 
         function get_columns() {
@@ -176,11 +175,13 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
 
             global $user_id;
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event save request is handled by the Tickera event editor workflow.
             if ( isset( $_POST[ 'add_new_event' ] ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, true, true );
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event payload is unslashed and sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -198,10 +199,10 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
                         $metas[ sanitize_key( str_replace( '_post_meta', '', $field_name ) ) ] = sanitize_text_field( $field_value );
                     }
 
-                    do_action( 'tc_after_event_post_field_type_check' );
+                    tickera_do_action( 'tickera_after_event_post_field_type_check' );
                 }
 
-                $metas = apply_filters( 'events_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_events_metas', $metas );
 
                 $arg = array(
                     'post_author'   => (int) $user_id,
@@ -212,7 +213,9 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
                     'post_type'     => 'tc_events',
                 );
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event post ID is used only to update the submitted event.
                 if ( isset( $_POST[ 'post_id' ] ) ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin event post ID is cast before being passed to wp_insert_post().
                     $arg[ 'ID' ] = (int) $_POST[ 'post_id' ];
                 }
 
@@ -236,29 +239,51 @@ if ( ! class_exists( '\Tickera\TC_Events' ) ) {
          */
         public static function get_hidden_events_ids( $event_id = false ) {
 
-            global $wpdb;
+            $hidden_events_ids = [];
+            $current_timestamp = date_i18n( 'U', current_time( 'timestamp' ) );
 
             if ( $event_id ) {
-                $query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID as ID FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id AND {$wpdb->posts}.post_type = 'tc_events' AND ({$wpdb->postmeta}.meta_key = 'hide_event_after_expiration') AND ({$wpdb->postmeta}.meta_value = %d) AND {$wpdb->posts}.ID = %d", 1, (int) $event_id );
-
-            } else {
-                $query = $wpdb->prepare( "SELECT {$wpdb->posts}.ID as ID FROM {$wpdb->posts}, {$wpdb->postmeta} WHERE {$wpdb->posts}.ID = {$wpdb->postmeta}.post_id AND {$wpdb->posts}.post_type = 'tc_events' AND ({$wpdb->postmeta}.meta_key = 'hide_event_after_expiration') AND ({$wpdb->postmeta}.meta_value = %d)", 1 );
-            }
-
-            $results = $wpdb->get_results( $query, ARRAY_A );
-            $hidden_events_ids = [];
-
-            foreach ( $results as $maybe_hidden_event_id ) {
-                $maybe_hidden_event_id = (int) $maybe_hidden_event_id[ 'ID' ];
-                $event_end_date_time = get_post_meta( $maybe_hidden_event_id, 'event_end_date_time', true );
+                $event_id = (int) $event_id;
 
                 if (
-                    ( date_i18n( 'U', current_time( 'timestamp' ) ) > date_i18n( 'U', strtotime( $event_end_date_time ) ) )
-                    && ! apply_filters( 'tc_bypass_hide_event_after_expiration', false, $maybe_hidden_event_id )
+                    'tc_events' === get_post_type( $event_id )
+                    && 1 === (int) get_post_meta( $event_id, 'hide_event_after_expiration', true )
+                    && $current_timestamp > date_i18n( 'U', strtotime( get_post_meta( $event_id, 'event_end_date_time', true ) ) )
+                    && ! tickera_apply_filters( 'tickera_bypass_hide_event_after_expiration', false, $event_id )
+                ) {
+                    $hidden_events_ids[] = $event_id;
+                }
+
+                return $hidden_events_ids;
+            }
+
+            $results = get_posts(
+                array(
+                    'post_type'              => 'tc_events',
+                    'post_status'            => 'any',
+                    'posts_per_page'         => -1,
+                    'fields'                 => 'ids',
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required to filter events configured to hide after expiration.
+                    'meta_key'               => 'hide_event_after_expiration',
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required to filter events configured to hide after expiration.
+                    'meta_value'             => 1,
+                    'no_found_rows'          => true,
+                    'update_post_meta_cache' => false,
+                    'update_post_term_cache' => false,
+                )
+            );
+
+            foreach ( $results as $maybe_hidden_event_id ) {
+                $maybe_hidden_event_id = (int) $maybe_hidden_event_id;
+
+                if (
+                    $current_timestamp > date_i18n( 'U', strtotime( get_post_meta( $maybe_hidden_event_id, 'event_end_date_time', true ) ) )
+                    && ! tickera_apply_filters( 'tickera_bypass_hide_event_after_expiration', false, $maybe_hidden_event_id )
                 ) {
                     $hidden_events_ids[] = $maybe_hidden_event_id;
                 }
             }
+
             return $hidden_events_ids;
         }
     }

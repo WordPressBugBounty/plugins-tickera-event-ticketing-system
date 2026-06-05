@@ -1,5 +1,4 @@
 <?php
-
 namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -17,7 +16,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
         function __construct( $init = true ) {
 
             $wp_events_search =  new \Tickera\TC_Events_Search( '', '', 10 );
-            $this->event_filter_options = apply_filters( 'tc_init_event_filter_options', $wp_events_search->get_results() );
+            $this->event_filter_options = tickera_apply_filters( 'tickera_init_event_filter_options', $wp_events_search->get_results() );
 
             if ( ! $init ) {
                 return;
@@ -29,14 +28,17 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 return;
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin editor post ID check only prevents loading the shortcode builder on ticket edit screens.
             if ( isset( $_GET[ 'post' ] ) ) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin editor post ID is cast before resolving post type for UI routing.
                 $post_type = get_post_type( (int) $_GET[ 'post' ] );
                 if ( $post_type == 'tc_tickets' ) {
                     return;
                 }
             }
 
-            if ( isset( $_GET[ 'page' ] ) && ( $_GET[ 'page' ] == 'tc_events' || $_GET[ 'page' ] == 'tc_ticket_types' || $_GET[ 'page' ] == 'tc_settings' ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin page check only prevents loading the shortcode builder on Tickera screens.
+            if ( isset( $_GET[ 'page' ] ) && ( sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) == 'tc_events' || sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) == 'tc_ticket_types' || sanitize_text_field( wp_unslash( $_GET[ 'page' ] ) ) == 'tc_settings' ) ) {
                 return;
             }
 
@@ -45,7 +47,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             add_action( 'in_admin_footer', array( $this, 'show_shortcodes' ) );
 
             $wp_events_search =  new \Tickera\TC_Events_Search( '', '', 10 );
-            $this->event_filter_options = apply_filters( 'tc_init_event_filter_options', $wp_events_search->get_results() );
+            $this->event_filter_options = tickera_apply_filters( 'tickera_init_event_filter_options', $wp_events_search->get_results() );
         }
 
         public function show_shortcodes() {
@@ -74,7 +76,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
                 'tc_order_history' => __( 'Display order history for a user', 'tickera-event-ticketing-system' ),
             );
 
-            $shortcodes = apply_filters( 'tc_shortcodes', $shortcodes );
+            $shortcodes = tickera_apply_filters( 'tickera_shortcodes', $shortcodes );
             ob_start();
             ?>
             <div id="tc-shortcode-builder-wrap" style="display:none">
@@ -499,11 +501,11 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
 
             if ( isset( $screen->post_type ) && ! empty( $screen->post_type ) ) {
                 wp_enqueue_style( $tc->name . '-colorbox', $tc->plugin_url . 'css/colorbox/colorbox.css', false, $tc->version );
-                wp_enqueue_script( $tc->name . '-colorbox', $tc->plugin_url . 'js/jquery.colorbox-min.js', false, $tc->version );
-                wp_enqueue_script( $tc->name . '-shortcode-builders-script', $tc->plugin_url . 'js/builders/shortcode-builder.js', array( $tc->name . '-colorbox' ), $tc->version );
+                wp_enqueue_script( $tc->name . '-colorbox', $tc->plugin_url . 'js/jquery.colorbox-min.js', false, $tc->version, false );
+                wp_enqueue_script( $tc->name . '-shortcode-builders-script', $tc->plugin_url . 'js/builders/shortcode-builder.js', array( $tc->name . '-colorbox' ), $tc->version, false );
 
                 wp_localize_script( $tc->name . '-shortcode-builders-script', 'tc_shortcode_builder_vars', array(
-                        'ajaxUrl' => apply_filters( 'tc_ajaxurl', admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ) ),
+                        'ajaxUrl' => tickera_apply_filters( 'tickera_ajaxurl', admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ) ),
                         'ajaxNonce' => wp_create_nonce( 'tc_ajax_nonce' ),
                         'please_enter_at_least_3_characters' => __( 'Please enter at least 3 characters.', 'tickera-event-ticketing-system' )
                     )
@@ -525,5 +527,5 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
         }
     }
 
-    $shortcode_builder = new TC_Shortcode_Builder();
+    new TC_Shortcode_Builder();
 }

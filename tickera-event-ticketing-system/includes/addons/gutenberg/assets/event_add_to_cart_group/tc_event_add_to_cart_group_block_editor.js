@@ -34,6 +34,7 @@ var AlignmentToolbar = wp.editor.AlignmentToolbar,
  * Event Add To Cart
  */
 registerBlockType( 'tickera/event-add-to-cart-group', {
+    apiVersion: 3,
     title: __( 'Event - Add to Cart', 'tickera-event-ticketing-system' ),
     description: __( 'Event Tickets Add to Cart table', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -44,7 +45,10 @@ registerBlockType( 'tickera/event-add-to-cart-group', {
         __( 'Add', 'tickera-event-ticketing-system' ),
         __( 'Cart', 'tickera-event-ticketing-system' )
     ],
-    supports: { html: false },
+    supports: {
+        html: false,
+        align: [ 'wide', 'full' ]
+    },
     attributes: {
         event_id: {
             type: 'string',
@@ -92,6 +96,9 @@ registerBlockType( 'tickera/event-add-to-cart-group', {
         soldout_message: {
             type: 'string',
             default: __( 'Tickets are sold out.', 'tickera-event-ticketing-system' )
+        },
+        align: {
+            type: 'string'
         }
     },
     providesContext: {
@@ -107,6 +114,7 @@ registerBlockType( 'tickera/event-add-to-cart-group', {
         'tickera/cart_title': 'cart_title',
         'tickera/quantity_title': 'quantity_title',
         'tickera/soldout_message': 'soldout_message',
+        'tickera/align': 'align'
     },
     edit: function( props ) {
 
@@ -364,6 +372,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/event-add-to-cart-columns', {
+    apiVersion: 3,
     title: __( 'Event - Add To Cart Columns', 'tickera-event-ticketing-system' ),
     description: __( 'Event add to cart table column names', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -383,11 +392,13 @@ registerBlockType( 'tickera/event-add-to-cart-columns', {
         'tickera/price_title',
         'tickera/cart_title',
         'tickera/quantity_title',
-        'tickera/soldout_message'
+        'tickera/soldout_message',
+        'tickera/align'
     ],
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         setTimeout( function() {
             props.setAttributes( {
@@ -402,14 +413,19 @@ registerBlockType( 'tickera/event-add-to-cart-columns', {
                 price_title: ( typeof context[ 'tickera/price_title' ] !== 'undefined' ) ? context[ 'tickera/price_title' ] : '',
                 cart_title: ( typeof context[ 'tickera/cart_title' ] !== 'undefined' ) ? context[ 'tickera/cart_title' ] : '',
                 quantity_title: ( typeof context[ 'tickera/quantity_title' ] !== 'undefined' ) ? context[ 'tickera/quantity_title' ] : '',
-                soldout_message: ( typeof context[ 'tickera/soldout_message' ] !== 'undefined' ) ? context[ 'tickera/soldout_message' ] : ''
+                soldout_message: ( typeof context[ 'tickera/soldout_message' ] !== 'undefined' ) ? context[ 'tickera/soldout_message' ] : '',
+                align: ( typeof context[ 'tickera/align' ] !== 'undefined' ) ? context[ 'tickera/align' ] : ''
             });
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/event-add-to-cart-columns',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/event-add-to-cart-columns',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;
@@ -471,6 +487,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/event-add-to-cart-rows', {
+    apiVersion: 3,
     title: __( 'Event - Add To Cart Values', 'tickera-event-ticketing-system' ),
     description: __( 'Event add to cart table values', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -484,11 +501,13 @@ registerBlockType( 'tickera/event-add-to-cart-rows', {
         'tickera/quantity',
         'tickera/link_type',
         'tickera/button_title',
-        'tickera/soldout_message'
+        'tickera/soldout_message',
+        'tickera/align'
     ],
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         setTimeout( function() {
             props.setAttributes( {
@@ -498,13 +517,18 @@ registerBlockType( 'tickera/event-add-to-cart-rows', {
                 link_type: ( typeof context[ 'tickera/link_type' ] !== 'undefined' ) ? context[ 'tickera/link_type' ] : '',
                 button_title: ( typeof context[ 'tickera/button_title' ] !== 'undefined' ) ? context[ 'tickera/button_title' ] : '',
                 soldout_message: ( typeof context[ 'tickera/soldout_message' ] !== 'undefined' ) ? context[ 'tickera/soldout_message' ] : '',
+                align: ( typeof context[ 'tickera/align' ] !== 'undefined' ) ? context[ 'tickera/align' ] : ''
             });
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/event-add-to-cart-rows',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/event-add-to-cart-rows',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;
@@ -516,6 +540,7 @@ registerBlockType( 'tickera/event-add-to-cart-rows', {
  * Backward Compatibility
  */
 registerBlockType( 'tickera/event-add-to-cart', {
+    apiVersion: 3,
     title: __( 'Event - Add to Cart', 'tickera-event-ticketing-system' ),
     description: __( 'Event Tickets Add to Cart table', 'tickera-event-ticketing-system' ),
     icon: 'cart',
@@ -529,10 +554,16 @@ registerBlockType( 'tickera/event-add-to-cart', {
     parent: [ 'tickera/event-add-to-cart-group' ],
     edit: function( props ) {
 
-        return el( ServerSideRender, {
-            block: "tickera/event-add-to-cart",
-            attributes: props.attributes
-        } );
+        let blockProps = UseBlockProps();
+
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: "tickera/event-add-to-cart",
+                attributes: props.attributes
+            } )
+        );
     },
     save: function( props ) {
         return null;

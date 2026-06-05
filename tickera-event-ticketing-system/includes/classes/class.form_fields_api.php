@@ -50,7 +50,7 @@ if ( ! class_exists( '\Tickera\TC_Form_Fields_API' ) ) {
                 'description' => __( 'If you\'re using multiple payment gateways, you can use this to define the order which payemnt gateways will be displayed on the front end. The lower the number, the higher in the list it goes. 30 is the default value.', 'tickera-event-ticketing-system' )
             );
 
-            $this->form_fields = apply_filters( 'tc_common_payment_gateway_fields', $fields, $this->sub_key );
+            $this->form_fields = tickera_apply_filters( 'tickera_common_payment_gateway_fields', $fields, $this->sub_key );
         }
 
         public function admin_options() {

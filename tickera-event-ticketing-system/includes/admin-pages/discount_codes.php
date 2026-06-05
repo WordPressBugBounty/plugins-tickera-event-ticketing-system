@@ -1,9 +1,10 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $wpdb;
 
 $discounts = new \Tickera\TC_Discounts();
-$page = sanitize_key( $_GET[ 'page' ] );
+$page = isset( $_GET[ 'page' ] ) ? sanitize_key( wp_unslash( $_GET[ 'page' ] ) ) : 1;
 
 /**
  * Add new discount code
@@ -25,26 +26,29 @@ if ( isset( $_POST[ 'add_new_discount' ] ) ) {
 /**
  * Edit existing discount code
  */
-if ( isset( $_GET[ 'action' ] ) && 'edit' == $_GET[ 'action' ] ) {
-    $id = (int) $_GET[ 'ID' ];
-    $discount = new \Tickera\TC_Discount( $id );
-    $post_id = $id;
+if ( isset( $_GET[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) ) {
+
+    $id = isset( $_GET[ 'ID' ] ) ? (int) $_GET[ 'ID' ] : 0;
+    if ( $id ) {
+        $tickera_discount = new \Tickera\TC_Discount( $id );
+        $post_id = $id;
+    }
 }
 
 /**
  * Delete discount code
  */
-if ( isset( $_GET[ 'action' ] ) && 'delete' == $_GET[ 'action' ] ) {
+if ( isset( $_GET[ 'action' ] ) && 'delete' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) ) {
 
     if ( ! isset( $_POST[ '_wpnonce' ] ) ) {
 
-        $id = (int) $_GET[ 'ID' ];
+        $id = isset( $_GET[ 'ID' ] ) ? (int) $_GET[ 'ID' ] : 0;
 
-        if ( check_admin_referer( 'delete_' . $id ) ) {
+        if ( $id && check_admin_referer( 'delete_' . $id ) ) {
 
             if ( current_user_can( 'manage_options' ) || current_user_can( 'delete_discount_cap' ) ) {
-                $discount = new \Tickera\TC_Discount( $id );
-                $discount->delete_discount();
+                $tickera_discount = new \Tickera\TC_Discount( $id );
+                $tickera_discount->delete_discount();
                 $message = __( 'Discount Code has been successfully deleted.', 'tickera-event-ticketing-system' );
 
             } else {
@@ -55,7 +59,7 @@ if ( isset( $_GET[ 'action' ] ) && 'delete' == $_GET[ 'action' ] ) {
 }
 
 $page_num = ( isset( $_GET[ 'page_num' ] ) ) ? (int) $_GET[ 'page_num' ] : 1;
-$discountssearch = ( isset( $_GET[ 's' ] ) ) ? sanitize_text_field( $_GET[ 's' ] ) : '';
+$discountssearch = ( isset( $_GET[ 's' ] ) ) ? sanitize_text_field( wp_unslash( $_GET[ 's' ] ) ) : '';
 
 $wp_discounts_search = new \Tickera\TC_Discounts_Search( $discountssearch, $page_num );
 $fields = $discounts->get_discount_fields();
@@ -90,7 +94,7 @@ $settings_discount_url = add_query_arg(
                                 <tr valign="top" <?php echo wp_kses_post( \Tickera\TC_Fields::conditionals( $field, false ) ); ?>>
                                     <th scope="row"><label for="<?php echo esc_attr( $field[ 'field_name' ] ); ?>"><?php echo esc_html( $field[ 'field_title' ] ); ?></label></th>
                                     <td>
-                                        <?php do_action( 'tc_before_discounts_field_type_check' ); ?>
+                                        <?php tickera_do_action( 'tickera_before_discounts_field_type_check' ); ?>
                                         <?php
                                         if ( $field[ 'field_type' ] == 'function' ) {
 
@@ -116,12 +120,12 @@ $settings_discount_url = add_query_arg(
                                                 echo wp_kses_post( 'placeholder="' . esc_attr( $field[ 'placeholder' ] ) . '"' );
                                             }
                                             ?> class="regular-<?php echo esc_attr( $field[ 'field_type' ] ); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" value="<?php
-                                            if ( isset( $discount ) ) {
+                                            if ( isset( $tickera_discount ) ) {
                                                 if ( $field[ 'post_field_type' ] == 'post_meta' ) {
-                                                    echo esc_attr( isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : '' );
+                                                    echo esc_attr( isset( $tickera_discount->details->{$field[ 'field_name' ]} ) ? $tickera_discount->details->{$field[ 'field_name' ]} : '' );
 
                                                 } else {
-                                                    echo esc_attr( $discount->details->{$field[ 'post_field_type' ]} );
+                                                    echo esc_attr( $tickera_discount->details->{$field[ 'post_field_type' ]} );
                                                 }
                                             }
                                             ?>" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>" <?php echo esc_attr( isset( $field[ 'required' ] ) ? 'required' : '' ); ?> <?php echo esc_attr( isset( $field[ 'number' ] ) ? 'number="true"' : '' ); ?>>
@@ -129,12 +133,12 @@ $settings_discount_url = add_query_arg(
 
                                         } elseif ( $field[ 'field_type' ] == 'textarea' ) { ?>
                                             <textarea class="regular-<?php echo esc_html($field[ 'field_type' ]); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>"><?php
-                                                if ( isset( $discount ) ) {
+                                                if ( isset( $tickera_discount ) ) {
                                                     if ( $field[ 'post_field_type' ] == 'post_meta' ) {
-                                                        echo esc_textarea( isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : '' );
+                                                        echo esc_textarea( isset( $tickera_discount->details->{$field[ 'field_name' ]} ) ? $tickera_discount->details->{$field[ 'field_name' ]} : '' );
 
                                                     } else {
-                                                        echo esc_textarea( $discount->details->{$field[ 'post_field_type' ]} );
+                                                        echo esc_textarea( $tickera_discount->details->{$field[ 'post_field_type' ]} );
                                                     }
                                                 }
                                                 ?>
@@ -145,8 +149,8 @@ $settings_discount_url = add_query_arg(
                                             <div class="file_url_holder">
                                                 <label>
                                                     <input class="file_url <?php echo esc_attr( $field[ 'field_name' ] ); ?>" type="text" size="36" name="<?php echo esc_attr( $field[ 'field_name' ] . '_file_url_' . $field[ 'post_field_type' ] ); ?>" value="<?php
-                                                           if ( isset( $discount ) ) {
-                                                               echo esc_attr( isset( $discount->details->{$field[ 'field_name' ] . '_file_url'} ) ? $discount->details->{$field[ 'field_name' ] . '_file_url'} : '' );
+                                                           if ( isset( $tickera_discount ) ) {
+                                                               echo esc_attr( isset( $tickera_discount->details->{$field[ 'field_name' ] . '_file_url'} ) ? $tickera_discount->details->{$field[ 'field_name' ] . '_file_url'} : '' );
                                                            }
                                                            ?>"
                                                     />
@@ -155,16 +159,16 @@ $settings_discount_url = add_query_arg(
                                             </div><?php
 
                                         } elseif ( $field[ 'field_type' ] == 'select' ) {
-                                            $selected = isset( $discount->details->{$field[ 'field_name' ]} ) ? $discount->details->{$field[ 'field_name' ]} : ''; ?>
+                                            $selected = isset( $tickera_discount->details->{$field[ 'field_name' ]} ) ? $tickera_discount->details->{$field[ 'field_name' ]} : ''; ?>
                                             <select id="<?php echo esc_attr( $field[ 'field_name' ] ); ?>" class="regular-<?php echo esc_attr( $field[ 'field_type' ] ); ?> <?php echo esc_attr( $field[ 'field_name' ] ); ?>" name="<?php echo esc_attr( $field[ 'field_name' ] . '_' . $field[ 'post_field_type' ] ); ?>" <?php echo esc_attr( isset( $field[ 'required' ] ) ? 'required' : '' ); ?>>
                                                 <?php foreach( $field[ 'options' ] as $key => $value ) : ?>
-                                                    <option value="<?php echo esc_attr( $key ) ?>" <?php selected( $selected, $key, true ) ?>><?php esc_html_e( $value, 'tickera-event-ticketing-system' ) ?></option>
+                                                    <option value="<?php echo esc_attr( $key ) ?>" <?php selected( $selected, $key, true ) ?>><?php echo esc_html( $value ) ?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                             <span class="description"><?php echo esc_html($field[ 'field_description' ]); ?></span>
                                             <?php
                                         }
-                                        do_action( 'tc_after_discounts_field_type_check' ); ?>
+                                        tickera_do_action( 'tickera_after_discounts_field_type_check' ); ?>
                                     </td>
                                 </tr><?php
                             }
@@ -172,8 +176,8 @@ $settings_discount_url = add_query_arg(
                         </tbody>
                     </table>
                     <div class="tc-discount-form-actions">
-                        <?php submit_button( ( isset( $_REQUEST[ 'action' ] ) && 'edit' == $_REQUEST[ 'action' ] ? __( 'Update', 'tickera-event-ticketing-system' ) : __( 'Add New', 'tickera-event-ticketing-system' ) ), 'primary', 'add_new_discount', false ); ?>
-                        <a <?php echo wp_kses_post( ( isset( $_GET[ 'action' ] ) && 'edit' == $_GET[ 'action' ] ) ) ? 'href="' . esc_url( $settings_discount_url ) . '"' : 'href="#"' . ' id="cancel_add_edit"'; ?> class="tc-tickera-secondary"><?php esc_html_e( 'Cancel', 'tickera-event-ticketing-system' ); ?></a>
+                        <?php submit_button( ( isset( $_REQUEST[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_REQUEST[ 'action' ] ) ) ? __( 'Update', 'tickera-event-ticketing-system' ) : __( 'Add New', 'tickera-event-ticketing-system' ) ), 'primary', 'add_new_discount', false ); ?>
+                        <a <?php echo wp_kses_post( ( isset( $_GET[ 'action' ] ) && 'edit' == sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) ) ) ? 'href="' . esc_url( $settings_discount_url ) . '"' : 'href="#"' . ' id="cancel_add_edit"'; ?> class="tc-tickera-secondary"><?php esc_html_e( 'Cancel', 'tickera-event-ticketing-system' ); ?></a>
                     </div>
                     <div class="clear"></div>
                 </form>
@@ -230,10 +234,10 @@ $settings_discount_url = add_query_arg(
             <?php
             $style = '';
 
-            foreach ( $wp_discounts_search->get_results() as $discount ) {
+            foreach ( $wp_discounts_search->get_results() as $tickera_discount ) {
 
-                $discount_obj = new \Tickera\TC_Discount( $discount->ID );
-                $discount_object = apply_filters( 'tc_discount_object_details', $discount_obj->details );
+                $discount_obj = new \Tickera\TC_Discount( $tickera_discount->ID );
+                $discount_object = tickera_apply_filters( 'tickera_discount_object_details', $discount_obj->details );
                 $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"';
                 ?>
                 <tr id='user-<?php echo esc_attr( $discount_object->ID ); ?>' <?php echo wp_kses_post($style); ?>>
@@ -242,7 +246,7 @@ $settings_discount_url = add_query_arg(
 
                         <!-- Discount code used count -->
                         <?php if ( $key == 'used_count' ) :
-                            $discount_title = $discount->post_title;
+                            $discount_title = $tickera_discount->post_title;
                             $discount_used_times = $discounts->discount_used_times( $discount_title ); ?>
                             <td>
                                 <?php echo esc_html( absint( $discount_used_times ) ); ?>
@@ -264,10 +268,10 @@ $settings_discount_url = add_query_arg(
 
                                 $post_field_type = $discounts->check_field_property( $key, 'post_field_type' );
                                 if ( isset( $post_field_type ) && $post_field_type == 'post_meta' ) {
-                                    echo wp_kses_post( apply_filters( 'tc_discount_field_value', $discount_object->{$key}, $post_field_type, $key ) );
+                                    echo wp_kses_post( tickera_apply_filters( 'tickera_discount_field_value', $discount_object->{$key}, $post_field_type, $key ) );
 
                                 } else {
-                                    echo wp_kses_post( apply_filters( 'tc_discount_field_value', ( isset( $discount_object->{$post_field_type} ) ? $discount_object->{$post_field_type} : $discount_object->{$key} ), $post_field_type, $key ) );
+                                    echo wp_kses_post( tickera_apply_filters( 'tickera_discount_field_value', ( isset( $discount_object->{$post_field_type} ) ? $discount_object->{$post_field_type} : $discount_object->{$key} ), $post_field_type, $key ) );
                                 }
                                 ?>
                             </td>

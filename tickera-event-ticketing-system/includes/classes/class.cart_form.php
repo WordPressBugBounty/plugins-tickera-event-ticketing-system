@@ -15,7 +15,7 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
 
         function __construct( $ticket_type_id = '' ) {
             $this->ticket_type_id = $ticket_type_id;
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_Cart_Form( $ticket_type_id = '' ) {
@@ -67,7 +67,7 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_buyer_info_fields', $default_fields, isset( $ticket_type_id ) ? $ticket_type_id : '' );
+            return tickera_apply_filters( 'tickera_buyer_info_fields', $default_fields, isset( $ticket_type_id ) ? $ticket_type_id : '' );
         }
 
         /**
@@ -147,7 +147,7 @@ if ( ! class_exists( '\Tickera\TC_Cart_Form' ) ) {
                 ];
             }
 
-            return apply_filters( 'tc_owner_info_fields', $default_fields, $ticket_type_id );
+            return tickera_apply_filters( 'tickera_owner_info_fields', $default_fields, $ticket_type_id );
         }
 
         function get_columns() {

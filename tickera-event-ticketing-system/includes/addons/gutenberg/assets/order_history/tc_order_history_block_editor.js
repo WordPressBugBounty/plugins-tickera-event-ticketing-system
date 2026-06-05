@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_order_history_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -70,6 +72,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/order-history', {
+    apiVersion: 3,
     title: __( 'User Order History', 'tickera-event-ticketing-system' ),
     description: __( 'Shows order history for current (logged in) user.', 'tickera-event-ticketing-system' ),
     icon: 'dashicons-media-spreadsheet',
@@ -86,11 +89,17 @@ registerBlockType( 'tickera/order-history', {
         },*/
     },
     edit: function( props ) {
+        let blockProps = UseBlockProps();
+
         return [
-            el( ServerSideRender, {
-                block: "tickera/order-history",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/order-history",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

@@ -39,15 +39,15 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
         function init() {
             global $tc;
 
-            $this->skip_payment_screen = apply_filters( $this->plugin_name . '_skip_payment_screen', $this->skip_payment_screen );
+            $this->skip_payment_screen = tickera_apply_filters( 'tickera_custom_offline_payments_skip_payment_screen', $this->skip_payment_screen );
             $this->admin_name = $this->get_option( 'admin_name', __( 'Offline Payment', 'tickera-event-ticketing-system' ) );
             $this->public_name = $this->get_option( 'public_name', __( 'Cash on Delivery', 'tickera-event-ticketing-system' ) );
 
-            $this->method_img_url = apply_filters( 'tc_gateway_method_img_url', $tc->plugin_url . 'images/gateways/custom-offline-payments.png', $this->plugin_name );
-            $this->admin_img_url = apply_filters( 'tc_gateway_admin_img_url', $tc->plugin_url . 'images/gateways/small-custom-offline-payments.png', $this->plugin_name );
+            $this->method_img_url = tickera_apply_filters( 'tickera_gateway_method_img_url', $tc->plugin_url . 'images/gateways/custom-offline-payments.png', $this->plugin_name );
+            $this->admin_img_url = tickera_apply_filters( 'tickera_gateway_admin_img_url', $tc->plugin_url . 'images/gateways/small-custom-offline-payments.png', $this->plugin_name );
 
-            add_action( 'tc_order_created', array( &$this, 'send_payment_instructions' ), 10, 5 );
-            add_filter( $this->plugin_name . '_instructions', array( &$this, 'modify_instruction_message' ), 10, 2 );
+            add_action( 'tickera_order_created', array( &$this, 'send_payment_instructions' ), 10, 5 );
+            tickera_add_filter( 'tickera_custom_offline_payments_instructions', array( &$this, 'modify_instruction_message' ), 10, 2, [ 'custom_offline_payments_instructions' ] );
         }
 
         function payment_form( $cart ) {
@@ -69,7 +69,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
             $buyer_name = $cart_info[ 'buyer_data' ][ 'first_name_post_meta' ] . ' ' . $cart_info[ 'buyer_data' ][ 'last_name_post_meta' ];
 
             $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'BUYER_NAME' );
-            $placeholder_values = array( strtoupper( $order->details->post_title ), apply_filters( 'tc_cart_currency_and_format', $payment_info[ 'total' ] ), $buyer_name );
+            $placeholder_values = array( strtoupper( $order->details->post_title ), tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ), $buyer_name );
 
             $message = str_replace( $placeholders, $placeholder_values, $message );
 
@@ -78,7 +78,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
 
         function send_payment_instructions( $order_id, $status, $cart_contents, $cart_info, $payment_info ) {
 
-            global $order_instructions_sent;
+            global $tickera_order_instructions_sent;
 
             if ( $payment_info[ 'gateway_private_name' ] == $this->admin_name ) {
 
@@ -94,12 +94,12 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
                     add_filter( 'wp_mail_from_name', 'tickera_client_email_from_name', 999 );
 
                     $to = $this->buyer_info( 'email' );
-                    $message = apply_filters( $this->plugin_name . '_instructions', $this->get_option( 'instructions' ), $order_id );
+                    $message = tickera_apply_filters( 'tickera_custom_offline_payments_instructions', $this->get_option( 'instructions' ), $order_id );
                     $subject = $this->get_option( 'instructions_email_subject' );
 
-                    if ( $order_instructions_sent !== $this->buyer_info( 'email' ) && ! empty( trim( $message ) ) ) {
-                        @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( apply_filters( 'tc_order_created_client_email_message', stripcslashes( wpautop( $message ) ) ) ), apply_filters( 'tc_order_created_client_email_headers', '' ) );
-                        $order_instructions_sent = $this->buyer_info( 'email' );
+                    if ( $tickera_order_instructions_sent !== $this->buyer_info( 'email' ) && ! empty( trim( $message ) ) ) {
+                        @wp_mail( sanitize_email( $to ), sanitize_text_field( stripslashes( $subject ) ), wp_kses_post( tickera_apply_filters( 'tickera_order_created_client_email_message', stripcslashes( wpautop( $message ) ) ) ), tickera_apply_filters( 'tickera_order_created_client_email_headers', '' ) );
+                        $tickera_order_instructions_sent = $this->buyer_info( 'email' );
                     }
                 }
             }
@@ -157,7 +157,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
             switch ( $order->details->post_status ) {
 
                 case 'order_received':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is not yet complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is not yet complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     $content .= '<p>' . wp_kses_post( __( 'Current order status: <strong>Pending Payment</strong>', 'tickera-event-ticketing-system' ) ) . '</p>';
                     break;
 
@@ -166,21 +166,21 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
                     break;
 
                 case 'order_paid':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is complete.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
 
                 case 'order_cancelled':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is cancelled.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */ __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is cancelled.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
 
                 case 'order_refunded':
-                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */  __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is refunded.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( apply_filters( 'tc_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
+                    $content .= '<p>' . wp_kses_post( sprintf( /* translators: 1: Payment gateway name 2: Order total amount */  __( 'Your payment via %1$s for this order totaling <strong>%2$s</strong> is refunded.', 'tickera-event-ticketing-system' ), esc_html( $this->public_name ), esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ) ) ) . '</p>';
                     break;
 
             }
 
-            $content = wp_kses_post( apply_filters( 'tc_order_confirmation_message_content', $content, $order, $this->plugin_name ) );
-            $content .= '<br /><br />' . wp_kses_post( apply_filters( $this->plugin_name . '_instructions', $tc->get_setting( 'gateways->custom_offline_payments->instructions' ), $order->details->ID ) );
+            $content = wp_kses_post( tickera_apply_filters( 'tickera_order_confirmation_message_content', $content, $order, $this->plugin_name ) );
+            $content .= '<br /><br />' . wp_kses_post( tickera_apply_filters( 'tickera_custom_offline_payments_instructions', $tc->get_setting( 'gateways->custom_offline_payments->instructions' ), $order->details->ID ) );
 
             $tc->remove_order_session_data();
             $tc->maybe_skip_confirmation_screen( $this, $order );

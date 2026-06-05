@@ -1,4 +1,6 @@
-<?php if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly  ?>
+<?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly  ?>
 <div class="wrap tc_wrap">
     <div class="barcode_api_keys">
         <?php if ( ! tickera_iw_is_pr() || \Tickera\tets_fs()->is_free_plan() ) : ?>

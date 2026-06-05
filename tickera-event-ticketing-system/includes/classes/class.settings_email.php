@@ -29,7 +29,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
             $owner_fields = isset( $this->settings[ 'show_owner_fields' ] ) ? $this->settings[ 'show_owner_fields' ] : 'no';
             $owner_email = isset( $this->settings[ 'show_owner_email_field' ] ) ? $this->settings[ 'show_owner_email_field' ] : 'no';
 
-            return apply_filters( 'tc_settings_email_sections', array(
+            return tickera_apply_filters( 'tickera_settings_email_sections', array(
 
                     array(
                         'name' => 'attendee_order_completed_email',
@@ -87,7 +87,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
             $owner_fields = isset( $this->settings[ 'show_owner_fields' ] ) ? $this->settings[ 'show_owner_fields' ] : 'no';
             $owner_email = isset( $this->settings[ 'show_owner_email_field' ] ) ? $this->settings[ 'show_owner_email_field' ] : 'no';
 
-            $client_order_placed_email_fields = apply_filters( 'client_order_placed_email_fields', array(
+            $client_order_placed_email_fields = tickera_apply_filters( 'tickera_client_order_placed_email_fields', array(
 
                     array(
                         'field_name' => 'client_send_placed_message',
@@ -149,7 +149,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'field_description' => sprintf(
                             /* translators: %s: Client order processing email's description placeholders. */
                             __( 'Body of the e-mail. You can use the following placeholders (%s)', 'tickera-event-ticketing-system' ),
-                            apply_filters( 'tc_client_order_placed_message_placeholders_description', 'ORDER_ID, ORDER_TOTAL, DOWNLOAD_URL, BUYER_NAME, ORDER_DETAILS, EVENT_NAME, EVENT_LOCATION' )
+                            tickera_apply_filters( 'tickera_client_order_placed_message_placeholders_description', 'ORDER_ID, ORDER_TOTAL, DOWNLOAD_URL, BUYER_NAME, ORDER_DETAILS, EVENT_NAME, EVENT_LOCATION' )
                         ),
                         'section' => 'client_order_placed_email',
                         'conditional' => array(
@@ -162,7 +162,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $client_order_completed_email_fields = apply_filters( 'client_order_completed_email_fields', array(
+            $client_order_completed_email_fields = tickera_apply_filters( 'tickera_client_order_completed_email_fields', array(
 
                     array(
                         'field_name' => 'client_send_message',
@@ -239,7 +239,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'field_description' => sprintf(
                             /* translators: %s: Client order completed email's description placeholders. */
                             __( 'Body of the e-mail. You can use the following placeholders (%s)', 'tickera-event-ticketing-system' ),
-                            apply_filters( 'tc_client_order_completed_message_placeholders_description', 'ORDER_ID, ORDER_TOTAL, DOWNLOAD_URL, BUYER_NAME. ORDER_DETAILS, EVENT_NAME, EVENT_LOCATION' )
+                            tickera_apply_filters( 'tickera_client_order_completed_message_placeholders_description', 'ORDER_ID, ORDER_TOTAL, DOWNLOAD_URL, BUYER_NAME. ORDER_DETAILS, EVENT_NAME, EVENT_LOCATION' )
                         ),
                         'section' => 'client_order_completed_email',
                         'conditional' => array(
@@ -252,7 +252,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $client_order_refunded_email_fields = apply_filters( 'client_order_refunded_email_fields', array(
+            $client_order_refunded_email_fields = tickera_apply_filters( 'tickera_client_order_refunded_email_fields', array(
 
                     array(
                         'field_name' => 'client_send_refunded_message',
@@ -323,7 +323,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $attendee_order_completed_email_fields = apply_filters( 'attendee_order_completed_email_fields', array(
+            $attendee_order_completed_email_fields = tickera_apply_filters( 'tickera_attendee_order_completed_email_fields', array(
 
                     array(
                         'field_name' => 'attendee_send_message',
@@ -405,7 +405,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                         'field_description' => sprintf(
                             /* translators: %s: Attendee order completed email's description placeholders. */
                             __( 'Body of the e-mail. You can use the following placeholders (%s)', 'tickera-event-ticketing-system' ),
-                            apply_filters( 'tc_attendee_order_completed_message_placeholders_description', 'DOWNLOAD_LINK, DOWNLOAD_URL, TICKET_TYPE, TICKET_CODE, FIRST_NAME, LAST_NAME, EVENT_NAME, EVENT_LOCATION' )
+                            tickera_apply_filters( 'tickera_attendee_order_completed_message_placeholders_description', 'DOWNLOAD_LINK, DOWNLOAD_URL, TICKET_TYPE, TICKET_CODE, FIRST_NAME, LAST_NAME, EVENT_NAME, EVENT_LOCATION' )
                         ),
                         'section' => 'attendee_order_completed_email',
                         'disabled' => ( 'no' == $owner_fields || 'no' == $owner_email ) ? true : false,
@@ -419,7 +419,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $admin_order_placed_email_fields = apply_filters( 'admin_order_placed_email_fields', array(
+            $admin_order_placed_email_fields = tickera_apply_filters( 'tickera_admin_order_placed_email_fields', array(
 
                     array(
                         'field_name' => 'admin_send_placed_message',
@@ -504,7 +504,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $admin_order_completed_email_fields = apply_filters( 'admin_order_completed_email_fields', array(
+            $admin_order_completed_email_fields = tickera_apply_filters( 'tickera_admin_order_completed_email_fields', array(
 
                     array(
                         'field_name' => 'admin_send_message',
@@ -604,7 +604,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
                 )
             );
 
-            $admin_order_refunded_email_fields = apply_filters( 'admin_order_refunded_email_fields', array(
+            $admin_order_refunded_email_fields = tickera_apply_filters( 'tickera_admin_order_refunded_email_fields', array(
 
                     array(
                         'field_name' => 'admin_send_refunded_message',
@@ -702,7 +702,7 @@ if ( ! class_exists( '\Tickera\TC_Settings_Email' ) ) {
             );
 
             $default_fields = array_merge( $client_order_placed_email_fields, $attendee_order_completed_email_fields, $client_order_completed_email_fields, $client_order_refunded_email_fields, $admin_order_completed_email_fields, $admin_order_placed_email_fields, $admin_order_refunded_email_fields, $misc_email_fields );
-            return apply_filters( 'tc_settings_email_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_settings_email_fields', $default_fields );
         }
     }
 }

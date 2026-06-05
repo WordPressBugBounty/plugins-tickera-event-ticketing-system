@@ -1,7 +1,8 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-global $tc_gateway_plugins, $tc;
+global $tickera_gateway_plugins, $tc;
 $settings = get_option( 'tickera_settings' );
 
 if ( isset( $_POST[ 'gateway_settings' ] ) ) {
@@ -11,14 +12,15 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
 
             if ( isset( $_POST[ 'tc' ] ) ) {
 
-                $post_data = tickera_sanitize_array( $_POST[ 'tc' ], true, true );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST[ 'tc' ] ), true, true );
                 $post_data = $post_data ? $post_data : [];
 
-                $filtered_settings = apply_filters( 'tc_gateway_settings_filter', $post_data );
+                $filtered_settings = tickera_apply_filters( 'tickera_gateway_settings_filter', $post_data );
                 $settings = array_merge( $settings, $filtered_settings );
 
                 update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
-                do_action( 'tc_save_tc_gateway_settings' );
+                tickera_do_action( 'tickera_save_tc_gateway_settings' );
             }
 
             echo wp_kses_post( '<div class="updated fade"><p>' . esc_html__( 'Settings saved.', 'tickera-event-ticketing-system' ) . '</p></div>' );
@@ -33,8 +35,8 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
         <?php
         $current_tab_url = add_query_arg( [
             'post_type' => 'tc_events',
-            'page' => sanitize_key( $_GET[ 'page' ] ),
-            'tab' => isset( $_GET[ 'tab' ] ) ? sanitize_key( $_GET[ 'tab' ] ) : '',
+            'page' => isset( $_GET[ 'page' ] ) ? sanitize_key( wp_unslash( $_GET[ 'page' ] ) ) : '',
+            'tab' => isset( $_GET[ 'tab' ] ) ? sanitize_key( wp_unslash( $_GET[ 'tab' ] ) ) : '',
         ], admin_url( 'edit.php' ) );
         ?>
         <form id="tc-gateways-form" method="post" action="<?php echo esc_url( $current_tab_url ); ?>">
@@ -49,7 +51,7 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
                     <table class="form-table">
                         <tr>
                             <td>
-                                <?php foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+                                <?php foreach ( (array) $tickera_gateway_plugins as $code => $plugin ) {
                                     if ( $tc->gateway_is_network_allowed( $code ) ) {
 
                                         $checked = '';
@@ -86,7 +88,7 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
                     <?php endif; ?>
                 </div>
             </div>
-            <?php foreach ( (array) $tc_gateway_plugins as $code => $plugin ) {
+            <?php foreach ( (array) $tickera_gateway_plugins as $code => $plugin ) {
 
                 if ( $tc->gateway_is_network_allowed( $code ) ) {
 

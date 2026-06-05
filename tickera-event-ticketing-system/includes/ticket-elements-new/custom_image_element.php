@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_custom_image_element' ) ) {
         var $font_awesome_icon = '<span class="tti-image_photograph_picture_icon"></span>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_custom_image_element_title', __( 'Custom Image / Logo', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_custom_image_element_title', __( 'Custom Image / Logo', 'tickera-event-ticketing-system' ) );
         }
 
         function admin_content_v2($element_default_values = false) {
@@ -39,12 +39,12 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_custom_image_element' ) ) {
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {
             $image_url = isset( $this->template_metas[ $this->element_name . '_custom_image_url' ] ) ? $this->template_metas[ $this->element_name . '_custom_image_url' ] : '';
-            return '<br/>' . apply_filters( 'tc_custom_image_element', '<img src="' . esc_url( tickera_ticket_template_image_url( $image_url ) ) . '" />' );
+            return '<br/>' . tickera_apply_filters( 'tickera_custom_image_element', '<img src="' . esc_url( tickera_ticket_template_image_url( $image_url ) ) . '" />' );
         }
 
         function ticket_content_v2( $element_default_values = false, $ticket_instance_id = false, $ticket_type_id = false ) {
             $image_url = isset( $element_default_values[ $this->element_name . '_custom_image_url' ] ) ? $element_default_values[ $this->element_name . '_custom_image_url' ] : '';
-            return '<br/>' . apply_filters( 'tc_custom_image_element', '<img src="' . esc_url( tickera_ticket_template_image_url( $image_url ) ) . '" />' );
+            return '<br/>' . tickera_apply_filters( 'tickera_custom_image_element', '<img src="' . esc_url( tickera_ticket_template_image_url( $image_url ) ) . '" />' );
         }
     }
 

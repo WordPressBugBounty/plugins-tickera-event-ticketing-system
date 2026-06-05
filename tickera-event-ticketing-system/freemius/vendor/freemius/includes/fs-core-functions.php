@@ -286,7 +286,6 @@
 
     if ( ! function_exists( 'fs_get_action' ) ) {
         function fs_get_action( $action_key = 'action' ) {
-            // phpcs:disable WordPress.Security.NonceVerification.Recommended
             if ( ! empty( $_REQUEST[ $action_key ] ) && is_string( $_REQUEST[ $action_key ] ) ) {
                 return strtolower( $_REQUEST[ $action_key ] );
             }

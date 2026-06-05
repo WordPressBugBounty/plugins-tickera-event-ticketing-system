@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_buyer_name_element' ) ) 
         var $font_awesome_icon = '<i class="fa fa-user"></i>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_buyer_name_element_title', __( 'Ticket Buyer Name', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_buyer_name_element_title', __( 'Ticket Buyer Name', 'tickera-event-ticketing-system' ) );
         }
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {
@@ -26,10 +26,10 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_buyer_name_element' ) ) 
                 $first_name = ( isset( $buyer_data[ 'first_name_post_meta' ] ) ) ? $buyer_data[ 'first_name_post_meta' ] : '';
                 $last_name = ( isset( $buyer_data[ 'last_name_post_meta' ] ) ) ? $buyer_data[ 'last_name_post_meta' ] : '';
                 $buyer_name = $first_name . ' ' . $last_name;
-                return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_buyer_name_element', $buyer_name, $order->details->ID ) );
+                return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_buyer_name_element', $buyer_name, $order->details->ID ) );
 
             } else {
-                return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_buyer_name_element_default', __( 'John Smith', 'tickera-event-ticketing-system' ) ) );
+                return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_buyer_name_element_default', __( 'John Smith', 'tickera-event-ticketing-system' ) ) );
             }
         }
     }

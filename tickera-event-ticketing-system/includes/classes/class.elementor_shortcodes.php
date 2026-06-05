@@ -1,5 +1,4 @@
 <?php
-
 namespace Tickera;
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
@@ -11,13 +10,15 @@ if ( ! class_exists( '\Tickera\TC_Elementor_Shortcode_Builder' ) ) {
         function __construct() {
 
             // Add filter and action for beaver builder
-            if ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'elementor' ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Elementor editor action only controls builder asset loading and shortcode preview output.
+            if ( isset( $_GET[ 'action' ] ) && sanitize_text_field( wp_unslash( $_GET[ 'action' ] ) ) == 'elementor' ) {
                 add_action( 'elementor/editor/before_enqueue_scripts', array( &$this, 'elementor_builder_enqueue_styles_scripts' ) );
                 add_action( 'elementor/editor/before_enqueue_scripts', array( &$this, 'elementor_builder_show_shortcodes' ) );
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Elementor preview flag only bypasses template redirection for the preview request.
             if ( $_REQUEST && isset( $_REQUEST[ 'elementor-preview' ] ) ) {
-                add_filter( 'tc_bypass_redirection', array( $this, 'elementor_preview_bypass_redirection' ) );
+                tickera_add_filter( 'tickera_bypass_redirection', array( $this, 'elementor_preview_bypass_redirection' ), 10, 1, array( 'tc_bypass_redirection' ) );
             }
         }
 
@@ -39,8 +40,8 @@ if ( ! class_exists( '\Tickera\TC_Elementor_Shortcode_Builder' ) ) {
         public function elementor_builder_enqueue_styles_scripts() {
             global $tc;
             wp_enqueue_style( $tc->name . '-colorbox', $tc->plugin_url . 'css/colorbox/colorbox.css', false, $tc->version );
-            wp_enqueue_script( $tc->name . '-colorbox', $tc->plugin_url . 'js/jquery.colorbox-min.js', array( 'jquery' ), $tc->version );
-            wp_enqueue_script( $tc->name . '-shortcode-builders-script', $tc->plugin_url . 'js/builders/shortcode-builder.js', array( $tc->name . '-colorbox' ), $tc->version );
+            wp_enqueue_script( $tc->name . '-colorbox', $tc->plugin_url . 'js/jquery.colorbox-min.js', array( 'jquery' ), $tc->version, false );
+            wp_enqueue_script( $tc->name . '-shortcode-builders-script', $tc->plugin_url . 'js/builders/shortcode-builder.js', array( $tc->name . '-colorbox' ), $tc->version, false );
             wp_enqueue_style( $tc->name . '-admin', $tc->plugin_url . 'css/admin.css', array(), $tc->version );
             wp_enqueue_style( $tc->name . '-elementor-sc-pp', $tc->plugin_url . 'css/builders/elementor-sc-popup.css', array(), $tc->version );
         }
@@ -69,7 +70,7 @@ if ( ! class_exists( '\Tickera\TC_Elementor_Shortcode_Builder' ) ) {
                 'tc_order_history' => __( 'Display order history for a user', 'tickera-event-ticketing-system' ),
             );
 
-            $shortcodes = apply_filters( 'tc_shortcodes', $shortcodes );
+            $shortcodes = tickera_apply_filters( 'tickera_shortcodes', $shortcodes );
             ?>
             <div id="tc-shortcode-builder-wrap" style="display:none">
                 <form id="tc-shortcode-builder">
@@ -128,7 +129,7 @@ if ( ! class_exists( '\Tickera\TC_Elementor_Shortcode_Builder' ) ) {
                 'tc_order_history' => __( 'Display order history for a user', 'tickera-event-ticketing-system' ),
             );
 
-            $shortcodes = apply_filters( 'tc_shortcodes', $shortcodes );
+            $shortcodes = tickera_apply_filters( 'tickera_shortcodes', $shortcodes );
             ?>
             <div id="tc-shortcode-builder-wrap" style="display:none">
                 <form id="tc-shortcode-builder">
@@ -653,5 +654,5 @@ if ( ! class_exists( '\Tickera\TC_Elementor_Shortcode_Builder' ) ) {
         }
     }
 
-    $elementor_shortcode_builder = new TC_Elementor_Shortcode_Builder();
+    new TC_Elementor_Shortcode_Builder();
 }

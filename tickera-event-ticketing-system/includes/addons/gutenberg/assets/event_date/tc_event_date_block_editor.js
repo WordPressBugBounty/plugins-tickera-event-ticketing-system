@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_event_date_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -70,6 +72,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/event-date', {
+    apiVersion: 3,
     title: __( 'Event Date', 'tickera-event-ticketing-system' ),
     description: __( 'Shows date of an event', 'tickera-event-ticketing-system' ),
     icon: 'calendar',
@@ -87,6 +90,7 @@ registerBlockType( 'tickera/event-date', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var events = jQuery.parseJSON( tc_event_date_block_editor.events );
 
         /**
@@ -129,10 +133,14 @@ registerBlockType( 'tickera/event-date', {
                     eventControl.attributes
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/event-date",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/event-date",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

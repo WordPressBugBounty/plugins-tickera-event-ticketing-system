@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
 
         function __construct() {
             $this->form_title = __( 'API Keys', 'tickera-event-ticketing-system' );
-            $this->valid_admin_fields_type = apply_filters( 'tc_valid_admin_fields_type', $this->valid_admin_fields_type );
+            $this->valid_admin_fields_type = tickera_apply_filters( 'tickera_valid_admin_fields_type', $this->valid_admin_fields_type );
         }
 
         function TC_API_Keys() {
@@ -25,12 +25,12 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
             $data = '';
             $uid = uniqid( "", true );
             $data .= isset( $_SERVER[ 'REQUEST_TIME' ] ) ? (int) $_SERVER[ 'REQUEST_TIME' ] : '';
-            $data .= isset( $_SERVER[ 'HTTP_USER_AGENT' ] ) ? sanitize_text_field( $_SERVER[ 'HTTP_USER_AGENT' ] ) : '';
-            $data .= isset( $_SERVER[ 'LOCAL_ADDR' ] ) ? sanitize_text_field( $_SERVER[ 'LOCAL_ADDR' ] ) : '';
-            $data .= isset( $_SERVER[ 'LOCAL_PORT' ] ) ? sanitize_text_field( $_SERVER[ 'LOCAL_PORT' ] ) : '';
-            $data .= isset( $_SERVER[ 'REMOTE_ADDR' ] ) ? sanitize_text_field( $_SERVER[ 'REMOTE_ADDR' ] ) : '';
+            $data .= isset( $_SERVER[ 'HTTP_USER_AGENT' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'HTTP_USER_AGENT' ] ) ) : '';
+            $data .= isset( $_SERVER[ 'LOCAL_ADDR' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'LOCAL_ADDR' ] ) ) : '';
+            $data .= isset( $_SERVER[ 'LOCAL_PORT' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'LOCAL_PORT' ] ) ) : '';
+            $data .= isset( $_SERVER[ 'REMOTE_ADDR' ] ) ? sanitize_text_field( wp_unslash( $_SERVER[ 'REMOTE_ADDR' ] ) ) : '';
             $data .= isset( $_SERVER[ 'REMOTE_PORT' ] ) ? (int) $_SERVER[ 'REMOTE_PORT' ] : '';
-            return substr( strtoupper( hash( 'ripemd128', $uid . md5( $data ) ) ), 0, apply_filters( 'tc_rand_api_key_length', 8 ) );
+            return substr( strtoupper( hash( 'ripemd128', $uid . md5( $data ) ) ), 0, tickera_apply_filters( 'tickera_rand_api_key_length', 8 ) );
         }
 
         function get_api_keys_fields() {
@@ -87,7 +87,7 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
                 ),
             );
 
-            return apply_filters( 'tc_api_keys_fields', $default_fields );
+            return tickera_apply_filters( 'tickera_api_keys_fields', $default_fields );
         }
 
         function get_columns() {
@@ -167,7 +167,8 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
 
                 $metas = [];
 
-                $post_data = tickera_sanitize_array( $_POST, false, true );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), false, true );
                 $post_data = $post_data ? $post_data : [];
 
                 foreach ( $post_data as $field_name => $field_value ) {
@@ -186,10 +187,10 @@ if ( ! class_exists( '\Tickera\TC_API_Keys' ) ) {
                         $metas[ sanitize_key( str_replace( '_post_meta', '', $field_name ) ) ] = ( is_array( $field_value ) ? tickera_sanitize_array( $field_value, false, true ) : sanitize_text_field( $field_value ) );
                     }
 
-                    do_action( 'tc_after_api_key_post_field_type_check', $post_data, $field_name, $field_value );
+                    tickera_do_action( 'tickera_after_api_key_post_field_type_check', $post_data, $field_name, $field_value );
                 }
 
-                $metas = apply_filters( 'tc_api_keys_metas', $metas );
+                $metas = tickera_apply_filters( 'tickera_api_keys_metas', $metas );
 
                 $arg = array(
                     'post_author'   => (int) $user_id,

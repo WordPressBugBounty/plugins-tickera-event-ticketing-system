@@ -502,6 +502,21 @@ label[for=api_key] {
     opacity: 0;
 }
 
+.tc_wrap input[type=checkbox]:focus,
+.tc_wrap input[type=radio]:focus {
+    box-shadow: none;
+}
+
+.tc_wrap input[type=radio]:checked {
+    background: #6b5f89;
+    border-color: #6b5f89;
+}
+
+.tc_wrap input[type=radio]:checked:before {
+    background: #6b5f89;
+    border: 2px solid #fff;
+}
+
 .tc-success {
     color: #00a32a;
 }

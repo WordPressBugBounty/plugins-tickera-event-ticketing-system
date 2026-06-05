@@ -1,6 +1,7 @@
 <?php
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-global $tc_general_settings, $wp_rewrite;
+global $tickera_general_settings, $wp_rewrite;
 
 if ( isset( $_POST[ 'save_tc_settings' ] ) ) {
 
@@ -8,8 +9,14 @@ if ( isset( $_POST[ 'save_tc_settings' ] ) ) {
 
         if ( current_user_can( 'manage_options' ) || current_user_can( 'save_settings_cap' ) ) {
 
-            update_option( 'tickera_general_setting', tickera_sanitize_array( $_POST[ 'tickera_general_setting' ] ) );
-            do_action( 'tc_save_tc_general_settings' );
+            if ( isset( $_POST[ 'tickera_general_setting' ] ) ) {
+
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                $save_data = isset( $_POST[ 'tickera_general_setting' ] ) ? tickera_sanitize_array( wp_unslash( $_POST[ 'tickera_general_setting' ] ) ) : [];
+
+                update_option( 'tickera_general_setting', $save_data );
+            }
+            tickera_do_action( 'tickera_save_tc_general_settings' );
             tickera_save_page_ids();
 
             $wp_rewrite->flush_rules();
@@ -21,7 +28,7 @@ if ( isset( $_POST[ 'save_tc_settings' ] ) ) {
     }
 }
 
-$tc_general_settings = get_option( 'tickera_general_setting', false );
+$tickera_general_settings = get_option( 'tickera_general_setting', false );
 ?>
 <div class="wrap tc_wrap">
     <?php if ( isset( $message ) ) { ?>
@@ -31,8 +38,8 @@ $tc_general_settings = get_option( 'tickera_general_setting', false );
         <?php
         $general_setting_url = add_query_arg( array(
             'post_type' => 'tc_events',
-            'page' => sanitize_key( $_GET[ 'page' ] ),
-            'tab' => isset( $_GET[ 'tab' ] ) ? sanitize_key( $_GET[ 'tab' ] ) : '',
+            'page' => isset( $_GET[ 'page' ] ) ? sanitize_key( wp_unslash( $_GET[ 'page' ] ) ) : '',
+            'tab' => isset( $_GET[ 'tab' ] ) ? sanitize_key( wp_unslash( $_GET[ 'tab' ] ) ) : '',
         ), admin_url( 'edit.php' ) );
         ?>
         <form id="tc-general-settings" method="post" action="<?php echo esc_url( $general_setting_url ); ?>">
@@ -54,9 +61,9 @@ $tc_general_settings = get_option( 'tickera_general_setting', false );
                                         <th scope="row"><label for="<?php echo esc_attr( $field[ 'field_name' ] ); ?>"><?php echo esc_html( $field[ 'field_title' ] ); ?><?php echo wp_kses_post( ( isset( $field[ 'tooltip' ] ) && $field[ 'tooltip' ] ) ? wp_kses_post( tickera_tooltip( $field[ 'tooltip' ] ) ) : '' ); ?></label></th>
                                         <td>
                                             <?php
-                                            do_action( 'tc_before_settings_general_field_type_check', $field );
+                                            tickera_do_action( 'tickera_before_settings_general_field_type_check', $field );
                                             echo wp_kses( \Tickera\TC_Fields::render_field( $field, 'tickera_general_setting' ), wp_kses_allowed_html( 'tickera_setting' ) );
-                                            do_action( 'tc_after_settings_general_field_type_check', $field ); ?>
+                                            tickera_do_action( 'tickera_after_settings_general_field_type_check', $field ); ?>
                                         </td>
                                     </tr>
                                     <?php

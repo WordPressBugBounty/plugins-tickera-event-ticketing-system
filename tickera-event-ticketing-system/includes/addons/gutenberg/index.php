@@ -27,6 +27,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             if ( function_exists( 'register_block_type' ) && 'widgets.php' != $pagenow ) {
                 $this->register_gutenberg_blocks();
                 add_action( 'enqueue_block_editor_assets', array( $this, 'register_extra_scripts' ) );
+                add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_assets' ) );
             }
 
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts_styles' ) );
@@ -38,6 +39,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
          */
         function admin_scripts_styles() {
             global $tc;
+
+            $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+            if ( $screen && method_exists( $screen, 'is_block_editor' ) && $screen->is_block_editor() ) {
+                return;
+            }
+
             wp_enqueue_style( $tc->name . '-common-admin', $tc->plugin_url . 'includes/addons/gutenberg/assets/blocks.css', array(), $tc->version );
         }
 
@@ -49,19 +57,53 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             wp_enqueue_style( $tc->name . '-common-front', $tc->plugin_url . 'includes/addons/gutenberg/assets/blocks.css', array(), $tc->version );
         }
 
+        function get_asset_version( $relative_path ) {
+            $asset_path = plugin_dir_path( __FILE__ ) . ltrim( $relative_path, '/' );
+            return file_exists( $asset_path ) ? filemtime( $asset_path ) : $this->version;
+        }
+
+        function enqueue_block_assets() {
+
+            if ( ! is_admin() ) {
+                return;
+            }
+
+            global $tc;
+
+            wp_enqueue_style( $tc->name . '-common-admin', $tc->plugin_url . 'includes/addons/gutenberg/assets/blocks.css', array(), $this->get_asset_version( 'assets/blocks.css' ) );
+
+            wp_enqueue_style( 'tc_add_to_cart_group_block_editor', plugins_url( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_add_to_cart_group_block_editor', plugins_url( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_tickets_sold_block_editor', plugins_url( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_tickets_left_block_editor', plugins_url( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.css' ) );
+            wp_enqueue_style( 'tc_tickets_sold_block_editor', plugins_url( 'assets/tickets_sold/tc_tickets_sold_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/tickets_sold/tc_tickets_sold_block_editor.css' ) );
+            wp_enqueue_style( 'tc_tickets_left_block_editor', plugins_url( 'assets/tickets_left/tc_tickets_left_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/tickets_left/tc_tickets_left_block_editor.css' ) );
+            wp_enqueue_style( 'tc_order_history_block_editor', plugins_url( 'assets/order_history/tc_order_history_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/order_history/tc_order_history_block_editor.css' ) );
+            wp_enqueue_style( 'tc_woo_add_to_cart_group_block_editor', plugins_url( 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.css' ) );
+            wp_enqueue_style( 'tc_woo_event_add_to_cart_group_block_editor', plugins_url( 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_date_block_editor', plugins_url( 'assets/event_date/tc_event_date_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_date/tc_event_date_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_location_block_editor', plugins_url( 'assets/event_location/tc_event_location_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_location/tc_event_location_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_terms_block_editor', plugins_url( 'assets/event_terms/tc_event_terms_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_terms/tc_event_terms_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_logo_block_editor', plugins_url( 'assets/event_logo/tc_event_logo_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_logo/tc_event_logo_block_editor.css' ) );
+            wp_enqueue_style( 'tc_event_sponsors_logo_block_editor', plugins_url( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.css' ) );
+            wp_enqueue_style( 'tc_seating_charts_block_editor', plugins_url( 'assets/seating_charts/tc_seating_charts_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->get_asset_version( 'assets/seating_charts/tc_seating_charts_block_editor.css' ) );
+        }
+
         function register_gutenberg_blocks() {
 
             // Only if Bridge is not active
-            if ( apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) == false ) {
+            if ( tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) == false ) {
 
                 // Add to cart group
                 register_block_type( 'tickera/add-to-cart-group', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_add_to_cart_group_block_editor',
                     'editor_style' => 'tc_add_to_cart_group_block_editor'
                 ) );
 
                 // Add to cart group - Inner Add to cart
                 register_block_type( 'tickera/add-to-cart', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_add_to_cart_shortcode' ),
                     'attributes' => array(
                         'ticket_type_id' => array( 'type' => 'string' ),
@@ -83,6 +125,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Add to cart group - Inner Ticket Price
                 register_block_type( 'tickera/ticket-price', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_ticket_price_shortcode' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -99,12 +142,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Event add to Cart Group
                 register_block_type( 'tickera/event-add-to-cart-group', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_event_add_to_cart_group_block_editor',
                     'editor_style' => 'tc_event_add_to_cart_group_block_editor'
                 ) );
 
                 // Event add to Cart Group - Inner Table Column
                 register_block_type( 'tickera/event-add-to-cart-columns', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_event_add_to_cart_columns_content' ),
                     'attributes' => array(
                         'event_id' => array( 'type' => 'string' ),
@@ -126,12 +171,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                         'style' => array( 'type' => 'object' ),
                         'borderColor' => array( 'type' => 'string' ),
                         'fontSize' => array( 'type' => 'string' ),
-                        'fontFamily' => array( 'type' => 'string' )
+                        'fontFamily' => array( 'type' => 'string' ),
+                        'align' => array( 'type' => 'string' )
                     )
                 ) );
 
                 // Event add to Cart Group - Inner Table Rows
                 register_block_type( 'tickera/event-add-to-cart-rows', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_event_add_to_cart_rows_content' ),
                     'attributes' => array(
                         'event_id' => array( 'type' => 'string' ),
@@ -147,11 +194,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                         'style' => array( 'type' => 'object' ),
                         'borderColor' => array( 'type' => 'string' ),
                         'fontSize' => array( 'type' => 'string' ),
-                        'fontFamily' => array( 'type' => 'string' )
+                        'fontFamily' => array( 'type' => 'string' ),
+                        'align' => array( 'type' => 'string' )
                     )
                 ) );
 
                 register_block_type( 'tickera/event-add-to-cart', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_event_add_to_cart_shortcode' ),
                     'attributes' => array(
                         'event_id' => array( 'type' => 'string' ),
@@ -178,6 +227,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ) );
 
                 register_block_type( 'tickera/event-tickets-sold', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_event_tickets_sold_block_editor',
                     'editor_style' => 'tc_event_tickets_sold_block_editor',
                     'render_callback' => array( $this, 'render_event_tickets_sold_shortcode' ),
@@ -195,6 +245,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ) );
 
                 register_block_type( 'tickera/event-tickets-left', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_event_tickets_left_block_editor',
                     'editor_style' => 'tc_event_tickets_left_block_editor',
                     'render_callback' => array( $this, 'render_event_tickets_left_shortcode' ),
@@ -212,6 +263,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ) );
 
                 register_block_type( 'tickera/tickets-sold', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_tickets_sold_block_editor',
                     'editor_style' => 'tc_tickets_sold_block_editor',
                     'render_callback' => array( $this, 'render_tickets_sold_shortcode' ),
@@ -229,6 +281,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ) );
 
                 register_block_type( 'tickera/tickets-left', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_tickets_left_block_editor',
                     'editor_style' => 'tc_tickets_left_block_editor',
                     'render_callback' => array( $this, 'render_tickets_left_shortcode' ),
@@ -246,6 +299,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ) );
 
                 register_block_type( 'tickera/order-history', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_order_history_block_editor',
                     'editor_style' => 'tc_order_history_block_editor',
                     'render_callback' => array( $this, 'render_order_history_shortcode' ),
@@ -265,6 +319,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Add to Cart Group
                 register_block_type( 'tickera/woo-add-to-cart-group', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_woo_add_to_cart_group_block_editor',
                     'editor_style' => 'tc_woo_add_to_cart_group_block_editor'
                 ) );
@@ -272,6 +327,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Add to Cart Group - Inner Add to Cart
                 register_block_type( 'tickera/woo-add-to-cart', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_woo_add_to_cart_shortcode' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -290,6 +346,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Add to Cart Group - Inner Ticket Price
                 register_block_type( 'tickera/woo-ticket-price', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_woo_ticket_price_shortcode' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -306,12 +363,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
                 // Event add to Cart Group
                 register_block_type( 'tickera/woo-event-add-to-cart-group', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_woo_event_add_to_cart_group_block_editor',
                     'editor_style' => 'tc_woo_event_add_to_cart_group_block_editor'
                 ) );
 
                 // Event add to Cart Group - Inner Table Column
                 register_block_type( 'tickera/woo-event-add-to-cart-columns', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_woo_event_add_to_cart_columns_content' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -330,12 +389,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                         'style' => array( 'type' => 'object' ),
                         'borderColor' => array( 'type' => 'string' ),
                         'fontSize' => array( 'type' => 'string' ),
-                        'fontFamily' => array( 'type' => 'string' )
+                        'fontFamily' => array( 'type' => 'string' ),
+                        'align' => array( 'type' => 'string' ),
                     )
                 ) );
 
                 // Event add to Cart Group - Inner Table Rows
                 register_block_type( 'tickera/woo-event-add-to-cart-rows', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_woo_event_add_to_cart_rows_content' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -348,11 +409,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                         'style' => array( 'type' => 'object' ),
                         'borderColor' => array( 'type' => 'string' ),
                         'fontSize' => array( 'type' => 'string' ),
-                        'fontFamily' => array( 'type' => 'string' )
+                        'fontFamily' => array( 'type' => 'string' ),
+                        'align' => array( 'type' => 'string' ),
                     )
                 ) );
 
                 register_block_type( 'tickera/woo-event-add-to-cart', array(
+                    'api_version' => 3,
                     'render_callback' => array( $this, 'render_woo_event_add_to_cart_shortcode' ),
                     'attributes' => array(
                         'id' => array( 'type' => 'string' ),
@@ -377,6 +440,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             }
 
             register_block_type( 'tickera/event-date', array(
+                'api_version' => 3,
                 'editor_script' => 'tc_event_date_block_editor',
                 'editor_style' => 'tc_event_date_block_editor',
                 'render_callback' => array( $this, 'render_event_date_shortcode' ),
@@ -394,6 +458,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             ) );
 
             register_block_type( 'tickera/event-location', array(
+                'api_version' => 3,
                 'editor_script' => 'tc_event_location_block_editor',
                 'editor_style' => 'tc_event_location_block_editor',
                 'render_callback' => array( $this, 'render_event_location_shortcode' ),
@@ -411,6 +476,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             ) );
 
             register_block_type( 'tickera/event-terms', array(
+                'api_version' => 3,
                 'editor_script' => 'tc_event_terms_block_editor',
                 'editor_style' => 'tc_event_terms_block_editor',
                 'render_callback' => array( $this, 'render_event_terms_shortcode' ),
@@ -428,6 +494,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             ) );
 
             register_block_type( 'tickera/event-logo', array(
+                'api_version' => 3,
                 'editor_script' => 'tc_event_logo_block_editor',
                 'editor_style' => 'tc_event_logo_block_editor',
                 'render_callback' => array( $this, 'render_event_logo_shortcode' ),
@@ -438,6 +505,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             ) );
 
             register_block_type( 'tickera/event-sponsors-logo', array(
+                'api_version' => 3,
                 'editor_script' => 'tc_event_sponsors_logo_block_editor',
                 'editor_style' => 'tc_event_sponsors_logo_block_editor',
                 'render_callback' => array( $this, 'render_event_sponsors_logo_shortcode' ),
@@ -449,6 +517,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             if ( class_exists( 'TC_Seat_Chart' ) ) {
                 register_block_type( 'tickera/seating-charts', array(
+                    'api_version' => 3,
                     'editor_script' => 'tc_seating_charts_block_editor',
                     'editor_style' => 'tc_seating_charts_block_editor',
                     'render_callback' => array( $this, 'render_seating_charts_shortcode' ),
@@ -476,7 +545,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
          */
         function register_extra_scripts() {
 
-            global $post, $wp_version;
+            global $tc, $post, $wp_version;
 
             $wp_tickets_search = new \Tickera\TC_Tickets_Search( '', '', -1 );
             $ticket_types = array();
@@ -484,7 +553,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             foreach ( $wp_tickets_search->get_results() as $ticket_type ) {
                 $ticket = new \Tickera\TC_Ticket( $ticket_type->ID );
-                $ticket_types[] = array( $ticket_type->ID, $ticket->details->post_title, apply_filters( 'tc_cart_currency_and_format', apply_filters( 'tc_cart_price_per_ticket', $ticket->details->price_per_ticket, $ticket_type ) ) );
+                $ticket_types[] = array( $ticket_type->ID, $ticket->details->post_title, tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', $ticket->details->price_per_ticket, $ticket_type ) ) );
             }
 
             /*
@@ -520,14 +589,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 unset( $creation_messages[7] );
                 $creation_messages = array_values( $creation_messages );
 
-                $ticket_type_admin_url = apply_filters( 'tc_ticket_type_admin_url', admin_url( 'edit.php?post_type=tc_tickets' ) );
-                $random_creation_message = $creation_messages[ rand( 0, count( $creation_messages ) - 1 ) ];
+                $ticket_type_admin_url = tickera_apply_filters( 'tickera_ticket_type_admin_url', admin_url( 'edit.php?post_type=tc_tickets' ) );
+                $random_creation_message = $creation_messages[ wp_rand( 0, count( $creation_messages ) - 1 ) ];
 
-                wp_enqueue_script( 'tc_gutenberg_controls', plugins_url( 'assets/controls.js', __FILE__ ), array( 'wp-data', 'utils', 'wp-edit-post' ) );
-                wp_enqueue_script( 'tc_gutenberg_notices', plugins_url( 'assets/notices.js', __FILE__ ), array( 'wp-data', 'utils', 'wp-edit-post' ) );
+                wp_enqueue_script( 'tc_gutenberg_controls', plugins_url( 'assets/controls.js', __FILE__ ), array( 'wp-data', 'utils', 'wp-edit-post' ), $tc->version, false );
+                wp_enqueue_script( 'tc_gutenberg_notices', plugins_url( 'assets/notices.js', __FILE__ ), array( 'wp-data', 'utils', 'wp-edit-post' ), $tc->version, false );
                 wp_localize_script( 'tc_gutenberg_notices', 'tc_gutenberg', [
                     'no_ticket_types' => ( count( $event_ticket_types ) == 0 ) ? true : false,
-                    'no_ticket_types_message' => strip_tags( $random_creation_message ),
+                    'no_ticket_types_message' => wp_strip_all_tags( $random_creation_message ),
                     'no_ticket_types_action_message' => __( 'Click here to create ticket types.', 'tickera-event-ticketing-system' ),
                     'no_ticket_types_action_url' => esc_url( $ticket_type_admin_url ),
                 ] );
@@ -546,49 +615,42 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             $wp_scripts->remove( 'wp-tinymce' );
             wp_register_tinymce_scripts( $wp_scripts, true );
 
-            if ( apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) == false ) {
+            if ( tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) == false ) {
 
                 // Ticket add to cart group block
-                wp_register_script( 'tc_add_to_cart_group_block_editor', plugins_url( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_add_to_cart_group_block_editor', plugins_url( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js' ), false );
                 wp_localize_script( 'tc_add_to_cart_group_block_editor', 'tc_add_to_cart_group_block_editor', array( 'ticket_types' => wp_json_encode( $ticket_types ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_add_to_cart_group_block_editor' );
-                wp_enqueue_style( 'tc_add_to_cart_group_block_editor', plugins_url( 'assets/add_to_cart_group/tc_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Event tickets cart group block
-                wp_register_script( 'tc_event_add_to_cart_group_block_editor', plugins_url( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_event_add_to_cart_group_block_editor', plugins_url( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.js' ), false );
                 wp_localize_script( 'tc_event_add_to_cart_group_block_editor', 'tc_event_add_to_cart_group_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_event_add_to_cart_group_block_editor' );
-                wp_enqueue_style( 'tc_event_add_to_cart_group_block_editor', plugins_url( 'assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Event Tickets Sold block
-                wp_register_script( 'tc_event_ti ckets_sold_block_editor', plugins_url( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_event_tickets_sold_block_editor', plugins_url( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.js' ), false );
                 wp_localize_script( 'tc_event_tickets_sold_block_editor', 'tc_event_tickets_sold_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_event_tickets_sold_block_editor' );
-                wp_enqueue_style( 'tc_event_event_tickets_sold_block_editor', plugins_url( 'assets/event_tickets_sold/tc_event_tickets_sold_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Event Tickets Left block
-                wp_register_script( 'tc_event_tickets_left_block_editor', plugins_url( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_event_tickets_left_block_editor', plugins_url( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.js' ), false );
                 wp_localize_script( 'tc_event_tickets_left_block_editor', 'tc_event_tickets_left_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_event_tickets_left_block_editor' );
-                wp_enqueue_style( 'tc_event_event_tickets_left_block_editor', plugins_url( 'assets/event_tickets_left/tc_event_tickets_left_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Tickets Sold block
-                wp_register_script( 'tc_tickets_sold_block_editor', plugins_url( 'assets/tickets_sold/tc_tickets_sold_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_tickets_sold_block_editor', plugins_url( 'assets/tickets_sold/tc_tickets_sold_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/tickets_sold/tc_tickets_sold_block_editor.js' ), false );
                 wp_localize_script( 'tc_tickets_sold_block_editor', 'tc_tickets_sold_block_editor', array( 'ticket_types' => wp_json_encode( $ticket_types ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_tickets_sold_block_editor' );
-                wp_enqueue_style( 'tc_tickets_sold_block_editor', plugins_url( 'assets/tickets_sold/tc_tickets_sold_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Tickets Left block
-                wp_register_script( 'tc_tickets_left_block_editor', plugins_url( 'assets/tickets_left/tc_tickets_left_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_tickets_left_block_editor', plugins_url( 'assets/tickets_left/tc_tickets_left_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/tickets_left/tc_tickets_left_block_editor.js' ), false );
                 wp_localize_script( 'tc_tickets_left_block_editor', 'tc_tickets_left_block_editor', array( 'ticket_types' => wp_json_encode( $ticket_types ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_tickets_left_block_editor' );
-                wp_enqueue_style( 'tc_tickets_left_block_editor', plugins_url( 'assets/tickets_left/tc_tickets_left_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Order History block
-                wp_register_script( 'tc_order_history_block_editor', plugins_url( 'assets/order_history/tc_order_history_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
-                wp_localize_script( 'tc_tickets_sold_block_editor', 'tc_order_history_block_editor', array( 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
+                wp_register_script( 'tc_order_history_block_editor', plugins_url( 'assets/order_history/tc_order_history_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/order_history/tc_order_history_block_editor.js' ), false );
+                wp_localize_script( 'tc_order_history_block_editor', 'tc_order_history_block_editor', array( 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_order_history_block_editor' );
-                wp_enqueue_style( 'tc_order_history_block_editor', plugins_url( 'assets/order_history/tc_order_history_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             } else {
 
@@ -597,6 +659,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                     'post_type' => 'product',
                     'post_status' => 'publish',
                     'posts_per_page' => -1,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                     'meta_query' => array(
                         'relation' => 'OR',
                         array(
@@ -618,47 +681,44 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 }
 
                 // Ticket add to cart group block
-                wp_register_script( 'tc_woo_add_to_cart_group_block_editor', plugins_url( 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                $tc_woo_add_to_cart_group_block_editor_script_path = plugin_dir_path( __FILE__ ) . 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js';
+                $tc_woo_add_to_cart_group_block_editor_script_version = file_exists( $tc_woo_add_to_cart_group_block_editor_script_path ) ? filemtime( $tc_woo_add_to_cart_group_block_editor_script_path ) : $this->version;
+                wp_register_script( 'tc_woo_add_to_cart_group_block_editor', plugins_url( 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $tc_woo_add_to_cart_group_block_editor_script_version, false );
                 wp_localize_script( 'tc_woo_add_to_cart_group_block_editor', 'tc_woo_add_to_cart_group_block_editor', array( 'ticket_types' => wp_json_encode( $product_ids ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_woo_add_to_cart_group_block_editor' );
-                wp_enqueue_style( 'tc_woo_add_to_cart_group_block_editor', plugins_url( 'assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
                 // Event tickets cart group block
-                wp_register_script( 'tc_woo_event_add_to_cart_group_block_editor', plugins_url( 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                $tc_woo_event_add_to_cart_group_block_editor_script_path = plugin_dir_path( __FILE__ ) . 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js';
+                $tc_woo_event_add_to_cart_group_block_editor_script_version = file_exists( $tc_woo_event_add_to_cart_group_block_editor_script_path ) ? filemtime( $tc_woo_event_add_to_cart_group_block_editor_script_path ) : $this->version;
+                wp_register_script( 'tc_woo_event_add_to_cart_group_block_editor', plugins_url( 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $tc_woo_event_add_to_cart_group_block_editor_script_version, false );
                 wp_localize_script( 'tc_woo_event_add_to_cart_group_block_editor', 'tc_woo_event_add_to_cart_group_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_woo_event_add_to_cart_group_block_editor' );
-                wp_enqueue_style( 'tc_woo_event_add_to_cart_group_block_editor', plugins_url( 'assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
             }
 
             // Event Date block
-            wp_register_script( 'tc_event_date_block_editor', plugins_url( 'assets/event_date/tc_event_date_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+            wp_register_script( 'tc_event_date_block_editor', plugins_url( 'assets/event_date/tc_event_date_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_date/tc_event_date_block_editor.js' ), false );
             wp_localize_script( 'tc_event_date_block_editor', 'tc_event_date_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
             wp_enqueue_script( 'tc_event_date_block_editor' );
-            wp_enqueue_style( 'tc_event_event_date_block_editor', plugins_url( 'assets/event_date/tc_event_date_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             // Event Location block
-            wp_register_script( 'tc_event_location_block_editor', plugins_url( 'assets/event_location/tc_event_location_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+            wp_register_script( 'tc_event_location_block_editor', plugins_url( 'assets/event_location/tc_event_location_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_location/tc_event_location_block_editor.js' ), false );
             wp_localize_script( 'tc_event_location_block_editor', 'tc_event_location_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
             wp_enqueue_script( 'tc_event_location_block_editor' );
-            wp_enqueue_style( 'tc_event_event_location_block_editor', plugins_url( 'assets/event_location/tc_event_location_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             // Event Terms & Conditions block
-            wp_register_script( 'tc_event_terms_block_editor', plugins_url( 'assets/event_terms/tc_event_terms_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+            wp_register_script( 'tc_event_terms_block_editor', plugins_url( 'assets/event_terms/tc_event_terms_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_terms/tc_event_terms_block_editor.js' ), false );
             wp_localize_script( 'tc_event_terms_block_editor', 'tc_event_terms_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
             wp_enqueue_script( 'tc_event_terms_block_editor' );
-            wp_enqueue_style( 'tc_event_event_terms_block_editor', plugins_url( 'assets/event_terms/tc_event_terms_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             // Event Logo block
-            wp_register_script( 'tc_event_logo_block_editor', plugins_url( 'assets/event_logo/tc_event_logo_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+            wp_register_script( 'tc_event_logo_block_editor', plugins_url( 'assets/event_logo/tc_event_logo_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_logo/tc_event_logo_block_editor.js' ), false );
             wp_localize_script( 'tc_event_logo_block_editor', 'tc_event_logo_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
             wp_enqueue_script( 'tc_event_logo_block_editor' );
-            wp_enqueue_style( 'tc_event_event_logo_block_editor', plugins_url( 'assets/event_logo/tc_event_logo_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             // Event Sponsors Logo block
-            wp_register_script( 'tc_event_sponsors_logo_block_editor', plugins_url( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+            wp_register_script( 'tc_event_sponsors_logo_block_editor', plugins_url( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.js' ), false );
             wp_localize_script( 'tc_event_sponsors_logo_block_editor', 'tc_event_sponsors_logo_block_editor', array( 'events' => wp_json_encode( $events ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
             wp_enqueue_script( 'tc_event_sponsors_logo_block_editor' );
-            wp_enqueue_style( 'tc_event_event_sponsors_logo_block_editor', plugins_url( 'assets/event_sponsors_logo/tc_event_sponsors_logo_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
 
             if ( class_exists( 'TC_Seat_Chart' ) ) {
 
@@ -679,10 +739,9 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                     $seating_charts_ids[] = array( $seat_chart->ID, $seat_chart->post_title );
                 }
 
-                wp_register_script( 'tc_seating_charts_block_editor', plugins_url( 'assets/seating_charts/tc_seating_charts_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->version );
+                wp_register_script( 'tc_seating_charts_block_editor', plugins_url( 'assets/seating_charts/tc_seating_charts_block_editor.js', __FILE__ ), array( 'wp-editor', 'wp-blocks', 'wp-i18n', 'wp-element', 'jquery' ), $this->get_asset_version( 'assets/seating_charts/tc_seating_charts_block_editor.js' ), false );
                 wp_localize_script( 'tc_seating_charts_block_editor', 'tc_seating_charts_block_editor', array( 'seating_charts' => wp_json_encode( $seating_charts_ids ), 'since_611' => ( version_compare( $wp_version, '6.1.1', '>=' ) ? true : false ) ) );
                 wp_enqueue_script( 'tc_seating_charts_block_editor' );
-                wp_enqueue_style( 'tc_seating_charts_block_editor', plugins_url( 'assets/seating_charts/tc_seating_charts_block_editor.css', __FILE__ ), array( 'wp-edit-blocks' ), $this->version );
             }
         }
 
@@ -799,6 +858,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 return '<div class="tc-hidden"></div>';
             }
 
+            // AlignWidth
+            $width = '';
+            $alignWidth = [ 'full' => 'alignfull', 'wide' => 'alignwide' ];
+            if ( isset( $attributes[ 'align' ] ) && isset( $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] ) ) {
+                $width = isset( $attributes[ 'align' ] ) ? ' ' . $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] : '';
+            }
+
             ob_start();
 
             // No event selected
@@ -860,28 +926,28 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             $event = new \Tickera\TC_Event( $event_id );
             $event_tickets = $event->get_event_ticket_types( 'publish' );
             ?>
-            <div class="tc-event-add-to-cart-group-wrap tc-event-add-to-cart-columns<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ); ?>">
+            <div class="tc-event-add-to-cart-group-wrap tc-event-add-to-cart-columns<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ) . esc_attr( $width ); ?>">
                 <?php if ( count( $event_tickets ) > 0 ) : ?>
                     <table cellspacing="0" class="event_tickets tickera" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'border' ) ); ?>">
                         <tr style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'background' ) ); ?>">
-                            <?php do_action( 'tc_event_col_title_before_ticket_title' ); ?>
+                            <?php tickera_do_action( 'tickera_event_col_title_before_ticket_title' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                 ?>"><?php echo esc_html( $ticket_type_title ); ?></th>
-                            <?php do_action( 'tc_event_col_title_before_ticket_price' ); ?>
+                            <?php tickera_do_action( 'tickera_event_col_title_before_ticket_price' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                 ?>"><?php echo esc_html( $price_title ); ?></th>
                             <?php if ( $quantity ) : ?>
-                                <?php do_action( 'tc_event_col_title_before_quantity' ); ?>
+                                <?php tickera_do_action( 'tickera_event_col_title_before_quantity' ); ?>
                                 <th style="<?php
                                     echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                     echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                     ?>"><?php echo esc_html( $quantity_title ); ?></th>
                             <?php endif; ?>
-                            <?php do_action( 'tc_event_col_title_before_cart_title' ); ?>
+                            <?php tickera_do_action( 'tickera_event_col_title_before_cart_title' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
@@ -920,6 +986,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
                 return '<div class="tc-hidden"></div>';
+            }
+
+            // AlignWidth
+            $width = '';
+            $alignWidth = [ 'full' => 'alignfull', 'wide' => 'alignwide' ];
+            if ( isset( $attributes[ 'align' ] ) && isset( $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] ) ) {
+                $width = isset( $attributes[ 'align' ] ) ? ' ' . $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] : '';
             }
 
             ob_start();
@@ -965,7 +1038,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
             $event_tickets = $event->get_event_ticket_types( 'publish', false, true, false );
             if ( count( $event_tickets ) > 0 ) {
                 if ( 'publish' == $event->details->post_status ) : ?>
-                    <div class="tc-event-add-to-cart-group-wrap tc-event-add-to-cart-rows event_tickets tickera<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ); ?>" style="<?php echo esc_attr( $styles ); ?>">
+                    <div class="tc-event-add-to-cart-group-wrap tc-event-add-to-cart-rows event_tickets tickera<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ) . esc_attr( $width ); ?>" style="<?php echo esc_attr( $styles ); ?>">
                         <table cellspacing="0" class="event_tickets tickera" style="<?php
                         echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                         echo esc_attr( self::convert_inline_to_string( $inline, 'border' ) );
@@ -975,15 +1048,15 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                                 $event_ticket = new \Tickera\TC_Ticket( (int) $event_ticket_id );
                                 if ( \Tickera\TC_Ticket::is_sales_available( (int) $event_ticket_id ) ) : ?>
                                 <tr style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'background' ) ); ?>">
-                                    <?php do_action( 'tc_event_col_value_before_ticket_type', (int) $event_ticket_id ); ?>
-                                    <td data-column="<?php esc_attr_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?>" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo esc_html( apply_filters( 'tc_tickets_table_title', $event_ticket->details->post_title, $event_ticket_id ) ); ?></td>
-                                    <?php do_action( 'tc_event_col_value_before_ticket_price', (int) $event_ticket_id ); ?>
+                                    <?php tickera_do_action( 'tickera_event_col_value_before_ticket_type', (int) $event_ticket_id ); ?>
+                                    <td data-column="<?php esc_attr_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?>" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo esc_html( tickera_apply_filters( 'tickera_tickets_table_title', $event_ticket->details->post_title, $event_ticket_id ) ); ?></td>
+                                    <?php tickera_do_action( 'tickera_event_col_value_before_ticket_price', (int) $event_ticket_id ); ?>
                                     <td data-column="<?php esc_attr_e( 'Price', 'tickera-event-ticketing-system' ); ?>" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo esc_html( do_shortcode( '[ticket_price id="' . (int) $event_ticket->details->ID . '"]' ) ); ?></td>
                                     <?php if ( $quantity ) { ?>
-                                        <?php do_action( 'tc_event_col_value_before_quantity', (int) $event_ticket_id ); ?>
+                                        <?php tickera_do_action( 'tickera_event_col_value_before_quantity', (int) $event_ticket_id ); ?>
                                         <td data-column="<?php esc_attr_e( 'Quantity', 'tickera-event-ticketing-system' ); ?>" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses( tickera_quantity_selector( (int) $event_ticket->details->ID, true ), wp_kses_allowed_html( 'tickera_quantity_selector' ) ); ?></td>
                                     <?php } ?>
-                                    <?php do_action( 'tc_event_col_value_before_cart_title', (int) $event_ticket_id ); ?>
+                                    <?php tickera_do_action( 'tickera_event_col_value_before_cart_title', (int) $event_ticket_id ); ?>
                                     <td data-column="<?php esc_attr_e( 'Cart', 'tickera-event-ticketing-system' ); ?>" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses( do_shortcode( '[ticket id="' . (int) $event_ticket->details->ID . '" type="' . sanitize_text_field( $link_type ) . '" title="' . sanitize_text_field( $button_title ) . '" soldout_message="' . sanitize_text_field( $soldout_message ) . '" open_method="regular"]' ), wp_kses_allowed_html( 'tickera_add_to_cart' ) ); ?></td>
                                     </tr><?php
                                 endif;
@@ -1715,6 +1788,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 return '<div class="tc-hidden"></div>';
             }
 
+            // AlignWidth
+            $width = '';
+            $alignWidth = [ 'full' => 'alignfull', 'wide' => 'alignwide' ];
+            if ( isset( $attributes[ 'align' ] ) && isset( $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] ) ) {
+                $width = isset( $attributes[ 'align' ] ) ? ' ' . $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] : '';
+            }
+
             ob_start();
 
             // No event selected
@@ -1776,6 +1856,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 'posts_per_page' => -1,
                 'orderby' => 'menu_order',
                 'order' => 'ASC',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => [
                     'relation' => 'AND',
                     [ 'key' => '_tc_is_ticket', 'compare' => '=', 'value' => 'yes' ],
@@ -1783,28 +1864,28 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 ]
             ] );
             ?>
-            <div class="tc-woo-event-add-to-cart-group-wrap tc-woo-event-add-to-cart-columns<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ); ?>">
+            <div class="tc-woo-event-add-to-cart-group-wrap tc-woo-event-add-to-cart-columns<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ) . esc_attr( $width ); ?>">
                 <?php if ( count( $event_tickets ) > 0 ) : ?>
                     <table cellspacing="0" class="event_tickets tickera" style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'border' ) ); ?>">
                         <tr style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'background' ) ); ?>">
-                            <?php do_action( 'tc_wb_event_col_title_before_ticket_title' ); ?>
+                            <?php tickera_do_action( 'tickera_wb_event_col_title_before_ticket_title' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                 ?>"><?php echo esc_html( $ticket_type_title ); ?></th>
-                            <?php do_action( 'tc_wb_event_col_title_before_ticket_price' ); ?>
+                            <?php tickera_do_action( 'tickera_wb_event_col_title_before_ticket_price' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                 ?>"><?php echo esc_html( $price_title ); ?></th>
                             <?php if ( $quantity ) : ?>
-                                <?php do_action( 'tc_wb_event_col_title_before_quantity' ); ?>
+                                <?php tickera_do_action( 'tickera_wb_event_col_title_before_quantity' ); ?>
                                 <th style="<?php
                                     echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                     echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                                     ?>"><?php echo esc_html( $quantity_title ); ?></th>
                             <?php endif; ?>
-                            <?php do_action( 'tc_wb_event_col_title_before_cart_title' ); ?>
+                            <?php tickera_do_action( 'tickera_wb_event_col_title_before_cart_title' ); ?>
                             <th style="<?php
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) );
                                 echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
@@ -1843,6 +1924,13 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             if ( \Tickera\TC_Events::get_hidden_events_ids( $event_id ) && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) ) {
                 return '<div class="tc-hidden"></div>';
+            }
+
+            // AlignWidth
+            $width = '';
+            $alignWidth = [ 'full' => 'alignfull', 'wide' => 'alignwide' ];
+            if ( isset( $attributes[ 'align' ] ) && isset( $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] ) ) {
+                $width = isset( $attributes[ 'align' ] ) ? ' ' . $alignWidth[ sanitize_key( $attributes[ 'align' ] ) ] : '';
             }
 
             ob_start();
@@ -1888,6 +1976,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                 'posts_per_page' => -1,
                 'orderby' => 'menu_order',
                 'order' => 'ASC',
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
                 'meta_query' => [
                     'relation' => 'AND',
                     [ 'key' => '_tc_is_ticket', 'compare' => '=', 'value' => 'yes' ],
@@ -1897,7 +1986,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             if ( count( $event_tickets ) > 0 ) {
                 if ( 'publish' == $event->details->post_status ) : ?>
-                    <div class="tc-woo-event-add-to-cart-group-wrap tc-woo-event-add-to-cart-rows event_tickets tickera<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ); ?>" style="<?php echo esc_attr( $styles ); ?>">
+                    <div class="tc-woo-event-add-to-cart-group-wrap tc-woo-event-add-to-cart-rows event_tickets tickera<?php echo esc_attr( $additional_classes ) . esc_attr( $classes ) . esc_attr( $width ); ?>" style="<?php echo esc_attr( $styles ); ?>">
                         <table cellspacing="0" class="event_tickets tickera" style="<?php
                         echo esc_attr( self::convert_inline_to_string( $inline, 'font' ) );
                         echo esc_attr( self::convert_inline_to_string( $inline, 'border' ) );
@@ -1915,16 +2004,16 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                                     if ( ! in_array( $wc_catalog_visibility, [ 'hidden', 'search' ] ) && \Tickera\TC_Ticket::is_sales_available( $ticket_type->ID ) ) : ?>
                                         <?php if ( ! $_tc_used_for_seatings ) : ?>
                                         <tr style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'background' ) ); ?>">
-                                            <?php do_action( 'tc_wb_event_col_value_before_ticket_type', (int) $ticket_type->ID ); ?>
+                                            <?php tickera_do_action( 'tickera_wb_event_col_value_before_ticket_type', (int) $ticket_type->ID ); ?>
                                             <td data-column="<?php esc_attr_e( 'Ticket Type', 'tickera-event-ticketing-system' ); ?>"
-                                                style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo esc_html( apply_filters( 'wc_product_tickets_table_title', $ticket_type->post_title, $ticket_type->ID ) ); ?></td>
-                                            <?php do_action( 'tc_wb_event_col_value_before_ticket_price', (int) $ticket_type->ID ); ?>
+                                                style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo esc_html( tickera_apply_filters( 'tickera_wc_product_tickets_table_title', $ticket_type->post_title, $ticket_type->ID ) ); ?></td>
+                                            <?php tickera_do_action( 'tickera_wb_event_col_value_before_ticket_price', (int) $ticket_type->ID ); ?>
                                             <td data-column="<?php esc_attr_e( 'Price', 'tickera-event-ticketing-system' ); ?>"
-                                                style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses_post( apply_filters( 'wc_product_tickets_table_price', $product->get_price_html(), $ticket_type->ID ) ); ?></td>
+                                                style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_wc_product_tickets_table_price', $product->get_price_html(), $ticket_type->ID ) ); ?></td>
                                             <?php if ( $quantity ) {
 
                                                 if ( ! $product->is_type( 'variable' ) ) {
-                                                    do_action( 'tc_wb_event_col_value_before_quantity', (int) $ticket_type->ID );
+                                                    tickera_do_action( 'tickera_wb_event_col_value_before_quantity', (int) $ticket_type->ID );
                                                     $quantity_selector_field = woocommerce_quantity_input(
                                                         array(
                                                             'min_value' => $product->get_min_purchase_quantity(),
@@ -1942,7 +2031,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
                                                     echo wp_kses( '<td data-column="' . esc_attr__( 'Quantity', 'tickera-event-ticketing-system' ) . '"></td>', wp_kses_allowed_html( 'tickera' ) );
                                                 }
                                             }
-                                            do_action( 'tc_wb_event_col_value_before_cart', (int) $ticket_type->ID ); ?>
+                                            tickera_do_action( 'tickera_wb_event_col_value_before_cart', (int) $ticket_type->ID ); ?>
                                             <td data-column="<?php esc_attr_e( 'Cart', 'tickera-event-ticketing-system' ); ?>"
                                                 style="<?php echo esc_attr( self::convert_inline_to_string( $inline, 'padding' ) ); ?>"><?php echo wp_kses_post( do_shortcode( '[add_to_cart id="' . (int) $ticket_type->ID . '" style="" show_price="false" class="tc-wb-add-to-cart"]' ) ); ?></td>
                                             </tr><?php
@@ -2317,4 +2406,4 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
     }
 }
 
-$TC_tc_gutentick = new TC_tc_gutentick();
+new TC_tc_gutentick();

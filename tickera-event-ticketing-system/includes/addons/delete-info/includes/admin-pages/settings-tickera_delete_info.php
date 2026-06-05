@@ -1,5 +1,5 @@
 <?php
-
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
@@ -10,17 +10,22 @@ if ( isset( $_POST[ 'tc_delete_selected_data_permanently' ] ) && current_user_ca
 
     if ( check_admin_referer( 'delete_info' ) && isset( $_POST[ 'tc_delete_plugin_data' ] ) ) {
 
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
         ini_set( 'max_input_time', 0 );
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
         ini_set( 'max_execution_time', 0 );
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
         set_time_limit( 0 );
+        // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
         @ini_set( 'memory_limit', '1024M' );
 
-        do_action( 'tc_delete_plugins_data', tickera_sanitize_array( $_POST[ 'tc_delete_plugin_data' ] ) );
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+        tickera_do_action( 'tickera_delete_plugins_data', tickera_sanitize_array( wp_unslash( $_POST[ 'tc_delete_plugin_data' ] ) ) );
         $message = __( 'All selected data has been permanently deleted successfully.', 'tickera-event-ticketing-system' );
     }
 }
 
-$tickera_plugins_and_addons = apply_filters( 'tc_delete_info_plugins_list', array( 'tickera' => $tc->title ) );
+$tickera_plugins_and_addons = tickera_apply_filters( 'tickera_delete_info_plugins_list', array( 'tickera' => $tc->title ) );
 
 $action_url = add_query_arg( array(
     'post_type' => 'tc_events',
@@ -48,7 +53,10 @@ $action_url = add_query_arg( array(
                         <?php foreach ( $tickera_plugins_and_addons as $plugin_name => $plugin_title ) { ?>
                             <tr>
                                 <td><?php echo esc_html( $plugin_title ); ?></td>
-                                <td><input type="checkbox" value="yes" name="tc_delete_plugin_data[<?php echo esc_attr( $plugin_name ); ?>]"/><?php esc_html_e( 'Delete', 'tickera-event-ticketing-system' ); ?>
+                                <td>
+                                    <label for="<?php echo esc_attr( 'tc_delete_plugin_data_' . $plugin_name ) ?>">
+                                        <input type="checkbox" id="<?php echo esc_attr( 'tc_delete_plugin_data_' . $plugin_name ) ?>" value="yes" name="tc_delete_plugin_data[<?php echo esc_attr( $plugin_name ); ?>]"/><?php esc_html_e( 'Delete', 'tickera-event-ticketing-system' ); ?>
+                                    </label>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -58,7 +66,7 @@ $action_url = add_query_arg( array(
                 <?php submit_button( __( 'Delete selected data permanently', 'tickera-event-ticketing-system' ), 'primary', 'tc_delete_selected_data_permanently', true ); ?>
             </div>
         </form>
-        <?php do_action( 'tc_after_delete_info' ); ?>
+        <?php tickera_do_action( 'tickera_after_delete_info' ); ?>
     </div>
     <div id="poststuff" class="metabox-holder tc-settings">
         <div class="postbox">

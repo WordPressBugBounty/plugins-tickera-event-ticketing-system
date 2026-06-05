@@ -34,6 +34,7 @@ var AlignmentToolbar = wp.editor.AlignmentToolbar,
  * Event Add To Cart
  */
 registerBlockType( 'tickera/woo-event-add-to-cart-group', {
+    apiVersion: 3,
     title: __( 'Event - Add to Cart', 'tc' ),
     description: __( 'Event Tickets (products) Add to Cart table', 'tc' ),
     icon: 'cart',
@@ -44,7 +45,10 @@ registerBlockType( 'tickera/woo-event-add-to-cart-group', {
         __( 'Add', 'tc' ),
         __( 'WooCommerce', 'tc' ),
     ],
-    supports: { html: false },
+    supports: {
+        html: false,
+        align: [ 'wide', 'full' ],
+    },
     attributes: {
         id: {
             type: 'string',
@@ -80,6 +84,9 @@ registerBlockType( 'tickera/woo-event-add-to-cart-group', {
         quantity_title: {
             type: 'string',
             default: __( 'Quantity', 'tc' )
+        },
+        align: {
+            type: 'string'
         }
     },
     providesContext: {
@@ -91,7 +98,8 @@ registerBlockType( 'tickera/woo-event-add-to-cart-group', {
         'tickera/ticket_type_title': 'ticket_type_title',
         'tickera/price_title': 'price_title',
         'tickera/cart_title': 'cart_title',
-        'tickera/quantity_title': 'quantity_title'
+        'tickera/quantity_title': 'quantity_title',
+        'tickera/align': 'align'
     },
     edit: function( props ) {
 
@@ -310,6 +318,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/woo-event-add-to-cart-columns', {
+    apiVersion: 3,
     title: __( 'Event - Add To Cart', 'tc' ),
     description: __( 'Event add to cart table column', 'tc' ),
     icon: 'cart',
@@ -326,11 +335,13 @@ registerBlockType( 'tickera/woo-event-add-to-cart-columns', {
         'tickera/ticket_type_title',
         'tickera/price_title',
         'tickera/cart_title',
-        'tickera/quantity_title'
+        'tickera/quantity_title',
+        'tickera/align'
     ],
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         setTimeout( function() {
             props.setAttributes( {
@@ -342,14 +353,19 @@ registerBlockType( 'tickera/woo-event-add-to-cart-columns', {
                 ticket_type_title: ( typeof context[ 'tickera/ticket_type_title' ] !== 'undefined' ) ? context[ 'tickera/ticket_type_title' ] : '',
                 price_title: ( typeof context[ 'tickera/price_title' ] !== 'undefined' ) ? context[ 'tickera/price_title' ] : '',
                 cart_title: ( typeof context[ 'tickera/cart_title' ] !== 'undefined' ) ? context[ 'tickera/cart_title' ] : '',
-                quantity_title: ( typeof context[ 'tickera/quantity_title' ] !== 'undefined' ) ? context[ 'tickera/quantity_title' ] : ''
+                quantity_title: ( typeof context[ 'tickera/quantity_title' ] !== 'undefined' ) ? context[ 'tickera/quantity_title' ] : '',
+                align: ( typeof context[ 'tickera/align' ] !== 'undefined' ) ? context[ 'tickera/align' ] : ''
             });
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/woo-event-add-to-cart-columns',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/woo-event-add-to-cart-columns',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;
@@ -411,6 +427,7 @@ supports_args = {
 };
 
 registerBlockType( 'tickera/woo-event-add-to-cart-rows', {
+    apiVersion: 3,
     title: __( 'Event - Add To Cart', 'tc' ),
     description: __( 'Event add to cart table rows', 'tc' ),
     icon: 'cart',
@@ -423,11 +440,13 @@ registerBlockType( 'tickera/woo-event-add-to-cart-rows', {
         'tickera/display_type',
         'tickera/quantity',
         'tickera/show_event_title',
-        'tickera/show_price'
+        'tickera/show_price',
+        'tickera/align'
     ],
     edit: function( props ) {
 
         const { context } = props;
+        let blockProps = UseBlockProps();
 
         setTimeout( function() {
             props.setAttributes( {
@@ -435,14 +454,19 @@ registerBlockType( 'tickera/woo-event-add-to-cart-rows', {
                 display_type: ( typeof context[ 'tickera/display_type' ] !== 'undefined' ) ? context[ 'tickera/display_type' ] : '',
                 quantity: ( typeof context[ 'tickera/quantity' ] !== 'undefined' ) ? context[ 'tickera/quantity' ] : false,
                 show_event_title: ( typeof context[ 'tickera/show_event_title' ] !== 'undefined' ) ? context[ 'tickera/show_event_title' ] : false,
-                show_price: ( typeof context[ 'tickera/show_price' ] !== 'undefined' ) ? context[ 'tickera/show_price' ] : false
+                show_price: ( typeof context[ 'tickera/show_price' ] !== 'undefined' ) ? context[ 'tickera/show_price' ] : false,
+                align: ( typeof context[ 'tickera/align' ] !== 'undefined' ) ? context[ 'tickera/align' ] : false
             });
         }, 1000 )
 
-        return el( ServerSideRender, {
-            block: 'tickera/woo-event-add-to-cart-rows',
-            attributes: props.attributes
-        } );
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: 'tickera/woo-event-add-to-cart-rows',
+                attributes: props.attributes
+            } )
+        );
     },
     save: function() {
         return null;
@@ -454,6 +478,7 @@ registerBlockType( 'tickera/woo-event-add-to-cart-rows', {
  * Backward Compatibility
  */
 registerBlockType( 'tickera/woo-event-add-to-cart', {
+    apiVersion: 3,
     title: __( 'Event - Add to Cart', 'tc' ),
     description: __( 'Event Tickets (products) Add to Cart table', 'tc' ),
     icon: 'cart',
@@ -463,13 +488,22 @@ registerBlockType( 'tickera/woo-event-add-to-cart', {
         __( 'Event', 'tc' ),
         __( 'WooCommerce', 'tc' ),
     ],
-    supports: { html: false },
+    supports: {
+        html: false,
+        align: [ 'wide', 'full' ]
+    },
     parent: [ 'tickera/woo-event-add-to-cart-group' ],
     edit: function( props ) {
-        return el( ServerSideRender, {
-            block: "tickera/woo-event-add-to-cart",
-            attributes: props.attributes
-        } );
+        let blockProps = UseBlockProps();
+
+        return el(
+            'div',
+            blockProps,
+            el( ServerSideRender, {
+                block: "tickera/woo-event-add-to-cart",
+                attributes: props.attributes
+            } )
+        );
     },
     save: function( props ) {
         return null;

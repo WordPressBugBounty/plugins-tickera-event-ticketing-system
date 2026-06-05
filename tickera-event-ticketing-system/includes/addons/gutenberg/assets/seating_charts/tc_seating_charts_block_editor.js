@@ -4,11 +4,13 @@ var el = wp.element.createElement,
 
 if ( tc_seating_charts_block_editor.since_611 ) {
     var InspectorControls = wp.blockEditor.InspectorControls,
-        ServerSideRender = wp.serverSideRender;
+        ServerSideRender = wp.serverSideRender,
+        UseBlockProps = wp.blockEditor.useBlockProps;
 
 } else {
     var InspectorControls = wp.editor.InspectorControls,
-        ServerSideRender = wp.components.ServerSideRender;
+        ServerSideRender = wp.components.ServerSideRender,
+        UseBlockProps = wp.editor.useBlockProps;
 }
 
 var AlignmentToolbar = wp.editor.AlignmentToolbar,
@@ -69,6 +71,7 @@ var supports_args = {
 };
 
 registerBlockType( 'tickera/seating-charts', {
+    apiVersion: 3,
     title: __( 'Seating Chart', 'tc' ),
     description: __( 'Show seating chart button.', 'tc' ),
     icon: 'cart',
@@ -103,6 +106,7 @@ registerBlockType( 'tickera/seating-charts', {
     },
     edit: function( props ) {
 
+        let blockProps = UseBlockProps();
         var seating_charts = jQuery.parseJSON( tc_seating_charts_block_editor.seating_charts ),
             seating_charts_ids = [];
 
@@ -172,10 +176,14 @@ registerBlockType( 'tickera/seating-charts', {
                     }
                 ),
             ),
-            el( ServerSideRender, {
-                block: "tickera/seating-charts",
-                attributes: props.attributes
-            } )
+            el(
+                'div',
+                blockProps,
+                el( ServerSideRender, {
+                    block: "tickera/seating-charts",
+                    attributes: props.attributes
+                } )
+            )
         ];
     },
     save: function( props ) {

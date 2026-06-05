@@ -30,8 +30,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Delete_Info' ) ) {
 
         function __construct() {
             $this->title = __( 'Delete Info', 'tickera-event-ticketing-system' );
-            add_filter( 'tc_settings_new_menus', array( &$this, 'tc_settings_new_menus_additional' ) );
-            add_action( 'tc_settings_menu_tickera_delete_info', array( &$this, 'tc_settings_menu_tickera_delete_info_show_page' ) );
+            tickera_add_filter( 'tickera_settings_new_menus', array( &$this, 'tc_settings_new_menus_additional' ), 10, 1, array( 'tc_settings_new_menus' ) );
+            tickera_add_action( 'tickera_settings_menu_tickera_delete_info', array( &$this, 'tc_settings_menu_tickera_delete_info_show_page' ), 10, 1, [ 'tc_settings_menu_tickera_delete_info' ] );
         }
 
         function tc_settings_new_menus_additional( $settings_tabs ) {
@@ -45,4 +45,4 @@ if ( ! class_exists( '\Tickera\Addons\TC_Delete_Info' ) ) {
     }
 }
 
-$TC_Delete_Info = new TC_Delete_Info();
+new TC_Delete_Info();

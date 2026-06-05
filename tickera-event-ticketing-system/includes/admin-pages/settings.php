@@ -4,8 +4,10 @@ global $action, $page, $tc;
 $tc->session->start();
 
 wp_reset_vars(array('action', 'page'));
-$page = sanitize_key( $_GET['page'] );
-$tab = (isset($_GET['tab'])) ? sanitize_key( $_GET['tab'] ) : '';
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin settings page parameter is sanitized before rendering tabs.
+$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin settings tab parameter is sanitized before rendering tabs.
+$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
 if (empty($tab)) {
     $tab = 'general';
 }
@@ -20,6 +22,7 @@ if (empty($tab)) {
         </div>
         <?php } ?>
     </h2>
+    <?php // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin settings submit flag only controls the saved settings notice. ?>
     <?php if (isset($_POST['submit'])) { ?>
         <div id="message" class="updated fade"><p><?php esc_html_e('Settings saved successfully.', 'tickera-event-ticketing-system'); ?></p></div>
     <?php }
@@ -33,24 +36,24 @@ if (empty($tab)) {
             ?></p>
         </div>
     <?php }
-    $menus = array();
-    $menus['general'] = __('General', 'tickera-event-ticketing-system');
-    $menus['gateways'] = __('Payment Gateways', 'tickera-event-ticketing-system');
-    $menus['email'] = __('E-mail', 'tickera-event-ticketing-system');
-    $menus['api'] = __('API Access', 'tickera-event-ticketing-system');
-    $menus = apply_filters('tc_settings_new_menus', $menus);
+    $tickera_setting_menus = array();
+    $tickera_setting_menus['general'] = __('General', 'tickera-event-ticketing-system');
+    $tickera_setting_menus['gateways'] = __('Payment Gateways', 'tickera-event-ticketing-system');
+    $tickera_setting_menus['email'] = __('E-mail', 'tickera-event-ticketing-system');
+    $tickera_setting_menus['api'] = __('API Access', 'tickera-event-ticketing-system');
+    $tickera_setting_menus = tickera_apply_filters( 'tickera_settings_new_menus', $tickera_setting_menus);
     ?>
     <div class="nav-tab-wrapper">
         <ul>
-            <?php foreach ($menus as $key => $menu) {
-                $tab_url = add_query_arg(array(
+            <?php foreach ($tickera_setting_menus as $tickera_setting_key => $tickera_menu) {
+                $tickera_setting_tab_url = add_query_arg(array(
                         'post_type' => 'tc_events',
                         'page' => $page,
-                        'tab' => $key,
+                        'tab' => $tickera_setting_key,
                     ), admin_url('edit.php'));
                 ?>
                 <li>
-                    <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $key ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $menu ) ); ?></a>
+                    <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $tickera_setting_key ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tickera_setting_tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $tickera_menu ) ); ?></a>
                 </li>
             <?php } ?>
         </ul>
@@ -81,7 +84,7 @@ if (empty($tab)) {
             $tc->show_page_tab('social');
             break;
 
-        default: do_action('tc_settings_menu_' . $tab);
+        default: tickera_do_action( 'tickera_settings_menu_' . $tab);
             break;
     } ?>
 </div><?php

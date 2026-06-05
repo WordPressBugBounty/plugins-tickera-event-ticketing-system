@@ -1,7 +1,8 @@
 ( function ( $ ) {
 
-    $( document ).ready( function ( $ ) {
+    const { sprintf, _n } = wp.i18n;
 
+    $( document ).ready( function ( $ ) {
 
         /**
          * Initialize Conditional Fields
@@ -1146,12 +1147,19 @@
 
                     if ( sold > 0 ) {
 
-                        if ( sold == 1 ) {
-                            var r = confirm( tc_vars.single_sold_ticket_trash_message.replace( "%s", sold ) );
+                        sold = parseInt(sold, 10);
 
-                        } else {
-                            var r = confirm( tc_vars.multi_sold_tickets_trash_message.replace( "%s", sold ) );
-                        }
+                        let message = sprintf(
+                            _n(
+                                'Are you sure you want to delete this Ticket Type? You have %s ticket sold for some of the selected ticket types',
+                                'Are you sure you want to delete this Ticket Type? You have %s tickets sold for some of the selected ticket types',
+                                sold,
+                                'tickera-event-ticketing-system'
+                            ),
+                            sold
+                        )
+
+                        var r = confirm( message );
 
                         if ( r ) {
                             window.location = href;

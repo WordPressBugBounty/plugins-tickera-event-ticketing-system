@@ -111,9 +111,9 @@ if ( ! class_exists( '\Tickera\TC_Session' ) ) {
          */
         function start() {
             if ( ! session_id() || ( ! headers_sent() && PHP_SESSION_NONE == session_status() ) ) {
-                do_action( 'tc_before_session_start' );
+                tickera_do_action( 'tickera_before_session_start' );
                 @session_start();
-                do_action( 'tc_after_session_started' );
+                tickera_do_action( 'tickera_after_session_started' );
             }
         }
 

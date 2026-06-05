@@ -14,7 +14,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_date_purchase_element' )
         var $font_awesome_icon = '<span class="tti-date_schedule_calendar_event_icon-1"></span>';
 
         function on_creation() {
-            $this->element_title = apply_filters( 'tc_ticket_date_purchase_element_title', __( 'Date of Purchase', 'tickera-event-ticketing-system' ) );
+            $this->element_title = tickera_apply_filters( 'tickera_ticket_date_purchase_element_title', __( 'Date of Purchase', 'tickera-event-ticketing-system' ) );
         }
 
         function ticket_content( $ticket_instance_id = false, $ticket_type_id = false ) {
@@ -27,7 +27,7 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_date_purchase_element' )
                 $purchase_date = date_i18n( get_option( 'date_format' ), strtotime( $post_purchase_date ) );
                 $purchase_time = date_i18n( get_option( 'time_format' ), strtotime( $post_purchase_date ) );
                 $date_purchase = $purchase_date . ' ' . $purchase_time;
-                return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_date_purchase_element', $date_purchase ) );
+                return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_date_purchase_element', $date_purchase ) );
 
             } else {
 
@@ -39,10 +39,10 @@ if ( ! class_exists( '\Tickera\Ticket\Element\tc_ticket_date_purchase_element' )
                     $purchase_date = date_i18n( get_option( 'date_format' ), strtotime( $post_purchase_date ) );
                     $purchase_time = date_i18n( get_option( 'time_format' ), strtotime( $post_purchase_date ) );
                     $date_purchase = $purchase_date . ' ' . $purchase_time;
-                    return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_date_purchase_element', $date_purchase ) );
+                    return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_date_purchase_element', $date_purchase ) );
 
                 } else {
-                    return '<br/>' . wp_kses_post( apply_filters( 'tc_ticket_date_purchase_element', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) ) );
+                    return '<br/>' . wp_kses_post( tickera_apply_filters( 'tickera_ticket_date_purchase_element', date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time(), false ) ) );
                 }
             }
         }

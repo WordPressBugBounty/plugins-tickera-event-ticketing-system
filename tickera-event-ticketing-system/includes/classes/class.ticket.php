@@ -76,14 +76,14 @@ if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
                 $from_date = isset( $metas[ '_ticket_availability_from_date' ] ) ? $metas[ '_ticket_availability_from_date' ] [ 0 ] : '';
                 $to_date = isset( $metas[ '_ticket_availability_to_date' ] ) ? $metas[ '_ticket_availability_to_date' ][ 0 ] : '';
 
-                if ( ( date( 'U', current_time( 'timestamp', false ) ) >= date( 'U', strtotime( $from_date ) ) ) && ( date( 'U', current_time( 'timestamp', false ) ) <= date( 'U', strtotime( $to_date ) ) ) ) {
+                if ( ( wp_date( 'U', current_time( 'timestamp', false ) ) >= wp_date( 'U', strtotime( $from_date ) ) ) && ( wp_date( 'U', current_time( 'timestamp', false ) ) <= wp_date( 'U', strtotime( $to_date ) ) ) ) {
                     // Ticket is saleable
                 } else {
                     $is_sales_available = false;
                 }
             }
 
-            return apply_filters( 'tc_is_ticket_type_sales_available', $is_sales_available, $ticket_type_id );
+            return tickera_apply_filters( 'tickera_is_ticket_type_sales_available', $is_sales_available, $ticket_type_id );
         }
 
         public static function is_checkin_available( $ticket_type_id = false, $order = false, $ticket_id = false ) {
@@ -101,7 +101,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
                     $from_date = get_post_meta( $ticket_type_id, '_ticket_checkin_availability_from_date', true );
                     $to_date = get_post_meta( $ticket_type_id, '_ticket_checkin_availability_to_date', true );
 
-                    return ( ( date( 'U', current_time( 'timestamp', false ) ) >= date( 'U', strtotime( $from_date ) ) ) && ( date( 'U', current_time( 'timestamp', false ) ) <= date( 'U', strtotime( $to_date ) ) ) )
+                    return ( ( wp_date( 'U', current_time( 'timestamp', false ) ) >= wp_date( 'U', strtotime( $from_date ) ) ) && ( wp_date( 'U', current_time( 'timestamp', false ) ) <= wp_date( 'U', strtotime( $to_date ) ) ) )
                         ? true
                         : false;
 
@@ -164,7 +164,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
                      * True = Event starts already
                      * False = Event didn't start yet
                      */
-                    return ( date( 'U', current_time( 'timestamp', false ) ) >= date( 'U', strtotime( $event_date ) ) ) ? true : false;
+                    return ( wp_date( 'U', current_time( 'timestamp', false ) ) >= wp_date( 'U', strtotime( $event_date ) ) ) ? true : false;
 
                 } else {
                     return true; // open-ended
@@ -271,7 +271,7 @@ if ( ! class_exists( '\Tickera\TC_Ticket' ) ) {
          */
         function get_ticket_event( $ticket_type_id = false ) {
             $ticket_type_id = ! $ticket_type_id ? $this->id : $ticket_type_id;
-            return get_post_meta( $ticket_type_id, apply_filters( 'tc_event_name_field_name', 'event_name', $ticket_type_id ), true );
+            return get_post_meta( $ticket_type_id, tickera_apply_filters( 'tickera_event_name_field_name', 'event_name', $ticket_type_id ), true );
         }
 
         /**
