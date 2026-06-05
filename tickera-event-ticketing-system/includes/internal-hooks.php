@@ -202,7 +202,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
                                         <?php echo esc_html( tickera_format_date( $order->details->tc_order_date, true ) ); ?>
                                     </td>
                                     <td>
-                                        <?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ); ?>
+                                        <?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) ); ?>
                                     </td>
                                     <td>
                                         <?php
@@ -379,7 +379,7 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price' ) ) {
         $tickera_general_settings = get_option( 'tickera_general_setting', false );
         if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || ( isset( $tickera_general_settings[ 'show_fees' ] ) && $tickera_general_settings[ 'show_fees' ] == 'yes' ) ) {
             if ( ! $disabled ) : ?>
-                <td class="ticket-fee" class="ticket_fee"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $fee ) ); ?></td>
+                <td class="ticket-fee" class="ticket_fee"><?php echo wp_kses_post( apply_filters( 'tickera_cart_currency_and_format', $fee ) ); ?></td>
             <?php endif;
         }
     }
@@ -446,7 +446,7 @@ if ( ! function_exists( 'tickera_cart_col_value_before_total_price_total' ) ) {
 
         if ( ! isset( $tickera_general_settings[ 'show_fees' ] ) || ( isset( $tickera_general_settings[ 'show_fees' ] ) && 'yes' == $tickera_general_settings[ 'show_fees' ] ) ) : ?>
             <div>
-                <span class="total_item_title"><?php echo esc_html( $fees_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $tickera_total_fees ) ); ?></span>
+                <span class="total_item_title"><?php echo esc_html( $fees_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( apply_filters( 'tickera_cart_currency_and_format', $tickera_total_fees ) ); ?></span>
             </div>
         <?php endif;
     }
@@ -514,7 +514,7 @@ if ( ! function_exists( 'tickera_cart_tax' ) ) {
 
         if ( ! isset( $tickera_general_settings[ 'show_tax_rate' ] ) || ( isset( $tickera_general_settings[ 'show_tax_rate' ] ) && 'yes' == $tickera_general_settings[ 'show_tax_rate' ] ) ) : ?>
             <div>
-                <span class="total_item_title"><?php echo esc_html( $tax_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_currency_and_format', $tickera_tax_value ) ); ?></span>
+                <span class="total_item_title"><?php echo esc_html( $tax_label ); ?>:</span><span class="total_item_amount"><?php echo wp_kses_post( apply_filters( 'tickera_cart_currency_and_format', $tickera_tax_value ) ); ?></span>
             </div>
         <?php endif;
     }
@@ -726,7 +726,7 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
                 return sprintf(
                     /* translators: 1: Discount amount 2: Discount ID 3: Discount Code */
                     __( '%1$s<br/>Code: <a href="edit.php?post_type=tc_events&page=tc_discount_codes&action=edit&ID=%2$s">%3$s</a>', 'tickera-event-ticketing-system' ),
-                    esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ),
+                    esc_html( apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ),
                     (int) $tickera_discount->ID,
                     esc_html( $discount_code ) );
 
@@ -735,16 +735,16 @@ if ( ! function_exists( 'tickera_order_field_value' ) ) {
             }
 
         } elseif ( 'total' == $field_id && isset( $value[ 'total' ] ) ) {
-            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'total' ] ) );
+            return esc_html( apply_filters( 'tickera_cart_currency_and_format', $value[ 'total' ] ) );
 
         } elseif ( 'subtotal' == $field_id && isset( $value[ 'subtotal' ] ) ) {
-            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'subtotal' ] ) );
+            return esc_html( apply_filters( 'tickera_cart_currency_and_format', $value[ 'subtotal' ] ) );
 
         } elseif ( 'fees_total' == $field_id && isset( $value[ 'fees_total' ] ) ) {
-            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'fees_total' ] ) );
+            return esc_html( apply_filters( 'tickera_cart_currency_and_format', $value[ 'fees_total' ] ) );
 
         } elseif ( 'tax_total' == $field_id && isset( $value[ 'tax_total' ] ) ) {
-            return esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value[ 'tax_total' ] ) );
+            return esc_html( apply_filters( 'tickera_cart_currency_and_format', $value[ 'tax_total' ] ) );
 
         } else {
             return $value;

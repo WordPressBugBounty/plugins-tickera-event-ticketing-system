@@ -266,7 +266,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
             ), $atts ) );
 
             $ticket = new TC_Ticket( (int) $id, 'publish' );
-            return tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) );
+            return apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) );
         }
 
         function event_tickets_sold( $atts ) {

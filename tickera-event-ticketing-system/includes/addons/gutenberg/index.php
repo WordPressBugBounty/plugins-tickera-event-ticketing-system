@@ -553,7 +553,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_tc_gutentick' ) ) {
 
             foreach ( $wp_tickets_search->get_results() as $ticket_type ) {
                 $ticket = new \Tickera\TC_Ticket( $ticket_type->ID );
-                $ticket_types[] = array( $ticket_type->ID, $ticket->details->post_title, tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', $ticket->details->price_per_ticket, $ticket_type ) ) );
+                $ticket_types[] = array( $ticket_type->ID, $ticket->details->post_title, apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', $ticket->details->price_per_ticket, $ticket_type ) ) );
             }
 
             /*

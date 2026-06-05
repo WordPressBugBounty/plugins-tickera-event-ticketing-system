@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.7.2
+ * Version: 3.5.7.3
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -760,7 +760,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         ?>
                                     <td class="ticket-price">
                                         <span class="ticket_price"><?php 
-                        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', tickera_get_ticket_price( $ticket->details->ID ), $ticket_type ) ) );
+                        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', tickera_get_ticket_price( $ticket->details->ID ), $ticket_type ) ) );
                         ?></span>
                                     </td>
                                     <?php 
@@ -804,7 +804,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         ?>
                                     <td class="ticket-total">
                                         <span class="ticket_total"><?php 
-                        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters(
+                        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters(
                             'tickera_cart_price_per_ticket_and_quantity',
                             tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count,
                             $ticket_type,
@@ -838,7 +838,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                                     <span class="total_item_title"><?php 
                 esc_html_e( 'SUBTOTAL: ', 'tickera-event-ticketing-system' );
                 ?></span><span class="total_item_amount"><?php 
-                echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_subtotal', $cart_subtotal ) ) );
+                echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_subtotal', $cart_subtotal ) ) );
                 ?></span>
                                 </div>
                                 <?php 
@@ -850,7 +850,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                                     <span class="total_item_title"><?php 
                     esc_html_e( 'DISCOUNT: ', 'tickera-event-ticketing-system' );
                     ?></span><span class="total_item_amount"><?php 
-                    echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_discount', 0 ) ) );
+                    echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_discount', 0 ) ) );
                     ?></span>
                                 <?php 
                 }
@@ -862,7 +862,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                                     <span class="total_item_title cart_total_price_title"><?php 
                 esc_html_e( 'TOTAL: ', 'tickera-event-ticketing-system' );
                 ?></span><span class="total_item_amount cart_total_price"><?php 
-                echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_total', $cart_subtotal ) ) );
+                echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_total', $cart_subtotal ) ) );
                 ?></span>
                                 </div>
                                 <?php 
@@ -2686,7 +2686,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                                 <?php 
                         echo wp_kses_post( tickera_apply_filters(
                             'tickera_cart_widget_item',
-                            $ordered_count . ' x ' . $ticket->details->post_title . ' (' . tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')',
+                            $ordered_count . ' x ' . $ticket->details->post_title . ' (' . apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')',
                             $ordered_count,
                             $ticket->details->post_title,
                             tickera_get_ticket_price( $ticket->details->ID )

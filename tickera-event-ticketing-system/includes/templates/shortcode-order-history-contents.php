@@ -71,7 +71,7 @@ if ( ! is_user_logged_in() ) {
                     </td>
                     <?php tickera_do_action( 'tickera_order_history_td_after_date', $tickera_user_order ); ?>
                     <td>
-                        <?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $tickera_order->details->tc_payment_info[ 'total' ] ) ); ?>
+                        <?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', $tickera_order->details->tc_payment_info[ 'total' ] ) ); ?>
                     </td>
                     <?php tickera_do_action( 'tickera_order_history_td_after_total', $tickera_user_order ); ?>
                     <td>

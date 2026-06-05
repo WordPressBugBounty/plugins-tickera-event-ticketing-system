@@ -149,7 +149,7 @@ if ( isset( $tickera_settings[ 'force_login' ] ) && 'yes' == $tickera_settings[ 
                                         </td>
                                         <?php tickera_do_action( 'tickera_cart_col_value_before_ticket_price', $tickera_ticket_type, $tickera_ordered_count, tickera_get_ticket_price( $tickera_ticket->details->ID ) ); ?>
                                         <td class="ticket-price">
-                                            <span class="ticket_price"><?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', tickera_get_ticket_price( $tickera_ticket->details->ID ), $tickera_ticket_type ) ) ); ?></span>
+                                            <span class="ticket_price"><?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket', tickera_get_ticket_price( $tickera_ticket->details->ID ), $tickera_ticket_type ) ) ); ?></span>
                                         </td>
                                         <?php tickera_do_action( 'tickera_cart_col_value_before_quantity', $tickera_ticket_type, $tickera_ordered_count, tickera_get_ticket_price( $tickera_ticket->details->ID ) ); ?>
                                         <td class="ticket-quantity ticket_quantity"><?php echo esc_html( $tickera_editable_qty ? '' : $tickera_ordered_count ); ?>
@@ -166,7 +166,7 @@ if ( isset( $tickera_settings[ 'force_login' ] ) && 'yes' == $tickera_settings[ 
                                                 <?php } ?></td>
                                             </div>
                                         <?php tickera_do_action( 'tickera_cart_col_value_before_total_price', $tickera_ticket_type, $tickera_ordered_count, tickera_get_ticket_price( $tickera_ticket->details->ID ) ); ?>
-                                        <td class="ticket-total"><span class="ticket_total"><?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket_and_quantity', ( tickera_get_ticket_price( $tickera_ticket->details->ID ) * $tickera_ordered_count ), $tickera_ticket_type, $tickera_ordered_count ) ) ); ?></span>
+                                        <td class="ticket-total"><span class="ticket_total"><?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_price_per_ticket_and_quantity', ( tickera_get_ticket_price( $tickera_ticket->details->ID ) * $tickera_ordered_count ), $tickera_ticket_type, $tickera_ordered_count ) ) ); ?></span>
                                         </td>
                                         <?php tickera_do_action( 'tickera_cart_col_value_after_total_price', $tickera_ticket_type, $tickera_ordered_count, tickera_get_ticket_price( $tickera_ticket->details->ID ) ); ?>
                                     </tr>
@@ -177,19 +177,19 @@ if ( isset( $tickera_settings[ 'force_login' ] ) && 'yes' == $tickera_settings[ 
                                     <?php tickera_do_action( 'tickera_cart_col_value_before_total_price_subtotal', tickera_apply_filters( 'tickera_cart_subtotal', $tickera_cart_subtotal ) ); ?>
                                     <div>
                                         <span class="total_item_title"><?php esc_html_e( 'SUBTOTAL: ', 'tickera-event-ticketing-system' ); ?></span>
-                                        <span class="total_item_amount"><?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_subtotal', $tickera_cart_subtotal ) ) ); ?></span>
+                                        <span class="total_item_amount"><?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_subtotal', $tickera_cart_subtotal ) ) ); ?></span>
                                     </div>
                                     <?php tickera_do_action( 'tickera_cart_col_value_before_total_price_discount', tickera_apply_filters( 'tickera_cart_discount', 0 ) ); ?>
                                     <?php if ( ! isset( $tickera_settings[ 'show_discount_field' ] ) || ( isset( $tickera_settings[ 'show_discount_field' ] ) && 'yes' == $tickera_settings[ 'show_discount_field' ] ) ) : ?>
                                         <div>
                                             <span class="total_item_title"><?php esc_html_e( 'DISCOUNT: ', 'tickera-event-ticketing-system' ); ?></span>
-                                            <span class="total_item_amount"><?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_discount', 0 ) ) ); ?></span>
+                                            <span class="total_item_amount"><?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_discount', 0 ) ) ); ?></span>
                                         </div>
                                     <?php endif; ?>
                                     <?php tickera_do_action( 'tickera_cart_col_value_before_total_price_total', tickera_apply_filters( 'tickera_cart_total', $tickera_cart_subtotal ) ); ?>
                                     <div>
                                         <span class="total_item_title cart_total_price_title"><?php esc_html_e( 'TOTAL: ', 'tickera-event-ticketing-system' ); ?></span>
-                                        <span class="total_item_amount cart_total_price"><?php echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_total', $tickera_cart_subtotal ) ) ); ?></span>
+                                        <span class="total_item_amount cart_total_price"><?php echo esc_html( apply_filters( 'tickera_cart_currency_and_format', tickera_apply_filters( 'tickera_cart_total', $tickera_cart_subtotal ) ) ); ?></span>
                                     </div>
                                     <?php tickera_do_action( 'tickera_cart_col_value_after_total_price_total' ); ?>
                                 </td>

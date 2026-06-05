@@ -1735,7 +1735,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $tc_client_order_message = tickera_apply_filters( 'tickera_client_order_message', $tc_client_order_message, $order );
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
                 $message = str_replace( tickera_apply_filters( 'tickera_order_completed_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_completed_client_email_placeholder_values', $placeholder_values ), $tc_client_order_message );
@@ -1778,7 +1778,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $message = isset( $settings[ 'admin_order_message' ] ) ? $settings[ 'admin_order_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 if ( isset( $settings[ 'admin_order_to_email' ] )
                     && $settings[ 'admin_order_to_email' ] ) {
@@ -1859,7 +1859,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $message = isset( $settings[ 'client_order_placed_message' ] ) ? $settings[ 'client_order_placed_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
                 $message = str_replace( tickera_apply_filters( 'tickera_order_placed_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_placed_client_email_placeholder_values', $placeholder_values ), $message );
@@ -1896,7 +1896,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $message = isset( $settings[ 'admin_order_placed_message' ] ) ? $settings[ 'admin_order_placed_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 if ( isset( $settings[ 'admin_order_placed_to_email' ] )
                     && $settings[ 'admin_order_placed_to_email' ] ) {
@@ -1976,7 +1976,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $message = isset( $settings[ 'client_order_refunded_message' ] ) ? $settings[ 'client_order_refunded_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'DOWNLOAD_URL', 'BUYER_NAME', 'ORDER_DETAILS', 'EVENT_NAME', 'EVENT_LOCATION' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_status_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ), implode( ' | ', $event_titles ), implode( ' | ', $event_locations ) );
 
                 $to = $buyer_data[ 'email_post_meta' ];
                 $message = str_replace( tickera_apply_filters( 'tickera_order_refunded_client_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_refunded_client_email_placeholder_values', $placeholder_values ), $message );
@@ -2010,7 +2010,7 @@ if ( ! function_exists( 'tickera_order_created_email' ) ) {
                 $message = isset( $settings[ 'admin_order_refunded_message' ] ) ? $settings[ 'admin_order_refunded_message' ] : $default_message;
 
                 $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'ORDER_ADMIN_URL', 'BUYER_NAME', 'ORDER_DETAILS' );
-                $placeholder_values = array( $order_id, esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
+                $placeholder_values = array( $order_id, esc_html( apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ) ), $order_admin_url, $buyer_name, tickera_get_order_details_email( $order->details->ID, $order->details->tc_order_date, true, $status ) );
 
                 $to = ( isset( $settings[ 'admin_order_refunded_to_email' ] ) && $settings[ 'admin_order_refunded_to_email' ] ) ? $settings[ 'admin_order_refunded_to_email' ] : get_option('admin_email');
                 $message = str_replace( tickera_apply_filters( 'tickera_order_refunded_admin_email_placeholders', $placeholders ), tickera_apply_filters( 'tickera_order_refunded_admin_email_placeholder_values', $placeholder_values ), $message );
@@ -3558,10 +3558,10 @@ if ( ! function_exists( 'tickera_get_order_details_email' ) ) {
                     $order_status = $order->details->post_status;
             }
 
-            $fees_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
-            $tax_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
-            $subtotal = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
-            $total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+            $fees_total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+            $tax_total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+            $subtotal = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
+            $total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
 
             $transaction_id = isset( $order->details->tc_payment_info[ 'transaction_id' ] ) ? sanitize_text_field( $order->details->tc_payment_info[ 'transaction_id' ] ) : '';
             $order_id = strtoupper( $order->details->post_name );
@@ -3837,10 +3837,10 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
                     $order_status = $order->details->post_status;
             }
 
-            $fees_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
-            $tax_total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
-            $subtotal = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
-            $total = sanitize_text_field( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+            $fees_total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+            $tax_total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+            $subtotal = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'subtotal' ] ) );
+            $total = sanitize_text_field( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
 
             $transaction_id = isset( $order->details->tc_payment_info[ 'transaction_id' ] ) ? sanitize_text_field( $order->details->tc_payment_info[ 'transaction_id' ] ) : '';
             $order_id = strtoupper( $order->details->post_name );
@@ -4028,7 +4028,7 @@ if ( ! function_exists( 'tickera_get_order_event' ) ) {
                                     $value = get_post_meta( $ticket->ID, $column[ 'field_name' ], true );
 
                                     if ( in_array( $column[ 'field_name' ], $ticket_summary_fields ) ) {
-                                        $value = esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $value ) );
+                                        $value = esc_html( apply_filters( 'tickera_cart_currency_and_format', $value ) );
                                     }
 
                                     if ( empty( $value ) ) {
@@ -4111,7 +4111,7 @@ if ( ! function_exists( 'tickera_get_order_discount_info' ) ) {
     function tickera_get_order_discount_info( $field_name = '', $post_id = '' ) {
         $discounts = new \Tickera\TC_Discounts();
         $discount_total = $discounts->get_discount_total_by_order( $post_id );
-        echo esc_html( ( $discount_total > 0 ) ? esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ) : '-' );
+        echo esc_html( ( $discount_total > 0 ) ? esc_html( apply_filters( 'tickera_cart_currency_and_format', $discount_total ) ) : '-' );
     }
 }
 
@@ -4124,7 +4124,7 @@ if ( ! function_exists( 'tickera_get_order_total' ) ) {
     function tickera_get_order_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
+        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'total' ] ) );
     }
 }
 
@@ -4138,7 +4138,7 @@ if ( ! function_exists( 'tickera_get_order_subtotal' ) ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
         $payment_info = isset( $order->details->tc_payment_info ) ? $order->details->tc_payment_info : [];
-        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', ( isset( $payment_info ) ? $payment_info[ 'subtotal' ] : '' ) ) );
+        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', ( isset( $payment_info ) ? $payment_info[ 'subtotal' ] : '' ) ) );
     }
 }
 
@@ -4151,7 +4151,7 @@ if ( ! function_exists( 'tickera_get_order_fees_total' ) ) {
     function tickera_get_order_fees_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
+        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'fees_total' ] ) );
     }
 }
 
@@ -4164,7 +4164,7 @@ if ( ! function_exists( 'tickera_get_order_tax_total' ) ) {
     function tickera_get_order_tax_total( $field_name = '', $post_id = '' ) {
         global $tc;
         $order = new \Tickera\TC_Order( $post_id );
-        echo esc_html( tickera_apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
+        echo esc_html( apply_filters( 'tickera_cart_currency_and_format', $order->details->tc_payment_info[ 'tax_total' ] ) );
     }
 }
 
@@ -4891,7 +4891,7 @@ if ( ! function_exists( 'tickera_update_widget_cart' ) ) {
 
                 foreach ( $cart_contents as $ticket_type => $ordered_count ) {
                     $ticket = new \Tickera\TC_Ticket( $ticket_type );
-                    $tc_cart_list .= "<li id='tc_ticket_type_'" . esc_attr( $ticket_type ) . ">" . wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ) ) . "</li>";
+                    $tc_cart_list .= "<li id='tc_ticket_type_'" . esc_attr( $ticket_type ) . ">" . wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ) ) . "</li>";
                 }
 
                 echo wp_kses_post( $tc_cart_list );

@@ -1,6 +1,9 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.5.7.3 05/06/2026 =
+* Currency and Format bug fixed.
+
 = 3.5.7.2 05/06/2026 =
 * Add block alignment support for "Event - Add to Cart" block.
 * WP 7.0 Compliance

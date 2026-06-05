@@ -55,7 +55,7 @@ if ( ! class_exists( '\Tickera\Widget\TC_Cart_Widget' ) ) {
                         <?php foreach ( $cart_contents as $ticket_type => $ordered_count ) :
                             $ticket = new \Tickera\TC_Ticket( $ticket_type ); ?>
                             <li id='tc_ticket_type_<?php echo esc_attr( (int) $ticket_type ); ?>'>
-                                <?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . tickera_apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ) ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
+                                <?php echo wp_kses_post( tickera_apply_filters( 'tickera_cart_widget_item', ( $ordered_count . ' x ' . $ticket->details->post_title . ' (' . apply_filters( 'tickera_cart_currency_and_format', tickera_get_ticket_price( $ticket->details->ID ) * $ordered_count ) . ')' ) ), $ordered_count, $ticket->details->post_title, tickera_get_ticket_price( $ticket->details->ID ) ); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
