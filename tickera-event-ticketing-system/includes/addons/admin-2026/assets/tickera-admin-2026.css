@@ -1,0 +1,935 @@
+/**
+ * Tickera Admin 2026 — clean, consolidated admin design system.
+ *
+ * Aligns the Tickera plugin admin with the Tickera 2026 block theme:
+ * Hanken Grotesk type, brand purple (#6b5f89) + accent yellow (#ffdf3b),
+ * soft white cards on a neutral canvas, refined controls.
+ *
+ * Scope: everything is under `body.tc-admin-2026` (added only on Tickera
+ * screens). Component rules are tightly scoped so they NEVER touch layout
+ * tables (.form-table), Gutenberg's own chrome, or unrelated wp-admin UI.
+ *
+ * Sections:
+ *   1. Fonts + tokens
+ *   2. Canvas + typography + links
+ *   3. Buttons (primary / secondary / add-new)
+ *   4. Form controls (inputs, selects, textareas, radios)
+ *   5. chosen.js selects
+ *   6. Cards (postboxes / metaboxes)
+ *   7. Data tables (list-table + custom Tickera tables)  — NOT .form-table
+ *   8. Filter toolbars
+ *   9. Settings: two-column layout + vertical tabs + section headers
+ *  10. Gutenberg meta-box area (Event / Ticket editors)
+ *  11. Notices
+ *  12. Add-Ons grid (Freemius)
+ *  13. Misc (discount accordion, eyebrow)
+ */
+
+/* ================================================================== *
+ * 1. FONTS + TOKENS
+ * ================================================================== */
+@font-face {
+	font-family: "Hanken Grotesk";
+	src: url("fonts/HankenGrotesk-Variable.woff2") format("woff2");
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+body.tc-admin-2026 {
+	--tc-ink: #1A1428;
+	--tc-slate: #2B2240;
+	--tc-muted: #6B7280;
+	--tc-hairline: #E6E5EA;
+	--tc-line-soft: #F1F0F4;
+	--tc-canvas: #ffffff;
+	--tc-paper: #ffffff;
+	--tc-brand: #6b5f89;
+	--tc-brand-glow: #9D8FBE;
+	--tc-brand-deep: #4A4262;
+	--tc-brand-tint: rgba(107, 95, 137, 0.08);
+	--tc-accent: #ffdf3b;
+	--tc-cash: #10B981;
+	--tc-warning: #F59E0B;
+	--tc-danger: #EF4444;
+
+	/* Radii match the Tickera 2026 theme: 4px focus, 8px buttons/controls, 16px cards. */
+	--tc-r-sm: 4px;
+	--tc-r: 8px;
+	--tc-r-lg: 16px;
+	--tc-ctrl-h: 38px;
+
+	--tc-shadow-soft: 0 1px 2px rgba(26, 20, 40, 0.05), 0 4px 12px rgba(26, 20, 40, 0.05);
+	--tc-shadow-lift: 0 6px 16px rgba(26, 20, 40, 0.08), 0 16px 32px rgba(26, 20, 40, 0.06);
+	--tc-shadow-brand: 0 1px 2px rgba(107, 95, 137, 0.35);
+	--tc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--tc-font: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ================================================================== *
+ * 2. CANVAS + TYPOGRAPHY + LINKS
+ * ================================================================== */
+/* (no #wpbody-content background override — keep WP's native canvas) */
+
+/* Typeface across Tickera content (not the WP admin menu / icons). */
+body.tc-admin-2026 #wpbody-content .wrap,
+body.tc-admin-2026 #wpbody-content .wrap input,
+body.tc-admin-2026 #wpbody-content .wrap select,
+body.tc-admin-2026 #wpbody-content .wrap textarea,
+body.tc-admin-2026 #wpbody-content .wrap button,
+body.tc-admin-2026 .postbox,
+body.tc-admin-2026 .edit-post-meta-boxes-area {
+	font-family: var(--tc-font);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Page title */
+body.tc-admin-2026 #wpbody-content .wrap > h1,
+body.tc-admin-2026 #wpbody-content .wrap > h1.wp-heading-inline {
+	color: var(--tc-ink);
+	font-size: 1.9rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	line-height: 1.2;
+}
+
+/* Links (skip buttons / tabs / titles) */
+body.tc-admin-2026 #wpbody-content .wrap a:not(.button):not(.button-primary):not(.nav-tab):not(.page-title-action):not(.add-new-h2):not(.row-title) {
+	color: var(--tc-brand);
+}
+body.tc-admin-2026 #wpbody-content .wrap a:not(.button):not(.button-primary):not(.nav-tab):not(.page-title-action):not(.add-new-h2):not(.row-title):hover {
+	color: var(--tc-brand-deep);
+}
+
+/* ================================================================== *
+ * 3. BUTTONS
+ * ================================================================== */
+/* Shared sizing for every Tickera button-like control. */
+body.tc-admin-2026 .wrap .button,
+body.tc-admin-2026 .wrap .button-primary,
+body.tc-admin-2026 .wrap .button-secondary,
+body.tc-admin-2026 .wrap .page-title-action,
+body.tc-admin-2026 .wrap .add-new-h2,
+body.tc-admin-2026 .postbox .button,
+body.tc-admin-2026 .postbox .button-primary,
+body.tc-admin-2026 .tablenav .button,
+body.tc-admin-2026 .search-box .button,
+body.tc-admin-2026 .tc-tickera-secondary,
+body.tc-admin-2026 .file_url_button {
+	height: var(--tc-ctrl-h);
+	min-height: var(--tc-ctrl-h);
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	padding: 0 1rem;
+	font-size: 13.5px;
+	font-weight: 600;
+	line-height: 1;
+	border-radius: var(--tc-r);
+	vertical-align: middle;
+	text-decoration: none;
+	transition: transform 120ms var(--tc-ease), box-shadow 200ms var(--tc-ease),
+		border-color 120ms var(--tc-ease), color 120ms var(--tc-ease), background 120ms var(--tc-ease);
+}
+
+/* Primary / "Add New" / page-title actions → brand gradient pill. */
+body.tc-admin-2026 .wrap .button-primary,
+body.tc-admin-2026 .postbox .button-primary,
+body.tc-admin-2026 .wrap .page-title-action,
+body.tc-admin-2026 .wrap .add-new-h2 {
+	background: linear-gradient(135deg, var(--tc-brand) 0%, var(--tc-brand-glow) 100%);
+	border: 1px solid transparent;
+	border-radius: var(--tc-r);
+	color: #fff;
+	text-shadow: none;
+	box-shadow: var(--tc-shadow-brand);
+	padding: 0 1.2rem;
+	overflow: visible;
+}
+body.tc-admin-2026 .wrap .button-primary:hover,
+body.tc-admin-2026 .postbox .button-primary:hover,
+body.tc-admin-2026 .wrap .page-title-action:hover,
+body.tc-admin-2026 .wrap .add-new-h2:hover,
+body.tc-admin-2026 .wrap .button-primary:focus,
+body.tc-admin-2026 .wrap .page-title-action:focus {
+	color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 3px 8px rgba(107, 95, 137, 0.38);
+	background: linear-gradient(135deg, var(--tc-brand) 0%, var(--tc-brand-glow) 100%);
+}
+
+/* Secondary buttons → clean white with hairline. */
+body.tc-admin-2026 .wrap .button:not(.button-primary),
+body.tc-admin-2026 .wrap .button-secondary,
+body.tc-admin-2026 .postbox .button:not(.button-primary),
+body.tc-admin-2026 .tablenav .button,
+body.tc-admin-2026 .search-box .button,
+body.tc-admin-2026 .tc-tickera-secondary,
+body.tc-admin-2026 .file_url_button {
+	background: #fff;
+	border: 1px solid var(--tc-hairline);
+	color: var(--tc-ink);
+	box-shadow: none;
+}
+body.tc-admin-2026 .wrap .button:not(.button-primary):hover,
+body.tc-admin-2026 .wrap .button-secondary:hover,
+body.tc-admin-2026 .postbox .button:not(.button-primary):hover,
+body.tc-admin-2026 .tablenav .button:hover,
+body.tc-admin-2026 .search-box .button:hover,
+body.tc-admin-2026 .tc-tickera-secondary:hover,
+body.tc-admin-2026 .tc-tickera-secondary:focus,
+body.tc-admin-2026 .file_url_button:hover,
+body.tc-admin-2026 .file_url_button:focus {
+	border-color: var(--tc-brand);
+	color: var(--tc-brand);
+	background: #fff;
+}
+
+/* ================================================================== *
+ * 4. FORM CONTROLS  (scoped — never Gutenberg's own chrome)
+ * ================================================================== */
+body.tc-admin-2026 :is(.wrap, .tc_outside_wrap, .postbox, #poststuff, .edit-post-meta-boxes-area) :is(
+	input[type="text"], input[type="email"], input[type="url"], input[type="number"],
+	input[type="password"], input[type="search"], input[type="date"], input[type="tel"], select, textarea
+) {
+	min-height: var(--tc-ctrl-h);
+	box-sizing: border-box;
+	border: 1px solid var(--tc-hairline);
+	border-radius: var(--tc-r);
+	background: #fff;
+	color: var(--tc-ink);
+	box-shadow: none;
+	padding: 0 12px;
+	font-size: 14px;
+	line-height: 1.4;
+	transition: border-color 120ms var(--tc-ease), box-shadow 120ms var(--tc-ease);
+}
+body.tc-admin-2026 :is(.wrap, .tc_outside_wrap, .postbox, #poststuff, .edit-post-meta-boxes-area) textarea {
+	min-height: 90px;
+	padding: 9px 12px;
+}
+body.tc-admin-2026 :is(.wrap, .tc_outside_wrap, .postbox, #poststuff, .edit-post-meta-boxes-area) :is(input, select, textarea):focus {
+	border-color: var(--tc-brand);
+	box-shadow: 0 0 0 3px rgba(157, 143, 190, 0.28);
+	outline: none;
+}
+body.tc-admin-2026 .form-table th,
+body.tc-admin-2026 .postbox .inside label {
+	color: var(--tc-ink);
+	font-weight: 600;
+}
+body.tc-admin-2026 input[type="radio"],
+body.tc-admin-2026 input[type="checkbox"] {
+	accent-color: var(--tc-brand);
+}
+
+/* ================================================================== *
+ * 5. CHOSEN.JS SELECTS  (events filter, settings dropdowns, …)
+ * ================================================================== */
+body.tc-admin-2026 .chosen-container {
+	min-width: 200px;
+	width: auto !important;
+	font-size: 14px;
+	vertical-align: middle;
+}
+body.tc-admin-2026 .chosen-container-single .chosen-single {
+	height: var(--tc-ctrl-h);
+	line-height: calc(var(--tc-ctrl-h) - 4px);
+	border: 1px solid var(--tc-hairline);
+	border-radius: var(--tc-r);
+	box-shadow: none;
+	color: var(--tc-ink);
+	padding: 0 32px 0 12px;
+	background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 12px center;
+}
+body.tc-admin-2026 .chosen-container-single .chosen-single span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+body.tc-admin-2026 .chosen-container-single .chosen-single div {
+	display: none;
+}
+body.tc-admin-2026 .chosen-container.chosen-with-drop .chosen-single {
+	border-radius: var(--tc-r) var(--tc-r) 0 0;
+}
+body.tc-admin-2026 .chosen-container .chosen-drop {
+	border: 1px solid var(--tc-hairline);
+	border-top: 0;
+	border-radius: 0 0 var(--tc-r) var(--tc-r);
+	box-shadow: var(--tc-shadow-lift);
+	min-width: 240px;
+}
+body.tc-admin-2026 .chosen-container .chosen-results li {
+	padding: 8px 12px;
+	white-space: normal;
+	line-height: 1.4;
+}
+body.tc-admin-2026 .chosen-container .chosen-results li.highlighted {
+	background: var(--tc-brand);
+	color: #fff;
+}
+body.tc-admin-2026 .chosen-container .chosen-search input {
+	border: 1px solid var(--tc-hairline) !important;
+	border-radius: var(--tc-r);
+}
+
+/* ================================================================== *
+ * 6. CARDS (postboxes / metaboxes)
+ * ================================================================== */
+body.tc-admin-2026 .postbox {
+	border: 1px solid var(--tc-hairline);
+	border-radius: var(--tc-r-lg);
+	box-shadow: var(--tc-shadow-soft);
+	background: #fff;
+}
+body.tc-admin-2026 .postbox > .postbox-header,
+body.tc-admin-2026 .postbox > h3.hndle,
+body.tc-admin-2026 .postbox > .hndle {
+	border-bottom: 1px solid var(--tc-line-soft);
+	background: transparent;
+	color: var(--tc-ink);
+	font-weight: 700;
+	font-size: 0.95rem;
+	padding: 0.95rem 1.2rem;
+	border-radius: var(--tc-r-lg) var(--tc-r-lg) 0 0;
+}
+body.tc-admin-2026 .postbox .handle-order-higher,
+body.tc-admin-2026 .postbox .handle-order-lower {
+	display: none;
+}
+body.tc-admin-2026 .postbox .inside {
+	padding: 0.85rem 1.2rem 1.1rem;
+	margin: 0; /* drop WP's default top margin so fields sit close to the header */
+}
+/* The settings "Save Settings" button (38px) overflows WP's 20px-tall
+   p.submit wrapper, escaping the card's bottom padding and bumping the rounded
+   card edge. Make the wrapper wrap the button at full height. */
+body.tc-admin-2026 .tc_wrap p.submit {
+	display: flex;
+	align-items: center;
+	margin: 16px 0 0;
+	padding: 0;
+}
+
+/* Media-button dashicons (e.g. the "Tickera" shortcode-builder button next to
+   Add Media) inherit a tall line-height, which drops the 20px glyph below the
+   icon box. Pin the line-height to the icon height so it stays centered. */
+body.tc-admin-2026 .wp-media-buttons .button .wp-media-buttons-icon,
+body.tc-admin-2026 .wp-media-buttons .button .wp-media-buttons-icon::before {
+	line-height: 20px !important;
+	vertical-align: middle;
+}
+body.tc-admin-2026 .wp-media-buttons .button .wp-media-buttons-icon {
+	position: relative;
+	top: -2px;
+}
+
+/* The "Preview" link under the Ticket template dropdown is float:right, so it
+   doesn't expand its container and spills out of the box. Pull it back into
+   normal flow (right-aligned) with a little breathing room above. */
+body.tc-admin-2026 .ticket_preview_link {
+	display: block;
+	float: none !important;
+	clear: both;
+	text-align: right;
+	margin-top: 8px;
+}
+/* On the classic post-edit screen (#poststuff) the metabox header is a
+   .postbox-header wrapping an h2.hndle that keeps its own 8px padding — that
+   doubles the header padding, and WP's #poststuff rule re-adds a 6px top margin
+   to .inside. Both stack into a big gap between the title and the first field.
+   Neutralise the inner padding and the margin so fields sit close to the title. */
+/* Only zero the padding of an .hndle that is NESTED inside a .postbox-header
+   (modern markup → the .postbox-header already provides the bar padding). A bare
+   .postbox > .hndle IS the header bar itself (e.g. the Custom Forms editor) and
+   must keep its header padding from the card-header rule. */
+body.tc-admin-2026 #poststuff .postbox > .postbox-header h2.hndle,
+body.tc-admin-2026 #poststuff .postbox > .postbox-header h3.hndle,
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox > .postbox-header h2.hndle,
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox > .postbox-header h3.hndle,
+body.tc-admin-2026 .editor-meta-boxes-area .postbox > .postbox-header h2.hndle,
+body.tc-admin-2026 .editor-meta-boxes-area .postbox > .postbox-header h3.hndle {
+	padding: 0 !important;
+}
+body.tc-admin-2026 #poststuff .postbox > .postbox-header,
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox > .postbox-header,
+body.tc-admin-2026 .editor-meta-boxes-area .postbox > .postbox-header {
+	padding: 0.55rem 1.2rem !important;
+}
+body.tc-admin-2026 #poststuff .postbox .inside,
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox .inside,
+body.tc-admin-2026 .editor-meta-boxes-area .postbox .inside {
+	margin: 0 !important;
+	padding-top: 0.55rem !important;
+}
+/* Event-style metaboxes wrap each field in a label.tc-metabox-field whose first
+   line (the field name) already adds ~12px of leading space; drop the .inside
+   top padding for those so the title→first-field gap matches the simpler boxes. */
+body.tc-admin-2026 #poststuff .postbox .inside:has(> label.tc-metabox-field),
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox .inside:has(> label.tc-metabox-field),
+body.tc-admin-2026 .editor-meta-boxes-area .postbox .inside:has(> label.tc-metabox-field) {
+	padding-top: 0 !important;
+}
+/* Breathing room between stacked metabox fields (e.g. Start/End date & time)
+   which Tickera separates only with a zero-height <br>. */
+body.tc-admin-2026 .postbox .inside label.tc-metabox-field {
+	margin-bottom: 14px;
+}
+body.tc-admin-2026 .postbox .inside label.tc-metabox-field:last-of-type {
+	margin-bottom: 0;
+}
+
+/* Image picker (Browse): input + button on one tidy row. */
+body.tc-admin-2026 .file_url_holder > label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+body.tc-admin-2026 .file_url_holder .file_url {
+	flex: 1 1 180px;
+	min-width: 0;
+}
+body.tc-admin-2026 .file_url_button {
+	flex: 0 0 auto;
+}
+
+/* ================================================================== *
+ * 7. DATA TABLES  (NOT .form-table layout tables)
+ * ================================================================== */
+body.tc-admin-2026 .wp-list-table,
+body.tc-admin-2026 table.widefat:not(.form-table),
+body.tc-admin-2026 table.shadow-table:not(.form-table),
+body.tc-admin-2026 .event-table:not(.form-table),
+body.tc-admin-2026 .tc-api-access-table {
+	background: #fff;
+	border: 1px solid var(--tc-hairline);
+	border-radius: var(--tc-r-lg);
+	box-shadow: var(--tc-shadow-soft);
+	border-collapse: separate;
+	border-spacing: 0;
+	overflow: hidden;
+}
+body.tc-admin-2026 .wp-list-table thead th,
+body.tc-admin-2026 .wp-list-table tfoot th,
+body.tc-admin-2026 table.widefat:not(.form-table) thead th,
+body.tc-admin-2026 table.shadow-table:not(.form-table) thead th,
+body.tc-admin-2026 .event-table:not(.form-table) thead th,
+body.tc-admin-2026 .tc-api-access-table thead th {
+	background: var(--tc-paper);
+	color: var(--tc-ink);
+	font-weight: 700;
+	font-size: 0.8rem;
+	padding: 14px;
+	border-bottom: 1px solid var(--tc-hairline);
+}
+body.tc-admin-2026 .wp-list-table thead th a,
+body.tc-admin-2026 .wp-list-table tfoot th a,
+body.tc-admin-2026 .wp-list-table thead th a span,
+body.tc-admin-2026 .wp-list-table tfoot th a span {
+	color: var(--tc-ink);
+}
+body.tc-admin-2026 .wp-list-table tbody td,
+body.tc-admin-2026 .wp-list-table tbody th,
+body.tc-admin-2026 table.widefat:not(.form-table) tbody td,
+body.tc-admin-2026 table.shadow-table:not(.form-table) tbody td,
+body.tc-admin-2026 .event-table:not(.form-table) tbody td,
+body.tc-admin-2026 .tc-api-access-table tbody td {
+	padding: 14px;
+	border-bottom: 1px solid var(--tc-line-soft);
+	vertical-align: middle;
+}
+body.tc-admin-2026 .wp-list-table tbody tr:hover td,
+body.tc-admin-2026 table.widefat:not(.form-table) tbody tr:hover td,
+body.tc-admin-2026 table.shadow-table:not(.form-table) tbody tr:hover td,
+body.tc-admin-2026 .event-table:not(.form-table) tbody tr:hover td {
+	background: var(--tc-brand-tint);
+}
+body.tc-admin-2026 .wp-list-table .row-title {
+	color: var(--tc-ink);
+	font-weight: 600;
+}
+
+/* When a data table lives INSIDE a .postbox, the postbox is already the card —
+   keep the table flat (prevents nested card-in-card with mismatched widths,
+   e.g. the API Access form + keys list). */
+body.tc-admin-2026 .postbox table.wp-list-table,
+body.tc-admin-2026 .postbox table.widefat,
+body.tc-admin-2026 .postbox table.shadow-table,
+body.tc-admin-2026 .postbox table.event-table,
+body.tc-admin-2026 .postbox table.tc-api-access-table,
+body.tc-admin-2026 .postbox table.form-table {
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	background: transparent;
+	width: 100%;
+}
+/* The API "Add New" form is a .form-table (label | field) inside a postbox —
+   never style it like a data card; just give the rows clean spacing. */
+body.tc-admin-2026 .postbox table.form-table th {
+	background: transparent !important;
+	border-bottom: 0;
+	padding: 12px 16px 12px 0;
+	vertical-align: middle;
+	width: 200px;
+}
+body.tc-admin-2026 .postbox table.form-table td {
+	background: transparent !important;
+	border-bottom: 0;
+	padding: 10px 0;
+	vertical-align: middle;
+}
+/* API "Add New" + "Cancel" actions: flex row so the (floated) buttons sit on
+   one baseline, the row gets real height, and the primary button's drop-shadow
+   has room instead of being clipped by the card that follows. */
+body.tc-admin-2026 .tc-api-form-actions,
+body.tc-admin-2026 .tc-discount-form-actions,
+body.tc-admin-2026 .tc_wrap [class*="-form-actions"] {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 1.25rem 0 0.5rem;
+}
+body.tc-admin-2026 .tc-api-form-actions::after,
+body.tc-admin-2026 .tc-discount-form-actions::after,
+body.tc-admin-2026 .tc_wrap [class*="-form-actions"]::after { content: none; } /* kill clearfix spacer */
+body.tc-admin-2026 .tc-api-form-actions .button,
+body.tc-admin-2026 .tc-api-form-actions .button-primary,
+body.tc-admin-2026 .tc-api-form-actions .tc-tickera-secondary,
+body.tc-admin-2026 .tc-discount-form-actions .button,
+body.tc-admin-2026 .tc-discount-form-actions .button-primary,
+body.tc-admin-2026 .tc-discount-form-actions .tc-tickera-secondary,
+body.tc-admin-2026 .tc_wrap [class*="-form-actions"] .button,
+body.tc-admin-2026 .tc_wrap [class*="-form-actions"] .button-primary,
+body.tc-admin-2026 .tc_wrap [class*="-form-actions"] .tc-tickera-secondary {
+	float: none !important;
+	margin: 0 !important;
+}
+
+/* Card header for postboxes whose first child is a title-bar .tablenav
+   (e.g. "API Keys" + search). Rounds the top of the card and divides it
+   from the table below — instead of a flush, left-stuck plain heading. */
+body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	height: auto;
+	margin: 0;
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.85rem 1.4rem;
+	border-bottom: 1px solid var(--tc-line-soft);
+	border-radius: var(--tc-r-lg) var(--tc-r-lg) 0 0;
+	background: transparent;
+}
+body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) h3 {
+	margin: 0;
+	padding: 0;
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--tc-ink);
+}
+body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) .new-actions,
+body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) .search-form,
+body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) form {
+	float: none;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+/* Settings form rows → Venuera-style hairline dividers between fields, with a
+   fixed-width label column. Each section is its own .form-table, so the first
+   row of every section starts flush (no leading divider). */
+body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table th,
+body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table td {
+	border-top: 1px solid var(--tc-line-soft);
+	padding-top: 15px;
+	padding-bottom: 15px;
+	vertical-align: middle;
+}
+body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table tr:first-child th,
+body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table tr:first-child td {
+	border-top: 0;
+}
+body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table th {
+	width: 220px;
+	padding-right: 24px;
+	font-weight: 600;
+	color: var(--tc-ink);
+}
+/* Section sub-headings between the form-tables → small uppercase label. */
+body.tc-admin-2026 .tc_wrap .postbox .inside > h2,
+body.tc-admin-2026 .tc_wrap .postbox .inside > h3,
+body.tc-admin-2026 .tc_wrap .postbox .inside > h4 {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--tc-muted);
+	margin: 22px 0 4px;
+	padding: 0;
+	border: 0;
+}
+
+/* ================================================================== *
+ * 8. FILTER TOOLBARS
+ * ================================================================== */
+body.tc-admin-2026 .tablenav.top {
+	height: auto;
+	margin-bottom: 16px;
+}
+
+/* Orders and attendees are created automatically at checkout — there is no
+   valid manual "Add Post" / "Create New Attendee", so hide that title action on
+   those list screens. */
+body.tc-admin-2026.post-type-tc_orders .wrap .page-title-action,
+body.tc-admin-2026.post-type-tc_tickets_instances .wrap .page-title-action {
+	display: none !important;
+}
+body.tc-admin-2026 .tablenav .actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0;
+}
+body.tc-admin-2026 .subsubsub {
+	color: var(--tc-muted);
+	margin-bottom: 8px;
+}
+body.tc-admin-2026 .subsubsub a { color: var(--tc-muted); }
+body.tc-admin-2026 .subsubsub a.current,
+body.tc-admin-2026 .subsubsub a:hover { color: var(--tc-brand); font-weight: 600; }
+
+/* ================================================================== *
+ * 9. SETTINGS — two-column layout + vertical tabs + section headers
+ * ================================================================== */
+body.tc-admin-2026 .tc_outside_wrap .sticky-wrapper {
+	float: left;
+	width: 230px;
+	margin: 0;
+}
+body.tc-admin-2026 .tc_outside_wrap .tc_wrap {
+	margin-left: 262px;
+	width: auto;
+	float: none;
+	clear: none;
+	display: flow-root;
+}
+/* Vertical tab rail */
+body.tc-admin-2026 .sticky-wrapper .nav-tab-wrapper {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	border: 1px solid var(--tc-hairline);
+	border-radius: var(--tc-r-lg);
+	background: #fff;
+	box-shadow: var(--tc-shadow-soft);
+	padding: 8px;
+	margin: 0;
+	overflow: hidden;
+}
+/* When Tickera's JS pins the nav (inline position:fixed; top:30px on scroll),
+   drop it 6px below the WP admin bar instead of tucking under it. */
+body.tc-admin-2026 .sticky-wrapper .nav-tab-wrapper[style*="position: fixed"] {
+	top: 38px !important;
+}
+@media screen and (max-width: 782px) {
+	body.tc-admin-2026 .sticky-wrapper .nav-tab-wrapper[style*="position: fixed"] {
+		top: 52px !important; /* 46px mobile admin bar + 6px */
+	}
+}
+body.tc-admin-2026 .sticky-wrapper .nav-tab-wrapper ul {
+	margin: 0 !important;
+	padding: 0 !important;
+	list-style: none;
+	width: 100% !important;
+	float: none !important;
+	border: 0 !important;
+	box-shadow: none !important;
+}
+body.tc-admin-2026 .sticky-wrapper .nav-tab-wrapper li {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	float: none;
+	display: block;
+	width: 100%;
+}
+body.tc-admin-2026 .sticky-wrapper .nav-tab {
+	float: none;
+	position: static;
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	border: 0;
+	border-radius: var(--tc-r);
+	margin: 2px 0;
+	padding: 0.6rem 0.85rem;
+	color: var(--tc-muted);
+	font-weight: 600;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	background: transparent;
+	transition: background 140ms var(--tc-ease), color 140ms var(--tc-ease);
+}
+body.tc-admin-2026 .sticky-wrapper .nav-tab:hover {
+	background: var(--tc-brand-tint);
+	color: var(--tc-brand);
+}
+body.tc-admin-2026 .sticky-wrapper .nav-tab-active,
+body.tc-admin-2026 .sticky-wrapper .nav-tab-active:hover,
+body.tc-admin-2026 .sticky-wrapper .nav-tab-active:focus {
+	background: linear-gradient(135deg, var(--tc-brand) 0%, var(--tc-brand-glow) 100%);
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(107, 95, 137, 0.28);
+}
+/* Card HEADER (direct child of the postbox) → white header bar. */
+body.tc-admin-2026 .tc_wrap .postbox > h3:first-child,
+body.tc-admin-2026 .tc_wrap .postbox > .hndle,
+body.tc-admin-2026 .tc_wrap .postbox > .postbox-header,
+body.tc-admin-2026 .tc_wrap .stuffbox > h3:first-child {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	background: #fff !important;
+	background-image: none !important;
+	color: var(--tc-ink) !important;
+	font-weight: 700 !important;
+	font-size: 1.1rem !important;
+	border-bottom: 1px solid var(--tc-line-soft) !important;
+	padding: 1.1rem 1.4rem !important;
+	margin: 0 !important;
+	border-radius: var(--tc-r-lg) var(--tc-r-lg) 0 0;
+}
+/* A search box (".new-actions") nested inside the card-header h3 — e.g. Discount
+   Codes "Search Discounts" — sits on the same row, right-aligned and centered,
+   instead of floating/dropping out of the header. */
+body.tc-admin-2026 .tc_wrap .postbox > h3:first-child .new-actions,
+body.tc-admin-2026 .tc_wrap .postbox > h3:first-child .search-form,
+body.tc-admin-2026 .tc_wrap .postbox > h3:first-child .search-form p {
+	float: none !important;
+	margin: 0 !important;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+body.tc-admin-2026 .tc_wrap .postbox > h3:first-child > span:first-child {
+	flex: 0 1 auto;
+}
+/* In-content section titles (e.g. "API Keys" inside .tablenav) → plain text,
+   never a floating boxed label. */
+body.tc-admin-2026 .tc_wrap .postbox .inside h3,
+body.tc-admin-2026 .tc_wrap .postbox .tablenav h3,
+body.tc-admin-2026 .tc_wrap .tablenav > h3 {
+	background: transparent !important;
+	background-image: none !important;
+	color: var(--tc-ink);
+	font-weight: 700;
+	font-size: 1.15rem;
+	border: 0 !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	padding: 0 0 0.5rem 0 !important;
+	margin: 0 0 0.75rem 0;
+	width: auto;
+}
+
+/* ================================================================== *
+ * 10. GUTENBERG META-BOX AREA (Event / Ticket editors)
+ * ================================================================== */
+body.tc-admin-2026 .edit-post-meta-boxes-area,
+body.tc-admin-2026 .editor-meta-boxes-area {
+	background: var(--tc-canvas);
+	padding: 1.25rem 1.75rem 2rem;
+}
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox,
+body.tc-admin-2026 .editor-meta-boxes-area .postbox,
+body.tc-admin-2026 #poststuff .postbox {
+	margin-bottom: 1.25rem;
+}
+/* No hard divider on editor meta-box headers (cleaner cards). */
+body.tc-admin-2026 .edit-post-meta-boxes-area .postbox > .postbox-header,
+body.tc-admin-2026 #poststuff .postbox > .postbox-header {
+	border-bottom: 0;
+}
+
+/* ================================================================== *
+ * 11. NOTICES
+ * ================================================================== */
+body.tc-admin-2026 #wpbody-content .notice,
+body.tc-admin-2026 #wpbody-content .updated,
+body.tc-admin-2026 #wpbody-content div.error {
+	border-radius: var(--tc-r);
+	box-shadow: var(--tc-shadow-soft);
+	border-left-width: 4px;
+}
+body.tc-admin-2026 #wpbody-content .updated,
+body.tc-admin-2026 #wpbody-content .notice-success { border-left-color: var(--tc-cash); }
+body.tc-admin-2026 #wpbody-content .notice-warning { border-left-color: var(--tc-warning); }
+body.tc-admin-2026 #wpbody-content .notice-error,
+body.tc-admin-2026 #wpbody-content div.error { border-left-color: var(--tc-danger); }
+
+/* ================================================================== *
+ * 12. ADD-ONS GRID (Freemius) — premium catalog look (à la Venuera)
+ *     Reshaped via tickera-admin-2026.js (gradient icon + Explore link).
+ * ================================================================== */
+body.tc-admin-2026 #fs_addons .fs-notice,
+body.tc-admin-2026 .wrap > .fs-notice { display: none !important; }
+
+body.tc-admin-2026 #fs_addons .fs-card.fs-addon {
+	border: 1px solid var(--tc-hairline) !important;
+	border-radius: var(--tc-r-lg) !important;
+	overflow: hidden !important;
+	box-shadow: 0 1px 2px rgba(26,20,40,.04), 0 18px 40px -24px rgba(26,20,40,.22) !important;
+	transition: transform .18s var(--tc-ease), box-shadow .18s, border-color .18s !important;
+	height: auto !important;
+	min-height: 0 !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card.fs-addon .fs-inner,
+body.tc-admin-2026 #fs_addons .fs-card.fs-addon .fs-inner > ul { height: auto !important; min-height: 0 !important; }
+body.tc-admin-2026 #fs_addons .fs-card.fs-addon:hover {
+	transform: translateY(-5px) !important;
+	box-shadow: 0 24px 48px -22px rgba(107,95,137,.42) !important;
+	border: 1px solid var(--tc-brand-glow) !important;
+	border-radius: var(--tc-r-lg) !important;
+}
+/* Neutralise Freemius default hover (teal overlay, title recolor, ul shift). */
+body.tc-admin-2026 #fs_addons .fs-cards-list .fs-card.fs-addon:hover .fs-overlay { border: 0 !important; margin: 0 !important; }
+body.tc-admin-2026 #fs_addons .fs-cards-list .fs-card.fs-addon:hover .fs-inner .fs-title { color: var(--tc-ink) !important; }
+body.tc-admin-2026 #fs_addons .fs-cards-list .fs-card.fs-addon:hover .fs-inner ul { top: 0 !important; }
+
+/* Card banner → keep the add-on's real icon/banner image on a soft brand backdrop. */
+body.tc-admin-2026 #fs_addons .fs-card .fs-card-banner {
+	position: relative !important;
+	height: 130px !important;
+	background-color: #F3F1F8 !important;
+	background-size: cover !important;
+	background-position: center !important;
+	border-bottom: 0 !important;
+}
+
+body.tc-admin-2026 #fs_addons .fs-card .fs-title {
+	font-weight: 800 !important;
+	color: var(--tc-ink) !important;
+	font-size: 20px !important;
+	line-height: 24px !important;
+	margin: 22px 24px 8px !important;
+	height: auto !important; min-height: 0 !important; max-height: none !important;
+	overflow: visible !important; white-space: normal !important; border: 0 !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card .fs-offer { display: none !important; }
+body.tc-admin-2026 #fs_addons .fs-card .fs-description {
+	background: transparent !important; border: 0 !important; display: block !important;
+	height: auto !important; min-height: 0 !important; max-height: none !important;
+	width: auto !important; max-width: none !important; box-sizing: border-box !important;
+	white-space: normal !important; overflow: visible !important;
+	color: var(--tc-muted) !important; font-size: 14.5px !important; line-height: 1.6 !important;
+	font-weight: 400 !important; margin: 0 24px 18px !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta { margin: 0 24px 24px !important; padding: 0 !important; }
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button,
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button-primary {
+	background: none !important; border: 0 !important; box-shadow: none !important; text-shadow: none !important;
+	color: var(--tc-brand) !important; padding: 0 !important; min-width: 0 !important; width: auto !important;
+	height: auto !important; line-height: 1.2 !important; font-weight: 700 !important; font-size: 14.5px !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button::after { content: " \2192"; }
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button:hover { color: var(--tc-brand-deep) !important; filter: none !important; }
+/* Flatten the split Activate button: drop the dropdown caret + keep the CTA in flow. */
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .fs-dropdown,
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button-group {
+	position: static !important;
+	width: auto !important;
+	display: inline-block !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .fs-dropdown-arrow-button,
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta .button-group .fs-dropdown-arrow {
+	display: none !important;
+}
+
+/* Uniform responsive grid (equal-height rows) instead of Freemius floats. */
+body.tc-admin-2026 #fs_addons .fs-cards-list {
+	display: grid !important;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 24px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+body.tc-admin-2026 #fs_addons .fs-cards-list .fs-card.fs-addon {
+	width: auto !important;
+	float: none !important;
+	margin: 0 !important;
+	display: flex !important;
+	flex-direction: column;
+}
+body.tc-admin-2026 #fs_addons .fs-card.fs-addon .fs-inner {
+	display: flex !important;
+	flex-direction: column;
+	flex: 1 1 auto !important;
+	height: auto !important;
+	min-height: 0 !important;
+	max-height: none !important;
+}
+body.tc-admin-2026 #fs_addons .fs-card .fs-cta { margin-top: auto !important; }
+
+/* Status badge → subtle white pill, top-right. */
+body.tc-admin-2026 #fs_addons .fs-card .fs-badge {
+	position: absolute !important; top: 13px !important; right: 13px !important;
+	background: #fff !important; color: #8A8EA3 !important; border: 0 !important; border-radius: 999px !important;
+	font-size: 10.5px !important; font-weight: 700 !important; letter-spacing: .04em !important; text-transform: uppercase !important;
+	padding: 5px 11px !important; box-shadow: 0 4px 10px -5px rgba(20,16,60,.2) !important;
+}
+
+/* All-Access bundle promo banner (injected by JS). */
+body.tc-admin-2026 .tc-bundle-cta {
+	display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+	margin: 18px 0 18px; padding: 18px 22px; border-radius: var(--tc-r-lg);
+	background: linear-gradient(135deg, #6b5f89, #4A4262); color: #fff;
+	box-shadow: 0 16px 34px -18px rgba(74,66,98,.6);
+}
+body.tc-admin-2026 .tc-bundle-cta .vb-txt { flex: 1 1 320px; }
+body.tc-admin-2026 .tc-bundle-cta .vb-txt b { display: block; font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+body.tc-admin-2026 .tc-bundle-cta .vb-txt span { display: block; margin-top: 3px; font-size: 13px; color: rgba(255,255,255,.85); font-weight: 600; }
+body.tc-admin-2026 .tc-bundle-cta .vb-price { font-size: 15px; font-weight: 800; white-space: nowrap; }
+body.tc-admin-2026 .tc-bundle-cta .vb-price em { font-style: normal; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.8); }
+body.tc-admin-2026 .tc-bundle-cta .vb-btn {
+	display: inline-block; background: #fff; color: #4A4262 !important; text-decoration: none;
+	font-weight: 800; font-size: 13.5px; padding: 11px 20px; border-radius: var(--tc-r); white-space: nowrap;
+	box-shadow: 0 8px 18px -8px rgba(0,0,0,.35); transition: transform .15s ease;
+}
+body.tc-admin-2026 .tc-bundle-cta .vb-btn:hover { transform: translateY(-2px); }
+
+/* ================================================================== *
+ * 13. MISC
+ * ================================================================== */
+/* Discount "Add New" accordion trigger → clean action bar (not empty card).
+   The trigger accordion holds only the Add New button + a hidden form-table. */
+body.tc-admin-2026 .tc-discount-actions > .postbox,
+body.tc-admin-2026 .tc-accordion-actions > .postbox {
+	border: 0;
+	box-shadow: none;
+	background: transparent;
+}
+body.tc-admin-2026 .tc-discount-actions > .postbox > .inside,
+body.tc-admin-2026 .tc-accordion-actions > .postbox > .inside {
+	padding: 0;
+	margin: 0;
+}
+
+body.tc-admin-2026 .tc-eyebrow {
+	display: inline-block;
+	font-size: 0.6875rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--tc-brand);
+}

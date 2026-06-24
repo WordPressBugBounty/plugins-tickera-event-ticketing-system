@@ -1,0 +1,2366 @@
+/**
+ * Ticket Designer Admin Styles
+ * Unified design with Venue Designer (Venue Designer)
+ */
+
+/* ========================================
+   Variables - Same as Venue Designer
+   ======================================== */
+:root {
+    --sc-primary: #3659E3;
+    --sc-primary-hover: #2A4BC7;
+    --sc-secondary: #1E0A3C;
+    --sc-success: #2DC26D;
+    --sc-warning: #F6AD55;
+    --sc-danger: #E53E3E;
+    --sc-gray-50: #FAFAFA;
+    --sc-gray-100: #F5F5F5;
+    --sc-gray-200: #EEEEEE;
+    --sc-gray-300: #E0E0E0;
+    --sc-gray-400: #BDBDBD;
+    --sc-gray-500: #9E9E9E;
+    --sc-gray-600: #757575;
+    --sc-gray-700: #616161;
+    --sc-gray-800: #424242;
+    --sc-gray-900: #212121;
+    --sc-sidebar-bg: #1E1E2D;
+    --sc-sidebar-hover: #2D2D3A;
+    --sc-canvas-bg: #F8F9FA;
+    --sc-border-radius: 8px;
+    --sc-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --sc-shadow-lg: 0 4px 20px rgba(0,0,0,0.15);
+    --sc-transition: all 0.2s ease;
+}
+
+/* ========================================
+   Templates List
+   ======================================== */
+.venuera-ticket-designer-wrap {
+    margin: 20px 20px 20px 0;
+}
+
+/* Empty State */
+.venuera-empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: #fff;
+    border-radius: var(--sc-border-radius);
+    box-shadow: var(--sc-shadow);
+    max-width: 500px;
+    margin: 40px auto;
+}
+
+.venuera-empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--sc-primary), #6B7FE3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+.venuera-empty-state-icon .dashicons {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: #fff;
+}
+
+.venuera-empty-state h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--sc-gray-900);
+    margin: 0 0 12px;
+}
+
+.venuera-empty-state p {
+    color: var(--sc-gray-600);
+    font-size: 15px;
+    margin: 0 0 24px;
+}
+
+/* Templates Grid */
+.venuera-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+.venuera-template-card {
+    background: #fff;
+    border-radius: var(--sc-border-radius);
+    box-shadow: var(--sc-shadow);
+    overflow: hidden;
+    transition: var(--sc-transition);
+}
+
+.venuera-template-card:hover {
+    box-shadow: var(--sc-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.venuera-template-thumbnail {
+    position: relative;
+    height: 150px;
+    background: var(--sc-gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--sc-gray-200);
+}
+
+.venuera-template-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+    padding: 10px;
+}
+
+.venuera-template-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 100%;
+    height: 100%;
+}
+
+.venuera-template-placeholder .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: rgba(255,255,255,0.6);
+}
+
+.venuera-template-placeholder span {
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+}
+
+.venuera-template-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--sc-primary);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.venuera-template-info {
+    padding: 16px;
+}
+
+.venuera-template-info h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--sc-gray-900);
+}
+
+.venuera-template-meta {
+    color: var(--sc-gray-500);
+    font-size: 13px;
+    margin: 0;
+}
+
+.venuera-template-actions {
+    padding: 12px 16px;
+    border-top: 1px solid var(--sc-gray-200);
+    display: flex;
+    gap: 8px;
+}
+
+/* Card action buttons (Edit / Duplicate / Delete) — rounded, polished,
+ * sharing the same shape language as the Settings primary buttons. The
+ * default WP `.button` look (chunky outline, plain corners) is replaced
+ * here with a modern pill-ish secondary look; Delete keeps the same
+ * shape but flips to a destructive red on hover.
+ *
+ * Selector targets `.button` BOTH inside `.venuera-template-actions`
+ * AND, for the page header, the `.page-title-action` "Add New" pill, so
+ * the toolbar above the card grid matches. */
+.venuera-template-actions .button,
+.wrap > .page-title-action[href*="venuera-ticket-designer"] {
+    flex: 1;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 34px !important;
+    padding: 0 14px !important;
+    border-radius: 8px !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    text-decoration: none !important;
+    background: #fff !important;
+    border: 1px solid #d1d5db !important;
+    color: #1f2937 !important;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04) !important;
+    transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease, transform 0.05s ease !important;
+}
+
+.venuera-template-actions .button:hover,
+.venuera-template-actions .button:focus,
+.wrap > .page-title-action[href*="venuera-ticket-designer"]:hover,
+.wrap > .page-title-action[href*="venuera-ticket-designer"]:focus {
+    background: #f5f7ff !important;
+    border-color: var(--twp-accent, #2563eb) !important;
+    color: var(--twp-accent, #2563eb) !important;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12) !important;
+    outline: none !important;
+}
+
+.venuera-template-actions .button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(37, 99, 235, 0.08) !important;
+}
+
+.venuera-template-actions .button:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Destructive variant — Delete flips to red on hover. */
+.venuera-template-actions .venuera-delete-template:hover,
+.venuera-template-actions .venuera-delete-template:focus {
+    background: #fef2f2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+/* Page-header Add New: brand-accented pill from the start to call it out. */
+.wrap > .page-title-action[href*="venuera-ticket-designer"] {
+    background: var(--twp-accent, #2563eb) !important;
+    border-color: var(--twp-accent, #2563eb) !important;
+    color: #fff !important;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+.wrap > .page-title-action[href*="venuera-ticket-designer"]:hover,
+.wrap > .page-title-action[href*="venuera-ticket-designer"]:focus {
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+    color: #fff !important;
+}
+
+/* ========================================
+   Ticket Designer Editor - Fixed Position
+   ======================================== */
+.venuera-ticket-designer-editor-wrap {
+    position: fixed;
+    top: 32px;
+    left: 160px;
+    right: 0;
+    bottom: 0;
+    /* Override the global `.wrap { margin: 10px 20px 0 2px }` admin rule —
+     * this is a fixed-position full-bleed editor, not a regular content page,
+     * so any margin pushes the chrome inward and creates ugly gaps. */
+    margin: 0;
+    background: var(--sc-canvas-bg);
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+}
+
+.folded .venuera-ticket-designer-editor-wrap {
+    left: 36px;
+}
+
+@media screen and (max-width: 782px) {
+    .venuera-ticket-designer-editor-wrap {
+        left: 0;
+        top: 46px;
+    }
+}
+
+/* Editor Header */
+.venuera-editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--sc-gray-200);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    z-index: 10;
+}
+
+.venuera-editor-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.venuera-back-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--sc-gray-600);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: var(--sc-transition);
+}
+
+.venuera-back-link:hover {
+    background: var(--sc-gray-100);
+    color: var(--sc-gray-900);
+}
+
+.venuera-template-name-input {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--sc-gray-900);
+    padding: 8px 12px;
+    border-radius: 6px;
+    min-width: 300px;
+    transition: var(--sc-transition);
+}
+
+.venuera-template-name-input:hover {
+    background: var(--sc-gray-100);
+}
+
+.venuera-template-name-input:focus {
+    background: #fff;
+    box-shadow: 0 0 0 2px var(--sc-primary);
+    outline: none;
+}
+
+.venuera-editor-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Editor header action buttons — three-tier visual hierarchy:
+ *   Preview         → ghost (transparent bg, soft hover)
+ *   Download PDF    → secondary (filled subtle gray, accent on hover)
+ *   Save Template   → primary (filled blue, subtle accent shadow)
+ * All share size, line-height, and gap so they form a clean cluster.
+ */
+.venuera-editor-header-right .button,
+.venuera-editor-header-right .button.button-large {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 36px;
+    line-height: 1;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    box-shadow: none;
+    transition: var(--sc-transition);
+}
+
+/* Ghost — Preview */
+.venuera-editor-header-right #venuera-preview-template {
+    background: transparent;
+    color: var(--sc-gray-700);
+    border-color: var(--sc-gray-300);
+}
+
+.venuera-editor-header-right #venuera-preview-template:hover {
+    background: var(--sc-gray-100);
+    color: var(--sc-primary);
+    border-color: var(--sc-primary);
+}
+
+.venuera-editor-header-right #venuera-preview-template:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(54, 89, 227, 0.18);
+}
+
+/* Secondary — Download PDF */
+.venuera-editor-header-right #venuera-download-pdf {
+    background: var(--sc-gray-100);
+    color: var(--sc-gray-800);
+    border-color: var(--sc-gray-200);
+}
+
+.venuera-editor-header-right #venuera-download-pdf:hover:not(:disabled) {
+    background: #e0e7ff;
+    color: var(--sc-primary);
+    border-color: var(--sc-primary);
+}
+
+.venuera-editor-header-right #venuera-download-pdf:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.venuera-editor-header-right #venuera-download-pdf:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(54, 89, 227, 0.18);
+}
+
+/* Primary — Save Template */
+.venuera-editor-header-right .button.button-primary {
+    padding: 0 22px;
+    background: var(--sc-primary);
+    border-color: var(--sc-primary);
+    color: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px transparent inset;
+}
+
+.venuera-editor-header-right .button.button-primary:hover {
+    background: var(--sc-primary-hover);
+    border-color: var(--sc-primary-hover);
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(54, 89, 227, 0.25);
+    transform: translateY(-1px);
+}
+
+.venuera-editor-header-right .button.button-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.venuera-editor-header-right .button.button-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(54, 89, 227, 0.3);
+}
+
+/* Icons inside the header buttons. Both legacy dashicons and the inline
+ * SVG icons used for new actions (e.g. the Download PDF arrow shared
+ * with the Reports tab) sit the same way. */
+.venuera-editor-header-right .button .dashicons,
+.venuera-editor-header-right .button .venuera-btn-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 1;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.venuera-editor-header-right .button .venuera-btn-icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: currentColor;
+}
+
+/* Inline "Custom fields for" status pill, shown under the picker inside
+ * the properties panel. Each state colors the pill differently so the
+ * outcome of picking a context is immediately readable. */
+.venuera-field-context-status[data-state="loading"] {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.venuera-field-context-status[data-state="ok"] {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.venuera-field-context-status[data-state="empty"] {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.venuera-field-context-status[data-state="error"] {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* ========================================
+   Editor Container
+   ======================================== */
+.venuera-editor-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ========================================
+   Floating Toolbar (Photoshop-style)
+   ======================================== */
+@keyframes toolbarFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+@keyframes toolbarFadeInHorizontal {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+@keyframes toolbarFadeInSimple {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.venuera-floating-toolbar {
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 8px;
+    background: var(--sc-sidebar-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+    opacity: 0;
+}
+
+.venuera-floating-toolbar.ready {
+    opacity: 1;
+}
+
+.venuera-floating-toolbar:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Toolbar Positions */
+.venuera-floating-toolbar[data-position="top"] {
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.venuera-floating-toolbar[data-position="right"] {
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    padding: 8px 6px;
+}
+
+.venuera-floating-toolbar[data-position="left"] {
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    padding: 8px 6px;
+}
+
+.venuera-floating-toolbar[data-position="bottom"] {
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.venuera-floating-toolbar[data-position="floating"] {
+    transform: none;
+}
+
+/* Fade-in animations when ready */
+.venuera-floating-toolbar.ready[data-position="top"],
+.venuera-floating-toolbar.ready[data-position="bottom"] {
+    animation: toolbarFadeInHorizontal 0.35s ease-out forwards;
+}
+
+.venuera-floating-toolbar.ready[data-position="left"],
+.venuera-floating-toolbar.ready[data-position="right"] {
+    animation: toolbarFadeIn 0.35s ease-out forwards;
+}
+
+.venuera-floating-toolbar.ready[data-position="floating"] {
+    animation: toolbarFadeInSimple 0.35s ease-out forwards;
+}
+
+.venuera-floating-toolbar.dragging {
+    opacity: 0.9;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    cursor: grabbing !important;
+}
+
+/* Drag Handle */
+.venuera-toolbar-drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 28px;
+    cursor: grab;
+    color: var(--sc-gray-500);
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.venuera-toolbar-drag-handle:hover {
+    background: var(--sc-sidebar-hover);
+    color: var(--sc-gray-300);
+}
+
+.venuera-floating-toolbar.dragging .venuera-toolbar-drag-handle {
+    cursor: grabbing;
+}
+
+/* Vertical toolbar adjustments */
+.venuera-floating-toolbar[data-position="left"] .venuera-toolbar-drag-handle,
+.venuera-floating-toolbar[data-position="right"] .venuera-toolbar-drag-handle {
+    width: 28px;
+    height: 20px;
+}
+
+.venuera-floating-toolbar[data-position="left"] .venuera-toolbar-divider,
+.venuera-floating-toolbar[data-position="right"] .venuera-toolbar-divider {
+    width: 100%;
+    height: 1px;
+    margin: 4px 0;
+}
+
+.venuera-floating-toolbar[data-position="left"] .venuera-toolbar-group,
+.venuera-floating-toolbar[data-position="right"] .venuera-toolbar-group {
+    flex-direction: column;
+}
+
+/* Toolbar Groups */
+.venuera-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Toolbar Divider */
+.venuera-toolbar-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 4px;
+}
+
+/* Floating Toolbar Buttons */
+.venuera-ftool-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sc-gray-400);
+    transition: all 0.12s ease;
+    position: relative;
+}
+
+.venuera-ftool-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.venuera-ftool-btn:hover {
+    background: var(--sc-sidebar-hover);
+    color: #fff;
+}
+
+.venuera-ftool-btn.active {
+    background: var(--sc-primary);
+    color: #fff;
+}
+
+.venuera-ftool-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.venuera-ftool-btn:disabled:hover {
+    background: transparent;
+    color: var(--sc-gray-400);
+}
+
+.venuera-ftool-btn.venuera-ftool-danger:hover {
+    background: var(--sc-danger);
+    color: #fff;
+}
+
+/* Custom hover tooltips for floating-toolbar buttons.
+   The native browser `title` tooltip has a ~1s delay and is sometimes
+   suppressed altogether (touch input, devtools focus, OS quirks), so
+   we render the caption ourselves from the `title` attribute via a
+   `::after` pseudo-element that appears instantly on hover. */
+.venuera-ftool-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 10px);
+    transform: translateY(-50%);
+    background: #0f172a;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10000;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Small arrow on the tooltip — left side, pointing back at the button. */
+.venuera-ftool-btn[title]:hover::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 4px);
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: #0f172a;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+/* If the toolbar is docked on the RIGHT, flip the tooltip to the left
+   of the button so it doesn't fall off the canvas edge. */
+.venuera-floating-toolbar[data-position="right"] .venuera-ftool-btn[title]:hover::after {
+    left: auto;
+    right: calc(100% + 10px);
+}
+
+.venuera-floating-toolbar[data-position="right"] .venuera-ftool-btn[title]:hover::before {
+    left: auto;
+    right: calc(100% + 4px);
+}
+
+/* Dropdown */
+.venuera-ftool-dropdown {
+    position: relative;
+}
+
+.venuera-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 6px;
+    background: var(--sc-sidebar-bg);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    padding: 6px;
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    z-index: 1000;
+}
+
+.venuera-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    background: transparent;
+}
+
+.venuera-ftool-dropdown:hover .venuera-dropdown-menu,
+.venuera-ftool-dropdown.open .venuera-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.venuera-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--sc-gray-300);
+    font-size: 13px;
+    text-align: left;
+    transition: all 0.12s ease;
+}
+
+.venuera-dropdown-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.venuera-dropdown-item:hover {
+    background: var(--sc-sidebar-hover);
+    color: #fff;
+}
+
+.venuera-dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 6px 0;
+}
+
+/* ──────────────────────────────────────────────────────────────────────
+ * Add-Elements dropdown — categorized picker
+ *
+ * Visual design notes:
+ *  - Fixed width (340px) so labels never collide with the right edge and
+ *    no horizontal scroll ever appears.
+ *  - One column of rows; each row is a 28px tinted icon chip + label.
+ *  - Category headers use small-caps with a tiny leading bar so the eye
+ *    can scan sections quickly.
+ *  - Vertical scroll uses a slim, branded scrollbar that fades on hover.
+ *    Most common categories fit on screen without scrolling.
+ * ────────────────────────────────────────────────────────────────────── */
+.venuera-elements-menu {
+    max-height: min(72vh, 620px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 340px;
+    min-width: 340px;
+    max-width: 340px;
+    padding: 8px 6px 12px;
+    border-radius: 10px;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* WebKit (Chrome / Safari / Edge) thin branded scrollbar. */
+.venuera-elements-menu::-webkit-scrollbar {
+    width: 8px;
+}
+.venuera-elements-menu::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 4px 0;
+}
+.venuera-elements-menu::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+.venuera-elements-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.32);
+    background-clip: content-box;
+}
+
+/* Category header — small leading accent bar + uppercase tracking. */
+.venuera-elements-menu .venuera-dropdown-header {
+    position: relative;
+    padding: 10px 12px 6px 18px;
+    margin: 2px 4px 2px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.55);
+    pointer-events: none;
+}
+.venuera-elements-menu .venuera-dropdown-header::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 14px;
+    width: 3px;
+    height: 9px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(99, 179, 237, 0.9), rgba(99, 179, 237, 0.4));
+}
+
+.venuera-elements-menu .venuera-dropdown-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    margin: 6px 12px;
+}
+
+/* Element row — icon chip + label, ellipsize long labels so width stays
+ * fixed. */
+.venuera-elements-menu .venuera-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: calc(100% - 8px);
+    margin: 1px 4px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.venuera-elements-menu .venuera-dropdown-item > span:not(.dashicons) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+/* Icon chip — soft tinted square that brightens on hover. */
+.venuera-elements-menu .venuera-dropdown-item .dashicons {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+    line-height: 16px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.75);
+    transition: background-color 0.12s ease, color 0.12s ease, transform 0.12s ease;
+}
+
+.venuera-elements-menu .venuera-dropdown-item:hover {
+    background: rgba(99, 179, 237, 0.12);
+    color: #fff;
+}
+.venuera-elements-menu .venuera-dropdown-item:hover .dashicons {
+    background: rgba(99, 179, 237, 0.28);
+    color: #fff;
+}
+.venuera-elements-menu .venuera-dropdown-item:active .dashicons {
+    transform: scale(0.94);
+}
+
+/* Keyboard / focus visibility. */
+.venuera-elements-menu .venuera-dropdown-item:focus-visible {
+    outline: 2px solid rgba(99, 179, 237, 0.6);
+    outline-offset: -2px;
+}
+
+/* Per-category icon tint — gives each section its own subtle color so the
+ * picker feels organized at a glance. Each entry tints both the chip
+ * background and the icon glyph foreground. */
+.venuera-elements-menu .venuera-dropdown-item[data-category="event"] .dashicons {
+    background: rgba(99, 179, 237, 0.14);
+    color: #cfe8ff;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="venue"] .dashicons {
+    background: rgba(94, 234, 212, 0.14);
+    color: #c6f3eb;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="ticket"] .dashicons {
+    background: rgba(251, 191, 36, 0.16);
+    color: #ffe6a8;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="order"] .dashicons {
+    background: rgba(196, 181, 253, 0.16);
+    color: #e2d6ff;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="venue"] .dashicons {
+    background: rgba(244, 114, 182, 0.14);
+    color: #ffd5ec;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="attendee"] .dashicons {
+    background: rgba(154, 230, 180, 0.14);
+    color: #d4f1de;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="codes"] .dashicons {
+    background: rgba(246, 173, 85, 0.14);
+    color: #ffd9a8;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="text"] .dashicons {
+    background: rgba(183, 148, 244, 0.14);
+    color: #e0d2ff;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="media"] .dashicons {
+    background: rgba(245, 101, 101, 0.14);
+    color: #ffd0d0;
+}
+.venuera-elements-menu .venuera-dropdown-item[data-category="shapes"] .dashicons {
+    background: rgba(160, 174, 192, 0.16);
+    color: #e2e8f0;
+}
+
+/* Left position dropdown — short menus stay vertically centred against
+ * the button. The tall elements menu is overridden below to anchor at
+ * the top so its first items can't get clipped above the viewport. */
+.venuera-floating-toolbar[data-position="left"] .venuera-dropdown-menu {
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    margin-left: 6px;
+}
+
+/* Override: anchor the categorized elements menu (which is much taller
+ * than the size/zoom dropdowns) to the TOP of the trigger so its first
+ * items are always visible. The internal max-height + overflow-y handles
+ * the long list safely without the centred positioning pushing the top
+ * off-screen. */
+.venuera-floating-toolbar[data-position="left"] .venuera-elements-menu {
+    top: 0;
+    transform: none;
+}
+.venuera-floating-toolbar[data-position="right"] .venuera-elements-menu {
+    top: 0;
+    transform: none;
+}
+
+.venuera-floating-toolbar[data-position="left"] .venuera-dropdown-menu::before {
+    top: 0;
+    left: -10px;
+    right: auto;
+    bottom: 0;
+    width: 14px;
+    height: auto;
+}
+
+/* Right position dropdown */
+.venuera-floating-toolbar[data-position="right"] .venuera-dropdown-menu {
+    top: 50%;
+    left: auto;
+    right: 100%;
+    transform: translateY(-50%);
+    margin-top: 0;
+    margin-right: 6px;
+}
+
+.venuera-floating-toolbar[data-position="right"] .venuera-dropdown-menu::before {
+    top: 0;
+    right: -10px;
+    left: auto;
+    bottom: 0;
+    width: 14px;
+    height: auto;
+}
+
+/* Size & Zoom Display */
+.venuera-size-display,
+.venuera-zoom-display {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 24px;
+    padding: 0 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    color: var(--sc-gray-300);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'SF Mono', Monaco, monospace;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.venuera-size-display:hover,
+.venuera-zoom-display:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Toolbar Controls */
+.venuera-toolbar-controls {
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+}
+
+.venuera-toolbar-control {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sc-gray-500);
+    transition: all 0.12s ease;
+}
+
+.venuera-toolbar-control:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--sc-gray-300);
+}
+
+/* Mini Toolbar (collapsed state) */
+.venuera-mini-toolbar {
+    position: absolute;
+    z-index: 100;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.venuera-mini-expand {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: var(--sc-sidebar-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sc-gray-400);
+    transition: all 0.15s ease;
+}
+
+.venuera-mini-expand:hover {
+    background: var(--sc-sidebar-hover);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Toolbar snap feedback */
+.venuera-floating-toolbar.snap-top,
+.venuera-floating-toolbar.snap-right,
+.venuera-floating-toolbar.snap-left,
+.venuera-floating-toolbar.snap-bottom {
+    box-shadow: 0 0 0 2px var(--sc-primary), 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Status Bar */
+.venuera-status-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    background: #f8f9fa;
+    border-top: 1px solid var(--sc-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    font-size: 13px;
+    color: #495057;
+    z-index: 10;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.venuera-status-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.venuera-status-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.venuera-status-hint {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.venuera-status-info {
+    color: #495057;
+    font-weight: 500;
+}
+
+/* ========================================
+   Properties Panel (Right)
+   ======================================== */
+.venuera-panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--sc-gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.venuera-panel-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--sc-gray-900);
+}
+
+.venuera-panel-content {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* ========================================
+   Canvas Wrapper
+   ======================================== */
+.venuera-canvas-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Canvas Container */
+.venuera-canvas-container {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    cursor: default;
+    display: flex;
+    /* "safe" centering keeps the canvas centered when it fits, but falls back to
+       start-aligned (scrollable) when it is larger than the viewport — without the
+       "safe" keyword flex centering clips and hides the top/left overflow. */
+    align-items: safe center;
+    justify-content: safe center;
+    overflow: auto;
+    padding: 30px;
+    padding-bottom: 62px; /* Space for status bar */
+    /* No painted grid here — the grid is drawn on the Fabric canvas and
+       controlled by the Toggle Grid button so it never appears "always on". */
+    background-color: var(--sc-canvas-bg);
+}
+
+/* While the Pan tool is active, the WHOLE canvas area shows the grab
+   cursor so the user can see at a glance the tool is engaged — not just
+   the fabric canvas itself. Switches to grabbing during the drag. */
+.venuera-canvas-container.tool-pan,
+.venuera-canvas-container.tool-pan .canvas-container {
+    cursor: grab;
+}
+.venuera-canvas-container.is-panning,
+.venuera-canvas-container.is-panning .canvas-container,
+.venuera-canvas-container.tool-pan.is-panning,
+.venuera-canvas-container.tool-pan.is-panning .canvas-container {
+    cursor: grabbing;
+}
+
+#venuera-ticket-canvas {
+    box-shadow: var(--sc-shadow-lg);
+    background: #fff;
+}
+
+/* ========================================
+   Right Panel - Properties
+   ======================================== */
+.venuera-properties-panel {
+    width: 280px;
+    background: #fff;
+    border-left: 1px solid var(--sc-gray-200);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    /* Sidebar can hold a long stack (background colour + 4-6 ready-made
+       template cards + export/import). Let it scroll independently of the
+       canvas so users can always reach the bottom actions. */
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.venuera-no-selection {
+    color: var(--sc-gray-500);
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Property Groups */
+.venuera-prop-group {
+    margin-bottom: 16px;
+}
+
+.venuera-prop-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sc-gray-700);
+    margin-bottom: 6px;
+}
+
+.venuera-prop-hint {
+    font-size: 11px;
+    color: var(--sc-gray-500);
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.venuera-prop-input,
+.venuera-prop-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--sc-gray-300);
+    border-radius: 6px;
+    font-size: 13px;
+    transition: var(--sc-transition);
+}
+
+.venuera-prop-input:focus,
+.venuera-prop-select:focus {
+    border-color: var(--sc-primary);
+    box-shadow: 0 0 0 2px rgba(54, 89, 227, 0.1);
+    outline: none;
+}
+
+.venuera-prop-range {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--sc-gray-200);
+    border-radius: 2px;
+    outline: none;
+}
+
+.venuera-prop-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--sc-primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Firefox range styling (thumb + track) so the slider renders identically. */
+.venuera-prop-range::-moz-range-track {
+    height: 4px;
+    background: var(--sc-gray-200);
+    border-radius: 2px;
+    border: none;
+}
+
+.venuera-prop-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--sc-primary);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.venuera-prop-range::-moz-focus-outer {
+    border: 0;
+}
+
+.venuera-range-value {
+    display: inline-block;
+    min-width: 40px;
+    text-align: right;
+    font-size: 12px;
+    color: var(--sc-gray-600);
+}
+
+.venuera-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--sc-gray-500);
+    margin-top: 4px;
+}
+
+.venuera-prop-row {
+    display: flex;
+    gap: 10px;
+}
+
+.venuera-prop-half {
+    flex: 1;
+}
+
+/* Property Sections — flat, clean stack (Venue Designer style). The JS renders
+   field groups directly inside .venuera-prop-section, so we keep the section
+   transparent (no card/border) and use the header only as a subtle group title.
+   This gives full-width, evenly-spaced fields instead of cramped boxed cards. */
+.venuera-prop-section {
+    border: none;
+    border-radius: 0;
+    margin-bottom: 4px;
+    background: transparent;
+}
+
+.venuera-prop-section + .venuera-prop-section {
+    margin-top: 4px;
+}
+
+.venuera-prop-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 10px;
+    margin-bottom: 4px;
+    cursor: default;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--sc-gray-500);
+    border-bottom: 1px solid var(--sc-gray-200);
+    transition: none;
+}
+
+/* First section sits right under the element-type header — no extra top gap. */
+.venuera-prop-section:first-child .venuera-prop-section-header {
+    padding-top: 4px;
+}
+
+.venuera-prop-section-header:hover {
+    background: transparent;
+}
+
+.venuera-prop-section-content {
+    padding: 12px;
+    border-top: 1px solid var(--sc-gray-200);
+    background: #fff;
+    border-radius: 0 0 6px 6px;
+}
+
+.venuera-prop-subsection {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--sc-gray-200);
+}
+
+.venuera-prop-subsection:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.venuera-prop-actions {
+    padding-top: 16px;
+    border-top: 1px solid var(--sc-gray-200);
+    margin-top: 16px;
+}
+
+.venuera-prop-actions .button {
+    width: 100%;
+}
+
+.venuera-prop-group .description {
+    font-size: 11px;
+    color: var(--sc-gray-500);
+    margin-top: 4px;
+}
+
+/* Layer Controls (live inside the floating toolbar; shown only on selection).
+   When docked left/right the toolbar groups stack vertically — the shared
+   .venuera-toolbar-group rules already handle direction, so we only need to
+   make sure this group lays out like the others. */
+.venuera-layer-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Legacy sidebar layer buttons (kept for backwards compatibility). */
+.venuera-layer-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--sc-gray-300);
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.venuera-layer-btn:hover {
+    background: var(--sc-gray-100);
+    border-color: var(--sc-gray-400);
+}
+
+.venuera-layer-btn:active {
+    background: var(--sc-gray-200);
+}
+
+.venuera-layer-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--sc-gray-600);
+}
+
+/* ========================================
+   Properties Panel Section / Header
+   ======================================== */
+.venuera-panel-section {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--sc-gray-200);
+}
+
+.venuera-prop-header {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sc-gray-500);
+    margin: 0 0 10px;
+}
+
+.venuera-panel-section .venuera-prop-group:last-child {
+    margin-bottom: 0;
+}
+
+/* =====================================================
+ * Ready-made templates gallery + Export/Import tools
+ * (default-state panel in the right sidebar)
+ * ===================================================== */
+
+.venuera-template-tools {
+    border-top: 1px solid var(--sc-gray-200, #e5e7eb);
+    padding-top: 14px;
+}
+
+.venuera-prop-hint {
+    margin: 0 0 10px;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--sc-gray-500, #6b7280);
+}
+
+.venuera-ready-templates {
+    margin-bottom: 4px;
+}
+
+.venuera-ready-templates-loading {
+    font-size: 11px;
+    color: var(--sc-gray-500, #6b7280);
+    text-align: center;
+    padding: 14px 8px;
+}
+
+.venuera-ready-search {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.venuera-ready-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--sc-gray-400, #9ca3af);
+    pointer-events: none;
+}
+
+.venuera-ready-search input[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px 6px 36px;
+    font-size: 12px;
+    line-height: 1.4;
+    border: 1px solid var(--sc-gray-200, #e5e7eb);
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.venuera-ready-search input[type="search"]:focus {
+    outline: none;
+    border-color: var(--sc-blue-500, #3659E3);
+    box-shadow: 0 0 0 2px rgba(54, 89, 227, 0.15);
+}
+
+.venuera-ready-empty {
+    margin: 8px 0 0;
+    font-size: 11px;
+    color: var(--sc-gray-500, #6b7280);
+    text-align: center;
+    padding: 12px 8px;
+    background: var(--sc-gray-50, #f9fafb);
+    border-radius: 6px;
+}
+
+.venuera-ready-grid {
+    /* One card per row by default — the sidebar is narrow (~280px) and a
+       full-width card means a bigger live preview at a glance, which is
+       what users actually care about when picking a template. The card
+       contents (thumb + meta) stay centered. */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.venuera-ready-card {
+    appearance: none;
+    background: #fff;
+    border: 1px solid var(--sc-gray-200, #e5e7eb);
+    border-radius: 8px;
+    padding: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+    text-align: center;
+    /* Center the thumbnail horizontally inside the card. */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.venuera-ready-card:hover {
+    border-color: var(--sc-blue-500, #3659E3);
+    box-shadow: 0 2px 8px rgba(54, 89, 227, 0.12);
+    transform: translateY(-1px);
+}
+
+.venuera-ready-card:focus {
+    outline: 2px solid var(--sc-blue-500, #3659E3);
+    outline-offset: 1px;
+}
+
+.venuera-ready-thumb {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f9fafb;
+    border: 1px solid var(--sc-gray-100, #f3f4f6);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    /* Center inside the card's flex column. */
+    margin: 0 auto;
+}
+
+.venuera-ready-thumb svg,
+.venuera-ready-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.venuera-ready-thumb-stub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sc-gray-500, #6b7280);
+    font-size: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    width: 100%;
+    height: 100%;
+}
+
+.venuera-ready-meta {
+    width: 100%;
+    margin-top: 6px;
+    text-align: center;
+}
+
+/* ===== Hover preview popup ===== */
+
+.venuera-ready-popup {
+    position: fixed;
+    z-index: 100050;
+    background: #fff;
+    border: 1px solid var(--sc-gray-200, #e5e7eb);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.30),
+                0 4px 12px -2px rgba(15, 23, 42, 0.12);
+    padding: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(6px);
+    transition: opacity 140ms ease, transform 140ms ease, visibility 0s linear 140ms;
+    pointer-events: none;
+}
+
+.venuera-ready-popup.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    transition: opacity 140ms ease, transform 140ms ease, visibility 0s linear 0s;
+}
+
+.venuera-ready-popup-header {
+    margin-bottom: 8px;
+}
+
+.venuera-ready-popup-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sc-gray-900, #111827);
+    line-height: 1.3;
+}
+
+.venuera-ready-popup-niche {
+    font-size: 11px;
+    color: var(--sc-gray-500, #6b7280);
+    margin-top: 2px;
+}
+
+.venuera-ready-popup-thumb {
+    border: 1px solid var(--sc-gray-100, #f3f4f6);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.venuera-ready-popup-desc {
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--sc-gray-700, #374151);
+}
+
+.venuera-ready-popup-meta {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--sc-gray-500, #6b7280);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.venuera-ready-thumb-size {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 6px;
+    border-radius: 3px;
+    backdrop-filter: blur(2px);
+}
+
+.venuera-ready-meta {
+    padding: 6px 8px 8px;
+}
+
+.venuera-ready-name {
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--sc-gray-900, #1f2937);
+}
+
+.venuera-ready-niche {
+    font-size: 10px;
+    color: var(--sc-gray-500, #6b7280);
+    margin-top: 1px;
+}
+
+/* Admin-only "Replace source template" block — sits between the ready-made
+   gallery and the Backup & restore row. The whole block is hidden via inline
+   display:none until a bundled template has been loaded into the editor. */
+.venuera-replace-source {
+    padding: 10px 12px;
+    background: #fff8e6;
+    border: 1px solid #f5d784;
+    border-radius: 8px;
+}
+
+.venuera-replace-source-meta {
+    font-size: 11px;
+    font-weight: 600;
+    color: #7a5a00;
+    margin-bottom: 8px;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.venuera-replace-source-meta strong {
+    color: #463300;
+}
+
+.venuera-replace-source-btn {
+    width: 100%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    line-height: 1.6 !important;
+    height: auto !important;
+}
+
+.venuera-replace-source-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+}
+
+.venuera-replace-source .venuera-prop-hint {
+    color: #8b6c1c;
+}
+
+/* Ticket background color picker fits the panel width. */
+.venuera-ticket-settings .wp-picker-container {
+    display: block;
+}
+
+.venuera-ticket-settings .wp-picker-container .wp-color-result.button {
+    height: 32px;
+    border-radius: 6px;
+    margin: 0;
+}
+
+/* ========================================
+   Button Group (Text Align etc)
+   ======================================== */
+.venuera-button-group {
+    display: flex;
+    border: 1px solid var(--sc-gray-300);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.venuera-align-btn {
+    flex: 1;
+    padding: 8px;
+    background: #fff;
+    border: none;
+    border-right: 1px solid var(--sc-gray-300);
+    cursor: pointer;
+    transition: var(--sc-transition);
+}
+
+.venuera-align-btn:last-child {
+    border-right: none;
+}
+
+.venuera-align-btn:hover {
+    background: var(--sc-gray-100);
+}
+
+.venuera-align-btn.active {
+    background: var(--sc-primary);
+    color: #fff;
+}
+
+.venuera-align-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Image Upload */
+.venuera-image-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.venuera-image-preview {
+    width: 100%;
+    height: 80px;
+    background: var(--sc-gray-100);
+    border: 1px dashed var(--sc-gray-300);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.venuera-image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Color Picker */
+.venuera-prop-group .wp-picker-container {
+    display: block;
+}
+
+.venuera-prop-group .wp-picker-container .wp-color-result {
+    height: 32px;
+    border-radius: 6px;
+}
+
+/* Color-picker palettes float as a fixed popup anchored to their swatch (top/left
+   set in initColorPickers) instead of opening in-flow at the bottom of the long
+   scrollable panel. wpColorPicker leaves CLOSED holders as display:block here, so
+   without this they'd show as empty chrome boxes ("circles"). We remove every
+   closed holder from the layout and reveal ONLY the open one — its toggle button
+   carries .wp-picker-open. */
+.venuera-editor-container .wp-picker-holder {
+    display: none;
+}
+
+.venuera-editor-container .wp-color-result.wp-picker-open ~ .wp-picker-holder {
+    display: block;
+    position: fixed;
+    z-index: 100000;
+    margin: 0;
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    padding: 8px;
+}
+
+.venuera-prop-group .iris-picker,
+.venuera-ticket-settings .iris-picker {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+/* The background-color picker lives in a non-scrolling section; let its palette
+   overlay so it doesn't shift the canvas/header layout. */
+.venuera-ticket-settings .wp-picker-holder {
+    position: absolute;
+    z-index: 100;
+    background: #fff;
+}
+
+/* Grid toggle active state */
+.venuera-canvas-toolbar .button.active {
+    background: var(--sc-primary);
+    color: #fff;
+    border-color: var(--sc-primary);
+}
+
+/* ========================================
+   Instant tool tooltips (captions)
+   Shown to the right of each toolbar button on hover. Built from the button's
+   data-tooltip (the title attribute is moved there by JS so the native delayed
+   tooltip does not also appear).
+   ======================================== */
+.venuera-floating-toolbar [data-tooltip],
+.venuera-mini-toolbar [data-tooltip] {
+    position: relative;
+}
+
+.venuera-floating-toolbar [data-tooltip]:hover::after,
+.venuera-mini-toolbar [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 12px;
+    background: var(--sc-gray-900);
+    color: #fff;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.venuera-floating-toolbar [data-tooltip]:hover::before,
+.venuera-mini-toolbar [data-tooltip]:hover::before {
+    content: "";
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 4px;
+    border: 5px solid transparent;
+    border-right-color: var(--sc-gray-900);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* When the toolbar is docked on the right, flip the tooltips to the left. */
+.venuera-floating-toolbar[data-position="right"] [data-tooltip]:hover::after {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 12px;
+}
+
+.venuera-floating-toolbar[data-position="right"] [data-tooltip]:hover::before {
+    left: auto;
+    right: 100%;
+    margin-left: 0;
+    margin-right: 4px;
+    border-right-color: transparent;
+    border-left-color: var(--sc-gray-900);
+}
+
+/* ========================================
+   Modals
+   ======================================== */
+.venuera-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000;
+}
+
+.venuera-modal-content {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--sc-shadow-lg);
+    width: 400px;
+    max-width: 90%;
+    animation: modalSlideIn 0.2s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.venuera-preview-modal-content {
+    max-width: 900px;
+    width: 90%;
+}
+
+.venuera-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--sc-gray-200);
+}
+
+.venuera-modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.venuera-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--sc-gray-500);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.venuera-modal-close:hover {
+    color: var(--sc-gray-900);
+}
+
+.venuera-modal-body {
+    padding: 20px;
+}
+
+.venuera-modal-footer {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--sc-gray-200);
+    justify-content: flex-end;
+}
+
+/* Preview Container */
+#venuera-preview-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background: var(--sc-gray-100);
+    border-radius: 6px;
+    overflow: auto;
+}
+
+/* ========================================
+   Notifications - Bottom Right
+   ======================================== */
+.venuera-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: var(--sc-gray-900);
+    color: #fff;
+    font-size: 14px;
+    box-shadow: var(--sc-shadow-lg);
+    animation: slideUp 0.3s ease;
+    z-index: 100001;
+}
+
+.venuera-notification.success {
+    background: var(--sc-success);
+}
+
+.venuera-notification.error {
+    background: var(--sc-danger);
+}
+
+.venuera-notification.warning {
+    background: var(--sc-warning);
+    color: var(--sc-gray-900);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   Loading States
+   ======================================== */
+.venuera-saving {
+    position: relative;
+    pointer-events: none;
+}
+
+.venuera-saving::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid transparent;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.dashicons.spin,
+.spin .dashicons {
+    animation: spin 1s linear infinite;
+}
+
+/* PDF Download Button */
+#venuera-download-pdf .dashicons-pdf {
+    color: #e74c3c;
+}
+
+#venuera-download-pdf:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   Canvas Selection Styles
+   ======================================== */
+.canvas-container {
+    border: 2px solid transparent;
+    border-radius: 4px;
+}
+
+.canvas-container.has-selection {
+    border-color: var(--sc-primary);
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media screen and (max-width: 1200px) {
+    .venuera-elements-panel,
+    .venuera-properties-panel {
+        width: 250px;
+    }
+}
+
+@media screen and (max-width: 960px) {
+    .venuera-editor-container {
+        flex-direction: column;
+    }
+    
+    .venuera-elements-panel {
+        width: 100%;
+        max-height: 200px;
+        border-right: none;
+        border-bottom: 1px solid var(--sc-gray-200);
+    }
+    
+    .venuera-properties-panel {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        z-index: 20;
+    }
+    
+    .venuera-properties-panel.open {
+        transform: translateX(0);
+    }
+    
+    .venuera-canvas-wrapper {
+        min-height: 400px;
+    }
+}
+
+/* ========================================
+   Primary Buttons in Properties Panel
+   ======================================== */
+.venuera-properties-panel .button-primary,
+.venuera-panel-content .button-primary {
+    background: var(--sc-primary) !important;
+    border-color: var(--sc-primary) !important;
+    color: #fff !important;
+    padding: 8px 16px !important;
+    height: auto !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    transition: all 0.15s ease !important;
+}
+
+.venuera-properties-panel .button-primary:hover,
+.venuera-panel-content .button-primary:hover {
+    background: #2a4ac7 !important;
+    border-color: #2a4ac7 !important;
+}
+
+/* Textarea in properties */
+.venuera-prop-group textarea.venuera-prop-input {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.venuera-prop-group label input[type="checkbox"] {
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+
+/* ===================================================================== */
+/* AI Ticket Assistant                                                   */
+/* ===================================================================== */
+.venuera-ftool-ai svg { color: #7c3aed; }
+.venuera-ftool-btn.venuera-ftool-ai:hover { background: #f3e8ff; }
+
+.venuera-ai-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.55);
+}
+.venuera-ai-dialog {
+    width: 560px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 60px);
+    overflow: auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    padding: 22px 24px 20px;
+}
+.venuera-ai-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.venuera-ai-header h2 { margin: 0; font-size: 18px; }
+.venuera-ai-close { background: none; border: none; font-size: 26px; line-height: 1; cursor: pointer; color: #6b7280; padding: 0 4px; }
+.venuera-ai-close:hover { color: #111827; }
+.venuera-ai-subtitle { margin: 2px 0 14px; color: #4b5563; font-size: 13px; }
+#venuera-td-ai-prompt {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 90px;
+}
+#venuera-td-ai-prompt:focus { border-color: #7c3aed; box-shadow: 0 0 0 1px #7c3aed; outline: none; }
+.venuera-ai-examples { margin-top: 12px; font-size: 12px; }
+.venuera-ai-examples-title { color: #6b7280; font-weight: 600; display: block; margin-bottom: 6px; }
+.venuera-ai-examples ul { margin: 0; padding: 0; list-style: none; }
+.venuera-ai-examples li { margin: 0 0 6px; }
+.venuera-ai-example {
+    text-align: left;
+    width: 100%;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 7px 10px;
+    cursor: pointer;
+    color: #374151;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.venuera-ai-example:hover { background: #f3e8ff; border-color: #ddd6fe; }
+.venuera-ai-clear { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; color: #374151; }
+.venuera-ai-error { margin-top: 12px; padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 8px; font-size: 13px; }
+.venuera-ai-footer { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
+#venuera-td-ai-generate-btn.is-busy { opacity: 0.7; cursor: progress; }
+
+/* Arrange (layer order) controls inside the properties sidebar. */
+.venuera-arrange-row{display:flex;gap:8px;}
+.venuera-arrange-btn{
+	flex:1;height:38px;display:grid;place-items:center;
+	background:#fff;border:1px solid #d5d8e0;border-radius:8px;color:#3a4256;cursor:pointer;transition:.12s;
+}
+.venuera-arrange-btn:hover{background:#f1f0fe;border-color:#6c5ce7;color:#6c5ce7;}
+.venuera-arrange-btn:active{transform:scale(.95);}
+.venuera-arrange-btn svg{width:18px;height:18px;}
+
+/* Legacy back-compat size controls (hidden <select> + width/height/unit block).
+   Custom size is set via the #venuera-custom-size-modal, never these. Their
+   inline display:none can get cleared by jQuery show/css cycles and then leak
+   onto the canvas top-left, so enforce hiding here. The modal itself
+   (#venuera-custom-size-modal) is unaffected. */
+#venuera-ticket-size,
+.venuera-editor-container > .venuera-custom-size{display:none !important;}
+
+/* Instant hover tooltips for the Arrange buttons (icon-only). aria-label keeps
+   them accessible; data-tip drives this styled bubble shown above the button. */
+.venuera-arrange-row{overflow:visible;}
+.venuera-arrange-btn{position:relative;}
+.venuera-arrange-btn[data-tip]::after{
+    content:attr(data-tip);
+    position:absolute;
+    bottom:calc(100% + 6px);
+    left:50%;
+    transform:translateX(-50%);
+    background:#1f2330;
+    color:#fff;
+    font-size:11px;
+    line-height:1;
+    white-space:nowrap;
+    padding:5px 8px;
+    border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+    z-index:1000;
+}
+.venuera-arrange-btn[data-tip]:hover::after{opacity:1;}

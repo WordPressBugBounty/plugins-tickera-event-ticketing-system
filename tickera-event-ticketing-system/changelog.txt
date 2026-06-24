@@ -1,6 +1,25 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.0 24/06/2026 =
+* New: Ticket Designer - a built-in drag & drop ticket designer with a live, pixel-perfect PDF preview and a library of ready-made starter templates (Wedding, Concert, Conference, Gala Dinner, Wine Tasting, Festival, Theater, and many more). It replaces the classic "Ticket Templates" editor.
+* New: Create unlimited ticket designs - build and save as many ticket templates as you like and assign them per event or per ticket type.
+* New: Front-end design themes - selectable style presets (Minimal, Bold, Dark, or "None / use my theme") that restyle Tickera's event, cart, checkout and order pages. Works in both standalone mode and with Bridge for WooCommerce. Set it under Tickera > Settings > Appearance.
+* New: Refreshed admin interface across Tickera screens (Add-ons, Settings, API Access, Discount Codes, Ticket Types, CSV Export, Speakers, and more).
+* New: Unified "Ticket template" selector - classic and Ticket Designer templates are now chosen from a single dropdown on ticket types and on Bridge for WooCommerce products.
+* Improvement: The classic "Ticket Templates" UI is deprecated in favor of the Ticket Designer; existing legacy templates remain available. The legacy "Multipage ticket template" option is hidden once no classic templates remain.
+* Improvement: Ticket Designer designs and their thumbnails are stored in the uploads directory (portable and update-safe).
+* Improvement: Full Bridge for WooCommerce support for Designer tickets - event, date, location, category, terms and buyer details all resolve correctly, including for variable products (the exact purchased variation is shown), and the WooCommerce Billing/Shipping Info elements render cleanly.
+* Improvement: New designer elements (QR code, barcode, terms, full-width bands, borders) always appear within the ticket bounds, on any ticket size.
+* Fixed: Designer tickets bought through WooCommerce could render empty (missing event details and buyer name); variable-product tickets could be completely blank or match no template. Resolved.
+* Fixed: Marking a WooCommerce order as paid could open/stream a ticket PDF instead of saving the order. Resolved.
+* Fixed: Ticket Designer editor polish - the color picker no longer disappears when picking a color, the Arrange buttons show hover tooltips, and the template search field icon is no longer clipped.
+* Fixed: Plugin load order so add-on settings (e.g. Slack, Pushover) reliably appear under Settings.
+* Fixed: Embedded font rendering in generated ticket PDFs so the PDF matches the on-screen design.
+
+= 3.5.7.4 05/06/2026 =
+* Dir name fixed.
+
 = 3.5.7.3 05/06/2026 =
 * Currency and Format bug fixed.
 

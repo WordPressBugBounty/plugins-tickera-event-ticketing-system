@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.5.7.3
+ * Version: 3.6.0.0
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.5.7.2';
+        var $version = '3.6.0.0';
 
         var $title = 'Tickera';
 
@@ -1557,8 +1557,13 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $post_status = 'publish';
             $template_counts = wp_count_posts( $post_type );
             $template_count = ( isset( $template_counts->{$post_status} ) ? (int) $template_counts->{$post_status} : 0 );
-            // Add Default Ticket Template
-            if ( 0 == $template_count ) {
+            // Add Default Ticket Template.
+            // Disabled by default: classic ("legacy") ticket templates are
+            // deprecated in favour of the Ticket Designer (which seeds its own
+            // default), and auto-recreating a classic template would otherwise
+            // resurrect the legacy Ticket Templates menu. Re-enable via the
+            // 'tickera_create_default_legacy_template' filter if ever needed.
+            if ( 0 == $template_count && tickera_apply_filters( 'tickera_create_default_legacy_template', false ) ) {
                 $post = tickera_apply_filters( 'tickera_template_post', [
                     'post_content' => '',
                     'post_status'  => 'publish',
@@ -1998,6 +2003,11 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 global $wp_rewrite;
                 $wp_rewrite->flush_rules();
                 update_option( 'tickera_version', sanitize_text_field( $this->version ) );
+                // Strictly-fresh install (no prior Tickera version stored): the
+                // classic Ticket Templates UI starts hidden in favour of the
+                // Ticket Designer. Existing sites default to 'visible' (see the
+                // Ticket Designer module), so this never hides it from upgraders.
+                add_option( 'tc_legacy_ticket_templates', 'hidden' );
             }
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API requests are authenticated by API key/checksum, not a browser nonce.
             if ( isset( $_REQUEST['tickera'] ) && trim( sanitize_text_field( wp_unslash( $_REQUEST['tickera'] ) ) ) != '' && isset( $_REQUEST['api_key'] ) ) {
@@ -2009,10 +2019,16 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         }
 
         function sales_api() {
-            if ( get_option( 'tickera_version', false ) == false || get_option( 'tickera_version', false ) !== $this->version ) {
+            $tc_prior_version = get_option( 'tickera_version', false );
+            if ( $tc_prior_version == false || $tc_prior_version !== $this->version ) {
                 global $wp_rewrite;
                 $wp_rewrite->flush_rules();
                 update_option( 'tickera_version', sanitize_text_field( $this->version ) );
+                // Stamp the legacy-templates mode only on a strictly-fresh install
+                // (no prior version). Upgrades fall through and default to 'visible'.
+                if ( $tc_prior_version == false ) {
+                    add_option( 'tc_legacy_ticket_templates', 'hidden' );
+                }
             }
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public sales API requests are authenticated by API key, not a browser nonce.
             if ( isset( $_REQUEST['tickera_sales'] ) && trim( sanitize_text_field( wp_unslash( $_REQUEST['tickera_sales'] ) ) ) != '' && isset( $_REQUEST['api_key'] ) ) {
@@ -5416,4 +5432,33 @@ if ( !function_exists( '\\Tickera\\tets_fs' ) ) {
             }
         }
     }
+}
+/**
+ * Keep the Tickera parent plugin loaded BEFORE its add-ons.
+ *
+ * Tickera add-ons (Slack, Pushover, …) instantiate at file-load time and bail
+ * unless the parent (\Tickera\tets_fs) is already loaded — they do not re-init
+ * on `tets_fs_loaded`. If WordPress loads an add-on before Tickera (e.g. after
+ * Tickera was deactivated/reactivated and moved to the end of active_plugins),
+ * that add-on's hooks (incl. its Settings tab) never register. Pin Tickera to
+ * the top of active_plugins so it always loads first.
+ */
+if ( !function_exists( 'Tickera\\tickera_ensure_loads_first' ) ) {
+    function tickera_ensure_loads_first() {
+        if ( !function_exists( 'get_option' ) ) {
+            return;
+        }
+        $self = plugin_basename( __FILE__ );
+        // tickera/tickera.php
+        $active = (array) get_option( 'active_plugins', array() );
+        $idx = array_search( $self, $active, true );
+        if ( false !== $idx && $idx > 0 ) {
+            unset($active[$idx]);
+            array_unshift( $active, $self );
+            update_option( 'active_plugins', array_values( $active ) );
+        }
+    }
+
+    add_action( 'activated_plugin', 'Tickera\\tickera_ensure_loads_first' );
+    add_action( 'admin_init', 'Tickera\\tickera_ensure_loads_first' );
 }

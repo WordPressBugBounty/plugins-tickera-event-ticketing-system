@@ -97,8 +97,11 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
                     $value = (int) $orders_query->found_posts;
 
                 } else {
-                    global $tickera_woocommerce_bridge;
-                    $post_types = $tickera_woocommerce_bridge->get_woo_order_types();
+
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+                    global $tc_woocommerce_bridge;
+
+                    $post_types = $tc_woocommerce_bridge->get_woo_order_types();
                     $post_types = array_filter( array_map( 'sanitize_key', $post_types ) );
 
                     if ( empty( $post_types ) ) {

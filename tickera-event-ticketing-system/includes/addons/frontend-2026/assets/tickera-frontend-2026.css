@@ -1,0 +1,612 @@
+/**
+ * Tickera Frontend 2026 — single-event style presets.
+ *
+ * Scoped to body.tc-front-2026.tc-style-{minimal|bold|dark}. Themes only
+ * Tickera's own front-end elements (event date/location widgets, the tickets
+ * table and the add-to-cart button) so it blends with the active theme and never
+ * touches theme-owned markup (post title, content typography, header/footer).
+ */
+
+/* ============================================================
+ * Design tokens per preset (set on <body>)
+ * ============================================================ */
+body.tc-front-2026 {
+	--tcf-brand: #6b5f89;
+	--tcf-brand-glow: #9d8fbe;
+	--tcf-brand-deep: #4a4262;
+	--tcf-ink: #1a1428;
+	--tcf-muted: #6b7280;
+	--tcf-surface: #ffffff;
+	--tcf-surface-2: #f6f5fa;
+	--tcf-hairline: #ece9f3;
+	--tcf-radius: 14px;
+	--tcf-radius-sm: 9px;
+	--tcf-shadow: 0 1px 2px rgba(26, 20, 40, .05), 0 10px 30px -12px rgba(26, 20, 40, .18);
+	--tcf-btn-bg: var(--tcf-brand);
+	--tcf-btn-bg-hover: var(--tcf-brand-deep);
+	--tcf-btn-fg: #ffffff;
+	--tcf-btn-shadow: 0 1px 2px rgba(107, 95, 137, .3);
+	--tcf-btn-shadow-hover: 0 4px 12px rgba(107, 95, 137, .35);
+	--tcf-head-bg: var(--tcf-surface-2);
+	--tcf-head-fg: var(--tcf-ink);
+	--tcf-accent: var(--tcf-brand);
+	/* Unified type scale (themes set a large base font; we normalise it across
+	   every Tickera surface so cells, labels, values and totals match). */
+	--tcf-fs-cell: 15px;   /* table body cells, form labels, summary rows */
+	--tcf-fs-head: 12px;   /* uppercase table header row */
+	--tcf-fs-total: 17px;  /* grand total */
+	--tcf-lh: 1.5;
+}
+
+/* Minimal → neutral black & white so it blends into any theme (no brand colour). */
+body.tc-front-2026.tc-style-minimal {
+	--tcf-accent: #1a1428;
+	--tcf-surface-2: #f4f4f5;
+	--tcf-hairline: #e4e4e7;
+	--tcf-head-bg: #f4f4f5;
+	--tcf-head-fg: #1a1428;
+	--tcf-btn-bg: #1a1428;
+	--tcf-btn-bg-hover: #000000;
+	--tcf-btn-fg: #ffffff;
+	--tcf-btn-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+	--tcf-btn-shadow-hover: 0 4px 12px rgba(0, 0, 0, .22);
+}
+
+body.tc-front-2026.tc-style-bold {
+	--tcf-head-bg: linear-gradient(135deg, var(--tcf-brand) 0%, var(--tcf-brand-glow) 100%);
+	--tcf-head-fg: #ffffff;
+	--tcf-btn-bg: linear-gradient(135deg, var(--tcf-brand) 0%, var(--tcf-brand-glow) 100%);
+	--tcf-btn-bg-hover: linear-gradient(135deg, var(--tcf-brand-deep) 0%, var(--tcf-brand) 100%);
+	--tcf-radius: 16px;
+}
+
+body.tc-front-2026.tc-style-dark {
+	--tcf-ink: #f4f2fa;
+	--tcf-muted: #b6afca;
+	--tcf-surface: #241d33;
+	--tcf-surface-2: #2c2542;
+	--tcf-hairline: #3a3252;
+	--tcf-head-bg: #3a3252;
+	--tcf-head-fg: #ffffff;
+	--tcf-btn-bg: var(--tcf-brand-glow);
+	--tcf-btn-bg-hover: #b3a6cf;
+	--tcf-btn-fg: #1a1428;
+	--tcf-accent: var(--tcf-brand-glow);
+	--tcf-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 14px 34px -12px rgba(0, 0, 0, .55);
+}
+
+/* ============================================================
+ * Event date / location widgets → brand pills
+ * ============================================================ */
+body.tc-front-2026 .tc_event_date_title_front,
+body.tc-front-2026 .tc_event_location_title_front {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	margin: 0 8px 14px 0;
+	padding: 7px 14px;
+	border-radius: 999px;
+	background: var(--tcf-surface-2);
+	color: var(--tcf-ink);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.2;
+	border: 1px solid var(--tcf-hairline);
+	text-decoration: none;
+}
+body.tc-front-2026 .tc_event_date_title_front .fa,
+body.tc-front-2026 .tc_event_location_title_front .fa,
+body.tc-front-2026 .tc_event_date_title_front i,
+body.tc-front-2026 .tc_event_location_title_front i {
+	color: var(--tcf-accent);
+}
+body.tc-front-2026.tc-style-bold .tc_event_date_title_front,
+body.tc-front-2026.tc-style-bold .tc_event_location_title_front {
+	background: rgba(107, 95, 137, .1);
+	border-color: rgba(107, 95, 137, .25);
+	color: var(--tcf-brand-deep);
+}
+body.tc-front-2026.tc-style-dark .tc_event_date_title_front,
+body.tc-front-2026.tc-style-dark .tc_event_location_title_front {
+	background: var(--tcf-surface-2);
+	border-color: var(--tcf-hairline);
+	color: var(--tcf-ink);
+}
+
+/* ============================================================
+ * Tickets table → card
+ * ============================================================ */
+body.tc-front-2026 table.event_tickets.tickera {
+	width: 100%;
+	margin: 18px 0;
+	border-collapse: separate;
+	border-spacing: 0;
+	background: var(--tcf-surface);
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius);
+	box-shadow: var(--tcf-shadow);
+	overflow: hidden;
+	color: var(--tcf-ink);
+}
+
+/* Header row (Tickera renders headers as <th> inside the first <tr>). */
+body.tc-front-2026 table.event_tickets.tickera tr:first-child th,
+body.tc-front-2026 table.event_tickets.tickera thead th {
+	background: var(--tcf-head-bg);
+	color: var(--tcf-head-fg);
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	text-align: left;
+	padding: 14px 18px;
+	border: 0;
+}
+
+body.tc-front-2026 table.event_tickets.tickera td {
+	padding: 16px 18px;
+	border-top: 1px solid var(--tcf-hairline);
+	vertical-align: middle;
+	color: var(--tcf-ink);
+	background: transparent;
+	font-size: var(--tcf-fs-cell);
+	line-height: var(--tcf-lh);
+}
+body.tc-front-2026 table.event_tickets.tickera tr:first-child td {
+	border-top: 0;
+}
+body.tc-front-2026 table.event_tickets.tickera tbody tr:hover td {
+	background: var(--tcf-surface-2);
+}
+
+/* Price */
+body.tc-front-2026 table.event_tickets.tickera td[data-column="Price"],
+body.tc-front-2026 table.event_tickets.tickera .woocommerce-Price-amount {
+	font-weight: 700;
+	color: var(--tcf-accent);
+	white-space: nowrap;
+}
+
+/* Cart cell → right aligned */
+body.tc-front-2026 table.event_tickets.tickera td[data-column="Cart"] {
+	text-align: right;
+}
+body.tc-front-2026 table.event_tickets.tickera td[data-column="Cart"] .product {
+	margin: 0;
+}
+
+/* ============================================================
+ * Add to cart button
+ * ============================================================ */
+body.tc-front-2026 .add_to_cart_inline a:not(.added_to_cart),
+body.tc-front-2026 .add_to_cart_inline button,
+body.tc-front-2026 table.event_tickets.tickera .button:not(.added_to_cart),
+body.tc-front-2026 table.event_tickets.tickera input[type="submit"],
+body.tc-front-2026 table.event_tickets.tickera a.add_to_cart_button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 11px 20px;
+	border: 0;
+	border-radius: var(--tcf-radius-sm);
+	background: var(--tcf-btn-bg);
+	color: var(--tcf-btn-fg);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background .15s ease, transform .08s ease, box-shadow .2s ease;
+	box-shadow: var(--tcf-btn-shadow);
+}
+body.tc-front-2026 .add_to_cart_inline a:not(.added_to_cart):hover,
+body.tc-front-2026 .add_to_cart_inline button:hover,
+body.tc-front-2026 table.event_tickets.tickera .button:not(.added_to_cart):hover,
+body.tc-front-2026 table.event_tickets.tickera a.add_to_cart_button:hover {
+	background: var(--tcf-btn-bg-hover);
+	color: var(--tcf-btn-fg);
+	transform: translateY(-1px);
+	box-shadow: var(--tcf-btn-shadow-hover);
+}
+
+/* "View cart" (shown after add-to-cart) → plain link, not a button. */
+body.tc-front-2026 .add_to_cart_inline a.added_to_cart,
+body.tc-front-2026 table.event_tickets.tickera a.added_to_cart {
+	display: inline-block;
+	margin-left: 10px;
+	padding: 0;
+	background: none;
+	border: 0;
+	box-shadow: none;
+	color: var(--tcf-accent);
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+body.tc-front-2026 .add_to_cart_inline a.added_to_cart:hover,
+body.tc-front-2026 table.event_tickets.tickera a.added_to_cart:hover {
+	color: var(--tcf-ink);
+	background: none;
+	transform: none;
+	box-shadow: none;
+}
+
+/* Quantity input, if present */
+body.tc-front-2026 table.event_tickets.tickera input[type="number"] {
+	width: 64px;
+	padding: 8px 10px;
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius-sm);
+	background: var(--tcf-surface);
+	color: var(--tcf-ink);
+}
+
+/* ============================================================
+ * Responsive — stack the tickets table using the data-column labels
+ * Tickera already outputs data-column on each <td>.
+ * ============================================================ */
+@media (max-width: 600px) {
+	body.tc-front-2026 table.event_tickets.tickera tr:first-child th {
+		display: none;
+	}
+	body.tc-front-2026 table.event_tickets.tickera,
+	body.tc-front-2026 table.event_tickets.tickera tbody,
+	body.tc-front-2026 table.event_tickets.tickera tr,
+	body.tc-front-2026 table.event_tickets.tickera td {
+		display: block;
+		width: 100%;
+	}
+	body.tc-front-2026 table.event_tickets.tickera tr {
+		border-top: 1px solid var(--tcf-hairline);
+		padding: 6px 0;
+	}
+	body.tc-front-2026 table.event_tickets.tickera tr:first-child {
+		border-top: 0;
+	}
+	body.tc-front-2026 table.event_tickets.tickera td {
+		border-top: 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px;
+	}
+	body.tc-front-2026 table.event_tickets.tickera td::before {
+		content: attr(data-column);
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: .05em;
+		color: var(--tcf-muted);
+	}
+	body.tc-front-2026 table.event_tickets.tickera td[data-column="Cart"] {
+		text-align: left;
+	}
+}
+
+/* ============================================================
+ * Standalone cart / checkout flow ([tc_cart], buyer/owner info, totals)
+ * ============================================================ */
+body.tc-front-2026 table.tickera_table {
+	width: 100%;
+	margin: 18px 0;
+	border-collapse: separate;
+	border-spacing: 0;
+	background: var(--tcf-surface);
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius);
+	box-shadow: var(--tcf-shadow);
+	overflow: hidden;
+	color: var(--tcf-ink);
+}
+body.tc-front-2026 table.tickera_table th {
+	background: var(--tcf-head-bg);
+	color: var(--tcf-head-fg);
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	text-align: left;
+	padding: 14px 16px;
+	border: 0;
+}
+body.tc-front-2026 table.tickera_table td {
+	padding: 14px 16px;
+	border-top: 1px solid var(--tcf-hairline);
+	vertical-align: middle;
+	color: var(--tcf-ink);
+	background: transparent;
+	font-size: var(--tcf-fs-cell);
+	line-height: var(--tcf-lh);
+}
+/* Per-line ticket total value inside the cart rows. */
+body.tc-front-2026 .ticket_total {
+	font-size: var(--tcf-fs-cell);
+	font-weight: 700;
+	color: var(--tcf-ink);
+}
+body.tc-front-2026 table.tickera_table tr:first-child td {
+	border-top: 0;
+}
+
+/* Totals */
+body.tc-front-2026 .cart_total_price_title {
+	color: var(--tcf-muted);
+	font-weight: 600;
+}
+body.tc-front-2026 .cart_total_price {
+	color: var(--tcf-ink);
+	font-weight: 700;
+}
+
+/* Buttons (Apply / Empty / Update / Checkout) */
+body.tc-front-2026 .tickera-button,
+body.tc-front-2026 .tickera_button:not(.minus):not(.plus),
+body.tc-front-2026 input.tickera-button,
+body.tc-front-2026 input.apply_coupon,
+body.tc-front-2026 input.tickera_empty,
+body.tc-front-2026 input.tickera_update,
+body.tc-front-2026 a.tickera_checkout,
+body.tc-front-2026 input.tickera_checkout,
+body.tc-front-2026 .tickera_checkout input[type="submit"] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	height: 42px !important;
+	padding: 0 20px !important;
+	border: 0;
+	border-radius: var(--tcf-radius-sm);
+	background: var(--tcf-btn-bg);
+	color: var(--tcf-btn-fg);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	box-sizing: border-box;
+	box-shadow: var(--tcf-btn-shadow);
+	transition: background .15s ease, transform .08s ease, box-shadow .2s ease;
+	vertical-align: middle;
+}
+body.tc-front-2026 .tickera-button:hover,
+body.tc-front-2026 .tickera_button:hover,
+body.tc-front-2026 input.apply_coupon:hover,
+body.tc-front-2026 input.tickera_empty:hover,
+body.tc-front-2026 input.tickera_update:hover,
+body.tc-front-2026 a.tickera_checkout:hover,
+body.tc-front-2026 input.tickera_checkout:hover {
+	background: var(--tcf-btn-bg-hover);
+	color: var(--tcf-btn-fg);
+	transform: translateY(-1px);
+	box-shadow: var(--tcf-btn-shadow-hover);
+}
+
+/* Inputs (discount code, buyer/owner form fields) */
+body.tc-front-2026 input.tickera-input-field,
+body.tc-front-2026 .tickera_buyer_info input[type="text"],
+body.tc-front-2026 .tickera_buyer_info input[type="email"],
+body.tc-front-2026 .tickera_buyer_info input[type="tel"],
+body.tc-front-2026 .tickera_buyer_info select,
+body.tc-front-2026 .tickera_buyer_info textarea,
+body.tc-front-2026 .tickera_owner_info input[type="text"],
+body.tc-front-2026 .tickera_owner_info input[type="email"],
+body.tc-front-2026 .tickera_owner_info input[type="tel"],
+body.tc-front-2026 .tickera_owner_info select,
+body.tc-front-2026 .tickera_owner_info textarea {
+	padding: 10px 12px;
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius-sm);
+	background: var(--tcf-surface);
+	color: var(--tcf-ink);
+	font-size: 14px;
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Consistent single-line input height (the theme/Tickera default can inflate
+   these to ~70px); textarea is left to grow. */
+body.tc-front-2026 input.tickera-input-field,
+body.tc-front-2026 input.coupon_code,
+body.tc-front-2026 .tickera_buyer_info input[type="text"],
+body.tc-front-2026 .tickera_buyer_info input[type="email"],
+body.tc-front-2026 .tickera_buyer_info input[type="tel"],
+body.tc-front-2026 .tickera_owner_info input[type="text"],
+body.tc-front-2026 .tickera_owner_info input[type="email"],
+body.tc-front-2026 .tickera_owner_info input[type="tel"] {
+	height: 44px;
+	line-height: normal;
+}
+
+/* Discount code row: input + Apply aligned on one line. */
+/* Footer row: discount (left) + Empty/Update Cart (right) on one level. */
+body.tc-front-2026 .action-wrap {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+body.tc-front-2026 .update-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+body.tc-front-2026 .discount-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: nowrap;
+	margin: 0;
+}
+body.tc-front-2026 .discount-wrap input.coupon_code {
+	flex: 1 1 auto;
+	min-width: 0;
+	height: 42px !important;
+	margin: 0 !important;
+}
+body.tc-front-2026 .discount-wrap input.apply_coupon {
+	flex: 0 0 auto;
+}
+
+/* Totals (Subtotal / Discount / Fees / Total) — calm, readable sizes.
+   Tickera renders each row as <span.total_item_title>LABEL</span>
+   <span.total_item_amount>VALUE</span> (the grand-total row additionally
+   carries .cart_total_price_title / .cart_total_price). Tickera's own
+   front.css sizes these large, so we override with !important. */
+body.tc-front-2026 .total_item_title,
+body.tc-front-2026 .total_item_amount {
+	font-size: var(--tcf-fs-cell) !important;
+	line-height: var(--tcf-lh) !important;
+}
+body.tc-front-2026 .total_item_title {
+	color: var(--tcf-muted) !important;
+	font-weight: 600 !important;
+}
+body.tc-front-2026 .total_item_amount {
+	color: var(--tcf-ink) !important;
+	font-weight: 700 !important;
+}
+/* Grand total row — a touch larger and full-ink. */
+body.tc-front-2026 .cart_total_price_title,
+body.tc-front-2026 .cart_total_price {
+	font-size: var(--tcf-fs-total) !important;
+	color: var(--tcf-ink) !important;
+}
+body.tc-front-2026 input.tickera-input-field:focus,
+body.tc-front-2026 .tickera_buyer_info input:focus,
+body.tc-front-2026 .tickera_owner_info input:focus,
+body.tc-front-2026 .tickera_buyer_info select:focus,
+body.tc-front-2026 .tickera_owner_info select:focus {
+	border-color: var(--tcf-accent);
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(107, 95, 137, .18);
+}
+
+/* Quantity stepper: [ - ][ 1 ][ + ] as one compact pill. */
+body.tc-front-2026 .inner-wrap:has(.tc_quantity_selector) {
+	display: inline-flex !important;
+	flex-wrap: nowrap !important;
+	align-items: stretch;
+	width: auto !important;
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius-sm);
+	overflow: hidden;
+	background: var(--tcf-surface);
+}
+body.tc-front-2026 input.tickera_button.minus,
+body.tc-front-2026 input.tickera_button.plus {
+	width: 38px !important;
+	min-width: 38px !important;
+	max-width: 38px !important;
+	height: 40px !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	flex: 0 0 38px;
+	border: 0;
+	border-radius: 0;
+	background: var(--tcf-surface-2);
+	color: var(--tcf-ink);
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: none;
+	cursor: pointer;
+	transition: background .15s ease;
+}
+body.tc-front-2026 input.tickera_button.minus:hover,
+body.tc-front-2026 input.tickera_button.plus:hover {
+	background: var(--tcf-hairline);
+	color: var(--tcf-ink);
+	transform: none;
+	box-shadow: none;
+}
+body.tc-front-2026 input.quantity.tc_quantity_selector {
+	width: 48px !important;
+	min-width: 48px !important;
+	max-width: 48px !important;
+	flex: 0 0 48px;
+	height: 40px !important;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	box-sizing: border-box;
+	border: 0;
+	border-left: 1px solid var(--tcf-hairline);
+	border-right: 1px solid var(--tcf-hairline);
+	border-radius: 0;
+	background: var(--tcf-surface);
+	color: var(--tcf-ink);
+	font-size: 14px;
+	-moz-appearance: textfield;
+}
+
+/* Section headings (Buyer Info / Attendee Info) + errors */
+body.tc-front-2026 .tickera_buyer_info,
+body.tc-front-2026 .tickera_owner_info {
+	margin-top: 18px;
+}
+body.tc-front-2026 .tc_cart_errors {
+	color: #b91c1c;
+}
+
+/* ============================================================
+ * Order details page — summary block (#order_details) + Tickets table
+ * ============================================================ */
+
+/* Summary block: <p> of <label><span.order_details_title>Label:</span> value</label>
+   rows. This text sits on the THEME's own background (not a Tickera card), and
+   #order_details also wraps the "Tickets" <h2> and the table — so we normalise
+   only the SIZE here and never force a preset colour (that would invert the
+   heading/values to an unreadable light tint on a light theme). The label is
+   muted relative to the theme's own text colour via opacity, so it stays
+   readable under every preset. */
+body.tc-front-2026 #order_details p,
+body.tc-front-2026 #order_details label {
+	font-size: var(--tcf-fs-cell);
+	line-height: 1.9;
+}
+body.tc-front-2026 .order_details_title {
+	opacity: .65;
+	font-weight: 600;
+}
+
+/* Tickets table (rendered as table.order-details) → full-width card matching
+   the cart/event tables, with the same uppercase header treatment. */
+body.tc-front-2026 table.order-details {
+	width: 100%;
+	margin: 18px 0;
+	border-collapse: separate;
+	border-spacing: 0;
+	background: var(--tcf-surface);
+	border: 1px solid var(--tcf-hairline);
+	border-radius: var(--tcf-radius);
+	box-shadow: var(--tcf-shadow);
+	overflow: hidden;
+	color: var(--tcf-ink);
+}
+body.tc-front-2026 table.order-details th {
+	background: var(--tcf-head-bg);
+	color: var(--tcf-head-fg);
+	font-size: var(--tcf-fs-head);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	text-align: left;
+	padding: 14px 16px;
+	border: 0;
+}
+body.tc-front-2026 table.order-details td {
+	padding: 14px 16px;
+	border-top: 1px solid var(--tcf-hairline);
+	background: transparent;
+	color: var(--tcf-ink);
+	vertical-align: middle;
+	text-align: left;
+	font-size: var(--tcf-fs-cell);
+	line-height: var(--tcf-lh);
+}
+body.tc-front-2026 table.order-details tbody tr.alternate td {
+	background: transparent;
+}

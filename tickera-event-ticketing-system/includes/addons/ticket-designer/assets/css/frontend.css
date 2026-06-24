@@ -1,0 +1,196 @@
+/**
+ * Ticket Designer Frontend Styles
+ */
+
+/* Ticket Container */
+.venuera-ticket {
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px auto;
+    page-break-inside: avoid;
+}
+
+.venuera-ticket * {
+    box-sizing: border-box;
+}
+
+/* Element Base */
+.ticket-element {
+    position: absolute;
+    overflow: hidden;
+}
+
+/* Text Elements */
+.ticket-dynamic-text,
+.ticket-static-text {
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+/* QR Code */
+.ticket-qr-code {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-qr-code img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.ticket-qr-code canvas {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Barcode */
+.ticket-barcode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-barcode svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Image Elements */
+.ticket-image {
+    overflow: hidden;
+}
+
+.ticket-image img {
+    width: 100%;
+    height: 100%;
+}
+
+.ticket-image.fit-contain img {
+    object-fit: contain;
+}
+
+.ticket-image.fit-cover img {
+    object-fit: cover;
+}
+
+.ticket-image.fit-fill img {
+    object-fit: fill;
+}
+
+/* Rectangle */
+.ticket-rectangle {
+    border-style: solid;
+}
+
+/* Line */
+.ticket-line {
+    background-clip: padding-box;
+}
+
+/* Google Map */
+.ticket-google-map {
+    overflow: hidden;
+}
+
+.ticket-google-map img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Print Styles */
+@media print {
+    .venuera-ticket {
+        margin: 0;
+        page-break-inside: avoid;
+        box-shadow: none;
+    }
+
+    .venuera-ticket-actions {
+        display: none;
+    }
+}
+
+/* Ticket List */
+.venuera-tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Ticket Actions */
+.venuera-ticket-wrapper {
+    position: relative;
+}
+
+.venuera-ticket-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.venuera-ticket-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Download Button */
+.venuera-download-ticket {
+    background: #3659E3;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.venuera-download-ticket:hover {
+    background: #2a47b8;
+}
+
+/* Apple Wallet */
+.venuera-wallet-button {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.venuera-wallet-button:hover {
+    background: #333;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .venuera-ticket {
+        transform: scale(0.8);
+        transform-origin: top center;
+        margin-bottom: -20%;
+    }
+
+    .venuera-ticket-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .venuera-ticket {
+        transform: scale(0.6);
+        margin-bottom: -40%;
+    }
+}
+

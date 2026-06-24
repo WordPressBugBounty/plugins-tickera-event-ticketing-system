@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.0
-Stable tag: 3.5.7.3
+Stable tag: 3.6.0.0
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ Sell tickets, manage events, and handle event registration on your site — PDF 
 
 == Description ==
 
-**Tickera** lets you **sell tickets** on WordPress, manage **event registration**, and run **ticket sales** end-to-end on your own domain. Create an **event**, add **tickets**, deliver **PDF tickets** with QR/Barcodes, and check in attendees at the door. You keep the revenue - no middleman fees taken by Tickera.
+**Tickera** lets you sell tickets on WordPress, manage event registration, and run ticket sales end-to-end on your own domain. Create an event, add tickets, **design beautiful PDF tickets** with the built-in drag & drop Ticket Designer, deliver them with QR/Barcodes, and check in attendees at the door. You keep the revenue — no middleman fees taken by Tickera.
 
 For ticket scanning, use integrated **[Barcode readers](https://tickera.com/tickera-documentation/barcode-reader/ "Tickera Barcode Reader Add-on")**. If you want mobile check-in on phones, our **premium** **[Checkinera apps](https://tickera.com/checkinera-app/ "Checkinera apps")** for iOS/Android enable blazing-fast scanning - **even offline** after sync. There’s also a **[Checkinera web app](https://tickera.com/checkinera-web/ "Checkinera web app")** that turns any modern browser into a fully-fledged check-in desk.
 ---
@@ -20,6 +20,7 @@ For ticket scanning, use integrated **[Barcode readers](https://tickera.com/tick
 ### ✅ Key features
 - 🎟️ Sell event tickets on your site - you keep the revenue
 - 🗂️ Manage events in WordPress — create, edit, duplicate, set dates/capacity, and control ticket types
+- 🎨 Built-in drag & drop Ticket Designer with a live PDF preview, unlimited designs, and ready-made templates
 - 🧾 PDF tickets with embedded QR/Barcode for fast entry
 - 🧍 Event registration with buyer and attendee fields
 - 💸 Ticket sales tools: multiple ticket types, limits, discount codes, fees, taxes
@@ -34,6 +35,13 @@ For ticket scanning, use integrated **[Barcode readers](https://tickera.com/tick
 > _“These guys offer a whole different level of service… give them a go!”_ — [James Farmer, WPMU DEV](https://wpmudev.com/)
 
 ━━━━━━━━━━━━━━━━
+
+### 🎨 Design beautiful tickets (new in 3.6)
+Make tickets people actually want to keep. The built-in **Ticket Designer** is a drag & drop editor with a **live, pixel-perfect PDF preview** — what you see on screen is exactly what your attendees receive. Start from a library of ready-made templates (Wedding, Concert, Conference, Gala Dinner, Festival, Theatre and more), or build your own unlimited designs and assign them per event or per ticket type.
+
+You can also restyle your storefront with selectable **front-end themes** (Minimal, Bold, or Dark) for a clean, modern look on your event, cart and checkout pages — or keep your own theme's styling. Set it under Tickera > Settings > Appearance.
+
+---
 
 #### Manage events & event registration
 Create and update events in WordPress, then capture event registration details for each attendee.
@@ -111,11 +119,11 @@ Want to try everything (including premium add-ons)?
 - **Education & webinars** (online events with attendee data collection)
 - **Theatre & cinema** (screenings, premieres; seat selection via Seating Charts add-on)
 - **On-site logistics** (entry lanes, staff/crew passes, vendor passes)
-- **Parking passes** for events (sell/scan parking **tickets** to manage capacity)
+- **Parking passes** for events (sell/scan parking tickets to manage capacity)
 - **Multi-activity days** (festival day passes, stage/area access levels)
 - **Timed entry windows** (staggered arrivals, capacity control at the door)
-- **Sell tickets** online and scan **tickets** on-site via QR/Barcode (readers, Checkinera apps, or web app)
-- **Event registration** with per-**attendee** data (forms, exports)
+- Sell tickets online and scan tickets on-site via QR/Barcode (readers, Checkinera apps, or web app)
+- **Event registration** with per-attendee data (forms, exports)
 
 ━━━━━━━━━━━━━━━━
 
@@ -165,7 +173,32 @@ You can find **[setup instructions here](http://tickera.com/documentation-catego
 * **2Checkout** makes it possible to accept payments via the 2Checkout payment gateway. Privacy policy: https://www.2checkout.com/legal/privacy/
 * **Tickera** is used for pulling the list of add-ons offered in the Add-ons area of the plugin. Privacy policy: https://tickera.com/privacy/
 
+== Upgrade Notice ==
+
+= 3.6.0.0 =
+Introduces the new drag & drop Ticket Designer, unlimited ticket designs and selectable front-end themes. If you sell tickets through WooCommerce, please also update Bridge for WooCommerce to 1.7.5 or higher.
+
 == Changelog ==
+
+= 3.6.0.0 24/06/2026 =
+* New: Ticket Designer - a built-in drag & drop ticket designer with a live, pixel-perfect PDF preview and a library of ready-made starter templates (Wedding, Concert, Conference, Gala Dinner, Wine Tasting, Festival, Theater, and many more). It replaces the classic "Ticket Templates" editor.
+* New: Create unlimited ticket designs - build and save as many ticket templates as you like and assign them per event or per ticket type.
+* New: Front-end design themes - selectable style presets (Minimal, Bold, Dark, or "None / use my theme") that restyle Tickera's event, cart, checkout and order pages. Works in both standalone mode and with Bridge for WooCommerce. Set it under Tickera > Settings > Appearance.
+* New: Refreshed admin interface across Tickera screens (Add-ons, Settings, API Access, Discount Codes, Ticket Types, CSV Export, Speakers, and more).
+* New: Unified "Ticket template" selector - classic and Ticket Designer templates are now chosen from a single dropdown on ticket types and on Bridge for WooCommerce products.
+* Improvement: The classic "Ticket Templates" UI is deprecated in favor of the Ticket Designer; existing legacy templates remain available. The legacy "Multipage ticket template" option is hidden once no classic templates remain.
+* Improvement: Ticket Designer designs and their thumbnails are stored in the uploads directory (portable and update-safe).
+* Improvement: Full Bridge for WooCommerce support for Designer tickets - event, date, location, category, terms and buyer details all resolve correctly, including for variable products (the exact purchased variation is shown), and the WooCommerce Billing/Shipping Info elements render cleanly.
+* Improvement: New designer elements (QR code, barcode, terms, full-width bands, borders) always appear within the ticket bounds, on any ticket size.
+* Fixed: Designer tickets bought through WooCommerce could render empty (missing event details and buyer name); variable-product tickets could be completely blank or match no template. Resolved.
+* Fixed: Marking a WooCommerce order as paid could open/stream a ticket PDF instead of saving the order. Resolved.
+* Fixed: Ticket Designer editor polish - the color picker no longer disappears when picking a color, the Arrange buttons show hover tooltips, and the template search field icon is no longer clipped.
+* Fixed: Plugin load order so add-on settings (e.g. Slack, Pushover) reliably appear under Settings.
+* Fixed: Embedded font rendering in generated ticket PDFs so the PDF matches the on-screen design.
+
+= 3.5.7.4 05/06/2026 =
+* Dashboard > All Users filter role bug fixed when Bridge for Woocommerce is active.
+* Freemius SDK updated to v2.13.1
 
 = 3.5.7.3 05/06/2026 =
 * Currency and Format bug fixed.

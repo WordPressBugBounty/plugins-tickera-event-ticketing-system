@@ -39,6 +39,19 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
 
             global $tc, $pdf;
 
+            /**
+             * Ticket Designer (dual-engine) router.
+             *
+             * Lets the new visual Ticket Designer short-circuit rendering when a
+             * ticket type is assigned a designer template. Returning null (the
+             * default) falls through to the classic template engine below, so
+             * existing templates keep working unchanged.
+             */
+            $tc_designer_pre = apply_filters( 'tickera_ticket_designer_pre_generate', null, $ticket_instance_id, $template_id, $ticket_type_id, $force_download, $string_attachment );
+            if ( null !== $tc_designer_pre ) {
+                return $tc_designer_pre;
+            }
+
             // Trying to set a memory limit to a high value since some template might need more memory (when a huge background is set, etc)
             // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
             @ini_set( 'memory_limit', '1024M' );

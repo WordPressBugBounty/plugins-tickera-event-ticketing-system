@@ -1,0 +1,98 @@
+/* Venuera — shared admin confirm/alert dialog (matches the Venue Designer look). */
+
+.venuera-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: twpDialogOverlayIn 0.2s ease-out forwards;
+}
+
+@keyframes twpDialogOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.venuera-dialog-overlay.closing { animation: twpDialogOverlayOut 0.15s ease-in forwards; }
+@keyframes twpDialogOverlayOut { from { opacity: 1; } to { opacity: 0; } }
+
+.venuera-dialog {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+    width: 90%;
+    padding: 28px;
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    animation: twpDialogIn 0.25s ease-out forwards;
+}
+
+@keyframes twpDialogIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.venuera-dialog-overlay.closing .venuera-dialog { animation: twpDialogOut 0.15s ease-in forwards; }
+@keyframes twpDialogOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to   { opacity: 0; transform: scale(0.95) translateY(10px); }
+}
+
+.venuera-dialog-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.venuera-dialog-icon-warning { background: #FEF3C7; color: #D97706; }
+.venuera-dialog-icon-danger  { background: #FEE2E2; color: #DC2626; }
+.venuera-dialog-icon-info    { background: #DBEAFE; color: #2563EB; }
+.venuera-dialog-icon-success { background: #DCFCE7; color: #16A34A; }
+
+.venuera-dialog-content { margin-bottom: 24px; }
+
+.venuera-dialog-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 8px 0;
+}
+
+.venuera-dialog-message {
+    font-size: 14px;
+    color: #6B7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.venuera-dialog-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.venuera-dialog-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+}
+
+.venuera-dialog-cancel { background: #F3F4F6; color: #4B5563; }
+.venuera-dialog-cancel:hover { background: #E5E7EB; }
+
+.venuera-dialog-confirm { background: #2271b1; color: #fff; }
+.venuera-dialog-confirm:hover { background: #135e96; }
+
+.venuera-dialog-confirm.danger { background: #DC2626; }
+.venuera-dialog-confirm.danger:hover { background: #B91C1C; }

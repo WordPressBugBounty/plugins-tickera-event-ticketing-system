@@ -1445,10 +1445,13 @@ if ( ! function_exists( 'tickera_maybe_create_temporary_ticket_file' ) ) {
             $upload_dir = $upload_dir . '/tc-tmp/';
             if ( $wp_filesystem && ! $wp_filesystem->is_dir( $upload_dir ) ) {
                 $wp_filesystem->mkdir( $upload_dir, 0755 );
-                $filename = '.htaccess';
-                $path = $upload_dir . '/' . $filename;
+                // Drop a protective .htaccess. This previously chmod'd a file that
+                // was never created, raising a fileperms() "stat failed" warning
+                // (which, with display_errors on, could abort PDF output with
+                // "data already output"). Create the file first, then chmod it.
+                $path = $upload_dir . '.htaccess';
                 if ( ! $wp_filesystem->exists( $path ) ) {
-                    $wp_filesystem->chmod( $path, 0644 );
+                    $wp_filesystem->put_contents( $path, "Options -Indexes\nDeny from all\n", 0644 );
                 }
             }
 
