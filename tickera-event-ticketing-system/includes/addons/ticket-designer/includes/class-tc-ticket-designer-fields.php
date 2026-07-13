@@ -38,6 +38,7 @@ class TC_Ticket_Designer_Fields {
 	 * @return bool
 	 */
 	public static function bridge_active() {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		return (bool) apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) && class_exists( 'WC_Order' );
 	}
 
@@ -117,7 +118,7 @@ class TC_Ticket_Designer_Fields {
 			);
 		}
 
-		return apply_filters( 'tc_ticket_designer_data_fields', $groups );
+		return apply_filters( 'tickera_ticket_designer_data_fields', $groups );
 	}
 
 	/**
@@ -398,7 +399,7 @@ class TC_Ticket_Designer_Fields {
 			$data['el_tc_woo_shipping_info_element'] = "John Doe\nExample Ltd\n123 Example St\nAmsterdam\n1011 AB\nNetherlands";
 		}
 
-		return apply_filters( 'tc_ticket_designer_sample_data', $data );
+		return apply_filters( 'tickera_ticket_designer_sample_data', $data );
 	}
 
 	/* --------------------------------------------------------------------- *
@@ -417,7 +418,7 @@ class TC_Ticket_Designer_Fields {
 		$data               = array();
 
 		if ( ! $ticket_instance_id || ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
-			return apply_filters( 'tc_ticket_designer_ticket_data', $data, $ticket_instance_id );
+			return apply_filters( 'tickera_ticket_designer_ticket_data', $data, $ticket_instance_id );
 		}
 
 		$instance    = new \Tickera\TC_Ticket_Instance( $ticket_instance_id );
@@ -592,6 +593,6 @@ class TC_Ticket_Designer_Fields {
 			}
 		}
 
-		return apply_filters( 'tc_ticket_designer_ticket_data', $data, $ticket_instance_id );
+		return apply_filters( 'tickera_ticket_designer_ticket_data', $data, $ticket_instance_id );
 	}
 }

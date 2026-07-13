@@ -1,4 +1,7 @@
 <?php
+
+namespace Tickera;
+
 /**
  * Ticket Designer Frontend
  *
@@ -36,8 +39,8 @@ class TC_Ticket_Designer_Frontend {
 			return;
 		}
 
-		$addon_url  = tc_ticket_designer()->get_url();
-		$addon_path = tc_ticket_designer()->get_path();
+		$addon_url  = tickera_ticket_designer()->get_url();
+		$addon_path = tickera_ticket_designer()->get_path();
 
 		// JsBarcode for barcode rendering — bundled locally under
 		// assets/vendor/jsbarcode/ so on-screen ticket pages keep rendering
@@ -277,9 +280,9 @@ class TC_Ticket_Designer_Frontend {
 			// return null and the ticket simply renders without occurrence data.
 			if ( is_string( $occurrence_id ) && 0 === strpos( $occurrence_id, 'virtual:' ) ) {
 				$occurrence_datetime = urldecode( substr( $occurrence_id, 8 ) );
-				$occurrence_data     = apply_filters( 'venuera_find_occurrence_by_datetime', null, $event_id, $occurrence_datetime );
+				$occurrence_data     = apply_filters( 'tickera_find_occurrence_by_datetime', null, $event_id, $occurrence_datetime );
 			} else {
-				$occurrence_data = apply_filters( 'venuera_get_occurrence', null, $occurrence_id );
+				$occurrence_data = apply_filters( 'tickera_get_occurrence', null, $occurrence_id );
 			}
 		}
 
@@ -418,7 +421,7 @@ class TC_Ticket_Designer_Frontend {
 			}
 		}
 
-		return apply_filters( 'venuera_ticket_data', $data, $order, $item );
+		return apply_filters( 'tickera_ticket_data', $data, $order, $item );
 	}
 
 	/**
@@ -429,7 +432,7 @@ class TC_Ticket_Designer_Frontend {
 	 * @return string
 	 */
 	public static function generate_ticket_id( $order_id, $item_id ) {
-		$prefix = apply_filters( 'venuera_ticket_id_prefix', 'TKT' );
+		$prefix = apply_filters( 'tickera_ticket_id_prefix', 'TKT' );
 		return sprintf( '%s-%06d-%04d', $prefix, $order_id, $item_id );
 	}
 

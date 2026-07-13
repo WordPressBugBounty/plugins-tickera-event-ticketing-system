@@ -276,7 +276,7 @@ class TC_Ticket_Designer {
 			} else {
 				// Legacy fallback: no linked ticket rows. Reuse the whole-item dataset
 				// for each quantity with a synthetic per-ticket id suffix.
-				$ticket_data = TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $item_id );
+				$ticket_data = \Tickera\TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $item_id );
 
 				if ( empty( $ticket_data ) ) {
 					continue;
@@ -293,7 +293,7 @@ class TC_Ticket_Designer {
 
 				for ( $i = 0; $i < $quantity; $i++ ) {
 					$ticket_data_copy              = $ticket_data;
-					$ticket_data_copy['ticket_id'] = TC_Ticket_Designer_Frontend::generate_ticket_id( $order->get_id(), $item_id ) . '-' . ( $i + 1 );
+					$ticket_data_copy['ticket_id'] = \Tickera\TC_Ticket_Designer_Frontend::generate_ticket_id( $order->get_id(), $item_id ) . '-' . ( $i + 1 );
 					$ticket_data_copy['qr_code']   = $ticket_data_copy['ticket_id'];
 
 					$this->generate_ticket_attachment( $template, $ticket_data_copy, $attachments, $temp_files );
@@ -411,7 +411,7 @@ class TC_Ticket_Designer {
 			) {
 				$preview_template = new TC_Ticket_Designer_Template( $preview_template_id );
 				if ( $preview_template->get_id() ) {
-					if ( function_exists( 'tc_ticket_designer_ensure_tcpdf' ) && ! tc_ticket_designer_ensure_tcpdf() ) {
+					if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) && ! tickera_ticket_designer_ensure_tcpdf() ) {
 						return null;
 					}
 					$sample = TC_Ticket_Designer_Fields::sample_data();
@@ -464,7 +464,7 @@ class TC_Ticket_Designer {
 		}
 
 		// Make sure TCPDF is available; if not, let the classic engine try.
-		if ( function_exists( 'tc_ticket_designer_ensure_tcpdf' ) && ! tc_ticket_designer_ensure_tcpdf() ) {
+		if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) && ! tickera_ticket_designer_ensure_tcpdf() ) {
 			return null;
 		}
 
@@ -525,7 +525,7 @@ class TC_Ticket_Designer {
 		foreach ( $fields as &$field ) {
 			if ( isset( $field['field_name'] ) && 'ticket_template' === $field['field_name'] ) {
 				$field['field_type'] = 'function';
-				$field['function']   = 'tc_ticket_designer_unified_template_field_select';
+				$field['function']   = 'tickera_ticket_designer_unified_template_field_select';
 				$field['tooltip']    = sprintf(
 					/* translators: 1: Ticket Designer URL, 2: classic Ticket Templates URL. */
 					__( 'Layout of the ticket the customer downloads. Choose a modern <a href="%1$s" target="_blank">Ticket Designer</a> template or a classic <a href="%2$s" target="_blank">ticket template</a>.', 'tickera-event-ticketing-system' ),
@@ -543,7 +543,7 @@ class TC_Ticket_Designer {
 			'field_name'       => 'ticket_template',
 			'field_title'      => __( 'Ticket template', 'tickera-event-ticketing-system' ),
 			'field_type'       => 'function',
-			'function'         => 'tc_ticket_designer_unified_template_field_select',
+			'function'         => 'tickera_ticket_designer_unified_template_field_select',
 			'table_visibility' => false,
 			'post_field_type'  => 'post_meta',
 			'metabox_context'  => 'side',
@@ -649,7 +649,7 @@ class TC_Ticket_Designer {
 	 * @return string
 	 */
 	public static function required_bridge_version() {
-		return (string) apply_filters( 'tc_required_bridge_version', '1.7.5' );
+		return (string) apply_filters( 'tickera_required_bridge_version', '1.7.5' );
 	}
 
 	/**
@@ -683,6 +683,7 @@ class TC_Ticket_Designer {
 		}
 
 		// Only relevant when Bridge is actually active.
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$bridge_active = (bool) apply_filters( 'tc_bridge_for_woocommerce_is_active', false ) || class_exists( 'TC_WooCommerce_Bridge' );
 		if ( ! $bridge_active ) {
 			return;
@@ -1672,8 +1673,12 @@ class TC_Ticket_Designer {
  *
  * @return TC_Ticket_Designer
  */
-function tc_ticket_designer() { // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed -- Bootstrap accessor function intentionally colocated with the addon class.
-	return TC_Ticket_Designer::instance();
+if ( ! function_exists( 'tickera_ticket_designer' ) ) {
+
+  function tickera_ticket_designer() {
+    // phpcs:ignore Universal.Files.SeparateFunctionsFromOO.Mixed -- Bootstrap accessor function intentionally colocated with the addon class.
+    return TC_Ticket_Designer::instance();
+  }
 }
 
 /**
@@ -1686,7 +1691,7 @@ function tc_ticket_designer() { // phpcs:ignore Universal.Files.SeparateFunction
  * @param int    $ticket_type_id Ticket type post id currently being edited.
  * @return void
  */
-function tc_ticket_designer_template_field_select( $field_name, $ticket_type_id = 0 ) {
+function tickera_ticket_designer_template_field_select( $field_name, $ticket_type_id = 0 ) {
 	global $wpdb;
 
 	$selected = $ticket_type_id ? (int) get_post_meta( $ticket_type_id, $field_name, true ) : 0;
@@ -1718,7 +1723,7 @@ function tc_ticket_designer_template_field_select( $field_name, $ticket_type_id 
  * @param int    $ticket_type_id Ticket type post id currently being edited.
  * @return void
  */
-function tc_ticket_designer_unified_template_field_select( $field_name, $ticket_type_id = 0 ) {
+function tickera_ticket_designer_unified_template_field_select( $field_name, $ticket_type_id = 0 ) {
 	global $wpdb;
 
 	$designer_id = $ticket_type_id ? (int) get_post_meta( $ticket_type_id, 'tc_designer_template_id', true ) : 0;
@@ -1784,7 +1789,7 @@ function tc_ticket_designer_unified_template_field_select( $field_name, $ticket_
  *
  * @return array
  */
-function tc_ticket_designer_merged_templates_array() {
+function tickera_ticket_designer_merged_templates_array() {
 	global $wpdb;
 
 	$out = array( '' => __( '— None —', 'tickera-event-ticketing-system' ) );
@@ -1816,7 +1821,7 @@ function tc_ticket_designer_merged_templates_array() {
  * @param string $classic_meta_key Meta key holding the classic template id.
  * @return string "d_<id>" for a designer template, the classic id, or ''.
  */
-function tc_ticket_designer_selected_template_value( $post_id, $classic_meta_key = 'ticket_template' ) {
+function tickera_ticket_designer_selected_template_value( $post_id, $classic_meta_key = 'ticket_template' ) {
 	$designer_id = (int) get_post_meta( $post_id, 'tc_designer_template_id', true );
 	if ( $designer_id > 0 ) {
 		return 'd_' . $designer_id;
@@ -1834,7 +1839,7 @@ function tc_ticket_designer_selected_template_value( $post_id, $classic_meta_key
  * @param string $classic_meta_key Meta key for the classic template id.
  * @return void
  */
-function tc_ticket_designer_save_template_value( $post_id, $value, $classic_meta_key = 'ticket_template' ) {
+function tickera_ticket_designer_save_template_value( $post_id, $value, $classic_meta_key = 'ticket_template' ) {
 	$value = (string) $value;
 	if ( preg_match( '/^d_(\d+)$/', $value, $m ) ) {
 		update_post_meta( $post_id, 'tc_designer_template_id', (int) $m[1] );
@@ -1846,4 +1851,4 @@ function tc_ticket_designer_save_template_value( $post_id, $value, $classic_meta
 }
 
 // Initialize.
-tc_ticket_designer();
+tickera_ticket_designer();

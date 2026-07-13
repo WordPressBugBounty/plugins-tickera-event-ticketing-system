@@ -164,37 +164,30 @@ class TC_Ticket_Designer_PDF_Generator {
 	}
 
 	/**
-	 * Whether the free-plan "Powered by Tickera" attribution footer should be
-	 * rendered. Shown only on the free Tickera plan, and never on white-labeled
-	 * builds.
+	 * Whether the "Powered by Tickera" attribution footer should be rendered.
 	 *
-	 * Structured to be wp.org-safe: in the free build distributed on
-	 * WordPress.org, tickera_iw_is_pr() is false and we return early WITHOUT
-	 * touching the Freemius SDK at all. The Freemius is_free_plan() call (a
-	 * standard public method, not a *_premium_only one) is only reached in the
-	 * premium build, and is still guarded by function_exists().
+	 * The attribution lives entirely inside is__premium_only() blocks, which
+	 * Freemius auto-removes from the free WordPress.org build — so the free
+	 * version ships no attribution code or strings at all (wp.org compliant). In
+	 * the premium build it is shown ONLY to users who are NOT on an active paid
+	 * plan or in trial (e.g. a lapsed / never-activated license); paying and
+	 * trial customers get a clean, unbranded ticket.
 	 *
 	 * @return bool
 	 */
 	private function powered_by_enabled() {
-		// White-label builds never carry Tickera branding.
-		if ( function_exists( 'tickera_iw_is_wl' ) && tickera_iw_is_wl() ) {
-			return false;
+		// This "if" block is auto-removed from the Free (wordpress.org) version.
+		if ( \Tickera\tets_fs()->is__premium_only() ) {
+			$fs = \Tickera\tets_fs();
+			return ! ( $fs->is_paying() || $fs->is_trial() );
 		}
-		// Free build (wp.org): always show — no Freemius call on this path.
-		if ( ! function_exists( 'tickera_iw_is_pr' ) || ! tickera_iw_is_pr() ) {
-			return true;
-		}
-		// Premium build: show only while running on the free Freemius plan.
-		if ( function_exists( '\Tickera\tets_fs' ) ) {
-			return (bool) \Tickera\tets_fs()->is_free_plan();
-		}
+
 		return false;
 	}
 
 	/**
 	 * Height (in points) reserved below the ticket for the attribution footer —
-	 * zero when the footer is disabled (premium / white-label).
+	 * zero when the footer is disabled.
 	 *
 	 * @return float
 	 */
@@ -208,13 +201,16 @@ class TC_Ticket_Designer_PDF_Generator {
 	 * (helvetica) so it needs no embedding.
 	 */
 	private function draw_powered_by_footer() {
-		$y = $this->height + 10.0; // 10pt gap below the ticket's bottom edge.
-		$this->pdf->SetFont( 'helvetica', '', 8 );
-		$this->pdf->SetTextColor( 136, 136, 136 );
-		$html = '<div style="text-align:center; font-size:8pt; color:#888888;">'
-			. esc_html__( 'Powered by', 'tickera-event-ticketing-system' )
-			. ' <a href="https://tickera.com/" style="color:#6b5f89; text-decoration:none;">Tickera</a></div>';
-		$this->pdf->writeHTMLCell( $this->width, 0, 0, $y, $html, 0, 1, false, true, 'C', true );
+		// This "if" block is auto-removed from the Free (wordpress.org) version.
+		if ( \Tickera\tets_fs()->is__premium_only() ) {
+			$y = $this->height + 10.0; // 10pt gap below the ticket's bottom edge.
+			$this->pdf->SetFont( 'helvetica', '', 8 );
+			$this->pdf->SetTextColor( 136, 136, 136 );
+			$html = '<div style="text-align:center; font-size:8pt; color:#888888;">'
+				. esc_html__( 'Powered by', 'tickera-event-ticketing-system' )
+				. ' <a href="https://tickera.com/" style="color:#6b5f89; text-decoration:none;">Tickera</a></div>';
+			$this->pdf->writeHTMLCell( $this->width, 0, 0, $y, $html, 0, 1, false, true, 'C', true );
+		}
 	}
 
 	/**
@@ -227,8 +223,8 @@ class TC_Ticket_Designer_PDF_Generator {
 	 * @return string|bool
 	 */
 	public function create_multi_pdf( $items, $output = 'S', $filename = '' ) {
-		if ( function_exists( 'tc_ticket_designer_ensure_tcpdf' ) ) {
-			tc_ticket_designer_ensure_tcpdf();
+		if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) ) {
+			tickera_ticket_designer_ensure_tcpdf();
 		}
 		$items = array_values( array_filter( (array) $items ) );
 		if ( ! class_exists( 'TCPDF' ) || empty( $items ) ) {
@@ -258,7 +254,11 @@ class TC_Ticket_Designer_PDF_Generator {
 		$this->pdf->setCellPaddings( 0, 0, 0, 0 );
 		$this->pdf->setCellMargins( 0, 0, 0, 0 );
 
-		$footer_h = $this->powered_by_height();
+		$footer_h = 0.0;
+		// This "if" block is auto-removed from the Free (wordpress.org) version.
+		if ( \Tickera\tets_fs()->is__premium_only() ) {
+			$footer_h = $this->powered_by_height();
+		}
 
 		foreach ( $items as $it ) {
 			$tarr         = $it['template']->get_template_array();
@@ -278,9 +278,11 @@ class TC_Ticket_Designer_PDF_Generator {
 				$this->render_element( $element, $it['ticket_data'] );
 			}
 
-			// Free-plan attribution, centred 10pt below the ticket.
-			if ( $footer_h ) {
-				$this->draw_powered_by_footer();
+			// This "if" block is auto-removed from the Free (wordpress.org) version.
+			if ( \Tickera\tets_fs()->is__premium_only() ) {
+				if ( $footer_h ) {
+					$this->draw_powered_by_footer();
+				}
 			}
 		}
 
@@ -299,8 +301,8 @@ class TC_Ticket_Designer_PDF_Generator {
 	 * @return string|bool
 	 */
 	public function create_pdf( $template, $ticket_data, $output = 'S', $filename = '' ) {
-		if ( function_exists( 'tc_ticket_designer_ensure_tcpdf' ) ) {
-			tc_ticket_designer_ensure_tcpdf();
+		if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) ) {
+			tickera_ticket_designer_ensure_tcpdf();
 		}
 		if ( ! class_exists( 'TCPDF' ) ) {
 			// Fallback to HTML if TCPDF not available.
@@ -314,8 +316,12 @@ class TC_Ticket_Designer_PDF_Generator {
 		$this->width  = floatval( $template_array['width'] ?? 432 );
 		$this->height = floatval( $template_array['height'] ?? 180 );
 
-		// Reserve space for the free-plan "Powered by Tickera" footer (0 on premium / white-label).
-		$footer_h = $this->powered_by_height();
+		// Optional footer band height (premium only; always 0 in the free build).
+		$footer_h = 0.0;
+		// This "if" block is auto-removed from the Free (wordpress.org) version.
+		if ( \Tickera\tets_fs()->is__premium_only() ) {
+			$footer_h = $this->powered_by_height();
+		}
 		$page_h   = $this->height + $footer_h;
 
 		// Determine orientation (based on the full page including the footer band).
@@ -364,9 +370,11 @@ class TC_Ticket_Designer_PDF_Generator {
 			$this->render_element( $element, $ticket_data );
 		}
 
-		// Free-plan attribution, centred 10pt below the ticket.
-		if ( $footer_h ) {
-			$this->draw_powered_by_footer();
+		// This "if" block is auto-removed from the Free (wordpress.org) version.
+		if ( \Tickera\tets_fs()->is__premium_only() ) {
+			if ( $footer_h ) {
+				$this->draw_powered_by_footer();
+			}
 		}
 
 		// Output.
@@ -1871,7 +1879,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	 * @return string HTML.
 	 */
 	private function generate_html_fallback( $template, $ticket_data ) {
-		return TC_Ticket_Designer_Frontend::render_template( $template, $ticket_data );
+		return \Tickera\TC_Ticket_Designer_Frontend::render_template( $template, $ticket_data );
 	}
 
 	/**

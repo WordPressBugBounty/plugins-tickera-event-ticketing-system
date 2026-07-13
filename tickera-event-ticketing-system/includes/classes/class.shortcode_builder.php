@@ -526,6 +526,4 @@ if ( ! class_exists( '\Tickera\TC_Shortcode_Builder' ) ) {
             <?php endif;
         }
     }
-
-    new TC_Shortcode_Builder();
 }

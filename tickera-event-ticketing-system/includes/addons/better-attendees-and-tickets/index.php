@@ -1,4 +1,5 @@
 <?php
+// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Tickera use case for $meta_keys_in and  $search_filters_in, have been prepared in the previous lines.
 /**
  * Better Attendees and Tickets
  * Better attendees and tickets presentation for Tickera
@@ -481,7 +482,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search parameters only scope extended list-table conditions.
             if ( 'edit.php' == $pagenow && ( 'tc_tickets_instances' == $post_type || ( isset( $_GET[ 'post_type' ] ) && 'tc_tickets_instances' == sanitize_text_field( wp_unslash( $_GET[ 'post_type' ] ) ) ) ) && isset( $_REQUEST[ 's' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 's' ] ) ) ) {
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search term is sanitized before building search conditions.
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin attendee search term is sanitized and SQL-escaped below.
                 $search_filter = isset( $_GET[ 's' ] ) ? strtolower( sanitize_text_field( wp_unslash( $_GET[ 's' ] ) ) ) : '';
 
                 $meta_keys = tickera_apply_filters( 'tickera_tickets_instances_extended_search_meta_keys', [
@@ -492,33 +493,52 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                     'tc_cart_info',
                 ]);
 
-                $meta_keys = "'" . implode( "','", $meta_keys ) . "'";
+                $meta_keys = array_filter( array_map( 'sanitize_key', (array) $meta_keys ) );
+                $meta_keys = $meta_keys ? $meta_keys : [ 'ticket_code' ];
+                $meta_key_placeholders = implode( ',', array_fill( 0, count( $meta_keys ), '%s' ) );
+                $meta_keys_in = call_user_func_array( [ $wpdb, 'prepare' ], array_merge( [ $meta_key_placeholders ], $meta_keys ) );
 
                 if ( tickera_apply_filters( 'tickera_tickets_instances_extensive_search', true ) ) {
 
-                    $where = preg_replace(
-                        "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                    $title_search_where = $wpdb->prepare(
                         "
-                        (p.post_parent LIKE '%" . $search_filter . "%')
+                        (p.post_parent LIKE %s)
                         OR
-                        (SELECT p4.post_title FROM {$wpdb->posts} as p4 WHERE p4.ID=p.post_parent) LIKE '%" . $search_filter ."%'
-                        OR 
-                        (SELECT LOWER( GROUP_CONCAT(pm2.meta_value SEPARATOR ' ') ) FROM {$wpdb->postmeta} as pm2 WHERE pm2.post_id=p.ID AND pm2.meta_key IN (" . $meta_keys . ")) LIKE '%" . $search_filter . "%'
+                        (SELECT p4.post_title FROM {$wpdb->posts} as p4 WHERE p4.ID=p.post_parent) LIKE %s
                         OR
-                        (SELECT LOWER( GROUP_CONCAT(pm3.meta_value SEPARATOR ' ') ) FROM {$wpdb->postmeta} as pm3 WHERE pm3.post_id=p.post_parent AND pm3.meta_key IN (" . $meta_keys . ")) LIKE '%" . $search_filter . "%'
+                        (SELECT LOWER( GROUP_CONCAT(pm2.meta_value SEPARATOR ' ') ) FROM {$wpdb->postmeta} as pm2 WHERE pm2.post_id=p.ID AND pm2.meta_key IN (" . $meta_keys_in . ")) LIKE %s
+                        OR
+                        (SELECT LOWER( GROUP_CONCAT(pm3.meta_value SEPARATOR ' ') ) FROM {$wpdb->postmeta} as pm3 WHERE pm3.post_id=p.post_parent AND pm3.meta_key IN (" . $meta_keys_in . ")) LIKE %s
                         ",
+                        '%' . $wpdb->esc_like( $search_filter ) . '%',
+                        '%' . $wpdb->esc_like( $search_filter ) . '%',
+                        '%' . $wpdb->esc_like( $search_filter ) . '%',
+                        '%' . $wpdb->esc_like( $search_filter ) . '%'
+                    );
+
+                    $where = preg_replace_callback(
+                        "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                        function() use ( $title_search_where ) {
+                            return $title_search_where;
+                        },
                         $where
                     );
 
-                    $where = preg_replace(
+                    $post_excerpt_search_where = $wpdb->prepare( "(p.post_excerpt LIKE %s)", '%' . $wpdb->esc_like( $search_filter ) . '%' );
+                    $where = preg_replace_callback(
                         "/\(\s*" . $wpdb->posts . ".post_excerpt\s+LIKE\s*(\'[^\']+\')\s*\)/",
-                        "(p.post_excerpt LIKE '%" . $search_filter . "%')",
+                        function() use ( $post_excerpt_search_where ) {
+                            return $post_excerpt_search_where;
+                        },
                         $where
                     );
 
-                    $where = preg_replace(
+                    $post_content_search_where = $wpdb->prepare( "(p.post_content LIKE %s)", '%' . $wpdb->esc_like( $search_filter ) . '%' );
+                    $where = preg_replace_callback(
                         "/\(\s*" . $wpdb->posts . ".post_content\s+LIKE\s*(\'[^\']+\')\s*\)/",
-                        "(p.post_content LIKE '%" . $search_filter . "%')",
+                        function() use ( $post_content_search_where ) {
+                            return $post_content_search_where;
+                        },
                         $where
                     );
 
@@ -528,23 +548,42 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
                 } else {
 
-                    $search_filters = preg_replace( '/\s+/', ' ', $search_filter );
-                    $search_filters = explode( ' ', strtolower( $search_filters ) );
+                    $search_filters = explode( ' ', $search_filter );
+                    $search_filters = array_filter( $search_filters, 'strlen' );
+                    $search_filter_placeholders = implode( ',', array_fill( 0, count( $search_filters ), '%s' ) );
+                    $search_filters_in = $search_filter_placeholders
+                        ? call_user_func_array( [ $wpdb, 'prepare' ], array_merge( [ $search_filter_placeholders ], $search_filters ) )
+                        : $wpdb->prepare( '%s', $search_filter );
 
-                    $where = preg_replace(
-                        "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
-                        "($wpdb->posts.post_parent LIKE '%" . $search_filter . "%' AND pm4.meta_key = 'ticket_code') OR ((pm4.meta_value LIKE '%" . $search_filter . "%' OR LOWER(pm4.meta_value) IN ('" . implode( "','", $search_filters ) . "')) AND pm4.meta_key IN (" . $meta_keys . "))", $where
+                    $title_search_where = $wpdb->prepare(
+                        "($wpdb->posts.post_parent LIKE %s AND pm4.meta_key = 'ticket_code') OR ((pm4.meta_value LIKE %s OR LOWER(pm4.meta_value) IN (" . $search_filters_in . ")) AND pm4.meta_key IN (" . $meta_keys_in . "))",
+                        '%' . $wpdb->esc_like( $search_filter ) . '%',
+                        '%' . $wpdb->esc_like( $search_filter ) . '%'
                     );
 
-                    $where = preg_replace(
-                        "/\(\s*" . $wpdb->posts . ".post_excerpt\s+LIKE\s*(\'[^\']+\')\s*\)/",
-                        "$wpdb->posts.post_excerpt LIKE '%" . $search_filter . "%' AND pm4.meta_key = 'ticket_code'",
+                    $where = preg_replace_callback(
+                        "/\(\s*" . $wpdb->posts . ".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                        function() use ( $title_search_where ) {
+                            return $title_search_where;
+                        },
                         $where
                     );
 
-                    $where = preg_replace(
+                    $post_excerpt_search_where = $wpdb->prepare( "$wpdb->posts.post_excerpt LIKE %s AND pm4.meta_key = 'ticket_code'", '%' . $wpdb->esc_like( $search_filter ) . '%' );
+                    $where = preg_replace_callback(
+                        "/\(\s*" . $wpdb->posts . ".post_excerpt\s+LIKE\s*(\'[^\']+\')\s*\)/",
+                        function() use ( $post_excerpt_search_where ) {
+                            return $post_excerpt_search_where;
+                        },
+                        $where
+                    );
+
+                    $post_content_search_where = $wpdb->prepare( "$wpdb->posts.post_content LIKE %s AND pm4.meta_key = 'ticket_code'", '%' . $wpdb->esc_like( $search_filter ) . '%' );
+                    $where = preg_replace_callback(
                         "/\(\s*" . $wpdb->posts . ".post_content\s+LIKE\s*(\'[^\']+\')\s*\)/",
-                        "$wpdb->posts.post_content LIKE '%" . $search_filter . "%' AND pm4.meta_key = 'ticket_code'",
+                        function() use ( $post_content_search_where ) {
+                            return $post_content_search_where;
+                        },
                         $where
                     );
                 }

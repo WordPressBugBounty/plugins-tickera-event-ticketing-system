@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.0
+ * Version: 3.6.0.1
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.0';
+        var $version = '3.6.0.1';
 
         var $title = 'Tickera';
 
@@ -135,6 +135,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $this->title = tickera_apply_filters( 'tickera_plugin_title', $this->title );
             $this->name = tickera_apply_filters( 'tickera_plugin_name', $this->name );
             $this->plugin_dir = tickera_apply_filters( 'tickera_plugin_dir', $this->plugin_dir );
+            add_action( 'plugins_loaded', array($this, 'instantiate') );
             // Admin css and scripts
             add_action( 'admin_enqueue_scripts', array($this, 'admin_scripts_styles') );
             // Add plugin admin menu
@@ -283,6 +284,14 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             }
             add_action( 'admin_init', array($this, 'update_option_names') );
             add_action( 'admin_init', array($this, 'update_discount_settings') );
+        }
+
+        /**
+         * Instantiate Objects
+         * @return void
+         */
+        function instantiate() : void {
+            new TC_Shortcode_Builder();
         }
 
         /**
@@ -2149,7 +2158,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
 
         function save_cart_post_data() {
             $cart_nonce = ( isset( $_POST['_wpnonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ) : '' );
-            if ( !empty( $_POST ) && wp_verify_nonce( $cart_nonce, 'page_cart' ) ) {
+            if ( !empty( $_POST ) && wp_verify_nonce( $cart_nonce, 'tickera_cart_page' ) ) {
                 // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
                 $post_data = tickera_sanitize_array( wp_unslash( $_POST ), true, true );
                 $post_data = ( $post_data ? $post_data : [] );
@@ -2389,7 +2398,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 }
             }
             // Show Cart page
-            if ( array_key_exists( 'page_cart', $wp->query_vars ) ) {
+            if ( array_key_exists( 'tickera_cart_page', $wp->query_vars ) ) {
                 $vars = [];
                 $theme_file = locate_template( ['page-cart.php'] );
                 if ( $theme_file != '' ) {
@@ -2514,7 +2523,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         }
 
         function filter_query_vars( $query_vars ) {
-            $query_vars[] = 'page_cart';
+            $query_vars[] = 'tickera_cart_page';
             $query_vars[] = 'page_payment';
             $query_vars[] = 'page_process_payment';
             $query_vars[] = 'page_confirmation';
@@ -2763,7 +2772,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             ];
             if ( $cart_action && in_array( $cart_action, $valid_cart_actions ) ) {
                 $cart_nonce = ( isset( $_POST['_wpnonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ) : '' );
-                if ( !wp_verify_nonce( $cart_nonce, 'page_cart' ) ) {
+                if ( !wp_verify_nonce( $cart_nonce, 'tickera_cart_page' ) ) {
                     wp_die( esc_html__( 'Invalid cart request.', 'tickera-event-ticketing-system' ), 403 );
                 }
                 $cart = [];

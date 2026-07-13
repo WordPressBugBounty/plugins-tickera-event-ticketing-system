@@ -1,6 +1,13 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.1 13/07/2026 =
+* Removed the "Powered by Tickera" credit from tickets.
+* Fixed: Instantiate TC_Shortcode_Builder class after the plugin is fully loaded.
+* Support "Users > Ticket Order History" for Bridge for Woocommerce.
+* Wordfence vulnerability patch.
+* Additional WP 7.0 Compliance.
+
 = 3.6.0.0 24/06/2026 =
 * New: Ticket Designer - a built-in drag & drop ticket designer with a live, pixel-perfect PDF preview and a library of ready-made starter templates (Wedding, Concert, Conference, Gala Dinner, Wine Tasting, Festival, Theater, and many more). It replaces the classic "Ticket Templates" editor.
 * New: Create unlimited ticket designs - build and save as many ticket templates as you like and assign them per event or per ticket type.

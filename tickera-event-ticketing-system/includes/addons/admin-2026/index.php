@@ -34,18 +34,19 @@ if ( ! class_exists( 'TC_Admin_2026' ) ) {
 			add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
 			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 			// The onboarding wizard renders its own full-screen <head> and fires
-			// this action inside it — inject the wizard stylesheet there.
+			// this action inside it, so enqueue and print the wizard stylesheet there.
 			add_action( 'tickera_admin_print_styles', array( __CLASS__, 'wizard_styles' ) );
 		}
 
 		/**
-		 * Print the wizard stylesheet link inside the wizard's custom head.
+		 * Enqueue and print the wizard stylesheet inside the wizard's custom head.
 		 */
 		public static function wizard_styles() {
 			$url = plugin_dir_url( __FILE__ ) . 'assets/tickera-wizard-2026.css';
 			$path = plugin_dir_path( __FILE__ ) . 'assets/tickera-wizard-2026.css';
 			$ver = file_exists( $path ) ? filemtime( $path ) : '1.0.0';
-			echo '<link rel="stylesheet" href="' . esc_url( $url ) . '?v=' . esc_attr( $ver ) . '" />' . "\n";
+			wp_enqueue_style( 'tc-admin-2026-wizard', $url, array(), $ver );
+			wp_print_styles( 'tc-admin-2026-wizard' );
 		}
 
 		/**
@@ -54,17 +55,6 @@ if ( ! class_exists( 'TC_Admin_2026' ) ) {
 		 * @return bool
 		 */
 		public static function is_tickera_screen() {
-			// Query-string post type. Core Tickera CPTs are listed explicitly, but
-			// any Tickera/add-on post type follows the `tc_` convention (e.g.
-			// tc_speakers and its taxonomy screens), so accept those too.
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-			if ( isset( $_GET['post_type'] ) ) {
-				$pt = sanitize_key( wp_unslash( $_GET['post_type'] ) );
-				if ( in_array( $pt, self::$cpts, true ) || 0 === strpos( $pt, 'tc_' ) ) {
-					return true;
-				}
-			}
-
 			if ( function_exists( 'get_current_screen' ) ) {
 				$screen = get_current_screen();
 				if ( $screen && ! empty( $screen->post_type )
@@ -73,21 +63,29 @@ if ( ! class_exists( 'TC_Admin_2026' ) ) {
 				}
 			}
 
+			global $typenow, $plugin_page;
+
+			// Core Tickera CPTs are listed explicitly, but any Tickera/add-on post
+			// type follows the `tc_` convention (e.g. tc_speakers), so accept those too.
+			$pt = isset( $typenow ) ? sanitize_key( $typenow ) : '';
+			if ( $pt && ( in_array( $pt, self::$cpts, true ) || 0 === strpos( $pt, 'tc_' ) ) ) {
+				return true;
+			}
+
 			// Tickera pages that don't live under the CPT menu (e.g. the
 			// onboarding wizard, the Ticket Designer, and stand-alone add-on
 			// screens such as Checkinera). All Tickera/add-on admin pages follow
 			// the `tc_` / `tc-` page-slug convention, so style any of them.
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-			$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+			$page = isset( $plugin_page ) ? sanitize_key( $plugin_page ) : '';
 			$standalone_pages = array( 'tc-installation-wizard' );
-			if ( $page && in_array( $page, apply_filters( 'tc_admin_2026_standalone_pages', $standalone_pages ), true ) ) {
+			if ( $page && in_array( $page, apply_filters( 'tickera_admin_2026_standalone_pages', $standalone_pages ), true ) ) {
 				return true;
 			}
 			if ( $page && ( 0 === strpos( $page, 'tc_' ) || 0 === strpos( $page, 'tc-' ) ) ) {
 				return true;
 			}
 
-			return apply_filters( 'tc_admin_2026_is_tickera_screen', false );
+			return apply_filters( 'tickera_admin_2026_is_tickera_screen', false );
 		}
 
 		/**

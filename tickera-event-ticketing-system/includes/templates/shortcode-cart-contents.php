@@ -596,7 +596,7 @@ if ( isset( $tickera_settings[ 'force_login' ] ) && 'yes' == $tickera_settings[ 
                     </div>
                 </div>
             </div>
-            <div><?php wp_nonce_field( 'page_cart' ); ?></div>
+            <div><?php wp_nonce_field( 'tickera_cart_page' ); ?></div>
         </form>
     <?php else : ?>
         <?php tickera_do_action( 'tickera_empty_cart' ); ?>

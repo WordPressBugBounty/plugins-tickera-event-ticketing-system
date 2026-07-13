@@ -219,7 +219,7 @@ class TC_Ticket_Designer_Fonts {
 	 * @return string
 	 */
 	public static function get_fonts_dir() {
-		return trailingslashit( tc_ticket_designer()->get_path( 'assets/fonts' ) );
+		return trailingslashit( tickera_ticket_designer()->get_path( 'assets/fonts' ) );
 	}
 
 	/**
@@ -228,7 +228,7 @@ class TC_Ticket_Designer_Fonts {
 	 * @return string
 	 */
 	public static function get_fonts_url() {
-		return trailingslashit( tc_ticket_designer()->get_url( 'assets/fonts' ) );
+		return trailingslashit( tickera_ticket_designer()->get_url( 'assets/fonts' ) );
 	}
 
 	/**

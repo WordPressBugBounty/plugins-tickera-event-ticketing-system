@@ -361,7 +361,7 @@ class TC_Ticket_Designer_Download {
 					$start_raw = substr( $occurrence_id, strlen( 'virtual:' ) );
 				} else {
 					// Materialised occurrence — ask the recurrence engine (via filter).
-					$occ = apply_filters( 'venuera_get_occurrence', null, $occurrence_id );
+					$occ = apply_filters( 'tickera_get_occurrence', null, $occurrence_id );
 					if ( is_object( $occ ) && ! empty( $occ->start_datetime ) ) {
 						$start_raw = (string) $occ->start_datetime;
 					} elseif ( is_array( $occ ) && ! empty( $occ['start_datetime'] ) ) {
@@ -494,7 +494,7 @@ class TC_Ticket_Designer_Download {
 				 * @param WC_Order $order   The order.
 				 */
 				$tickets[] = apply_filters(
-					'venuera_pos_receipt_ticket_data',
+					'tickera_pos_receipt_ticket_data',
 					$ticket,
 					array(
 						'item'           => $item,
@@ -586,7 +586,7 @@ class TC_Ticket_Designer_Download {
 		 *
 		 * @param array $fields Field definitions keyed by config key.
 		 */
-		$fields = apply_filters( 'venuera_pos_receipt_tickets_fields', $fields );
+		$fields = apply_filters( 'tickera_pos_receipt_tickets_fields', $fields );
 
 		$types['tickets'] = array(
 			'label'  => __( 'Tickets', 'tickera-event-ticketing-system' ),
@@ -652,7 +652,7 @@ class TC_Ticket_Designer_Download {
 			 * @param array  $cfg   The block config.
 			 * @param array  $ctx   The render context.
 			 */
-			$out .= (string) apply_filters( 'venuera_pos_receipt_ticket_after_datetime', '', $t, $cfg, $ctx );
+			$out .= (string) apply_filters( 'tickera_pos_receipt_ticket_after_datetime', '', $t, $cfg, $ctx );
 
 			$attendee = isset( $t['attendee'] ) && is_array( $t['attendee'] ) ? $t['attendee'] : array();
 			if ( $show_attendee_name && ! empty( $attendee['name'] ) ) {
@@ -669,7 +669,7 @@ class TC_Ticket_Designer_Download {
 			 * After the attendee block — used by the Attendee Fields add-on to
 			 * print custom attendee fields (it owns that data + toggle).
 			 */
-			$out .= (string) apply_filters( 'venuera_pos_receipt_ticket_after_attendee', '', $t, $cfg, $ctx );
+			$out .= (string) apply_filters( 'tickera_pos_receipt_ticket_after_attendee', '', $t, $cfg, $ctx );
 
 			if ( 'none' !== $codes_mode ) {
 				$codes_html = '';
@@ -810,7 +810,7 @@ class TC_Ticket_Designer_Download {
 		foreach ( $examples as $ex ) {
 			++$pos;
 			$tickets[] = apply_filters(
-				'venuera_pos_receipt_ticket_data',
+				'tickera_pos_receipt_ticket_data',
 				$ex,
 				array(
 					'item'           => null,
@@ -1123,7 +1123,7 @@ class TC_Ticket_Designer_Download {
 		// Resolve the requested ticket to its 1-based index in `_venuera_ticket_ids`.
 		$ticket_index = self::resolve_ticket_index( $item, $ticket_id );
 
-		$data = TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $order_item_id, $ticket_index );
+		$data = \Tickera\TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $order_item_id, $ticket_index );
 
 		// Legacy synthetic fallback: orders without real ticket rows encode the index
 		// in a "TKT-<order>-<item>-<n>" id. Preserve that exact id on the streamed PDF.

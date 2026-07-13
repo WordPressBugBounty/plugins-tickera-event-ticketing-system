@@ -209,7 +209,6 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
             $title = isset( $attributes[ 'title' ] ) ? sanitize_text_field( $attributes[ 'title' ] ) : __( 'Add to Cart', 'tickera-event-ticketing-system' );
             $show_price = isset( $attributes[ 'show_price' ] ) ? (bool) $attributes[ 'show_price' ] : false;
             $price_position = isset( $attributes[ 'price_position' ] ) ? sanitize_text_field( $attributes[ 'price_position' ] ) : 'after';
-            $price_wrapper = isset( $attributes[ 'price_wrapper' ] ) ? sanitize_text_field( $attributes[ 'price_wrapper' ] ) : 'span';
             $price_wrapper_class = isset( $attributes[ 'price_wrapper_class' ] ) ? sanitize_text_field( $attributes[ 'price_wrapper_class' ] ) : 'price';
             $soldout_message = isset( $attributes[ 'soldout_message' ] ) ? sanitize_text_field( $attributes[ 'soldout_message' ] ) : __( 'Tickets are sold out.', 'tickera-event-ticketing-system' );
             $type = isset( $attributes[ 'type' ] ) ? sanitize_text_field( $attributes[ 'type' ] ) : 'cart';
@@ -229,7 +228,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
                 $with_price_content = ( $show_price ) ? ' <span class="' . esc_attr( $price_wrapper_class ) . '">' . esc_html( do_shortcode( '[ticket_price id="' . (int) $id . '"]' ) ) . '</span> ' : '';
 
                 if ( is_array( $tc->get_cart_cookie() ) && array_key_exists( $id, $tc->get_cart_cookie() ) ) {
-                    $button = sprintf( '<' . sanitize_text_field( $price_wrapper ) . ' class="tc_in_cart">%s <a href="%s" class="%s" data-tooltip="%s">%s</a></' . sanitize_text_field( $price_wrapper ) . '>', tickera_apply_filters( 'tickera_ticket_added_to_message', __( 'Ticket added to', 'tickera-event-ticketing-system' ) ), esc_url( $tc->get_cart_slug( true ) ), ( $frontend_tooltip ? 'tc-tooltip' : '' ), esc_attr( $frontend_tooltip ? $frontend_tooltip_cart : '' ), tickera_apply_filters( 'tickera_ticket_added_to_cart_message', __( 'Cart', 'tickera-event-ticketing-system' ) ) );
+                    $button = sprintf( '<span class="tc_in_cart">%s <a href="%s" class="%s" data-tooltip="%s">%s</a></span>', tickera_apply_filters( 'tickera_ticket_added_to_message', __( 'Ticket added to', 'tickera-event-ticketing-system' ) ), esc_url( $tc->get_cart_slug( true ) ), ( $frontend_tooltip ? 'tc-tooltip' : '' ), esc_attr( $frontend_tooltip ? $frontend_tooltip_cart : '' ), tickera_apply_filters( 'tickera_ticket_added_to_cart_message', __( 'Cart', 'tickera-event-ticketing-system' ) ) );
 
                 } else {
 

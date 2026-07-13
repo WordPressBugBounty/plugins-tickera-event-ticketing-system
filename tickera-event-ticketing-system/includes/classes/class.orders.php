@@ -396,33 +396,53 @@ if ( ! class_exists( '\Tickera\TC_Orders' ) ) {
             $user_id = ( $user && isset( $user->ID ) ) ? $user->ID : get_current_user_id();
             $email = tickera_apply_filters( 'tickera_ticket_order_history_list_by_user_email', false ) ? $user->user_email : '';
 
+            $post_types = apply_filters( 'tickera_ticket_order_history_list_by_post_type', [ 'tc_orders' ] );
+            $post_statuses = apply_filters( 'tickera_ticket_order_history_list_by_post_status', array_keys( tickera_get_order_statuses() ) );
+
             $args = [
                 'posts_per_page' => -1,
                 'orderby' => 'post_date',
                 'order' => 'DESC',
-                'post_type' => 'tc_orders',
-                'post_status' => array_keys( tickera_get_order_statuses() )
+                'post_type' => $post_types,
+                'post_status' => $post_statuses,
             ];
 
-            if ( $email ) {
+            if ( ! tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) ) {
 
-                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
-                $args[ 'meta_query' ] = [ [ 'key' => 'tc_cart_info', 'value' => $email, 'compare' => 'LIKE' ] ];
-                $posts = get_posts( $args );
+                if ( $email ) {
 
-                foreach ( $posts as $key => $post ) {
-                    $cart_info = tickera_apply_filters( 'tickera_order_cart_info', get_post_meta( $post->ID, 'tc_cart_info', true ), $post->ID );
-                    $buyer_data = isset( $cart_info[ 'buyer_data' ] ) ? $cart_info[ 'buyer_data' ] : [];
-                    $buyer_email = isset( $buyer_data[ 'email_post_meta' ] ) ? $buyer_data[ 'email_post_meta' ] : '';
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Must resolve the existing posts and meta.
+                    $args[ 'meta_query' ] = [ [ 'key' => 'tc_cart_info', 'value' => $email, 'compare' => 'LIKE' ] ];
+                    $posts = get_posts( $args );
 
-                    if ( $buyer_email != $email ) {
-                        unset( $posts[ $key ] );
+                    foreach ( $posts as $key => $post ) {
+                        $cart_info = tickera_apply_filters( 'tickera_order_cart_info', get_post_meta( $post->ID, 'tc_cart_info', true ), $post->ID );
+                        $buyer_data = isset( $cart_info[ 'buyer_data' ] ) ? $cart_info[ 'buyer_data' ] : [];
+                        $buyer_email = isset( $buyer_data[ 'email_post_meta' ] ) ? $buyer_data[ 'email_post_meta' ] : '';
+
+                        if ( $buyer_email != $email ) {
+                            unset( $posts[ $key ] );
+                        }
                     }
+
+                } else {
+                    $args[ 'author__in' ] = [ $user_id ];
+                    $posts = get_posts( $args );
                 }
 
             } else {
-                $args[ 'author__in' ] = [ $user_id ];
-                $posts = get_posts( $args );
+
+                $posts = get_posts( [
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required to count WooCommerce orders for this customer.
+                    'meta_key'               => '_customer_user',
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required to count WooCommerce orders for this customer.
+                    'meta_value'             => (int) $user_id,
+                    'post_status'            => $post_statuses,
+                    'post_type'              => $post_types,
+                    'posts_per_page'         => -1,
+                    'update_post_meta_cache' => false,
+                    'update_post_term_cache' => false,
+                ] );
             }
 
             return $posts;

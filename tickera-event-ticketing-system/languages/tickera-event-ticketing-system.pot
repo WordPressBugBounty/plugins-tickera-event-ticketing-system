@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Tickera – Sell Tickets & Manage Events\n"
-"POT-Creation-Date: 2026-06-24 13:52+0200\n"
+"POT-Creation-Date: 2026-07-13 09:50+0200\n"
 "PO-Revision-Date: 2026-05-12 11:11+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -30,8 +30,8 @@ msgid "Check in attendees faster with the premium Checkinera app"
 msgstr ""
 
 #: includes/addons/barcode-reader/includes/admin-pages/tc_barcode_reader.php:30
-#: includes/addons/better-attendees-and-tickets/index.php:795
-#: includes/addons/better-attendees-and-tickets/index.php:930
+#: includes/addons/better-attendees-and-tickets/index.php:834
+#: includes/addons/better-attendees-and-tickets/index.php:969
 msgid "API Key"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgid "Checking in..."
 msgstr ""
 
 #: includes/addons/barcode-reader/index.php:141
-#: includes/addons/better-attendees-and-tickets/index.php:592
+#: includes/addons/better-attendees-and-tickets/index.php:631
 #: includes/classes/class.checkin_api.php:736
 msgid "Insufficient permissions. This API key cannot check in this ticket."
 msgstr ""
@@ -79,103 +79,103 @@ msgstr ""
 msgid "Ticket code cannot be empty"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:89
-#: includes/addons/better-attendees-and-tickets/index.php:131
-#: includes/addons/better-attendees-and-tickets/index.php:337
+#: includes/addons/better-attendees-and-tickets/index.php:90
+#: includes/addons/better-attendees-and-tickets/index.php:132
+#: includes/addons/better-attendees-and-tickets/index.php:338
 #: includes/addons/better-orders/index.php:179
-#: includes/general-functions.php:4612 includes/internal-hooks.php:1047
-#: includes/internal-hooks.php:1050
+#: includes/general-functions.php:4612 includes/internal-hooks.php:1044
+#: includes/internal-hooks.php:1047
 msgid "All Events"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:359
+#: includes/addons/better-attendees-and-tickets/index.php:360
 #: includes/addons/better-orders/index.php:201
 msgid "All Order Statuses"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:389
+#: includes/addons/better-attendees-and-tickets/index.php:390
 msgid "Ticket checked in successfully."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:568
+#: includes/addons/better-attendees-and-tickets/index.php:607
 msgid "Attendee updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:569
+#: includes/addons/better-attendees-and-tickets/index.php:608
 #: includes/addons/better-events/index.php:344
 #: includes/addons/better-orders/index.php:366
 #: includes/addons/better-ticket-types/index.php:171
 msgid "Custom field updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:570
+#: includes/addons/better-attendees-and-tickets/index.php:609
 #: includes/addons/better-events/index.php:345
 #: includes/addons/better-orders/index.php:367
 #: includes/addons/better-ticket-types/index.php:172
 msgid "Custom field deleted."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:571
+#: includes/addons/better-attendees-and-tickets/index.php:610
 msgid "Check-in records updated."
 msgstr ""
 
 #. translators: %s: Formatted datetime timestamp of a revision.
-#: includes/addons/better-attendees-and-tickets/index.php:577
+#: includes/addons/better-attendees-and-tickets/index.php:616
 #, php-format
 msgid "Attendee data restored to revision from %s"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:582
+#: includes/addons/better-attendees-and-tickets/index.php:621
 msgid "Attendee data published."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:583
+#: includes/addons/better-attendees-and-tickets/index.php:622
 msgid "Attendee data saved."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:584
+#: includes/addons/better-attendees-and-tickets/index.php:623
 msgid "Attendee data submitted."
 msgstr ""
 
 #. translators: 1: Formatted datetime timestamp of a scheduled ticket instance.
-#: includes/addons/better-attendees-and-tickets/index.php:587
+#: includes/addons/better-attendees-and-tickets/index.php:626
 #, php-format
 msgid "Attendee data scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:590
+#: includes/addons/better-attendees-and-tickets/index.php:629
 msgid "Attendee data draft updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:591
+#: includes/addons/better-attendees-and-tickets/index.php:630
 msgid "Ticket is invalid or expired"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:729
+#: includes/addons/better-attendees-and-tickets/index.php:768
 msgid "Check-in List"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:780
+#: includes/addons/better-attendees-and-tickets/index.php:819
 msgid "Check-in record deleted successfully."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:793
+#: includes/addons/better-attendees-and-tickets/index.php:832
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:102
 msgid "Date & Time"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:794
-#: includes/classes/class.orders.php:69 includes/internal-hooks.php:161
+#: includes/addons/better-attendees-and-tickets/index.php:833
+#: includes/classes/class.orders.php:69 includes/internal-hooks.php:158
 #: includes/templates/shortcode-order-history-contents.php:24
 msgid "Status"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:797
+#: includes/addons/better-attendees-and-tickets/index.php:836
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:58
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:909
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:945
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:950
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:959
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:925
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:961
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:966
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:975
 #: includes/admin-pages/discount_codes.php:262
 #: includes/admin-pages/settings-api.php:242
 #: includes/admin-pages/ticket_templates.php:230
@@ -192,16 +192,16 @@ msgid "Delete"
 msgstr ""
 
 #. translators: %s: Delete checkin url.
-#: includes/addons/better-attendees-and-tickets/index.php:816
+#: includes/addons/better-attendees-and-tickets/index.php:855
 #, php-format
 msgid "<a class=\"tc_delete_link\" href=\"%s\">Delete</a>"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:827
+#: includes/addons/better-attendees-and-tickets/index.php:866
 msgid "There are no any check-ins for this ticket yet."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:948
+#: includes/addons/better-attendees-and-tickets/index.php:987
 msgid "Check In"
 msgstr ""
 
@@ -210,9 +210,9 @@ msgid "Duplicate this Event"
 msgstr ""
 
 #: includes/addons/better-events/index.php:240
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:906
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:988
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:993
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:922
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1004
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1009
 #: includes/admin-pages/ticket_templates.php:237
 #: includes/admin-pages/ticket_templates_new.php:240
 msgid "Duplicate"
@@ -387,7 +387,7 @@ msgid "Event - Add to Cart"
 msgstr ""
 
 #: includes/addons/better-events/index.php:464
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:78
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:79
 #: includes/classes/class.elementor_shortcodes.php:61
 #: includes/classes/class.elementor_shortcodes.php:120
 #: includes/classes/class.shortcode_builder.php:67
@@ -400,7 +400,7 @@ msgstr ""
 
 #: includes/addons/better-events/index.php:465
 #: includes/addons/gutenberg/assets/event_location/tc_event_location_block_editor.js:76
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:79
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:80
 #: includes/classes/class.elementor_shortcodes.php:62
 #: includes/classes/class.elementor_shortcodes.php:121
 #: includes/classes/class.shortcode_builder.php:68
@@ -413,7 +413,7 @@ msgstr ""
 
 #: includes/addons/better-events/index.php:466
 #: includes/addons/gutenberg/assets/event_terms/tc_event_terms_block_editor.js:78
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:81
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:82
 #: includes/classes/class.elementor_shortcodes.php:63
 #: includes/classes/class.elementor_shortcodes.php:122
 #: includes/classes/class.shortcode_builder.php:69
@@ -590,7 +590,7 @@ msgstr ""
 msgid "Order draft updated."
 msgstr ""
 
-#: includes/addons/better-orders/index.php:475 includes/internal-hooks.php:214
+#: includes/addons/better-orders/index.php:475 includes/internal-hooks.php:211
 #: includes/templates/shortcode-order-history-contents.php:79
 msgid "Order Details"
 msgstr ""
@@ -655,7 +655,7 @@ msgstr ""
 #: includes/classes/class.discounts.php:611
 #: includes/classes/class.tickets.php:85 includes/classes/class.tickets.php:188
 #: includes/general-functions.php:4353 includes/general-functions.php:4761
-#: includes/internal-hooks.php:1110 includes/internal-hooks.php:1165
+#: includes/internal-hooks.php:1107 includes/internal-hooks.php:1162
 msgid "Unlimited"
 msgstr ""
 
@@ -664,7 +664,7 @@ msgid "Event level"
 msgstr ""
 
 #: includes/addons/better-ticket-types/index.php:340
-#: includes/internal-hooks.php:1129
+#: includes/internal-hooks.php:1126
 msgid "-"
 msgstr ""
 
@@ -689,7 +689,7 @@ msgid " (%s)"
 msgstr ""
 
 #: includes/addons/better-ticket-types/index.php:438
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1775
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1780
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:585
 #: includes/admin-pages/ticket_templates.php:394
 #: includes/admin-pages/ticket_templates_new.php:450
@@ -728,8 +728,8 @@ msgid ""
 msgstr ""
 
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:81
-#: includes/classes/class.events.php:15 tickera.php:3500 tickera.php:4969
-#: tickera.php:4970
+#: includes/classes/class.events.php:15 tickera.php:3510 tickera.php:4979
+#: tickera.php:4980
 msgid "Events"
 msgstr ""
 
@@ -813,7 +813,7 @@ msgstr ""
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:44
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:141
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:488
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:75
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:76
 #: includes/classes/class.checkin_api.php:947
 #: includes/classes/class.elementor_shortcodes.php:265
 #: includes/classes/class.elementor_shortcodes.php:284
@@ -873,9 +873,9 @@ msgstr ""
 #: includes/addons/export-attendee-list/index.php:175
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:542
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:551
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1411
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1444
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:90
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1427
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1460
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:91
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:113
 #: includes/ticket-elements-new/ticket_id.php:20
 #: includes/ticket-elements-new/ticket_id.php:34
@@ -1147,7 +1147,7 @@ msgstr ""
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:74
 #: includes/addons/gutenberg/index.php:1052
 #: includes/addons/gutenberg/index.php:2008
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:87
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:88
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:111
 #: includes/classes/class.checkin_api.php:946
 #: includes/classes/class.elementor_shortcodes.php:188
@@ -1167,7 +1167,7 @@ msgstr ""
 #: includes/ticket-elements-new/ticket_type_element.php:17
 #: includes/ticket-elements-new/ticket_type_element.php:40
 #: includes/ticket-elements/ticket_type_element.php:17
-#: includes/ticket-elements/ticket_type_element.php:40 tickera.php:749
+#: includes/ticket-elements/ticket_type_element.php:40 tickera.php:759
 msgid "Ticket Type"
 msgstr ""
 
@@ -1182,7 +1182,7 @@ msgstr ""
 
 #: includes/addons/export-attendee-list/index.php:191
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:549
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1098
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1114
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:44
 #: includes/ticket-elements-new/ticket_barcode_element.php:17
 #: includes/ticket-elements-new/ticket_barcode_element.php:234
@@ -1193,7 +1193,7 @@ msgstr ""
 
 #: includes/addons/export-attendee-list/index.php:195
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:540
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1094
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1110
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:38
 #: includes/ticket-elements-new/ticket_qr_code_element.php:17
 #: includes/ticket-elements-new/ticket_qr_code_element.php:184
@@ -1239,7 +1239,7 @@ msgstr ""
 #: includes/gateways/stripe.php:539 includes/gateways/stripe.php:550
 #: includes/general-functions.php:2150 includes/general-functions.php:2203
 #: includes/general-functions.php:4349 includes/general-functions.php:4513
-#: includes/internal-hooks.php:1229
+#: includes/internal-hooks.php:1226
 #: includes/ticket-elements/ticket_description_element.php:35
 msgid "Yes"
 msgstr ""
@@ -1268,7 +1268,7 @@ msgstr ""
 #: includes/gateways/stripe.php:540 includes/gateways/stripe.php:551
 #: includes/general-functions.php:2153 includes/general-functions.php:2206
 #: includes/general-functions.php:4350 includes/general-functions.php:4514
-#: includes/internal-hooks.php:1229
+#: includes/internal-hooks.php:1226
 #: includes/ticket-elements/ticket_description_element.php:34
 msgid "No"
 msgstr ""
@@ -1291,7 +1291,7 @@ msgstr ""
 
 #: includes/addons/frontend-2026/index.php:179
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:521
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1616
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1632
 #: includes/classes/class.ticket_template_elements.php:176
 #: includes/classes/class.ticket_template_elements_new.php:190
 msgid "Bold"
@@ -1393,10 +1393,10 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:293
 #: includes/classes/class.shortcodes.php:71
 #: includes/classes/class.shortcodes.php:126
-#: includes/classes/class.shortcodes.php:232
+#: includes/classes/class.shortcodes.php:231
 #: includes/classes/class.visual_composer_shortcodes.php:18
-#: includes/widgets/cart-widget.php:20 tickera.php:2009 tickera.php:2036
-#: tickera.php:2542
+#: includes/widgets/cart-widget.php:20 tickera.php:2019 tickera.php:2046
+#: tickera.php:2552
 msgid "Cart"
 msgstr ""
 
@@ -1408,7 +1408,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:153
 #: includes/classes/class.shortcode_builder.php:277
 #: includes/classes/class.shortcodes.php:72
-#: includes/classes/class.shortcodes.php:214 tickera.php:2834
+#: includes/classes/class.shortcodes.php:213 tickera.php:2844
 msgid "Tickets are sold out."
 msgstr ""
 
@@ -1462,7 +1462,7 @@ msgstr ""
 #: includes/addons/gutenberg/assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js:327
 #: includes/addons/gutenberg/assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js:287
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:112
-#: includes/templates/shortcode-cart-contents.php:109 tickera.php:751
+#: includes/templates/shortcode-cart-contents.php:109 tickera.php:761
 msgid "Ticket Price"
 msgstr ""
 
@@ -1473,13 +1473,13 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js:333
 #: includes/addons/gutenberg/assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js:293
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1294
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:85
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1310
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:86
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1499
 #: includes/admin-pages/ticket_templates.php:308
 #: includes/classes/class.orders.php:328
 #: includes/classes/class.tickets_instances.php:94
-#: includes/general-functions.php:2340 tickera.php:5056
+#: includes/general-functions.php:2340 tickera.php:5066
 msgid "Ticket"
 msgstr ""
 
@@ -1508,7 +1508,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:147
 #: includes/classes/class.shortcode_builder.php:247
 #: includes/classes/class.shortcodes.php:77
-#: includes/classes/class.shortcodes.php:209 tickera.php:2833
+#: includes/classes/class.shortcodes.php:209 tickera.php:2843
 msgid "Add to Cart"
 msgstr ""
 
@@ -1621,7 +1621,7 @@ msgstr ""
 #: includes/addons/gutenberg/assets/event_date/tc_event_date_block_editor.js:83
 #: includes/classes/class.ticket_templates-new.php:440
 #: includes/classes/class.ticket_templates.php:353
-#: includes/internal-hooks.php:162
+#: includes/internal-hooks.php:159
 #: includes/templates/shortcode-order-history-contents.php:26
 msgid "Date"
 msgstr ""
@@ -1683,7 +1683,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/event_tickets_left/tc_event_tickets_left_block_editor.js:83
 #: includes/addons/gutenberg/assets/tickets_left/tc_tickets_left_block_editor.js:82
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1634
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1650
 #: includes/classes/class.ticket_template_elements.php:114
 #: includes/classes/class.ticket_template_elements.php:139
 #: includes/classes/class.ticket_template_elements.php:149
@@ -1717,7 +1717,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/order_history/tc_order_history_block_editor.js:82
 #: includes/classes/class.tickets_instances.php:76
-#: includes/general-functions.php:2343 tickera.php:2641 tickera.php:5168
+#: includes/general-functions.php:2343 tickera.php:2651 tickera.php:5178
 msgid "Order"
 msgstr ""
 
@@ -1748,7 +1748,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/seating_charts/tc_seating_charts_block_editor.js:99
 #: includes/classes/class.orders.php:139
-#: includes/templates/shortcode-cart-contents.php:113 tickera.php:755
+#: includes/templates/shortcode-cart-contents.php:113 tickera.php:765
 msgid "Subtotal"
 msgstr ""
 
@@ -1819,7 +1819,7 @@ msgstr ""
 #: includes/addons/gutenberg/index.php:2028
 #: includes/addons/gutenberg/index.php:2031
 #: includes/classes/class.shortcodes.php:121
-#: includes/templates/shortcode-cart-contents.php:111 tickera.php:753
+#: includes/templates/shortcode-cart-contents.php:111 tickera.php:763
 msgid "Quantity"
 msgstr ""
 
@@ -2205,9 +2205,9 @@ msgstr ""
 #: includes/gateways/paypal-standard.php:405
 #: includes/gateways/paypal-standard.php:418
 #: includes/general-functions.php:3255 includes/general-functions.php:3289
-#: includes/internal-hooks.php:677 includes/internal-hooks.php:707
-#: includes/internal-hooks.php:910 includes/internal-hooks.php:921
-#: includes/internal-hooks.php:948 includes/internal-hooks.php:1224
+#: includes/internal-hooks.php:674 includes/internal-hooks.php:704
+#: includes/internal-hooks.php:907 includes/internal-hooks.php:918
+#: includes/internal-hooks.php:945 includes/internal-hooks.php:1221
 msgid "N/A"
 msgstr ""
 
@@ -2429,7 +2429,7 @@ msgid "Ticket template"
 msgstr ""
 
 #. translators: 1: Tickera version, 2: required Bridge version, 3: current Bridge version.
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:703
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:704
 #, php-format
 msgid ""
 "<strong>Tickera%1$s requires Bridge for WooCommerce %2$s or higher.</strong> "
@@ -2437,144 +2437,144 @@ msgid ""
 "tickets sold through WooCommerce may render empty or fail to generate."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:715
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:716
 msgid "Go to Plugins"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:793
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:794
 msgid "Ticket Templates is now legacy."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:795
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:796
 msgid ""
 "New tickets are built with the modern Ticket Designer. Your existing "
 "templates still work, but we recommend designing new ones there."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:797
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:798
 msgid "Open Ticket Designer"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:853
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1042
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1071
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1161
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1282
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1327
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1343
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1368
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:854
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1043
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1072
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1162
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1283
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1328
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1344
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1369
 msgid "Permission denied."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:866
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:867
 msgid "Template name is required."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:900
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:901
 msgid "Ticket template saved successfully."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:904
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:905
 msgid "Failed to save ticket template."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1016
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1048
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1077
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1017
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1049
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1078
 msgid "Invalid template ID."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1022
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1083
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1294
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1350
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1023
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1084
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1295
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1351
 msgid "Template not found."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1055
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1056
 msgid "Ticket template deleted."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1057
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1058
 msgid "Failed to delete ticket template."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1089
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1090
 msgid "Failed to duplicate ticket template."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1105
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1106
 msgid "Ticket template duplicated."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1288
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1289
 msgid "Template ID required."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1313
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1314
 msgid ""
 "Failed to generate PDF. Make sure TCPDF is installed (run composer install)."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1373
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1374
 msgid "Missing template slug."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1383
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1384
 msgid "Template file not found on disk."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1389
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1390
 msgid "Could not prepare the templates directory."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1395
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1396
 msgid "Missing payload."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1400
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1401
 msgid "Invalid payload — expected wrapped templateData."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1432
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1433
 msgid "Failed to encode JSON."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1450
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1451
 msgid "Failed to write file (permissions?)."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1454
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1455
 msgid "Failed to replace template file."
 msgstr ""
 
 #. translators: placeholders are dynamic values.
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1460
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1461
 #, php-format
 msgid "Replaced %s.json on disk."
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1702
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1707
 msgid "Classic template"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1746
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1790
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1751
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1795
 msgid "— None —"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1749
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1754
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:319
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:320
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:837
 msgid "Ticket Designer"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1759
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1764
 msgid "Legacy Templates"
 msgstr ""
 
-#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1804
+#: includes/addons/ticket-designer/class-venuera-ticket-designer.php:1809
 msgid "Legacy"
 msgstr ""
 
@@ -2729,17 +2729,17 @@ msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:508
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:571
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1457
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1484
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1504
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1473
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1500
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1520
 msgid "Width"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:509
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:572
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1461
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1488
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1508
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1477
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1504
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1524
 msgid "Height"
 msgstr ""
 
@@ -2757,7 +2757,7 @@ msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:513
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:514
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1400
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1416
 msgid "Text"
 msgstr ""
 
@@ -2770,91 +2770,91 @@ msgid "Label Prefix"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:517
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1600
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1616
 msgid "Font Family"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:518
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1608
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1624
 #: includes/classes/class.ticket_template_elements.php:252
 #: includes/classes/class.ticket_template_elements_new.php:274
 msgid "Font Size"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:519
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1613
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1629
 msgid "Weight"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:520
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:523
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1615
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1622
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1631
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1638
 msgid "Normal"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:522
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:558
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1620
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1636
 msgid "Style"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:524
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1623
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1639
 #: includes/classes/class.ticket_template_elements.php:180
 #: includes/classes/class.ticket_template_elements_new.php:194
 msgid "Italic"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:525
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1628
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1644
 msgid "Text Color"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:526
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1632
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1648
 msgid "Text Align"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:527
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:528
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1103
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1475
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1119
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1491
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:50
 msgid "Image"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:529
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1480
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1496
 msgid "Remove"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:530
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:535
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1492
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1508
 msgid "Fit"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:531
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:536
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1494
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1510
 msgid "Contain"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:532
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:537
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1495
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1511
 msgid "Cover"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:533
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:538
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1496
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1512
 msgid "Stretch"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:534
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1107
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1123
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:56
 msgid "Event Image"
 msgstr ""
@@ -2865,34 +2865,34 @@ msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:541
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:550
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1409
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1442
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1425
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1458
 msgid "Data Source"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:543
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:552
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1412
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1445
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1428
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1461
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:114
-#: includes/classes/class.orders.php:52 includes/internal-hooks.php:160
+#: includes/classes/class.orders.php:52 includes/internal-hooks.php:157
 msgid "Order ID"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:544
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1422
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1438
 msgid "Error Correction"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:545
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:554
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1430
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1446
 msgid "Foreground"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:546
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:555
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1434
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1450
 msgid "Background"
 msgstr ""
 
@@ -2907,65 +2907,65 @@ msgid "Corner radius:"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:553
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1449
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1465
 msgid "Format"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:559
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1512
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1528
 msgid "Fill Color"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:560
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1516
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1532
 msgid "Border Color"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:561
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1520
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1536
 msgid "Border Width"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:562
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1524
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1540
 msgid "Corner Radius"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:563
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1116
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1132
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:71
 msgid "Line"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:564
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1532
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1548
 #: includes/classes/class.ticket_template_elements.php:99
 #: includes/classes/class.ticket_template_elements_new.php:112
 msgid "Orientation"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:565
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1534
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1550
 msgid "Horizontal"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:566
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1535
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1551
 msgid "Vertical"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:567
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1539
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1555
 msgid "Length"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:568
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1543
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1559
 msgid "Color"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:569
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1547
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1563
 msgid "Thickness"
 msgstr ""
 
@@ -2997,7 +2997,7 @@ msgid "Cancel"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:578
-#: includes/templates/shortcode-cart-contents.php:209 tickera.php:5477
+#: includes/templates/shortcode-cart-contents.php:209 tickera.php:5487
 msgid "Apply"
 msgstr ""
 
@@ -3006,7 +3006,7 @@ msgid "You have unsaved changes. Are you sure you want to leave?"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:580
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:963
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:979
 msgid "Are you sure you want to delete this template?"
 msgstr ""
 
@@ -3019,7 +3019,7 @@ msgid "Failed to save template."
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:583
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1479
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1495
 msgid "Select Image"
 msgstr ""
 
@@ -3032,7 +3032,7 @@ msgid "Add elements to design your ticket"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:617
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1126
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1142
 msgid "AI Ticket Assistant"
 msgstr ""
 
@@ -3072,7 +3072,7 @@ msgid "Done"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:626
-#: includes/gateways/paygate.php:188 tickera.php:5497
+#: includes/gateways/paygate.php:188 tickera.php:5507
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -3157,11 +3157,12 @@ msgid "No preview"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:868
-#: tickera.php:1614 tickera.php:1712
+#: tickera.php:1624 tickera.php:1722
 msgid "Default"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:886
+#. translators: %d: number of ticket types
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:899
 #, php-format
 msgid "Assigned to %d ticket type"
 msgid_plural "Assigned to %d ticket types"
@@ -3169,18 +3170,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of events
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:891
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:907
 #, php-format
 msgid "Assigned to %d event"
 msgid_plural "Assigned to %d events"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:896
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:912
 msgid "Not assigned"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:903
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:919
 #: includes/admin-pages/discount_codes.php:257
 #: includes/admin-pages/settings-api.php:238
 #: includes/admin-pages/ticket_templates.php:225
@@ -3191,328 +3192,328 @@ msgstr ""
 #: includes/classes/class.events.php:154
 #: includes/classes/class.ticket_templates-new.php:462
 #: includes/classes/class.ticket_templates.php:375
-#: includes/classes/class.tickets.php:259 tickera.php:4974 tickera.php:5060
-#: tickera.php:5103 tickera.php:5126 tickera.php:5169 tickera.php:5248
+#: includes/classes/class.tickets.php:259 tickera.php:4984 tickera.php:5070
+#: tickera.php:5113 tickera.php:5136 tickera.php:5179 tickera.php:5258
 msgid "Edit"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:926
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:942
 msgid "Deleting..."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:944
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:960
 msgid "Failed to delete template."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:949
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:992
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:965
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1008
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:957
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:973
 msgid "Delete ticket design?"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:958
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:974
 msgid "This permanently deletes this ticket design. This cannot be undone."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:960
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:976
 msgid "Keep"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:972
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:988
 msgid "Duplicating..."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:987
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1003
 msgid "Failed to duplicate template."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1018
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1034
 msgid "Back to Templates"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1022
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1038
 msgid "Untitled Template"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1043
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1059
 msgid "Save template first"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1047
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1063
 msgid "Open PDF"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1051
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1067
 msgid "Save Template"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1060
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1076
 msgid "Drag to move"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1066
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1082
 msgid "Select (V)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1069
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1085
 msgid "Pan (H)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1079
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1095
 msgid "Add Elements"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1086
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1102
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:26
 msgid "Dynamic Text"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1090
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1106
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:32
 msgid "Static Text"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1112
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1128
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:62
 msgid "Rectangle"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1136
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1152
 #: includes/classes/class.ticket_template_elements.php:81
 #: includes/classes/class.ticket_template_elements_new.php:93
 msgid "Ticket Size"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1140
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1156
 msgid "Standard (6\" × 2.5\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1141
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1157
 msgid "Concert (8\" × 3\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1142
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1158
 msgid "Compact (5\" × 2\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1143
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1159
 msgid "Large (8.5\" × 3.5\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1144
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1160
 msgid "Pass (3.5\" × 5\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1145
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1161
 msgid "Badge (3.5\" × 4.5\")"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1146
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1162
 msgid "A6 Landscape"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1147
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1163
 msgid "A6 Portrait"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1148
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1164
 msgid "A5 Landscape"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1149
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1165
 msgid "A5 Portrait"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1150
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1166
 msgid "A4 Landscape"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1151
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1167
 msgid "A4 Portrait"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1153
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1169
 msgid "Custom Size..."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1156
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1172
 msgid "Print size"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1163
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1179
 msgid "Zoom Out (-)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1166
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1182
 msgid "Click to reset"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1167
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1183
 msgid "Zoom In (+)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1170
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1186
 msgid "Fit to Screen (0)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1179
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1195
 msgid "Toggle Grid (G)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1182
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1198
 msgid "Snap to Grid (S)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1185
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1201
 msgid "Show elements outside the ticket (O)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1194
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1210
 msgid "Undo (Ctrl+Z)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1197
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1213
 msgid "Redo (Ctrl+Y)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1209
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1225
 msgid "Export Ticket Template"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1212
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1228
 msgid "Import Ticket Template"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1225
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1241
 msgid "Delete (Del)"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1232
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1248
 msgid "Collapse toolbar"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1240
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1256
 msgid "Expand toolbar"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1280
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1296
 msgid "Space+Drag to pan • Scroll to zoom"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1291
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1307
 msgid "Properties"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1296
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1312
 msgid "Background Color"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1308
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1324
 msgid "Ready-made templates"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1309
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1325
 msgid "Click a template to replace your current design."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1311
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1327
 msgid "Loading templates…"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1327
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1343
 msgid "Select an element to edit its properties."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1344
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1360
 msgid "Ticket Preview"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1351
-#: tickera.php:5479
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1367
+#: tickera.php:5489
 msgid "Close"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1366
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1382
 msgid "Data Field"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1378
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1569
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1394
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1585
 msgid "Label"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1379
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1395
 msgid "e.g., Date:"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1382
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1398
 msgid "Label Position"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1384
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1400
 msgid "Before value"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1385
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1401
 msgid "After value"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1392
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1408
 msgid "Hide if empty"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1413
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1429
 msgid "Custom URL"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1417
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1433
 msgid "Size"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1467
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1483
 msgid "Show text below"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1555
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1571
 msgid "Field Source"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1557
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1573
 msgid "Attendee Field"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1558
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1574
 msgid "Event Field"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1562
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1578
 msgid "Select Field"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1564
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1580
 msgid "-- Select --"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1566
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1582
 msgid "Filter by event or ticket type to see available fields."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1578
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1594
 msgid "Position"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1581
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1597
 msgid "X"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1585
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1601
 msgid "Y"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1637
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1653
 #: includes/classes/class.ticket_template_elements.php:141
 #: includes/classes/class.ticket_template_elements.php:151
 #: includes/classes/class.ticket_template_elements_new.php:155
@@ -3520,7 +3521,7 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1640
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1656
 #: includes/classes/class.ticket_template_elements.php:113
 #: includes/classes/class.ticket_template_elements.php:140
 #: includes/classes/class.ticket_template_elements.php:150
@@ -3530,35 +3531,35 @@ msgstr ""
 msgid "Right"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1682
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1731
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1705
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1754
 msgid "Ticket Template"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1689
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1712
 msgid "-- Default Template --"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1694
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1717
 msgid ""
 "Default template for every variation of this product. Individual variations "
 "can override this in their own Ticket Template field."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1695
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1718
 msgid "Select a specific ticket template for this ticket type."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1724
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1747
 msgid "-- Inherit from parent --"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1732
+#: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1755
 msgid ""
 "Pick a template just for this variation, or inherit from the parent product."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:77
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:78
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:99
 #: includes/classes/class.orders.php:222 includes/classes/class.orders.php:294
 #: includes/ticket-elements-new/event_name_element.php:17
@@ -3568,7 +3569,7 @@ msgstr ""
 msgid "Event Name"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:80
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:81
 #: includes/ticket-elements-new/event_category_element.php:17
 #: includes/ticket-elements-new/event_category_element.php:66
 #: includes/ticket-elements/event_category_element.php:17
@@ -3576,7 +3577,7 @@ msgstr ""
 msgid "Event Category"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:88
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:89
 #: includes/ticket-elements-new/ticket_description_element.php:17
 #: includes/ticket-elements-new/ticket_description_element.php:47
 #: includes/ticket-elements/ticket_description_element.php:17
@@ -3584,7 +3585,7 @@ msgstr ""
 msgid "Ticket Description"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:89
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:90
 #: includes/classes/class.orders.php:264
 #: includes/classes/class.tickets_instances.php:48
 #: includes/ticket-elements-new/ticket_code.php:18
@@ -3594,13 +3595,13 @@ msgstr ""
 msgid "Ticket Code"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:94
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:95
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:659
-#: includes/classes/class.tickets_instances.php:39 tickera.php:5122
+#: includes/classes/class.tickets_instances.php:39 tickera.php:5132
 msgid "Attendee"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:96
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:97
 #: includes/ticket-elements-new/ticket_owner_name_element.php:17
 #: includes/ticket-elements-new/ticket_owner_name_element.php:33
 #: includes/ticket-elements/ticket_owner_name_element.php:17
@@ -3608,11 +3609,11 @@ msgstr ""
 msgid "Ticket Owner Name"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:100
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:101
 msgid "Order / Buyer"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:102
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:103
 #: includes/ticket-elements-new/ticket_buyer_name_element.php:17
 #: includes/ticket-elements-new/ticket_buyer_name_element.php:37
 #: includes/ticket-elements/ticket_buyer_name_element.php:17
@@ -3620,7 +3621,7 @@ msgstr ""
 msgid "Ticket Buyer Name"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:103
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:104
 #: includes/ticket-elements-new/ticket_date_of_purchase.php:17
 #: includes/ticket-elements-new/ticket_date_of_purchase.php:51
 #: includes/ticket-elements/ticket_date_of_purchase.php:17
@@ -3628,35 +3629,35 @@ msgstr ""
 msgid "Date of Purchase"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:115
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:116
 msgid "Add-on Fields"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:335
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:336
 msgid "Sample Event"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:339
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:340
 msgid "Main Hall, 123 Example St"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:340
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:341
 msgid "Concert"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:341
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:342
 msgid "No refunds. This ticket admits one person."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:342
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:343
 msgid "General Admission"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:343
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:344
 msgid "Admit one"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:373
+#: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:374
 msgid "Sample"
 msgstr ""
 
@@ -4004,7 +4005,7 @@ msgstr ""
 msgid "Media"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-pdf-generator.php:215
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-pdf-generator.php:210
 msgid "Powered by"
 msgstr ""
 
@@ -4064,7 +4065,7 @@ msgid "Update"
 msgstr ""
 
 #: includes/admin-pages/discount_codes.php:204
-#: includes/classes/class.discounts.php:17 tickera.php:3502
+#: includes/classes/class.discounts.php:17 tickera.php:3512
 msgid "Discount Codes"
 msgstr ""
 
@@ -4344,7 +4345,7 @@ msgid "API Access"
 msgstr ""
 
 #: includes/admin-pages/settings-api.php:204
-#: includes/classes/class.api_keys.php:16 tickera.php:5098
+#: includes/classes/class.api_keys.php:16 tickera.php:5108
 msgid "API Keys"
 msgstr ""
 
@@ -4387,8 +4388,8 @@ msgid ""
 "Get premium support, more payment gateways and unlock additional features"
 msgstr ""
 
-#: includes/admin-pages/settings.php:18 tickera.php:3503 tickera.php:3572
-#: tickera.php:3617
+#: includes/admin-pages/settings.php:18 tickera.php:3513 tickera.php:3582
+#: tickera.php:3627
 msgid "Settings"
 msgstr ""
 
@@ -4434,7 +4435,7 @@ msgstr ""
 msgid "Post creation failed, could not find original post: "
 msgstr ""
 
-#: includes/admin-pages/ticket_templates.php:167 tickera.php:3501
+#: includes/admin-pages/ticket_templates.php:167 tickera.php:3511
 msgid "Ticket Templates"
 msgstr ""
 
@@ -4670,11 +4671,11 @@ msgstr ""
 msgid "Discount Scope"
 msgstr ""
 
-#: includes/classes/class.discounts.php:537 includes/internal-hooks.php:1218
+#: includes/classes/class.discounts.php:537 includes/internal-hooks.php:1215
 msgid "Per Item"
 msgstr ""
 
-#: includes/classes/class.discounts.php:538 includes/internal-hooks.php:1221
+#: includes/classes/class.discounts.php:538 includes/internal-hooks.php:1218
 msgid "Per Order"
 msgstr ""
 
@@ -4938,7 +4939,7 @@ msgid ""
 msgstr ""
 
 #: includes/classes/class.fields.php:360 includes/general-functions.php:4787
-#: includes/general-functions.php:4824 includes/internal-hooks.php:1198
+#: includes/general-functions.php:4824 includes/internal-hooks.php:1195
 msgid "All"
 msgstr ""
 
@@ -4963,7 +4964,7 @@ msgid ""
 "the number, the higher in the list it goes. 30 is the default value."
 msgstr ""
 
-#: includes/classes/class.orders.php:16 tickera.php:5167
+#: includes/classes/class.orders.php:16 tickera.php:5177
 msgid "Orders"
 msgstr ""
 
@@ -4999,7 +5000,7 @@ msgstr ""
 msgid "Tax"
 msgstr ""
 
-#: includes/classes/class.orders.php:169 includes/internal-hooks.php:163
+#: includes/classes/class.orders.php:169 includes/internal-hooks.php:160
 #: includes/templates/shortcode-order-history-contents.php:28
 msgid "Total"
 msgstr ""
@@ -5008,7 +5009,7 @@ msgstr ""
 msgid "Attendee E-Mail"
 msgstr ""
 
-#: includes/classes/class.orders.php:378 includes/internal-hooks.php:164
+#: includes/classes/class.orders.php:378 includes/internal-hooks.php:161
 #: includes/templates/shortcode-order-history-contents.php:30
 msgid "Details"
 msgstr ""
@@ -5088,7 +5089,7 @@ msgid ""
 "plugin!"
 msgstr ""
 
-#: includes/classes/class.payment_gateways.php:404 tickera.php:4898
+#: includes/classes/class.payment_gateways.php:404 tickera.php:4908
 msgid "Your transaction has been canceled."
 msgstr ""
 
@@ -5274,7 +5275,7 @@ msgstr ""
 #: includes/classes/class.settings_email.php:622
 #: includes/general-functions.php:1975 includes/general-functions.php:2009
 #: includes/general-functions.php:3557 includes/general-functions.php:3836
-#: includes/internal-hooks.php:629 includes/internal-hooks.php:1018
+#: includes/internal-hooks.php:626 includes/internal-hooks.php:1015
 msgid "Order Refunded"
 msgstr ""
 
@@ -5855,7 +5856,7 @@ msgid ""
 "constant variable (e.g AUTH_KEY) is configured to regenerate over time."
 msgstr ""
 
-#: includes/classes/class.shortcode_builder.php:510 tickera.php:5474
+#: includes/classes/class.shortcode_builder.php:510 tickera.php:5484
 msgid "Please enter at least 3 characters."
 msgstr ""
 
@@ -5871,11 +5872,11 @@ msgstr ""
 msgid "Press enter key to view your cart."
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:232
+#: includes/classes/class.shortcodes.php:231
 msgid "Ticket added to"
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:254
+#: includes/classes/class.shortcodes.php:253
 msgid "Unknown ticket ID"
 msgstr ""
 
@@ -6090,7 +6091,7 @@ msgstr ""
 msgid "Minimum tickets per order"
 msgstr ""
 
-#: includes/classes/class.tickets.php:107 includes/internal-hooks.php:1117
+#: includes/classes/class.tickets.php:107 includes/internal-hooks.php:1114
 msgid "No minimum"
 msgstr ""
 
@@ -6104,7 +6105,7 @@ msgstr ""
 msgid "Maximum tickets per order"
 msgstr ""
 
-#: includes/classes/class.tickets.php:117 includes/internal-hooks.php:1123
+#: includes/classes/class.tickets.php:117 includes/internal-hooks.php:1120
 msgid "No maximum"
 msgstr ""
 
@@ -6195,11 +6196,11 @@ msgid ""
 "the event"
 msgstr ""
 
-#: includes/classes/class.tickets.php:236 includes/internal-hooks.php:780
+#: includes/classes/class.tickets.php:236 includes/internal-hooks.php:777
 msgid "Active"
 msgstr ""
 
-#: includes/classes/class.tickets_instances.php:16 tickera.php:5121
+#: includes/classes/class.tickets_instances.php:16 tickera.php:5131
 msgid "Attendees & Tickets"
 msgstr ""
 
@@ -6993,7 +6994,7 @@ msgstr ""
 #: includes/templates/page-process-payment.php:19
 #: includes/templates/page-process-payment.php:29
 #: includes/templates/page-process-payment.php:42
-#: includes/templates/page-process-payment.php:62 tickera.php:2289
+#: includes/templates/page-process-payment.php:62 tickera.php:2299
 msgid "Sorry, something went wrong."
 msgstr ""
 
@@ -7728,14 +7729,14 @@ msgid "Automatic payment status"
 msgstr ""
 
 #: includes/gateways/custom-offline-payments.php:249
-#: includes/gateways/free-orders.php:169 includes/internal-hooks.php:639
-#: includes/internal-hooks.php:1002
+#: includes/gateways/free-orders.php:169 includes/internal-hooks.php:636
+#: includes/internal-hooks.php:999
 msgid "Order Received"
 msgstr ""
 
 #: includes/gateways/custom-offline-payments.php:250
-#: includes/gateways/free-orders.php:170 includes/internal-hooks.php:644
-#: includes/internal-hooks.php:1006
+#: includes/gateways/free-orders.php:170 includes/internal-hooks.php:641
+#: includes/internal-hooks.php:1003
 msgid "Order Paid"
 msgstr ""
 
@@ -11873,7 +11874,7 @@ msgstr ""
 #. translators: 1: Order status color class identifier 2: Order status
 #. translators: 1: Order status color class identifier  2: Order status
 #. translators: 1: An order status key 2: Order status
-#: includes/general-functions.php:3154 includes/internal-hooks.php:198
+#: includes/general-functions.php:3154 includes/internal-hooks.php:195
 #: includes/templates/shortcode-order-history-contents.php:60
 #, php-format
 msgid "<span class=\"%1$s\">%2$s</span>"
@@ -11891,7 +11892,7 @@ msgstr ""
 
 #: includes/general-functions.php:3336 includes/general-functions.php:3338
 #: includes/general-functions.php:3348 includes/general-functions.php:3350
-#: includes/internal-hooks.php:924
+#: includes/internal-hooks.php:921
 msgid "Download"
 msgstr ""
 
@@ -11908,7 +11909,7 @@ msgid "Order Deleted"
 msgstr ""
 
 #: includes/general-functions.php:3553 includes/general-functions.php:3832
-#: includes/internal-hooks.php:649 includes/internal-hooks.php:1010
+#: includes/internal-hooks.php:646 includes/internal-hooks.php:1007
 msgid "Order Cancelled"
 msgstr ""
 
@@ -12042,7 +12043,7 @@ msgstr ""
 msgid "Choose any events"
 msgstr ""
 
-#: includes/general-functions.php:4604 tickera.php:5024
+#: includes/general-functions.php:4604 tickera.php:5034
 msgid "All Event Categories"
 msgstr ""
 
@@ -12054,17 +12055,17 @@ msgstr ""
 msgid "Per event"
 msgstr ""
 
-#: includes/general-functions.php:4847 includes/internal-hooks.php:1205
-#: includes/internal-hooks.php:1211
+#: includes/general-functions.php:4847 includes/internal-hooks.php:1202
+#: includes/internal-hooks.php:1208
 msgid "Fixed Amount"
 msgstr ""
 
-#: includes/general-functions.php:4848 includes/internal-hooks.php:1208
+#: includes/general-functions.php:4848 includes/internal-hooks.php:1205
 msgid "Percentage (%)"
 msgstr ""
 
 #: includes/general-functions.php:4904 includes/widgets/cart-widget.php:68
-#: tickera.php:2891
+#: tickera.php:2901
 msgid "The cart is empty"
 msgstr ""
 
@@ -12111,53 +12112,53 @@ msgstr ""
 msgid "Ticket Orders"
 msgstr ""
 
-#: includes/internal-hooks.php:146
+#: includes/internal-hooks.php:143
 msgid "Ticket Order History"
 msgstr ""
 
-#: includes/internal-hooks.php:154
+#: includes/internal-hooks.php:151
 #: includes/templates/shortcode-order-history-contents.php:18
 msgid "No Orders Found"
 msgstr ""
 
-#: includes/internal-hooks.php:192
+#: includes/internal-hooks.php:189
 #: includes/templates/shortcode-order-history-contents.php:54
 msgid "Held for Review"
 msgstr ""
 
-#: includes/internal-hooks.php:634 includes/internal-hooks.php:1014
+#: includes/internal-hooks.php:631 includes/internal-hooks.php:1011
 msgid "Order Fraud"
 msgstr ""
 
 #. translators: 1: Discount amount 2: Discount ID 3: Discount Code
-#: includes/internal-hooks.php:731
+#: includes/internal-hooks.php:728
 #, php-format
 msgid ""
 "%1$s<br/>Code: <a href=\"edit.php?"
 "post_type=tc_events&page=tc_discount_codes&action=edit&ID=%2$s\">%3$s</a>"
 msgstr ""
 
-#: includes/internal-hooks.php:771 includes/internal-hooks.php:821
+#: includes/internal-hooks.php:768 includes/internal-hooks.php:818
 msgid "Shortcode"
 msgstr ""
 
-#: includes/internal-hooks.php:924
+#: includes/internal-hooks.php:921
 msgid "View"
 msgstr ""
 
-#: includes/internal-hooks.php:938
+#: includes/internal-hooks.php:935
 msgid " Details"
 msgstr ""
 
-#: includes/internal-hooks.php:1069
+#: includes/internal-hooks.php:1066
 msgid "Administrator"
 msgstr ""
 
-#: includes/internal-hooks.php:1081
+#: includes/internal-hooks.php:1078
 msgid "Wrong user. API will be available to the administrators only."
 msgstr ""
 
-#: includes/internal-hooks.php:1187
+#: includes/internal-hooks.php:1184
 msgid "Assigned ticket type(s) no longer exists."
 msgstr ""
 
@@ -12208,15 +12209,15 @@ msgstr ""
 msgid "Select the quantity of the ticket type."
 msgstr ""
 
-#: includes/templates/shortcode-cart-contents.php:179 tickera.php:810
+#: includes/templates/shortcode-cart-contents.php:179 tickera.php:820
 msgid "SUBTOTAL: "
 msgstr ""
 
-#: includes/templates/shortcode-cart-contents.php:185 tickera.php:814
+#: includes/templates/shortcode-cart-contents.php:185 tickera.php:824
 msgid "DISCOUNT: "
 msgstr ""
 
-#: includes/templates/shortcode-cart-contents.php:191 tickera.php:818
+#: includes/templates/shortcode-cart-contents.php:191 tickera.php:828
 msgid "TOTAL: "
 msgstr ""
 
@@ -12627,7 +12628,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %s: Alternative payment method name.
-#: tickera.php:595
+#: tickera.php:605
 #, php-format
 msgid ""
 "Tickera <b>%s</b> is now available. Please activate it via <a href=\"edit."
@@ -12635,106 +12636,106 @@ msgid ""
 "Payment Gateways Tab</a>"
 msgstr ""
 
-#: tickera.php:744
+#: tickera.php:754
 msgid "Payment Summary"
 msgstr ""
 
-#: tickera.php:966
+#: tickera.php:976
 msgid "I hereby declare that I am 16 years or older"
 msgstr ""
 
-#: tickera.php:1200
+#: tickera.php:1210
 msgid "Action is not allowed on paid orders."
 msgstr ""
 
-#: tickera.php:1219
+#: tickera.php:1229
 msgid "Seating chart update is currently not allowed."
 msgstr ""
 
-#: tickera.php:1250
+#: tickera.php:1260
 msgid "Invalid action. Nonce did not matched."
-msgstr ""
-
-#: tickera.php:1321
-msgctxt "Page slug"
-msgid "tickets-cart"
-msgstr ""
-
-#: tickera.php:1322
-msgctxt "Page title"
-msgid "Cart"
-msgstr ""
-
-#: tickera.php:1326
-msgctxt "Page slug"
-msgid "tickets-payment"
-msgstr ""
-
-#: tickera.php:1327
-msgctxt "Page title"
-msgid "Payment"
 msgstr ""
 
 #: tickera.php:1331
 msgctxt "Page slug"
-msgid "tickets-order-confirmation"
+msgid "tickets-cart"
 msgstr ""
 
 #: tickera.php:1332
 msgctxt "Page title"
-msgid "Payment Confirmation"
+msgid "Cart"
 msgstr ""
 
 #: tickera.php:1336
 msgctxt "Page slug"
-msgid "tickets-order-details"
+msgid "tickets-payment"
 msgstr ""
 
 #: tickera.php:1337
 msgctxt "Page title"
-msgid "Order Details"
+msgid "Payment"
 msgstr ""
 
 #: tickera.php:1341
 msgctxt "Page slug"
-msgid "tickets-process-payment"
+msgid "tickets-order-confirmation"
 msgstr ""
 
 #: tickera.php:1342
 msgctxt "Page title"
-msgid "Process Payment"
+msgid "Payment Confirmation"
 msgstr ""
 
 #: tickera.php:1346
 msgctxt "Page slug"
-msgid "tickets-ipn-payment"
+msgid "tickets-order-details"
 msgstr ""
 
 #: tickera.php:1347
 msgctxt "Page title"
+msgid "Order Details"
+msgstr ""
+
+#: tickera.php:1351
+msgctxt "Page slug"
+msgid "tickets-process-payment"
+msgstr ""
+
+#: tickera.php:1352
+msgctxt "Page title"
+msgid "Process Payment"
+msgstr ""
+
+#: tickera.php:1356
+msgctxt "Page slug"
+msgid "tickets-ipn-payment"
+msgstr ""
+
+#: tickera.php:1357
+msgctxt "Page title"
 msgid "IPN"
 msgstr ""
 
-#: tickera.php:1740
+#: tickera.php:1750
 #, php-format
 msgid ""
 "%1$s%2$s%3$s is almost ready. You must %4$supdate your permalink structure"
 "%5$s to something other than the default for it to work."
 msgstr ""
 
-#: tickera.php:1781
+#: tickera.php:1791
 msgid ""
 "It is recommended to turn off both <strong>TC_DEBUG</strong> and "
 "<strong>WP_DEBUG</strong> on a production site."
 msgstr ""
 
-#: tickera.php:1782 tickera.php:1788
+#: tickera.php:1792 tickera.php:1798
 msgid ""
 " Remove <i><strong>define('TC_DEBUG', true);</strong></i> line from wp-"
 "config.php file."
 msgstr ""
 
-#: tickera.php:1783 tickera.php:1793
+#: tickera.php:1793 tickera.php:1803
 msgid ""
 " Edit wp-config.php file and set the the WP_DEBUG value like this: "
 "<strong>define('WP_DEBUG', false);</strong> or add additional line "
@@ -12742,444 +12743,444 @@ msgid ""
 "config.php"
 msgstr ""
 
-#: tickera.php:1787
+#: tickera.php:1797
 msgid ""
 "It is recommended to turn off <strong>TC_DEBUG</strong> on a production site."
 msgstr ""
 
-#: tickera.php:1792
+#: tickera.php:1802
 msgid ""
 "It is recommended to turn off <strong>WP_DEBUG</strong> on a production site."
 msgstr ""
 
 #. translators: 1: Session error message, 2: opening cart link tag, 3: closing link tag.
-#: tickera.php:2317
+#: tickera.php:2327
 #, php-format
 msgid "%1$s %2$sPlease try again%3$s."
 msgstr ""
 
 #. translators: %s: Gateway public name.
-#: tickera.php:2443
+#: tickera.php:2453
 #, php-format
 msgid "Redirecting to %s payment page..."
 msgstr ""
 
-#: tickera.php:2451
+#: tickera.php:2461
 msgid "Continue &raquo;"
 msgstr ""
 
-#: tickera.php:2454
+#: tickera.php:2464
 msgid "Continue Checkout &raquo;"
 msgstr ""
 
-#: tickera.php:2566
+#: tickera.php:2576
 msgid "Payment"
 msgstr ""
 
-#: tickera.php:2618
+#: tickera.php:2628
 msgid "Process Payment"
 msgstr ""
 
-#: tickera.php:2664
+#: tickera.php:2674
 msgid "Confirmation"
 msgstr ""
 
-#: tickera.php:2928
+#: tickera.php:2938
 msgid "Invalid cart request."
 msgstr ""
 
 #. translators: %s: Ticket type name
 #. translators: %s: Ticket type name.
-#: tickera.php:2971 tickera.php:3096
+#: tickera.php:2981 tickera.php:3106
 #, php-format
 msgid "\"%s\" tickets are sold out"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A minimum number of tickets per order.
-#: tickera.php:3030
+#: tickera.php:3040
 #, php-format
 msgid "Minimum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A maximum number of tickets per order
-#: tickera.php:3064
+#: tickera.php:3074
 #, php-format
 msgid "Maximum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: A number of quantity left 2: Ticket type name 3: Singular or plural form of a string "ticket".
-#: tickera.php:3082
+#: tickera.php:3092
 #, php-format
 msgid "Only %1$s \"%2$s\" %3$s left"
 msgstr ""
 
-#: tickera.php:3085
+#: tickera.php:3095
 msgid "tickets"
 msgstr ""
 
-#: tickera.php:3085
+#: tickera.php:3095
 msgid "ticket"
 msgstr ""
 
 #. translators: %s: Ticket type name.
-#: tickera.php:3122
+#: tickera.php:3132
 #, php-format
 msgid "\"%s\" You have reached the maximum number of purchases of this ticket"
 msgstr ""
 
-#: tickera.php:3199
+#: tickera.php:3209
 msgid "All fields marked with * are required."
 msgstr ""
 
-#: tickera.php:3344
+#: tickera.php:3354
 msgid "here"
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3354
+#: tickera.php:3364
 #, php-format
 msgid "You can check your order status %s."
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3362
+#: tickera.php:3372
 #, php-format
 msgid "You can check your order status and download tickets %s."
 msgstr ""
 
 #. translators: %s: Tickera
-#: tickera.php:3480
+#: tickera.php:3490
 #, php-format
 msgid ""
 "There was an issue determining where %s is installed. Please reinstall it."
 msgstr ""
 
-#: tickera.php:3943
+#: tickera.php:3953
 msgid "IPN"
 msgstr ""
 
-#: tickera.php:4109
+#: tickera.php:4119
 msgid "Something went wrong. Cart data is not available"
 msgstr ""
 
-#: tickera.php:4119
+#: tickera.php:4129
 msgid ""
 "Something went wrong. The order with the same ID already exists. Please try "
 "again."
 msgstr ""
 
-#: tickera.php:4893
+#: tickera.php:4903
 msgid "Order cancelled by client."
 msgstr ""
 
-#: tickera.php:4971 tickera.php:5057 tickera.php:5100 tickera.php:5245
+#: tickera.php:4981 tickera.php:5067 tickera.php:5110 tickera.php:5255
 msgid "Create new"
 msgstr ""
 
-#: tickera.php:4972
+#: tickera.php:4982
 msgid "Create new event"
 msgstr ""
 
-#: tickera.php:4973
+#: tickera.php:4983
 msgid "Edit events"
 msgstr ""
 
-#: tickera.php:4975
+#: tickera.php:4985
 msgid "New event"
 msgstr ""
 
-#: tickera.php:4976
+#: tickera.php:4986
 msgid "View event"
 msgstr ""
 
-#: tickera.php:4977
+#: tickera.php:4987
 msgid "Search events"
 msgstr ""
 
-#: tickera.php:4978
+#: tickera.php:4988
 msgid "No events found"
 msgstr ""
 
-#: tickera.php:4979
+#: tickera.php:4989
 msgid "No events found in the trash"
 msgstr ""
 
-#: tickera.php:4980
+#: tickera.php:4990
 msgid "View Event"
 msgstr ""
 
-#: tickera.php:5022
+#: tickera.php:5032
 msgctxt "event_category"
 msgid "Event Categories"
 msgstr ""
 
-#: tickera.php:5023
+#: tickera.php:5033
 msgctxt "event_category"
 msgid "Event Category"
 msgstr ""
 
-#: tickera.php:5025
+#: tickera.php:5035
 msgid "Edit Event Category"
 msgstr ""
 
-#: tickera.php:5026
+#: tickera.php:5036
 msgid "View Event Category"
 msgstr ""
 
-#: tickera.php:5027
+#: tickera.php:5037
 msgid "Update Event Category"
 msgstr ""
 
-#: tickera.php:5028
+#: tickera.php:5038
 msgid "Add New Event Category"
 msgstr ""
 
-#: tickera.php:5029
+#: tickera.php:5039
 msgid "New Event Category Name"
 msgstr ""
 
-#: tickera.php:5030
+#: tickera.php:5040
 msgid "Parent Event Category"
 msgstr ""
 
-#: tickera.php:5031
+#: tickera.php:5041
 msgid "Parent Event Category:"
 msgstr ""
 
-#: tickera.php:5032
+#: tickera.php:5042
 msgid "Search Event Categories"
 msgstr ""
 
-#: tickera.php:5033
+#: tickera.php:5043
 msgid "Separate event categories with commas"
 msgstr ""
 
-#: tickera.php:5034
+#: tickera.php:5044
 msgid "Add or remove event categories"
 msgstr ""
 
-#: tickera.php:5035
+#: tickera.php:5045
 msgid "Choose from the most used event categories"
 msgstr ""
 
-#: tickera.php:5036
+#: tickera.php:5046
 msgid "No event categories found"
 msgstr ""
 
-#: tickera.php:5055
+#: tickera.php:5065
 msgid "Ticket Types"
 msgstr ""
 
-#: tickera.php:5058
+#: tickera.php:5068
 msgid "Create new ticket type"
 msgstr ""
 
-#: tickera.php:5059
+#: tickera.php:5069
 msgid "Edit Ticket"
 msgstr ""
 
-#: tickera.php:5061
+#: tickera.php:5071
 msgid "New ticket"
 msgstr ""
 
-#: tickera.php:5062
+#: tickera.php:5072
 msgid "View ticket"
 msgstr ""
 
-#: tickera.php:5063
+#: tickera.php:5073
 msgid "Search tickets"
 msgstr ""
 
-#: tickera.php:5064
+#: tickera.php:5074
 msgid "No tickets found"
 msgstr ""
 
-#: tickera.php:5065
+#: tickera.php:5075
 msgid "No tickets found in the trash"
 msgstr ""
 
-#: tickera.php:5066
+#: tickera.php:5076
 msgid "View Ticket"
 msgstr ""
 
-#: tickera.php:5099
+#: tickera.php:5109
 msgid "API keys"
 msgstr ""
 
-#: tickera.php:5101
+#: tickera.php:5111
 msgid "Create new API keys"
 msgstr ""
 
-#: tickera.php:5102
+#: tickera.php:5112
 msgid "Edit API keys"
 msgstr ""
 
-#: tickera.php:5104
+#: tickera.php:5114
 msgid "New API key"
 msgstr ""
 
-#: tickera.php:5105 tickera.php:5109
+#: tickera.php:5115 tickera.php:5119
 msgid "View API key"
 msgstr ""
 
-#: tickera.php:5106
+#: tickera.php:5116
 msgid "Search API keys"
 msgstr ""
 
-#: tickera.php:5107
+#: tickera.php:5117
 msgid "No API keys found"
 msgstr ""
 
-#: tickera.php:5108
+#: tickera.php:5118
 msgid "No API keys found in the trash"
 msgstr ""
 
-#: tickera.php:5123
+#: tickera.php:5133
 msgid "Create Attendee"
 msgstr ""
 
-#: tickera.php:5124
+#: tickera.php:5134
 msgid "Create New Attendee"
 msgstr ""
 
-#: tickera.php:5125
+#: tickera.php:5135
 msgid "Check-in details"
 msgstr ""
 
-#: tickera.php:5127
+#: tickera.php:5137
 msgid "New Attendee"
 msgstr ""
 
-#: tickera.php:5128 tickera.php:5132
+#: tickera.php:5138 tickera.php:5142
 msgid "View attendee"
 msgstr ""
 
-#: tickera.php:5129
+#: tickera.php:5139
 msgid "Search attendees"
 msgstr ""
 
-#: tickera.php:5130
+#: tickera.php:5140
 msgid "No attendees found"
 msgstr ""
 
-#: tickera.php:5131
+#: tickera.php:5141
 msgid "No attendee records found in the trash"
 msgstr ""
 
-#: tickera.php:5170
+#: tickera.php:5180
 msgid "View order"
 msgstr ""
 
-#: tickera.php:5171
+#: tickera.php:5181
 msgid "Search orders"
 msgstr ""
 
-#: tickera.php:5172
+#: tickera.php:5182
 msgid "No orders found"
 msgstr ""
 
-#: tickera.php:5206
+#: tickera.php:5216
 msgid "Received"
 msgstr ""
 
 #. translators: %s: number of received orders.
-#: tickera.php:5207
+#: tickera.php:5217
 #, php-format
 msgid "Received <span class=\"count\">(%s)</span>"
 msgid_plural "Received <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5213
+#: tickera.php:5223
 msgid "Paid"
 msgstr ""
 
 #. translators: %s: number of paid orders.
-#: tickera.php:5214
+#: tickera.php:5224
 #, php-format
 msgid "Paid <span class=\"count\">(%s)</span>"
 msgid_plural "Paid <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5220
+#: tickera.php:5230
 msgid "Cancelled"
 msgstr ""
 
 #. translators: %s: number of canceled orders.
-#: tickera.php:5221
+#: tickera.php:5231
 #, php-format
 msgid "Cancelled <span class=\"count\">(%s)</span>"
 msgid_plural "Cancelled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5227
+#: tickera.php:5237
 msgid "Refunded"
 msgstr ""
 
 #. translators: %s: number of refunded orders.
-#: tickera.php:5228
+#: tickera.php:5238
 #, php-format
 msgid "Refunded <span class=\"count\">(%s)</span>"
 msgid_plural "Refunded <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5235
+#: tickera.php:5245
 msgid "Fraud"
 msgstr ""
 
 #. translators: %s: number of fraud orders.
-#: tickera.php:5236
+#: tickera.php:5246
 #, php-format
 msgid "Fraud <span class=\"count\">(%s)</span>"
 msgid_plural "Fraud <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5243 tickera.php:5244
+#: tickera.php:5253 tickera.php:5254
 msgid "Templates"
 msgstr ""
 
-#: tickera.php:5246
+#: tickera.php:5256
 msgid "Create new template"
 msgstr ""
 
-#: tickera.php:5247
+#: tickera.php:5257
 msgid "Edit templates"
 msgstr ""
 
-#: tickera.php:5249
+#: tickera.php:5259
 msgid "New template"
 msgstr ""
 
-#: tickera.php:5250
+#: tickera.php:5260
 msgid "View template"
 msgstr ""
 
-#: tickera.php:5251
+#: tickera.php:5261
 msgid "Search templates"
 msgstr ""
 
-#: tickera.php:5252
+#: tickera.php:5262
 msgid "No templates found"
 msgstr ""
 
-#: tickera.php:5253
+#: tickera.php:5263
 msgid "No templates found in the trash"
 msgstr ""
 
-#: tickera.php:5254
+#: tickera.php:5264
 msgid "View Template"
 msgstr ""
 
-#: tickera.php:5373 tickera.php:5377
+#: tickera.php:5383 tickera.php:5387
 msgid "Bridge for WooCommerce"
 msgstr ""
 
 #. translators: 1: Bridge for WooCommerce add-on link. 2: Bridge for WooCommerce add-on link.
-#: tickera.php:5381
+#: tickera.php:5391
 #, php-format
 msgid ""
 "Unleash the power of seamless event ticketing with %1$s add-on for Tickera. "
@@ -13188,162 +13189,162 @@ msgid ""
 "unlock the full potential of your event ticketing and e-commerce strategy."
 msgstr ""
 
-#: tickera.php:5465
+#: tickera.php:5475
 msgid "Please confirm that you want to delete it permanently?"
 msgstr ""
 
-#: tickera.php:5466
+#: tickera.php:5476
 msgid "Order status changed successfully."
 msgstr ""
 
-#: tickera.php:5467
+#: tickera.php:5477
 msgid "Order confirmation e-mail has been sent successfully."
 msgstr ""
 
-#: tickera.php:5468
+#: tickera.php:5478
 msgid "Sending..."
 msgstr ""
 
-#: tickera.php:5469
+#: tickera.php:5479
 msgid "Sent"
 msgstr ""
 
-#: tickera.php:5470
+#: tickera.php:5480
 msgid "Failed"
 msgstr ""
 
-#: tickera.php:5471
+#: tickera.php:5481
 msgid ""
 "Are you sure you want to delete all Ticket Types? You have tickets sold for "
 "some of the selected ticket types."
 msgstr ""
 
-#: tickera.php:5475
+#: tickera.php:5485
 msgid "Are you sure you want to insert this element onto the template?"
 msgstr ""
 
-#: tickera.php:5476
+#: tickera.php:5486
 msgid "Please select how you’d like to proceed"
 msgstr ""
 
-#: tickera.php:5478
+#: tickera.php:5488
 msgid "Move"
 msgstr ""
 
-#: tickera.php:5496
+#: tickera.php:5506
 msgid "tickets have been deleted."
 msgstr ""
 
-#: tickera.php:5498
+#: tickera.php:5508
 msgid "Please confirm if you want to proceed."
 msgstr ""
 
-#: tickera.php:5547
+#: tickera.php:5557
 msgid "This field is required."
 msgstr ""
 
-#: tickera.php:5548
+#: tickera.php:5558
 msgid "Please fix this field."
 msgstr ""
 
-#: tickera.php:5549
+#: tickera.php:5559
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: tickera.php:5550
+#: tickera.php:5560
 msgid "Please enter a valid URL."
 msgstr ""
 
-#: tickera.php:5551
+#: tickera.php:5561
 msgid "Please enter a valid date."
 msgstr ""
 
-#: tickera.php:5552
+#: tickera.php:5562
 msgid "Please enter a valid date (ISO)."
 msgstr ""
 
-#: tickera.php:5553
+#: tickera.php:5563
 msgid "Please enter a valid number."
 msgstr ""
 
-#: tickera.php:5554
+#: tickera.php:5564
 msgid "Please enter only digits."
 msgstr ""
 
-#: tickera.php:5555
+#: tickera.php:5565
 msgid "Please enter the same value again."
 msgstr ""
 
-#: tickera.php:5556
+#: tickera.php:5566
 msgid "Please enter no more than {0} characters."
 msgstr ""
 
-#: tickera.php:5557
+#: tickera.php:5567
 msgid "Please enter at least {0} characters."
 msgstr ""
 
-#: tickera.php:5558
+#: tickera.php:5568
 msgid "Please enter a value between {0} and {1} characters long."
 msgstr ""
 
-#: tickera.php:5559
+#: tickera.php:5569
 msgid "Please enter a value between {0} and {1}."
 msgstr ""
 
-#: tickera.php:5560
+#: tickera.php:5570
 msgid "Please enter a value less than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5561
+#: tickera.php:5571
 msgid "Please enter a value greater than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5562
+#: tickera.php:5572
 msgid "Please enter a multiple of {0}."
 msgstr ""
 
-#: tickera.php:5572
+#: tickera.php:5582
 msgid ""
 "Only customers aged 16 or older are permitted for purchase on this website"
 msgstr ""
 
-#: tickera.php:5581
+#: tickera.php:5591
 msgid "In order to continue you need to agree to provide your details."
 msgstr ""
 
-#: tickera.php:5588
+#: tickera.php:5598
 msgid "Are you sure you want to remove all tickets from your cart?"
 msgstr ""
 
-#: tickera.php:5589
+#: tickera.php:5599
 msgid "Ticket Added!"
 msgstr ""
 
-#: tickera.php:5591
+#: tickera.php:5601
 msgid "Adding ticket to cart..."
 msgstr ""
 
-#: tickera.php:5592
+#: tickera.php:5602
 msgid "In Your Cart"
 msgstr ""
 
-#: tickera.php:5594
+#: tickera.php:5604
 msgid "Please update your cart before to proceed."
 msgstr ""
 
-#: tickera.php:5595
+#: tickera.php:5605
 msgid "Please confirm to remove all of the items from your cart."
 msgstr ""
 
-#: tickera.php:5600
+#: tickera.php:5610
 msgid "This field is required *"
 msgstr ""
 
-#: tickera.php:5601
+#: tickera.php:5611
 msgid "Please use alphanumeric characters only."
 msgstr ""
 
-#: tickera.php:5627
+#: tickera.php:5637
 msgid ""
 "You have both FREE and PREMIUM version of Tickera plugin activated. In order "
 "to avoid conflicts, please deactivate one of them. </br> Once premium "

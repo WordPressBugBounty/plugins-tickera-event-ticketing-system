@@ -86,7 +86,7 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
                             'author'                 => (int) $user_id,
                             'fields'                 => 'ids',
                             'no_found_rows'          => false,
-                            'post_status'            => 'any',
+                            'post_status'            => array_keys( tickera_get_order_statuses() ),
                             'post_type'              => 'tc_orders',
                             'posts_per_page'         => 1,
                             'update_post_meta_cache' => false,
@@ -98,10 +98,7 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
 
                 } else {
 
-                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
-                    global $tc_woocommerce_bridge;
-
-                    $post_types = $tc_woocommerce_bridge->get_woo_order_types();
+                    $post_types = apply_filters( 'tickera_ticket_order_history_list_by_post_type', [] );
                     $post_types = array_filter( array_map( 'sanitize_key', $post_types ) );
 
                     if ( empty( $post_types ) ) {
@@ -116,7 +113,7 @@ if ( ! function_exists( 'tickera_add_number_of_orders_value' ) ) {
                                 // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required to count WooCommerce orders for this customer.
                                 'meta_value'             => (int) $user_id,
                                 'no_found_rows'          => false,
-                                'post_status'            => 'any',
+                                'post_status'            => apply_filters( 'tickera_ticket_order_history_list_by_post_status', [] ),
                                 'post_type'              => $post_types,
                                 'posts_per_page'         => 1,
                                 'update_post_meta_cache' => false,
@@ -167,7 +164,7 @@ if ( ! function_exists( 'tickera_show_extra_profile_fields_order_history' ) ) {
                             $style = '';
                             foreach ( $user_orders as $user_order ) {
                                 $style = ( ' class="alternate"' == $style ) ? '' : ' class="alternate"';
-                                $order = new \Tickera\TC_Order( $user_order->ID );
+                                $order = apply_filters( 'tickera_ticket_order_history_list_order', ( new \Tickera\TC_Order( $user_order->ID ) ) );
                                 ?>
                                 <tr <?php echo wp_kses_post($style ); ?>>
                                     <td>

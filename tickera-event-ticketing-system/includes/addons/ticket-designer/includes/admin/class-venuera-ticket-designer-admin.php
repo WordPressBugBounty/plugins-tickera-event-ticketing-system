@@ -299,7 +299,7 @@ SYS;
 
 		// Reuse Tickera's bundled TCPDF (loaded + aliased to the global TCPDF name
 		// by the module bootstrap). Only warn if it genuinely cannot be loaded.
-		if ( function_exists( 'tc_ticket_designer_ensure_tcpdf' ) && tc_ticket_designer_ensure_tcpdf() ) {
+		if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) && tickera_ticket_designer_ensure_tcpdf() ) {
 			return;
 		}
 
@@ -335,7 +335,7 @@ SYS;
 			return;
 		}
 
-		$addon_url  = tc_ticket_designer()->get_url();
+		$addon_url  = tickera_ticket_designer()->get_url();
 		$addon_path = dirname( dirname( __DIR__ ) ) . '/';
 		// Version editor assets by file mtime so JS/CSS changes always bust the
 		// browser cache (a static version left stale code loaded after edits).
@@ -346,7 +346,7 @@ SYS;
 
 		// Fabric.js for canvas manipulation.
 		$fabric_rel  = 'assets/vendor/fabric.min.js';
-		$fabric_file = tc_ticket_designer()->get_path() . $fabric_rel;
+		$fabric_file = tickera_ticket_designer()->get_path() . $fabric_rel;
 		wp_enqueue_script(
 			'fabric-js',
 			$addon_url . $fabric_rel,
@@ -358,9 +358,9 @@ SYS;
 		// JsBarcode for barcode generation — bundled locally under
 		// assets/vendor/jsbarcode/ so the designer renders barcodes even on
 		// offline / CDN-blocked environments. Frontend ticket pages use the
-		// same bundled copy (see TC_Ticket_Designer_Frontend).
+		// same bundled copy (see \Tickera\TC_Ticket_Designer_Frontend).
 		$jsbarcode_rel  = 'assets/vendor/jsbarcode/JsBarcode.all.min.js';
-		$jsbarcode_file = tc_ticket_designer()->get_path() . $jsbarcode_rel;
+		$jsbarcode_file = tickera_ticket_designer()->get_path() . $jsbarcode_rel;
 		wp_enqueue_script(
 			'jsbarcode',
 			$addon_url . $jsbarcode_rel,
@@ -371,7 +371,7 @@ SYS;
 
 		// QRCode.js for QR code generation.
 		$qrcode_rel  = 'assets/vendor/qrcode.min.js';
-		$qrcode_file = tc_ticket_designer()->get_path() . $qrcode_rel;
+		$qrcode_file = tickera_ticket_designer()->get_path() . $qrcode_rel;
 		wp_enqueue_script(
 			'qrcode-js',
 			$addon_url . $qrcode_rel,
@@ -383,7 +383,7 @@ SYS;
 		// Font-family preview in the editor. Loaded from the fonts bundled with
 		// the plugin (local @font-face) — no external/CDN request, wp.org compliant.
 		$td_fonts_rel  = 'assets/fonts/fonts.css';
-		$td_fonts_file = tc_ticket_designer()->get_path() . $td_fonts_rel;
+		$td_fonts_file = tickera_ticket_designer()->get_path() . $td_fonts_rel;
 		wp_enqueue_style(
 			'venuera-td-fonts',
 			$addon_url . $td_fonts_rel,
@@ -873,7 +873,6 @@ SYS;
 								<p class="venuera-template-meta">
 									<?php
 									$events = $template->get_assigned_events();
-									global $wpdb;
 									// Count any ticket type assigned this template. Standalone
 									// Tickera uses 'tc_tickets'; with Bridge for WooCommerce the
 									// ticket type is a WooCommerce 'product' (and a variable
@@ -881,9 +880,26 @@ SYS;
 									// per-variation overrides on 'product_variation'). Limiting to
 									// 'tc_tickets' made Bridge/variable-product assignments show
 									// as "Not assigned".
-									$assigned_types = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT pm.post_id) FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = 'tc_designer_template_id' AND pm.meta_value = %d AND p.post_type IN ( 'tc_tickets', 'product', 'product_variation' ) AND p.post_status <> 'trash'", $template->get_id() ) );
+									$assigned_type_ids = get_posts(
+										array(
+											'fields'         => 'ids',
+											'meta_key'       => 'tc_designer_template_id',
+											'meta_value'     => $template->get_id(),
+											'no_found_rows'  => true,
+											'posts_per_page' => -1,
+											'post_status'    => 'any',
+											'post_type'      => array( 'tc_tickets', 'product', 'product_variation' ),
+										)
+									);
+									$assigned_types = count( $assigned_type_ids );
 									if ( $assigned_types > 0 ) {
-										echo esc_html( sprintf( _n( 'Assigned to %d ticket type', 'Assigned to %d ticket types', $assigned_types, 'tickera-event-ticketing-system' ), $assigned_types ) );
+										echo esc_html(
+											sprintf(
+												/* translators: %d: number of ticket types */
+												_n( 'Assigned to %d ticket type', 'Assigned to %d ticket types', $assigned_types, 'tickera-event-ticketing-system' ),
+												$assigned_types
+											)
+										);
 									} elseif ( ! empty( $events ) ) {
 										echo esc_html(
 											sprintf(
@@ -1665,7 +1681,14 @@ SYS;
 			$product = wc_get_product( $post->ID );
 		}
 
-		if ( ! $product || ! in_array( $product->get_type(), array( 'event_ticket', 'event_ticket_variable' ), true ) ) {
+		// Do NOT gate on the product TYPE here. This field lives inside the
+		// always-rendered "Event Ticket" data panel, which WooCommerce shows/hides
+		// live (via the show_if_event_ticket* classes) as the product-type dropdown
+		// changes. Gating on get_type() hid the field on a brand-new, unsaved
+		// product (still "simple") until its first save — so the selector only
+		// appeared after saving. Rendering it unconditionally lets it show the
+		// moment the Event Ticket type is selected, like the panel's other fields.
+		if ( ! $product ) {
 			return;
 		}
 
@@ -1800,4 +1823,3 @@ SYS;
 		}
 	}
 }
-

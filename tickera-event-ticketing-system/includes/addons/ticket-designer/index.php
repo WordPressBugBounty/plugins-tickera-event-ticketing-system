@@ -48,8 +48,8 @@ if ( ! defined( 'TC_TICKET_DESIGNER_PARENT_URL' ) ) {
  *
  * @return bool True when a global TCPDF class is available.
  */
-if ( ! function_exists( 'tc_ticket_designer_ensure_tcpdf' ) ) {
-	function tc_ticket_designer_ensure_tcpdf() {
+if ( ! function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) ) {
+	function tickera_ticket_designer_ensure_tcpdf() {
 
 		global $tc;
 
