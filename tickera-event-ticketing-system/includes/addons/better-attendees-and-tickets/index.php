@@ -189,8 +189,8 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter only scopes attendee and ticket type list queries.
                 if ( isset( $_REQUEST[ 'tc_event_filter' ] ) && ( 'tc_tickets_instances' == $query->query[ 'post_type' ] || 'tc_tickets' == $query->query[ 'post_type' ] ) ) {
 
-                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is sanitized before changing the list query.
-                    if ( sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) ) !== '0' ) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is cast before changing the list query.
+                    if ( (int) sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) ) !== 0 ) {
                         add_filter( 'posts_where', array( $this, 'pre_get_posts_events_filter_where' ) );
                     }
                 }
@@ -212,16 +212,28 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
                 return $where;
             }
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is sanitized before changing the SQL condition.
-            $tc_event_filter = sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) );
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin event filter is cast before changing the SQL condition.
+            $tc_event_filter = (int) sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_event_filter' ] ) );
+
+            if ( 0 === $tc_event_filter ) {
+                return $where;
+            }
 
             if ( 'tc_tickets' == $post_type ) {
                 $meta_key = 'event_name';
-                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . $tc_event_filter . ")";
+                $where .= $wpdb->prepare(
+                    " AND {$wpdb->posts}.ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE {$wpdb->postmeta}.meta_key = %s AND {$wpdb->postmeta}.meta_value = %d)",
+                    $meta_key,
+                    $tc_event_filter
+                );
 
             } elseif ( 'tc_tickets_instances' == $post_type ) {
                 $meta_key = 'event_id';
-                $where .= " AND " . $wpdb->posts . ".ID IN (SELECT post_id FROM " . $wpdb->postmeta . " WHERE " . $wpdb->postmeta . ".meta_key = '$meta_key' AND " . $wpdb->postmeta . ".meta_value = " . $tc_event_filter . ")";
+                $where .= $wpdb->prepare(
+                    " AND {$wpdb->posts}.ID IN (SELECT post_id FROM {$wpdb->postmeta} WHERE {$wpdb->postmeta}.meta_key = %s AND {$wpdb->postmeta}.meta_value = %d)",
+                    $meta_key,
+                    $tc_event_filter
+                );
             }
 
             return $where;
@@ -233,11 +245,21 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          * @return mixed
          */
         function pre_get_posts_order_status_filter( $query ) {
+
             global $post_type, $pagenow;
-            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ]
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the attendee list query.
-                && isset( $_REQUEST[ 'tc_order_status_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) !== '0' ) {
-                add_filter( 'posts_where', array( $this, 'pre_get_posts_order_status_filter_where' ), 10, 2 );
+
+            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
+
+                if ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) ) {
+
+                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the attendee list query.
+                    $order_status_filter = sanitize_key( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) );
+                    $eligible_order_statuses = $this->checkin_eligible_order_statuses;
+
+                    if ( $order_status_filter !== '0' && isset( $eligible_order_statuses[ $order_status_filter ] ) ) {
+                        add_filter( 'posts_where', array( $this, 'pre_get_posts_order_status_filter_where' ), 10, 2 );
+                    }
+                }
             }
         }
 
@@ -249,19 +271,25 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         function pre_get_posts_order_status_filter_where( $where ) {
 
             global $wpdb;
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the SQL condition.
-            $order_statuses = ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) ) ? [ sanitize_text_field( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) ) ] : [];
+            if ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) ) {
 
-            if ( ! $order_statuses )
-                return $where;
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the SQL condition.
+                $order_status_filter = sanitize_key( wp_unslash( $_REQUEST[ 'tc_order_status_filter' ] ) );
+                $eligible_order_statuses = $this->checkin_eligible_order_statuses;
 
-            $order_statuses = "'" . implode( '\',\'', $order_statuses ) . "'";
+                if ( $order_status_filter !== '0' && isset( $eligible_order_statuses[ $order_status_filter ] ) ) {
+                    $order_statuses = $wpdb->prepare( '%s', $order_status_filter );
+                    $where .= " AND ";
+                    $order_status_filter = $wpdb->prepare(
+                        "{$wpdb->posts}.post_parent IN (SELECT {$wpdb->posts}.ID FROM {$wpdb->posts} WHERE {$wpdb->posts}.post_status IN ( %s ))",
+                        $order_status_filter
+                    );
+                    $order_status_filter = tickera_apply_filters( 'tickera_tickets_instances_order_status_where_clause', $order_status_filter, $order_statuses, true );
+                    return $where . $order_status_filter;
+                }
+            }
 
-            $where .= " AND ";
-            $order_status_filter = $wpdb->posts . ".post_parent IN (SELECT " . $wpdb->posts . ".ID FROM " . $wpdb->posts . " WHERE " . $wpdb->posts . ".post_status IN ( " . $order_statuses . "))";
-            $order_status_filter = tickera_apply_filters( 'tickera_tickets_instances_order_status_where_clause', $order_status_filter, $order_statuses, true );
-
-            return $where . $order_status_filter;
+            return $where;
         }
 
         /**

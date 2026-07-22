@@ -1,6 +1,11 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.2 22/07/2026 =
+* Unable to "Cancel Pending Orders" scheduled task. [Fixed]
+* Improved Database Query Performance.
+* Wordfence vulnerability patch.
+
 = 3.6.0.1 13/07/2026 =
 * Removed the "Powered by Tickera" credit from tickets.
 * Fixed: Instantiate TC_Shortcode_Builder class after the plugin is fully loaded.

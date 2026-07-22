@@ -1004,7 +1004,7 @@ if ( ! function_exists( 'tickera_get_tickets_count_sold' ) ) {
             'post_type' => 'tc_tickets_instances',
             'post_status' => 'publish',
             'posts_per_page' => -1,
-            'fields' => 'ids',
+            'fields' => 'id=>parent',
             'no_found_rows' => true,
             'update_post_meta_cache' => false,
             'update_post_term_cache' => false,
@@ -1020,11 +1020,9 @@ if ( ! function_exists( 'tickera_get_tickets_count_sold' ) ) {
         ] );
 
         $sold_count = 0;
-        foreach ( $sold_records as $ticket_instance_id ) {
-            $order_id = wp_get_post_parent_id( $ticket_instance_id );
-            $order_status = get_post_status( $order_id );
-
-            if ( ! in_array( $order_status, $skip_statuses, true ) ) {
+        foreach ( $sold_records as $sold_record_parent_id ) {
+            $order_status = get_post_status( $sold_record_parent_id );
+            if ( ! in_array( $order_status, $skip_statuses ) ) {
                 $sold_count++;
             }
         }

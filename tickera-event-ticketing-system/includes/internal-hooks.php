@@ -854,9 +854,17 @@ if ( ! function_exists( 'tickera_ticket_object_details' ) ) {
             ),
         ) );
 
+        // status cache across ticket instances of an order
+        $paid_orders = [];
+
         $sold_count = 0;
         foreach ( $sold_records as $sold_record_parent_id ) {
-            if ( get_post_status( $sold_record_parent_id ) == 'order_paid' ) {
+
+            if ( in_array( $sold_record_parent_id, $paid_orders ) ) {
+                $sold_count++;
+
+            } elseif ( get_post_status( $sold_record_parent_id ) == 'order_paid' ) {
+                $paid_orders[] = $sold_record_parent_id;
                 $sold_count++;
             }
         }

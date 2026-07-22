@@ -90,7 +90,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
             if ( $delete_pending_orders == 'yes' ) {
 
                 if ( ! wp_next_scheduled( 'tc_maybe_delete_pending_posts_hook' ) ) {
-                    wp_schedule_event( time(), 'hourly', 'tc_maybe_delete_pending_posts_hook' );
+                    wp_schedule_event( time(), 'every_minute', 'tickera_maybe_delete_pending_posts_hook' );
                 }
                 $this->tc_maybe_cancel_pending_posts();
 
@@ -139,6 +139,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
             $tickera_general_settings = get_option( 'tickera_general_setting', false );
             $delete_pending_orders = isset( $tickera_general_settings[ 'delete_pending_orders' ] ) ? $tickera_general_settings[ 'delete_pending_orders' ] : 'no';
             $delete_pending_orders_interval = isset( $tickera_general_settings[ 'delete_pending_orders_interval' ] ) ? $tickera_general_settings[ 'delete_pending_orders_interval' ] : '24';
+            $current_datetime  = current_datetime()->modify( '-' . $delete_pending_orders_interval  . ' hour' );
 
             if ( $delete_pending_orders == 'yes' ) {
 
@@ -153,7 +154,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
                     'date_query' => [
                         [
                             'column' => 'post_date',
-                            'before' => wp_date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - ( (int) $delete_pending_orders_interval * 3600 ) ), // 3600 secs in 1hr
+                            'before' => $current_datetime->format( 'Y-m-d H:i:s' ),
                         ],
                     ],
                 ] );
