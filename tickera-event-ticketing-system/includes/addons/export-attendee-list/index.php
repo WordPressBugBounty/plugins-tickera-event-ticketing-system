@@ -276,8 +276,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_Export_Mix' ) ) {
 
                         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Admin attendee export column selection controls PDF row output only.
                         if ( isset( $_POST[ 'col_checked_in' ] ) ) {
-                            $checkins = get_post_meta( $ticket_instance_id, 'tc_checkins', true );
-                            $checked_in = ( is_array( $checkins ) && count( $checkins ) > 0 ) ? __( 'Yes', 'tickera-event-ticketing-system' ) : __( 'No', 'tickera-event-ticketing-system' );
+                            $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance_id );
+                            $last_pass = null;
+                            foreach ( $checkins as $checkin ) {
+                                if ( 'Pass' === $checkin[ 'status' ] ) {
+                                    $last_pass = $checkin;
+                                }
+                            }
+                            $checked_in = $last_pass && 'in' === $last_pass[ 'direction' ] ? __( 'Yes', 'tickera-event-ticketing-system' ) : __( 'No', 'tickera-event-ticketing-system' );
                             $rows .= '<td>' . esc_html( $checked_in ) . '</td>';
                         }
 
@@ -285,11 +291,14 @@ if ( ! class_exists( '\Tickera\Addons\TC_Export_Mix' ) ) {
                         if ( isset( $_POST[ 'col_checkins' ] ) ) {
 
                             $checkins_list = array();
-                            $checkins = get_post_meta( $ticket_instance_id, 'tc_checkins', true );
+                            $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance_id );
 
                             if ( is_array( $checkins ) && count( $checkins ) > 0 ) {
 
                                 foreach ( $checkins as $checkin ) {
+                                    if ( 'in' !== $checkin[ 'direction' ] ) {
+                                        continue;
+                                    }
                                     $api_key = $checkin[ 'api_key_id' ];
                                     $api_key_obj = new \Tickera\TC_API_Key( (int) $api_key );
                                     $api_key_name = $api_key_obj->details->api_key_name;

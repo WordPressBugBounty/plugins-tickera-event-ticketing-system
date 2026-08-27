@@ -53,6 +53,16 @@
                     margin: 0,
                     background: 'transparent'
                 });
+
+                // JsBarcode writes intrinsic pixel dimensions onto the SVG.
+                // The Designer, however, stores the resized dimensions on the
+                // absolutely-positioned container. Make the generated barcode
+                // fill that box so enlarging (as well as shrinking) the element
+                // is reflected on frontend tickets.
+                svg.setAttribute('preserveAspectRatio', 'none');
+                svg.style.width = '100%';
+                svg.style.height = '100%';
+                svg.style.display = 'block';
             } catch (e) {
                 console.error('Barcode generation failed:', e);
                 $container.html('<span class="barcode-error">' + T('invalidBarcode', 'Invalid barcode') + '</span>');
@@ -100,7 +110,7 @@
                 }
                 .ticket-element { position: absolute; }
                 .ticket-qr-code img { max-width: 100%; max-height: 100%; }
-                .ticket-barcode svg { max-width: 100%; max-height: 100%; }
+                .ticket-barcode svg { width: 100%; height: 100%; display: block; }
                 @media print {
                     body { padding: 0; }
                     .venuera-ticket { border: none; }
@@ -184,4 +194,3 @@
     });
 
 })(jQuery);
-

@@ -86,7 +86,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts_Search' ) ) {
                 'post_type' => $this->post_type,
                 'post_mime_type' => '',
                 'post_parent' => '',
-                'post_status' => 'any'
+                'post_status' => 'publish'
             ] );
 
             return count( get_posts( $args ) );

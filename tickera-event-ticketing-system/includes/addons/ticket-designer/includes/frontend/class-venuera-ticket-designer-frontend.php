@@ -57,11 +57,12 @@ class TC_Ticket_Designer_Frontend {
 		);
 
 		// Frontend ticket styles.
+		$frontend_css = $addon_path . 'assets/css/frontend.css';
 		wp_enqueue_style(
 			'venuera-ticket-designer-frontend',
 			$addon_url . 'assets/css/frontend.css',
 			array(),
-			TC_TICKET_DESIGNER_VERSION
+			file_exists( $frontend_css ) ? filemtime( $frontend_css ) : TC_TICKET_DESIGNER_VERSION
 		);
 
 		// @font-face rules so the rendered HTML ticket uses the same bundled
@@ -71,11 +72,12 @@ class TC_Ticket_Designer_Frontend {
 		}
 
 		// Frontend ticket scripts.
+		$frontend_js = $addon_path . 'assets/js/frontend/ticket-render.js';
 		wp_enqueue_script(
 			'venuera-ticket-designer-frontend',
 			$addon_url . 'assets/js/frontend/ticket-render.js',
 			array( 'jquery', 'jsbarcode' ),
-			TC_TICKET_DESIGNER_VERSION,
+			file_exists( $frontend_js ) ? filemtime( $frontend_js ) : TC_TICKET_DESIGNER_VERSION,
 			true
 		);
 	}
@@ -475,4 +477,3 @@ class TC_Ticket_Designer_Frontend {
 		return (string) $zone_id;
 	}
 }
-

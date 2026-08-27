@@ -29,7 +29,6 @@ if ( is_admin() || isset( $_POST[ 'action' ] ) && sanitize_text_field( wp_unslas
 
     if ( isset( $tickera_gateway_class ) ) {
         $tickera_session_order = $tc->session->get( 'tc_order' );
-        $tickera_cart_info_cookie = $tc->get_cart_info_cookie();
         $tickera_order_cookie = $tc->get_order_cookie();
 
         $tickera_payment_class_name = class_exists( $tickera_gateway_class ) ? $tickera_gateway_class : "\\Tickera\\Gateway\\" . $tickera_gateway_class;

@@ -416,24 +416,30 @@ if ( ! function_exists( 'tickera_sanitize_array' ) ) {
 
             case 'integer':
                 return (int) $value;
-                break;
 
             case 'double':
                 return (float) $value;
-                break;
 
             case 'boolean':
                 return (bool) $value;
-                break;
+
+            case 'object':
+                return tickera_map_deep( $value, 'sanitize_text_field' );
 
             case 'string':
-            case 'object':
             case 'array':
 
-                if ( ! is_array( $value ) ) {
-                    $value = maybe_unserialize( $value );
-                    $value = json_encode( $value );
-                    $value = json_decode( $value, true );
+                if ( is_serialized( $value ) ) {
+
+                    $value = @unserialize( trim( $value ), [ 'allowed_classes' => false ] );
+                    
+                    if ( is_object( $value ) ) {
+                        return '';
+
+                    } else {
+                        $value = json_encode( $value );
+                        $value = json_decode( $value, true );
+                    }
                 }
 
                 if ( is_array( $value ) ) {
@@ -466,7 +472,6 @@ if ( ! function_exists( 'tickera_sanitize_array' ) ) {
                         return sanitize_text_field( $value );
                     }
                 }
-                break;
 
             default:
                 throw new \Exception( esc_html__( 'Invalid data type passed on tickera_sanitize_array function.', 'tickera-event-ticketing-system' ) );
@@ -488,6 +493,18 @@ if ( ! function_exists( 'tickera_map_deep' ) ) {
      * @return mixed The value with the callback applied to all non-arrays and non-objects inside it.
      */
     function tickera_map_deep( $value, $callback ) {
+
+        if ( is_serialized( $value ) ) {
+            
+            $value = @unserialize( trim( $value ), [ 'allowed_classes' => false ] );
+            if ( is_object( $value ) ) {
+                return '';
+
+            } else {
+                $value = json_encode( $value );
+                $value = json_decode( $value, true );
+            }
+        }
 
         if ( is_array( $value ) ) {
 

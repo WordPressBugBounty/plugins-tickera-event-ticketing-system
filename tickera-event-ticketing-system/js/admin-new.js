@@ -28,17 +28,37 @@
          * @since 3.5.2.3
          */
         $('#tc_dl_delete_btn').on( 'click', function() {
+            var eventIds = $( '#tc_dl_event_ids' ).val() || [];
+
+            if ( ! eventIds.length ) {
+                alert( tc_vars.select_event_message );
+                return;
+            }
 
             let confirmAction = confirm( tc_vars.confirm_action_message );
 
             if ( confirmAction ) {
-
-                $( '.tc_dl_notice' ).empty().addClass( 'tc-dl-notice' ).text( 0 + ' ' + tc_vars.tickets_have_been_removed );
-                tc_dl.loading( true );
-
-                // Start deleting
-                tc_dl.process_delete();
+                tc_dl.start( eventIds, $( 'input[name="delete_orders"]:checked' ).val() );
             }
+        });
+
+        /**
+         * Process Bulk Removal of Check-ins
+         * Tickera > Settings > Delete Info
+         */
+        $( '#tc_remove_checkins_btn' ).on( 'click', function() {
+            var eventIds = $( '#tc_remove_checkins_event_ids' ).val() || [];
+
+            if ( ! eventIds.length ) {
+                alert( tc_vars.select_event_message );
+                return;
+            }
+
+            tc_checkin_removal.start(
+                eventIds,
+                $( '#tc_remove_checkins_date_from' ).val(),
+                $( '#tc_remove_checkins_date_to' ).val()
+            );
         });
 
         var tc_element_in_edit_mode = null;
@@ -752,6 +772,86 @@
             tc_delete( event );
         } );
 
+        var $api_keys_bulk_form = $( '#tc-api-keys-bulk-form' );
+
+        if ( $api_keys_bulk_form.length ) {
+            var $api_keys_bulk_action = $api_keys_bulk_form.find( '#tc-api-keys-bulk-action' ),
+                $api_keys_select_all = $api_keys_bulk_form.closest( '.postbox' ).find( '.tc-api-keys-select-all' ),
+                $api_key_checkboxes = $api_keys_bulk_form.closest( '.postbox' ).find( '.tc-api-key-select' );
+
+            function tc_update_api_keys_bulk_action() {
+                var selected_count = $api_key_checkboxes.filter( ':checked' ).length,
+                    checkbox_count = $api_key_checkboxes.length;
+
+                $api_keys_select_all.prop( 'checked', 0 < checkbox_count && selected_count === checkbox_count );
+                $api_keys_select_all.prop( 'indeterminate', 0 < selected_count && selected_count < checkbox_count );
+            }
+
+            $api_keys_select_all.on( 'change', function () {
+                $api_key_checkboxes.prop( 'checked', $( this ).prop( 'checked' ) );
+                tc_update_api_keys_bulk_action();
+            } );
+
+            $api_keys_bulk_action.add( $api_key_checkboxes ).on( 'change', tc_update_api_keys_bulk_action );
+
+            $api_keys_bulk_form.on( 'submit', function ( event ) {
+                var selected_count = $api_key_checkboxes.filter( ':checked' ).length;
+
+                if ( 'delete' === $api_keys_bulk_action.val() && 0 < selected_count ) {
+                    var confirmation_message = 1 === selected_count
+                        ? tc_vars.bulk_delete_api_key_confirmation_message
+                        : tc_vars.bulk_delete_api_keys_confirmation_message;
+
+                    if ( ! confirm( sprintf( confirmation_message, selected_count ) ) ) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+            } );
+
+            tc_update_api_keys_bulk_action();
+        }
+
+        var $discounts_bulk_form = $( '#tc-discounts-bulk-form' );
+
+        if ( $discounts_bulk_form.length ) {
+            var $discounts_bulk_action = $discounts_bulk_form.find( '#tc-discounts-bulk-action' ),
+                $discounts_select_all = $discounts_bulk_form.closest( '.tc-discount-codes' ).find( '.tc-discounts-select-all' ),
+                $discount_checkboxes = $discounts_bulk_form.closest( '.tc-discount-codes' ).find( '.tc-discount-select' );
+
+            function tc_update_discounts_bulk_action() {
+                var selected_count = $discount_checkboxes.filter( ':checked' ).length,
+                    checkbox_count = $discount_checkboxes.length;
+
+                $discounts_select_all.prop( 'checked', 0 < checkbox_count && selected_count === checkbox_count );
+                $discounts_select_all.prop( 'indeterminate', 0 < selected_count && selected_count < checkbox_count );
+            }
+
+            $discounts_select_all.on( 'change', function () {
+                $discount_checkboxes.prop( 'checked', $( this ).prop( 'checked' ) );
+                tc_update_discounts_bulk_action();
+            } );
+
+            $discounts_bulk_action.add( $discount_checkboxes ).on( 'change', tc_update_discounts_bulk_action );
+
+            $discounts_bulk_form.on( 'submit', function ( event ) {
+                var selected_count = $discount_checkboxes.filter( ':checked' ).length;
+
+                if ( 'delete' === $discounts_bulk_action.val() && 0 < selected_count ) {
+                    var confirmation_message = 1 === selected_count
+                        ? tc_vars.bulk_delete_discount_confirmation_message
+                        : tc_vars.bulk_delete_discounts_confirmation_message;
+
+                    if ( ! confirm( sprintf( confirmation_message, selected_count ) ) ) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
+            } );
+
+            tc_update_discounts_bulk_action();
+        }
+
         function tc_delete_confirmed() {
             return confirm( tc_vars.delete_confirmation_message );
         }
@@ -824,11 +924,11 @@
             tc_fix_template_elements_sizes();
 
             $( ".rows ul li" ).last().addClass( "last_child" );
-            $( ".tc_wrap select" ).css( 'width', '25em' );
-            $( ".tc_wrap select" ).css( 'display', 'block' );
+            $( ".tc_wrap select:not(.tc-regular-select)" ).css( 'width', '25em' );
+            $( ".tc_wrap select:not(.tc-regular-select)" ).css( 'display', 'block' );
 
-            $( ".tc_wrap select" ).chosen( { disable_search_threshold: 5 } );
-            $( ".tc_wrap select" ).css( 'display', 'none' );
+            $( ".tc_wrap select:not(.tc-regular-select)" ).chosen( { disable_search_threshold: 5 } );
+            $( ".tc_wrap select:not(.tc-regular-select)" ).css( 'display', 'none' );
             $( ".tc_wrap .chosen-container" ).css( 'width', '100%' );
             $( ".tc_wrap .chosen-container" ).css( 'max-width', '25em' );
             $( ".tc_wrap .chosen-container" ).css( 'min-width', '1em' );
@@ -933,7 +1033,7 @@
             }
         } );
 
-        tc_admin.chosen( $( '.tc_wrap select' ) );
+        tc_admin.chosen( $( '.tc_wrap select:not(.tc-regular-select)' ) );
 
         /**
          * INLINE EDIT
@@ -1420,7 +1520,7 @@
 
         chosen: function ( element ) {
 
-            element.chosen( {
+            element.not( '.tc-regular-select' ).chosen( {
                 disable_search_threshold: 5,
                 allow_single_deselect: false
             } );
@@ -1435,13 +1535,14 @@
         fix_chosen: function ( element ) {
 
             if ( typeof element !== 'undefined' ) {
+                element = element.not( '.tc-regular-select' );
                 element.css( { 'width': '25em', 'display': 'block' } ).chosen( { disable_search_threshold: 5, allow_single_deselect: false } );
                 element.css( 'display', 'none' );
                 element.next( '.chosen-container' ).css( { 'width': '100%', 'max-width': '25em', 'min-width': '1em' } );
 
             } else {
-                $( '.tc_wrap select' ).css( { 'width': '25em', 'display': 'block' } ).chosen( { disable_search_threshold: 5, allow_single_deselect: false } );
-                $( '.tc_wrap select' ).css( 'display', 'none' );
+                $( '.tc_wrap select:not(.tc-regular-select)' ).css( { 'width': '25em', 'display': 'block' } ).chosen( { disable_search_threshold: 5, allow_single_deselect: false } );
+                $( '.tc_wrap select:not(.tc-regular-select)' ).css( 'display', 'none' );
                 $( '.tc_wrap .chosen-container' ).css( { 'width': '100%', 'max-width': '25em', 'min-width': '1em' } );
             }
         },
@@ -1596,52 +1697,222 @@
      * @type {{process_delete: ((function(*, *): Promise<void>)|*), loading: Window.tc_dl.loading}}
      * @since 3.5.2.3
      */
+    function tc_delete_info_toggle_controls( disabled ) {
+        var $controls = $( '#tc_delete_info' ).find( 'select, input, button' );
+        $controls.prop( 'disabled', disabled );
+        $controls.filter( 'select' ).trigger( 'chosen:updated' );
+    }
+
+    function tc_delete_info_error_message( xhr ) {
+        if ( xhr && xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message ) {
+            return xhr.responseJSON.data.message;
+        }
+        return tc_vars.something_went_wrong;
+    }
+
     window.tc_dl = {
 
-        loading: function( loading ) {
+        state: null,
 
-            switch ( loading ) {
-                case true:
-                    $('.tccrr-loader').css( { 'display': 'inline-block' } );
-                    break;
-
-                default:
-                    $('.tccrr-loader').css( { 'display': 'none' } );
-            }
+        start: function( eventIds, deleteOrders ) {
+            this.state = {
+                eventIds: eventIds.slice( 0 ),
+                deleteOrders: deleteOrders === 'yes' ? 'yes' : 'no',
+                deleted: 0
+            };
+            $( '.tc_dl_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( sprintf( tc_vars.tickets_removed_message, 0 ) );
+            tc_delete_info_toggle_controls( true );
+            this.loading( true );
+            this.process_delete();
         },
 
-        process_delete: async function( page, prev_deleted ) {
+        loading: function( loading ) {
+            $( '.tc-delete-tickets-loader' ).css( 'display', loading ? 'inline-block' : 'none' );
+        },
 
-            var page = ( typeof page !== 'undefined' ) ? page : 1,
-                prev_deleted = ( typeof prev_deleted !== 'undefined' ) ? prev_deleted : 0;
+        process_delete: function() {
+            var self = this;
 
-            await $.post( tc_vars.ajaxUrl, {
-                action: 'tc_dl_delete_tickets',
-                event_ids: $('#tc_dl_event_filter select').chosen().val(),
-                delete_orders: $( 'input[name="delete_orders"]:checked' ).val(),
-                page: page,
-                prev_deleted: prev_deleted
-
-            }, function ( response ) {
-
-                if ( typeof response !== 'undefined') {
-
-                    if ( typeof response.page !== 'undefined' ) {
-                        $( '.tc_dl_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( response.deleted + ' ' + tc_vars.tickets_have_been_removed );
-                        tc_dl.process_delete( ( response.page + 1 ), response.deleted );
-
-                    } else {
-
-                        // Process completed
-                        let notice = $( '.tc_dl_notice' ).text();
-                        $( '.tc_dl_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( notice );
-                        tc_dl.loading( false );
-                    }
-
-                } else {
-                    $( '.tc_dl_notice' ).removeClass( 'tc-dl-notice' ).addClass( 'tc-dl-error' ).text( tc_vars.something_went_wrong );
+            $.ajax( {
+                type: 'POST',
+                dataType: 'json',
+                url: tc_vars.ajaxUrl,
+                data: {
+                    action: 'tc_delete_tickets',
+                    nonce: tc_vars.ajaxNonce,
+                    event_ids: self.state.eventIds,
+                    delete_orders: self.state.deleteOrders
                 }
-            });
+            } ).done( function( response ) {
+                if ( ! response || ! response.success || ! response.data ) {
+                    self.fail( tc_vars.something_went_wrong );
+                    return;
+                }
+
+                self.state.deleted += parseInt( response.data.deleted, 10 ) || 0;
+                $( '.tc_dl_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( sprintf( tc_vars.tickets_removed_message, self.state.deleted ) );
+
+                if ( response.data.completed ) {
+                    self.finish();
+                } else if ( ( parseInt( response.data.processed, 10 ) || 0 ) > 0 ) {
+                    self.process_delete();
+                } else {
+                    self.fail( tc_vars.something_went_wrong );
+                }
+            } ).fail( function( xhr ) {
+                var data = xhr && xhr.responseJSON ? xhr.responseJSON.data : null;
+                if ( data ) {
+                    self.state.deleted += parseInt( data.deleted, 10 ) || 0;
+                }
+                self.fail( tc_delete_info_error_message( xhr ) );
+            } );
+        },
+
+        finish: function() {
+            this.loading( false );
+            tc_delete_info_toggle_controls( false );
+            this.state = null;
+        },
+
+        fail: function( message ) {
+            var progress = this.state ? sprintf( tc_vars.tickets_removed_message, this.state.deleted ) + ' ' : '';
+            $( '.tc_dl_notice' ).removeClass( 'tc-dl-notice' ).addClass( 'tc-dl-error' ).text( progress + message );
+            this.finish();
+        }
+    };
+
+    window.tc_checkin_removal = {
+
+        state: null,
+
+        start: function( eventIds, dateFrom, dateTo ) {
+            this.state = {
+                eventIds: eventIds.slice( 0 ),
+                dateFrom: dateFrom,
+                dateTo: dateTo,
+                tickets: 0,
+                checkins: 0,
+                checkouts: 0
+            };
+            $( '.tc_remove_checkins_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( tc_vars.checkins_preview_message );
+            tc_delete_info_toggle_controls( true );
+            this.loading( true );
+            this.preview();
+        },
+
+        loading: function( loading ) {
+            $( '.tc-remove-checkins-loader' ).css( 'display', loading ? 'inline-block' : 'none' );
+        },
+
+        update_notice: function() {
+            $( '.tc_remove_checkins_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text(
+                sprintf( tc_vars.checkins_removed_message, this.state.tickets, this.state.checkins, this.state.checkouts )
+            );
+        },
+
+        add_batch: function( data ) {
+            this.state.tickets += parseInt( data.tickets_updated, 10 ) || 0;
+            this.state.checkins += parseInt( data.checkins_removed, 10 ) || 0;
+            this.state.checkouts += parseInt( data.checkouts_removed, 10 ) || 0;
+        },
+
+        preview: function() {
+            var self = this;
+
+            $.ajax( {
+                type: 'POST',
+                dataType: 'json',
+                url: tc_vars.ajaxUrl,
+                data: {
+                    action: 'tc_remove_event_checkins',
+                    nonce: tc_vars.ajaxNonce,
+                    preview: 'yes',
+                    event_ids: self.state.eventIds,
+                    date_from: self.state.dateFrom,
+                    date_to: self.state.dateTo
+                }
+            } ).done( function( response ) {
+                if ( ! response || ! response.success || ! response.data || ! response.data.preview ) {
+                    self.fail( tc_vars.something_went_wrong );
+                    return;
+                }
+
+                var matched = parseInt( response.data.matched_tickets, 10 ) || 0;
+                if ( ! matched ) {
+                    $( '.tc_remove_checkins_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( tc_vars.checkins_no_matches_message );
+                    self.finish();
+                    return;
+                }
+
+                var message = sprintf(
+                    matched === 1 ? tc_vars.remove_checkins_one_confirmation_message : tc_vars.remove_checkins_many_confirmation_message,
+                    matched
+                );
+
+                if ( confirm( message ) ) {
+                    self.update_notice();
+                    self.process_delete();
+                } else {
+                    $( '.tc_remove_checkins_notice' ).removeClass( 'tc-dl-error' ).addClass( 'tc-dl-notice' ).text( tc_vars.checkins_cancelled_message );
+                    self.finish();
+                }
+            } ).fail( function( xhr ) {
+                self.fail( tc_delete_info_error_message( xhr ) );
+            } );
+        },
+
+        process_delete: function() {
+            var self = this;
+
+            $.ajax( {
+                type: 'POST',
+                dataType: 'json',
+                url: tc_vars.ajaxUrl,
+                data: {
+                    action: 'tc_remove_event_checkins',
+                    nonce: tc_vars.ajaxNonce,
+                    event_ids: self.state.eventIds,
+                    date_from: self.state.dateFrom,
+                    date_to: self.state.dateTo
+                }
+            } ).done( function( response ) {
+                if ( ! response || ! response.success || ! response.data ) {
+                    self.fail( tc_vars.something_went_wrong );
+                    return;
+                }
+
+                self.add_batch( response.data );
+                self.update_notice();
+
+                if ( response.data.completed ) {
+                    self.finish();
+                } else if ( ( parseInt( response.data.processed, 10 ) || 0 ) > 0 ) {
+                    self.process_delete();
+                } else {
+                    self.fail( tc_vars.something_went_wrong );
+                }
+            } ).fail( function( xhr ) {
+                var data = xhr && xhr.responseJSON ? xhr.responseJSON.data : null;
+                if ( data ) {
+                    self.add_batch( data );
+                }
+                self.fail( tc_delete_info_error_message( xhr ) );
+            } );
+        },
+
+        finish: function() {
+            this.loading( false );
+            tc_delete_info_toggle_controls( false );
+            this.state = null;
+        },
+
+        fail: function( message ) {
+            var progress = '';
+            if ( this.state ) {
+                progress = sprintf( tc_vars.checkins_removed_message, this.state.tickets, this.state.checkins, this.state.checkouts ) + ' ';
+            }
+            $( '.tc_remove_checkins_notice' ).removeClass( 'tc-dl-notice' ).addClass( 'tc-dl-error' ).text( progress + message );
+            this.finish();
         }
     };
 

@@ -211,11 +211,21 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     'CANCEL' => 'CANCEL',
                     'SEARCH' => 'Search',
                     'ID' => 'ID',
+                    'CODE' => 'CODE',
                     'PURCHASED' => 'PURCHASED',
+                    'DATE' => 'Date',
+                    'STATUS' => 'Status',
+                    'TYPE' => 'Type',
+                    'CHECKED_IN_STATUS' => 'Checked-In',
+                    'CHECKED_OUT_STATUS' => 'Checked-Out',
                     'CHECKINS' => 'CHECK-INS',
                     'CHECK_IN' => 'CHECK IN',
+                    'CHECK_OUT' => 'CHECK OUT',
+                    'CHECK_IN_DIRECTION' => 'Check-in',
+                    'CHECK_OUT_DIRECTION' => 'Check-out',
                     'SUCCESS' => 'SUCCESS',
                     'SUCCESS_MESSAGE' => 'Ticket has been checked in',
+                    'SUCCESS_CHECKOUT_MESSAGE' => 'Ticket has been checked out',
                     'OK' => 'OK',
                     'ERROR' => 'ERROR',
                     'ERROR_MESSAGE' => 'Wrong ticket code',
@@ -328,11 +338,16 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 foreach ( $results as $result ) {
 
                     $result_id = $result[ 'ID' ];
-                    $checkins = get_post_meta( $result_id, 'tc_checkins', true );
+                    $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $result_id );
 
                     if ( $checkins ) {
-                        $checkedin_statuses = array_column( $checkins, 'status' );
-                        if ( in_array( 'Pass', $checkedin_statuses ) ) {
+                        $last_pass = null;
+                        foreach ( $checkins as $checkin ) {
+                            if ( 'Pass' === $checkin[ 'status' ] ) {
+                                $last_pass = $checkin;
+                            }
+                        }
+                        if ( $last_pass && 'in' === $last_pass[ 'direction' ] ) {
                             $event_checkedin_tickets++;
                         }
                     }
@@ -388,7 +403,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
             }
 
             $ticket_type_id = tickera_apply_filters( 'tickera_ticket_type_id', $ticket_type->details->ID );
-            $checkins_data = get_post_meta( $ticket_id, 'tc_checkins', true );
+            $checkins_data = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_id );
             $pass_checkin_status = tickera_apply_filters( 'tickera_checkin_status_title_get_number_of_allowed_checkins_for_ticket_instance', 'Pass' );
 
             /**
@@ -435,9 +450,22 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 'month' => 'first day of this month midnight'
             ];
 
-            if ( is_array( $checkins_data ) && count( $checkins_data ) > 0 ) {
+            $active_checkins = array();
+            foreach ( $checkins_data as $check_in ) {
+                if ( $check_in[ 'status' ] != $pass_checkin_status ) {
+                    continue;
+                }
 
-                foreach ( $checkins_data as $check_in ) {
+                if ( 'out' === $check_in[ 'direction' ] ) {
+                    array_pop( $active_checkins );
+                } else {
+                    $active_checkins[] = $check_in;
+                }
+            }
+
+            if ( count( $active_checkins ) > 0 ) {
+
+                foreach ( $active_checkins as $check_in ) {
 
                     if ( $check_in[ 'status' ] == $pass_checkin_status ) {
 
@@ -493,7 +521,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
             if ( $this->get_api_key_id() ) {
 
                 $ticket_id = tickera_ticket_code_to_id( $this->ticket_code );
-                $check_ins = get_post_meta( $ticket_id, 'tc_checkins', true );
+                $check_ins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_id );
 
                 $rows = [];
                 $check_ins = tickera_apply_filters( 'tickera_ticket_checkins_array', $check_ins );
@@ -502,6 +530,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     foreach ( $check_ins as $check_in ) {
                         $r[ 'date_checked' ] = tickera_apply_filters( 'tickera_check_in_date_checked', tickera_format_date( $check_in[ 'date_checked' ], false, false ), $ticket_id, $this->get_api_key_id() );
                         $r[ 'status' ] = tickera_apply_filters( 'tickera_check_in_status_title', $check_in[ 'status' ], $ticket_id, $this->get_api_key_id() );
+                        $r[ 'direction' ] = $check_in[ 'direction' ];
                         $rows[] = array( 'data' => $r );
                     }
                 }
@@ -564,82 +593,43 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
         }
 
         /**
-         * Check if check-out is activated.
-         * If attendee checkin the second time, it will count as checkout and remove the checkin entry from the collection
-         * Admin Dashboard: Tickera > Settings > General > Store Settings
+         * Backward-compatible accessor for integrations that still call this method.
+         * Attendance is now stored exclusively in the unified check-in log.
          *
-         * @param $ticket_instance_id
-         * @return array|mixed
+         * @param int $ticket_instance_id Ticket instance ID.
+         * @return array
          */
         function validate_ticket_checkout( $ticket_instance_id ) {
+            $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance_id );
+            return array( 'ins' => $checkins, 'outs' => array() );
+        }
 
-            if ( $ticket_instance_id !== '' ) {
+        /**
+         * Determine whether the next successful scan is an entry or an exit.
+         *
+         * @param int $ticket_instance_id Ticket instance ID.
+         * @return string
+         */
+        private static function get_next_attendance_direction( $ticket_instance_id ) {
+            $tc_general_setting = get_option( 'tickera_general_setting' );
+            $globally_allowed = isset( $tc_general_setting[ 'allow_global_ticket_checkout' ] ) ? $tc_general_setting[ 'allow_global_ticket_checkout' ] : 'no';
+            $ticket_type_id = get_post_meta( $ticket_instance_id, 'ticket_type_id', true );
+            $ticket_type_id = ( 'product_variation' == get_post_type( $ticket_type_id ) ) ? wp_get_post_parent_id( $ticket_type_id ) : $ticket_type_id;
+            $field_name = tickera_apply_filters( 'tickera_allow_ticket_checkout_field_name', 'allow_ticket_checkout', $ticket_type_id );
+            $type_allowed = metadata_exists( 'post', $ticket_type_id, $field_name ) ? get_post_meta( $ticket_type_id, $field_name, true ) : 'no';
 
-                $tc_general_setting = get_option( 'tickera_general_setting' );
+            if ( 'yes' !== $globally_allowed && 'yes' !== $type_allowed ) {
+                return 'in';
+            }
 
-                if ( $tc_general_setting ) {
-
-                    $globally_allow_ticket_checkout = isset( $tc_general_setting[ 'allow_global_ticket_checkout' ] ) ? $tc_general_setting[ 'allow_global_ticket_checkout' ] : 'no';
-                    $ticket_type_id = get_post_meta( $ticket_instance_id, 'ticket_type_id', true );
-                    $ticket_type_id = ( 'product_variation' == get_post_type( $ticket_type_id ) ) ? wp_get_post_parent_id( $ticket_type_id ) : $ticket_type_id;
-                    $allow_ticket_checkout_field_name = tickera_apply_filters( 'tickera_allow_ticket_checkout_field_name', 'allow_ticket_checkout', $ticket_type_id );
-                    $allow_ticket_checkout = ( metadata_exists( 'post', $ticket_type_id, $allow_ticket_checkout_field_name ) ) ? get_post_meta( $ticket_type_id, $allow_ticket_checkout_field_name, true ) : 'no';
-
-                    if ( 'yes' == $globally_allow_ticket_checkout || ( 'no' == $globally_allow_ticket_checkout && 'yes' == $allow_ticket_checkout ) ) {
-                        $checkins = get_post_meta( $ticket_instance_id, 'tc_checkins', true );
-
-                        if ( $checkins ) {
-
-                            $checkouts = get_post_meta( $ticket_instance_id, 'tc_checkouts', true );
-                            $checkouts = ( $checkouts ) ? $checkouts : [];
-
-                            // Process only those with 'Pass' status
-                            $passed_checkins = [];
-                            foreach ( $checkins as $key => $checkin ) {
-                                if ( 'Pass' == $checkin[ 'status' ] ) {
-                                    $passed_checkins[ $key ] = $checkin;
-                                }
-                            }
-                            $is_for_checkout = ( count( $passed_checkins ) % 2 ) ? false : true;
-
-                            if ( $is_for_checkout ) {
-
-                                /*
-                                 * Remove the latest checkin entry from its collection
-                                 */
-                                $_keys_hash = array_keys( $passed_checkins );
-                                unset( $checkins[ end( $_keys_hash ) ] );
-                                array_pop( $_keys_hash );
-                                unset( $checkins[ end( $_keys_hash ) ] );
-                                $checkouts[ 'ins' ] = $checkins;
-
-                                /*
-                                 * Populate data onto checkouts collections
-                                 */
-                                $latest_checkin = end( $passed_checkins );
-                                $checkouts[ 'outs' ][] = [
-                                    // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized and used as the checkout time context.
-                                    'date_checked' => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) ) ) : tickera_timestamp_to_local(),
-                                    'status' => $latest_checkin[ 'status' ],
-                                    'api_key_id' => $latest_checkin[ 'api_key_id' ]
-                                ];
-
-                            } else {
-
-                                /*
-                                 * Remove the latest checkout entry
-                                 */
-                                $_checkouts = $checkouts;
-                                array_pop( $_checkouts );
-                                $checkouts[ 'ins' ] = $checkins;
-                                $checkouts[ 'outs' ] = $_checkouts;
-                            }
-
-                            return $checkouts;
-                        }
-                    }
+            $records = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance_id );
+            for ( $index = count( $records ) - 1; $index >= 0; $index-- ) {
+                if ( 'Pass' === $records[ $index ][ 'status' ] ) {
+                    return 'in' === $records[ $index ][ 'direction' ] ? 'out' : 'in';
                 }
             }
+
+            return 'in';
         }
 
         /**
@@ -744,9 +734,10 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 }
 
                 $check_ins = $ticket_instance->get_ticket_checkins();
+                $checkin_direction = self::get_next_attendance_direction( $ticket_id );
                 $allowed_checkins = TC_Checkin_API::get_number_of_allowed_checkins_for_ticket_instance( $ticket_id, $ticket_type );
 
-                if ( $allowed_checkins > 0 ) {
+                if ( 'out' === $checkin_direction || $allowed_checkins > 0 ) {
                     $check_in_status = tickera_apply_filters( 'tickera_checkin_status_name', true );
                     $check_in_status_bool = true;
                     tickera_do_action( 'tickera_check_in_notification', $ticket_id, $api_key_id );
@@ -756,7 +747,7 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     $check_in_status_bool = false;
                 }
 
-                if ( ! \Tickera\TC_Ticket::is_checkin_available( $ticket_type_id, $order, $ticket_id ) ) {
+                if ( 'in' === $checkin_direction && ! \Tickera\TC_Ticket::is_checkin_available( $ticket_type_id, $order, $ticket_id ) ) {
                     $check_in_status = tickera_apply_filters( 'tickera_checkin_status_name', false );
                     $check_in_status_bool = false;
                 }
@@ -764,28 +755,37 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $new_checkins = array();
 
                 if ( is_array( $check_ins ) ) {
-                    foreach ( $check_ins as $check_in )
+                    foreach ( $check_ins as $check_in ) {
+                        if ( ! isset( $check_in[ 'direction' ] ) ) {
+                            $check_in[ 'direction' ] = 'in';
+                        }
                         $new_checkins[] = $check_in;
+                    }
                 }
 
                 $new_checkin = [
                     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API timestamp is sanitized and used as the check-in time context.
                     "date_checked" => isset( $_GET[ 'timestamp' ] ) ? tickera_timestamp_to_local( intval( sanitize_text_field( wp_unslash( $_GET[ 'timestamp' ] ) ) ) ) : tickera_timestamp_to_local(),
                     "status" => $check_in_status ? tickera_apply_filters( 'tickera_checkin_status_name', 'Pass' ) : tickera_apply_filters( 'tickera_checkin_status_name', 'Fail' ),
-                    "api_key_id" => (int) $api_key_id
+                    "api_key_id" => (int) $api_key_id,
+                    "direction" => $checkin_direction
                 ];
 
-                $new_checkins[] = tickera_apply_filters( 'tickera_new_checkin_array', $new_checkin );
+                $new_checkin = tickera_apply_filters( 'tickera_new_checkin_array', $new_checkin );
+                $new_checkin[ 'direction' ] = $checkin_direction;
+                $new_checkins[] = $new_checkin;
                 tickera_do_action( 'tickera_before_checkin_array_update', $new_checkins );
                 $new_checkins = tickera_apply_filters( 'tickera_all_attendee_checkin_records', $new_checkins );
-                update_post_meta( (int) $ticket_id, "tc_checkins", $new_checkins );
 
-                // When Check-out is activated, process validation.
-                $_new_checkins = self::validate_ticket_checkout( $ticket_id );
-                if ( 'Pass' == $new_checkin[ 'status' ] && $_new_checkins ) {
-                    update_post_meta( $ticket_id, 'tc_checkins', $_new_checkins[ 'ins' ] );
-                    update_post_meta( $ticket_id, 'tc_checkouts', $_new_checkins[ 'outs' ] );
+                foreach ( $new_checkins as &$attendance_record ) {
+                    if ( ! isset( $attendance_record[ 'direction' ] ) ) {
+                        $attendance_record[ 'direction' ] = 'in';
+                    }
                 }
+                unset( $attendance_record );
+
+                \Tickera\TC_Ticket_Instance::sort_attendance_records( $new_checkins );
+                update_post_meta( $ticket_id, 'tc_checkins', $new_checkins );
 
                 tickera_do_action( 'tickera_after_checkin_array_update' );
 
@@ -810,6 +810,8 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                 $data = [
                     'status' => $check_in_status_bool, // False
                     'previous_status' => '',
+                    'direction' => $checkin_direction,
+                    'next_direction' => self::get_next_attendance_direction( $ticket_id ),
                     'pass' => true, // Api is valid
                     'name' => $name,
                     'payment_date' => $payment_date,
@@ -908,15 +910,21 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
                     $event_title = isset( $event->details->post_title ) ? $event->details->post_title : '';
 
                     $order = new \Tickera\TC_Order( $order_id );
-                    $check_ins = get_post_meta( $result_id, 'tc_checkins', true );
+                    $check_ins = \Tickera\TC_Ticket_Instance::get_attendance_records( $result_id );
                     $checkin_date = '';
+                    $attendance_status = '';
 
                     if ( ! empty( $check_ins ) ) {
-                        foreach ( $check_ins as $check_in )
-                            $checkin_date = tickera_format_date( $check_in[ 'date_checked' ], false, false );
+                        foreach ( $check_ins as $check_in ) {
+                            if ( 'Pass' === $check_in[ 'status' ] ) {
+                                $checkin_date = tickera_format_date( $check_in[ 'date_checked' ], false, false );
+                                $attendance_status = $check_in[ 'direction' ];
+                            }
+                        }
                     }
 
                     $r[ 'date_checked' ] = $checkin_date;
+                    $r[ 'attendance_status' ] = $attendance_status;
 
                     if ( in_array( $order->details->post_type, [ 'shop_order', 'shop_order_placehold' ] ) ) {
                         $format = get_option( 'date_format' ) . ' - ' . get_option( 'time_format' );

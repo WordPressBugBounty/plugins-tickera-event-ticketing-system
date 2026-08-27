@@ -230,11 +230,16 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
                         $tickets_sold++;
                     }
 
-                    $checkins = get_post_meta( $ticket_instance->ID, 'tc_checkins', true );
+                    $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance->ID );
                     $checkins = $checkins ? $checkins : [];
 
-                    $checkedin_statuses = array_column( $checkins, 'status' );
-                    if ( in_array( 'Pass', $checkedin_statuses ) ) {
+                    $last_pass = null;
+                    foreach ( $checkins as $checkin ) {
+                        if ( 'Pass' === $checkin[ 'status' ] ) {
+                            $last_pass = $checkin;
+                        }
+                    }
+                    if ( $last_pass && 'in' === $last_pass[ 'direction' ] ) {
                         $event_checkedin_tickets++;
                     }
                 }
@@ -270,13 +275,14 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
                 $ticket_id = tickera_ticket_code_to_id( $this->ticket_code );
                 $ticket_instance = new \Tickera\TC_Ticket_Instance( $ticket_id );
 
-                $check_ins = get_post_meta( $ticket_id, 'tc_checkins', true );
+                $check_ins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_id );
                 $check_ins = tickera_apply_filters( 'tickera_ticket_checkins_array', $check_ins );
 
                 $rows = [];
                 foreach ( $check_ins as $check_in ) {
                     $r[ 'date_checked' ] = wp_date( 'Y-m-d H:i:s', $check_in[ 'date_checked' ] );
                     $r[ 'status' ] = $check_in[ 'status' ];
+                    $r[ 'direction' ] = isset( $check_in[ 'direction' ] ) ? $check_in[ 'direction' ] : 'in';
                     $rows[] = [ 'data' => $r ];
                 }
 
@@ -339,6 +345,9 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
 
                 if ( is_array( $check_ins ) ) {
                     foreach ( $check_ins as $check_in ) {
+                        if ( ! isset( $check_in[ 'direction' ] ) ) {
+                            $check_in[ 'direction' ] = 'in';
+                        }
                         $new_checkins[] = $check_in;
                     }
                 }
@@ -346,12 +355,16 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
                 $new_checkin = array(
                     "date_checked" => time(),
                     "status" => $check_in_status ? tickera_apply_filters( 'tickera_checkin_status_name', 'Pass' ) : tickera_apply_filters( 'tickera_checkin_status_name', 'Fail' ),
-                    "api_key_id" => $api_key_id
+                    "api_key_id" => $api_key_id,
+                    "direction" => "in"
                 );
 
-                $new_checkins[] = tickera_apply_filters( 'tickera_new_checkin_array', $new_checkin );
+                $new_checkin = tickera_apply_filters( 'tickera_new_checkin_array', $new_checkin );
+                $new_checkin[ 'direction' ] = 'in';
+                $new_checkins[] = $new_checkin;
 
                 tickera_do_action( 'tickera_before_checkin_array_update' );
+                \Tickera\TC_Ticket_Instance::sort_attendance_records( $new_checkins );
                 update_post_meta( $ticket_id, "tc_checkins", tickera_sanitize_array( $new_checkins, false, true ) );
                 tickera_do_action( 'tickera_after_checkin_array_update' );
 
@@ -439,7 +452,7 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
                     $order = new \Tickera\TC_Order( $ticket_instance->details->post_parent );
                     if ( $order->details->post_status == 'order_paid' ) {
                         /* OLD */
-                        $check_ins = get_post_meta( $ticket_instance->details->ID, 'tc_checkins', true );
+                        $check_ins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance->details->ID );
                         $checkin_date = '';
 
                         if ( ! empty( $check_ins ) ) {

@@ -32,27 +32,30 @@ $action_url = add_query_arg( array(
     'page' => 'tc_settings',
     'tab' => 'tickera_delete_info'
 ), admin_url( 'edit.php' ) );
+
+$wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 );
+$delete_info_events = $wp_events_search->get_results();
 ?>
 <div class="wrap tc_wrap" id="tc_delete_info">
     <?php if ( isset( $message ) ) { ?>
         <div id="message" class="updated fade"><p><?php echo esc_html( $message ); ?></p></div>
     <?php } ?>
-    <div id="poststuff" class="metabox-holder tc-settings">
+    <div id="poststuff" class="metabox-holder tc-settings" data-tc-delete-info-panel="plugin-data">
         <form id="tc-delete-info" method='post' action='<?php echo esc_url( $action_url ); ?>'>
             <?php wp_nonce_field( 'delete_info' ); ?>
             <div class="postbox">
-                <h3><span><?php esc_html_e( 'Delete Information stored by the plugin and its add-ons', 'tickera-event-ticketing-system' ); ?></span></h3>
+                <h3>
+                    <span><?php esc_html_e( 'Delete Information stored by the plugin and its add-ons', 'tickera-event-ticketing-system' ); ?></span>
+                    <span class="description"><?php esc_html_e( 'Action is non-reversible, please make sure to backup the database first.', 'tickera-event-ticketing-system' ); ?></span>
+                </h3>
                 <div class="inside">
-                    <span class="description"></span>
-                    <table class="form-table" cellspacing="0" id="status">
+                    <table class="form-table">
                         <tbody>
-                        <tr>
-                            <th><?php esc_html_e( 'Plugin', 'tickera-event-ticketing-system' ); ?></th>
-                            <th><?php esc_html_e( 'Confirm', 'tickera-event-ticketing-system' ); ?></th>
-                        </tr>
                         <?php foreach ( $tickera_plugins_and_addons as $plugin_name => $plugin_title ) { ?>
                             <tr>
-                                <td><?php echo esc_html( $plugin_title ); ?></td>
+                                <th scope="row">
+                                    <label for="<?php echo esc_attr( 'tc_delete_plugin_data_' . $plugin_name ); ?>"><?php echo esc_html( $plugin_title ); ?></label>
+                                </th>
                                 <td>
                                     <label for="<?php echo esc_attr( 'tc_delete_plugin_data_' . $plugin_name ) ?>">
                                         <input type="checkbox" id="<?php echo esc_attr( 'tc_delete_plugin_data_' . $plugin_name ) ?>" value="yes" name="tc_delete_plugin_data[<?php echo esc_attr( $plugin_name ); ?>]"/><?php esc_html_e( 'Delete', 'tickera-event-ticketing-system' ); ?>
@@ -60,18 +63,22 @@ $action_url = add_query_arg( array(
                                 </td>
                             </tr>
                         <?php } ?>
+                        <tr>
+                            <th scope="row">
+                                <input type="submit" id="tc_delete_selected_data_permanently" name="tc_delete_selected_data_permanently" class="button button-primary" value="<?php esc_attr_e( 'Delete selected data permanently', 'tickera-event-ticketing-system' ); ?>"/>
+                            </th>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
-                <?php submit_button( __( 'Delete selected data permanently', 'tickera-event-ticketing-system' ), 'primary', 'tc_delete_selected_data_permanently', true ); ?>
             </div>
         </form>
         <?php tickera_do_action( 'tickera_after_delete_info' ); ?>
     </div>
-    <div id="poststuff" class="metabox-holder tc-settings">
+    <div id="poststuff" class="metabox-holder tc-settings" data-tc-delete-info-panel="tickets">
         <div class="postbox">
             <h3>
-                <span><?php esc_html_e('Bulk Delete Tickets', 'tickera-event-ticketing-system'); ?></span>
+                <span><?php esc_html_e('Delete Tickets', 'tickera-event-ticketing-system'); ?></span>
                 <span class="description"><?php esc_html_e( 'Action is non-reversible, please make sure to backup the database first.', 'tickera-event-ticketing-system' ); ?></span>
             </h3>
             <div class="inside">
@@ -81,9 +88,9 @@ $action_url = add_query_arg( array(
                         <th scope="row"><label><?php esc_html_e('Events', 'tickera-event-ticketing-system') ?></label></th>
                         <td>
                             <div class="tc-dl-inner-container">
-                                <?php $wp_events_search = new \Tickera\TC_Events_Search( '', '', -1 ); ?>
-                                <select name="event_ids" class="regular-text" data-placeholder="<?php esc_html_e( 'Select some events to delete all associated tickets' ,'tickera-event-ticketing-system' ); ?>" multiple="true">
-                                    <?php foreach ( $wp_events_search->get_results() as $event ) :
+                                <label class="screen-reader-text" for="tc_dl_event_ids"><?php esc_html_e( 'Events whose tickets should be permanently deleted', 'tickera-event-ticketing-system' ); ?></label>
+                                <select id="tc_dl_event_ids" name="event_ids" class="regular-text tc_chosen" data-placeholder="<?php esc_html_e( 'Select events whose tickets should be deleted' ,'tickera-event-ticketing-system' ); ?>" multiple>
+                                    <?php foreach ( $delete_info_events as $event ) :
                                         $event = new \Tickera\TC_Event( $event->ID );
                                         $event_date = $event->get_event_date();
                                         ?>
@@ -98,23 +105,81 @@ $action_url = add_query_arg( array(
                         <td>
                             <div class="tc-dl-inner-container">
                                 <label>
-                                    <input type="radio" class="" name="delete_orders" value="yes"/>Yes
+                                    <input type="radio" class="" name="delete_orders" value="yes"/><?php esc_html_e( 'Yes', 'tickera-event-ticketing-system' ); ?>
                                 </label>
                                 <label>
-                                    <input type="radio" class="" name="delete_orders" value="no" checked="checked"/>No
+                                    <input type="radio" class="" name="delete_orders" value="no" checked="checked"/><?php esc_html_e( 'No', 'tickera-event-ticketing-system' ); ?>
                                 </label>
                             </div>
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="tc-delete-tickets-status-row">
                         <th scope="row">
-                            <span class="tc_dl_notice"></span>
-                            <div class="tccrr-loader hidden"><div></div><div></div><div></div><div></div></div><!-- Spinner -->
+                            <span class="tc_dl_notice" role="status" aria-live="polite"></span>
+                            <div class="tccrr-loader tc-delete-tickets-loader hidden" aria-hidden="true"><div></div><div></div><div></div><div></div></div><!-- Spinner -->
                         </th>
                     </tr>
                     <tr>
                         <th scope="row">
                             <input type="button" id="tc_dl_delete_btn" class="button button-primary" value="<?php esc_html_e( 'Delete tickets permanently', 'tickera-event-ticketing-system' ); ?>"/>
+                        </th>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="poststuff" class="metabox-holder tc-settings" data-tc-delete-info-panel="checkins">
+        <div class="postbox">
+            <h3>
+                <span><?php esc_html_e( 'Remove Check-ins History', 'tickera-event-ticketing-system' ); ?></span>
+                <span class="description"><?php esc_html_e( 'Permanently removes check-in and checkout history without deleting tickets. Back up the database before continuing.', 'tickera-event-ticketing-system' ); ?></span>
+            </h3>
+            <div class="inside">
+                <table class="form-table">
+                    <tbody>
+                    <tr id="tc_remove_checkins_event_filter">
+                        <th scope="row"><label for="tc_remove_checkins_event_ids"><?php esc_html_e( 'Events', 'tickera-event-ticketing-system' ); ?></label></th>
+                        <td colspan="2">
+                            <div class="tc-dl-inner-container">
+                                <select id="tc_remove_checkins_event_ids" name="checkin_event_ids" class="regular-text tc_chosen" data-placeholder="<?php esc_html_e( 'Select events whose check-in history should be removed', 'tickera-event-ticketing-system' ); ?>" multiple>
+                                    <?php foreach ( $delete_info_events as $event ) :
+                                        $event = new \Tickera\TC_Event( $event->ID );
+                                        $event_date = $event->get_event_date();
+                                        ?>
+                                        <option value="<?php echo esc_attr( $event->details->ID ); ?>"><?php echo esc_html( $event->details->post_title . ' (' . $event_date . ')' ); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="tc_remove_checkins_date_filter">
+                        <th scope="row">
+                            <span><?php esc_html_e( 'Ticket creation date', 'tickera-event-ticketing-system' ); ?></span>
+                            <p class="description"><?php esc_html_e( 'Optional. Use either boundary or both. The range applies to when each ticket was created, not the event date.', 'tickera-event-ticketing-system' ); ?></p>
+                        </th>
+                        <td>
+                            <div class="tc-remove-checkins-date-fields">
+                                <div class="tc-remove-checkins-date-field">
+                                    <label for="tc_remove_checkins_date_from"><?php esc_html_e( 'From', 'tickera-event-ticketing-system' ); ?></label>
+                                    <input id="tc_remove_checkins_date_from" type="text" class="tc_date_field" name="tc_remove_checkins_date_from" value="" autocomplete="off"/>
+                                </div>
+                                <div class="tc-remove-checkins-date-field">
+                                    <label for="tc_remove_checkins_date_to"><?php esc_html_e( 'To', 'tickera-event-ticketing-system' ); ?></label>
+                                    <input id="tc_remove_checkins_date_to" type="text" class="tc_date_field" name="tc_remove_checkins_date_to" value="" autocomplete="off"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="tc-remove-checkins-status-row">
+                        <th scope="row">
+                            <span class="tc_remove_checkins_notice" role="status" aria-live="polite"></span>
+                            <div class="tccrr-loader tc-remove-checkins-loader hidden" aria-hidden="true"><div></div><div></div><div></div><div></div></div><!-- Spinner -->
+                        </th>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <input type="button" id="tc_remove_checkins_btn" class="button button-primary" value="<?php esc_attr_e( 'Remove check-ins history permanently', 'tickera-event-ticketing-system' ); ?>"/>
                         </th>
                     </tr>
                     </tbody>

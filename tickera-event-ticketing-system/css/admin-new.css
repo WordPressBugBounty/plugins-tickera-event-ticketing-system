@@ -1295,6 +1295,11 @@ a.tc_link:hover {
     min-width: 1em !important;
 }
 
+.tc_wrap select.tc-bulk-action-select {
+    width: auto;
+    min-width: 0 !important;
+}
+
 .tickera_page_tc_settings .chosen-container-single,
 .tickera_page_tc_ticket_templates .chosen-container-single,
 .discount-table .chosen-container-single,
@@ -2372,6 +2377,28 @@ select.tc-event-filter ~ .chosen-container .tc-loader {
 
 .tc-dl-error {
     color: red;
+}
+
+.tc-remove-checkins-date-fields {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.tc-remove-checkins-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#tc_delete_info .tc-delete-tickets-status-row,
+#tc_delete_info .tc-delete-tickets-status-row > th,
+#tc_delete_info .tc-delete-tickets-status-row > td,
+#tc_delete_info .tc-remove-checkins-status-row,
+#tc_delete_info .tc-remove-checkins-status-row > th,
+#tc_delete_info .tc-remove-checkins-status-row > td {
+    border: 0;
 }
 
 .tc-dl-inner-container input[type="radio"] {

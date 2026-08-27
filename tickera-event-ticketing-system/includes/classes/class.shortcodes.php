@@ -81,6 +81,7 @@ if ( ! class_exists( '\Tickera\TC_Shortcodes' ) ) {
 
             $event = new TC_Event( $id );
             $event_tickets = $event->get_event_ticket_types( 'publish', false, true, false );
+            apply_filters( 'custom_log_file', $event_tickets );
 
             if ( count( $event_tickets ) > 0 && ! \Tickera\TC_Events::get_hidden_events_ids( $id ) ) {
 

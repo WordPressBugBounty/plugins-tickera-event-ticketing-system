@@ -1,6 +1,18 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.3 27/08/2026 =
+* Added secure bulk removal of event check-in and checkout history under Settings > Delete Info.
+* Improved Delete Info batch processing with permanent ticket deletion, validation, scoped progress indicators, and reliable AJAX error recovery.
+* Resolved a CSS conflict between Tickera and the Divi Theme Customizer.
+* Fixed barcode size not reflecting correctly in generated PDF tickets.
+* Ability to `Remove Check-ins History` in Tickera > Settings > Delete Info section.
+* Unified check-in and checkout history under `tc_checkins`, using a new `direction` field with `in` and `out` values.
+* Added automatic migration and removal of legacy `tc_checkouts` metadata.
+* Improved attendance history ordering, validation, reporting, and Check-in Details information.
+* Predefined custom capabilities for Tickera > Settings tabs (e.g manage_general_settings_cap, manage_api_settings_cap, manage_gateways_settings_cap, manage_email_settings_cap )
+* Patchstack: Security patch for PHP Object Injection Vulnerability.
+
 = 3.6.0.2 22/07/2026 =
 * Unable to "Cancel Pending Orders" scheduled task. [Fixed]
 * Improved Database Query Performance.

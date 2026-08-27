@@ -815,7 +815,6 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
         $ticket_type = new \Tickera\TC_Ticket( $ticket_instance->details->ticket_type_id );
         $ticket_event_id = $ticket_type->get_ticket_event( $ticket_instance->details->ticket_type_id );
         $ticket_checkins = $ticket_instance->get_ticket_checkins();
-        $ticket_checkouts = $ticket_instance->get_ticket_checkouts();
 
         if ( isset( $_GET[ 'checkin_action' ] ) && 'delete_checkin' == sanitize_text_field( wp_unslash( $_GET[ 'checkin_action' ] ) ) && isset( $_GET[ 'checkin_entry' ] ) && check_admin_referer( 'delete_checkin' ) && ! isset( $_POST[ 'api_key' ] ) ) {
 
@@ -832,15 +831,8 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
                     $checkin_row++;
                 }
 
-                // Remove an entry from the check-out object
-                foreach ( (array) $ticket_checkouts as $ticket_key => $ticket_checkout ) {
-                    if ( isset( $ticket_checkout[ 'ref_checked_in' ] ) && $ticket_checkout[ 'ref_checked_in' ] == $entry_to_delete ) {
-                        unset( $ticket_checkouts[ $ticket_key ] );
-                    }
-                }
-
+                \Tickera\TC_Ticket_Instance::sort_attendance_records( $ticket_checkins );
                 update_post_meta( $ticket_instance->details->ID, 'tc_checkins', tickera_sanitize_array( $ticket_checkins, false, true ) );
-                update_post_meta( $ticket_instance->details->ID, 'tc_checkouts', tickera_sanitize_array( $ticket_checkouts, false, true ) );
 
                 tickera_do_action( 'tickera_check_in_deleted', $ticket_instance->details->ID, $ticket_checkins );
                 $message_type = 'updated';
@@ -859,6 +851,7 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
             <tr valign="top">
                 <th><?php esc_html_e( 'Date & Time', 'tickera-event-ticketing-system' ); ?></th>
                 <th><?php esc_html_e( 'Status', 'tickera-event-ticketing-system' ); ?></th>
+                <th><?php esc_html_e( 'Direction', 'tickera-event-ticketing-system' ); ?></th>
                 <th><?php esc_html_e( 'API Key', 'tickera-event-ticketing-system' ); ?></th>
                 <?php if ( current_user_can( 'manage_options' ) || current_user_can( 'delete_tickets_cap' ) ) { ?>
                     <th><?php esc_html_e( 'Delete', 'tickera-event-ticketing-system' ); ?></th>
@@ -873,7 +866,8 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
                     <tr class="alternate">
                     <td><?php echo esc_html( tickera_format_date( $ticket_checkin[ 'date_checked' ], false, false ) ); ?></td>
                     <td><?php echo wp_kses_post( tickera_apply_filters( 'tickera_checkins_status', $ticket_checkin[ 'status' ] ) ); ?></td>
-                    <td><?php echo wp_kses_post( tickera_apply_filters( 'tickera_checkins_api_key_id', $ticket_checkin[ 'api_key_id' ] ) ); ?></td>
+                    <td><?php echo esc_html( 'out' === $ticket_checkin[ 'direction' ] ? __( 'Out', 'tickera-event-ticketing-system' ) : __( 'In', 'tickera-event-ticketing-system' ) ); ?></td>
+                    <td><?php echo esc_html( tickera_apply_filters( 'tickera_checkins_api_key_id', isset( $ticket_checkin[ 'api_key_id' ] ) ? $ticket_checkin[ 'api_key_id' ] : 0 ) ); ?></td>
                     <?php if ( current_user_can( 'manage_options' ) || current_user_can( 'delete_checkins_cap' ) ) { ?>
                         <td><?php
                             $_post = isset( $_GET[ 'post' ] ) ? sanitize_text_field( wp_unslash( $_GET[ 'post' ] ) ) : null;
@@ -891,7 +885,7 @@ if ( ! function_exists( '\Tickera\Addons\tickera_attendees_check_in_details_meta
 
             } else { ?>
                 <tr>
-                <td colspan="4"><?php esc_html_e( "There are no any check-ins for this ticket yet.", "tickera-event-ticketing-system" ); ?></td>
+                <td colspan="5"><?php esc_html_e( "There are no any check-ins for this ticket yet.", "tickera-event-ticketing-system" ); ?></td>
                 </tr><?php
             } ?>
             </tbody>

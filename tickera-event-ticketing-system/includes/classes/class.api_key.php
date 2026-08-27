@@ -45,9 +45,9 @@ if ( ! class_exists( '\Tickera\TC_API_Key' ) ) {
 
         function delete_api_key( $force_delete = true ) {
             if ( $force_delete ) {
-                wp_delete_post( $this->id );
+                return wp_delete_post( $this->id, true );
             } else {
-                wp_trash_post( $this->id );
+                return wp_trash_post( $this->id );
             }
         }
 

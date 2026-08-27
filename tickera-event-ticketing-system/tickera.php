@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.2
+ * Version: 3.6.0.3
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.2';
+        var $version = '3.6.0.3';
 
         var $title = 'Tickera';
 
@@ -271,6 +271,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 1
             );
             add_action( 'wp_ajax_tc_delete_tickets', array($this, 'tc_delete_tickets') );
+            add_action( 'wp_ajax_tc_remove_event_checkins', array($this, 'tc_remove_event_checkins') );
             add_action( 'admin_notices', array($this, 'bridge_admin_notice') );
             add_action( 'wp_ajax_tc_remove_notification', array($this, 'tc_remove_notification') );
             add_action( 'wp_ajax_nopriv_tc_remove_notification', array($this, 'tc_remove_notification') );
@@ -284,6 +285,34 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             }
             add_action( 'admin_init', array($this, 'update_option_names') );
             add_action( 'admin_init', array($this, 'update_discount_settings') );
+            add_action( 'admin_init', array($this, 'tc_migrate_unified_attendance_log') );
+        }
+
+        /**
+         * Migrate legacy checkout metadata into the unified check-in log in small batches.
+         */
+        function tc_migrate_unified_attendance_log() {
+            if ( get_option( 'tickera_unified_attendance_log_migrated', false ) ) {
+                return;
+            }
+            global $wpdb;
+            $cursor = (int) get_option( 'tickera_unified_attendance_log_migration_cursor', 0 );
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time metadata migration.
+            $ticket_ids = $wpdb->get_col( $wpdb->prepare(
+                "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key IN (%s, %s) AND post_id > %d ORDER BY post_id ASC LIMIT 100",
+                'tc_checkins',
+                'tc_checkouts',
+                $cursor
+            ) );
+            foreach ( $ticket_ids as $ticket_id ) {
+                \Tickera\TC_Ticket_Instance::get_attendance_records( (int) $ticket_id );
+            }
+            if ( count( $ticket_ids ) < 100 ) {
+                update_option( 'tickera_unified_attendance_log_migrated', 1, false );
+                delete_option( 'tickera_unified_attendance_log_migration_cursor' );
+            } else {
+                update_option( 'tickera_unified_attendance_log_migration_cursor', (int) end( $ticket_ids ), false );
+            }
         }
 
         /**
@@ -953,67 +982,308 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * @since 3.5.2.9
          */
         function tc_delete_tickets() {
-            check_ajax_referer( 'tc_ajax_nonce', 'nonce' );
-            if ( current_user_can( 'manage_options' ) && $_POST ) {
-                $page = ( isset( $_POST['page'] ) ? (int) $_POST['page'] : 1 );
-                $post_per_page = tickera_apply_filters( 'tickera_delete_tickets_post_per_page', 20 );
-                $delete_orders = ( isset( $_POST['delete_orders'] ) ? sanitize_key( wp_unslash( $_POST['delete_orders'] ) ) : 'no' );
-                $events_ids = ( isset( $_POST['event_ids'] ) ? array_map( 'absint', wp_unslash( $_POST['event_ids'] ) ) : [] );
-                $prev_deleted = ( isset( $_POST['prev_deleted'] ) ? (int) $_POST['prev_deleted'] : 0 );
-                if ( $events_ids ) {
-                    // Collection of Attendee's Tickets
-                    $ticket_instances = get_posts( [
+            if ( !check_ajax_referer( 'tc_ajax_nonce', 'nonce', false ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Security check failed. Refresh the page and try again.', 'tickera-event-ticketing-system' ),
+                ), 403 );
+            }
+            if ( !current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'You do not have permission to perform this action.', 'tickera-event-ticketing-system' ),
+                ), 403 );
+            }
+            $post_per_page = min( 500, max( 1, absint( tickera_apply_filters( 'tickera_delete_tickets_post_per_page', 20 ) ) ) );
+            $delete_orders = ( isset( $_POST['delete_orders'] ) ? sanitize_key( wp_unslash( $_POST['delete_orders'] ) ) : 'no' );
+            $events_ids = ( isset( $_POST['event_ids'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['event_ids'] ) ) ) ) ) : array() );
+            if ( !in_array( $delete_orders, array('yes', 'no'), true ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Invalid order deletion option.', 'tickera-event-ticketing-system' ),
+                ), 400 );
+            }
+            if ( !$this->tc_delete_info_event_ids_are_valid( $events_ids ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Select one or more valid events.', 'tickera-event-ticketing-system' ),
+                ), 400 );
+            }
+            // Always query the first page because each successful batch is permanently removed.
+            $ticket_instances = get_posts( array(
+                'post_type'      => 'tc_tickets_instances',
+                'post_status'    => get_post_stati(),
+                'meta_query'     => array(array(
+                    'key'     => 'event_id',
+                    'value'   => $events_ids,
+                    'compare' => 'IN',
+                )),
+                'fields'         => 'ids',
+                'paged'          => 1,
+                'posts_per_page' => $post_per_page,
+                'orderby'        => 'ID',
+                'order'          => 'ASC',
+                'no_found_rows'  => true,
+            ) );
+            if ( !$ticket_instances ) {
+                wp_send_json_success( array(
+                    'completed' => true,
+                    'deleted'   => 0,
+                    'processed' => 0,
+                ) );
+            }
+            $batch_size = count( $ticket_instances );
+            $deleted = 0;
+            $failed = 0;
+            if ( 'yes' === $delete_orders ) {
+                $order_ids = array();
+                $orphaned_ticket_ids = array();
+                foreach ( $ticket_instances as $ticket_instance_id ) {
+                    $order_id = wp_get_post_parent_id( $ticket_instance_id );
+                    if ( $order_id && get_post( $order_id ) ) {
+                        $order_ids[] = (int) $order_id;
+                    } else {
+                        $orphaned_ticket_ids[] = (int) $ticket_instance_id;
+                    }
+                }
+                foreach ( array_unique( $order_ids ) as $order_id ) {
+                    $associated_tickets = get_posts( array(
                         'post_type'      => 'tc_tickets_instances',
                         'post_status'    => get_post_stati(),
-                        'meta_query'     => [
-                            'relation' => 'AND',
-                            [
-                                'key'     => 'event_id',
-                                'value'   => $events_ids,
-                                'compare' => 'IN',
-                            ],
-                        ],
+                        'post_parent'    => $order_id,
                         'fields'         => 'ids',
-                        'paged'          => 1,
-                        'posts_per_page' => $post_per_page,
-                    ] );
-                    if ( $ticket_instances ) {
-                        // Delete Attendee's Tickets
-                        foreach ( $ticket_instances as $ticket_instance_id ) {
-                            if ( 'yes' == $delete_orders ) {
-                                $order_id = wp_get_post_parent_id( $ticket_instance_id );
-                                if ( $order_id && get_post( $order_id ) ) {
-                                    $associated_tickets = get_posts( [
-                                        'post_type'      => 'tc_tickets_instances',
-                                        'post_status'    => get_post_stati(),
-                                        'post_parent'    => $order_id,
-                                        'fields'         => 'ids',
-                                        'posts_per_page' => -1,
-                                    ] );
-                                    $prev_deleted = $prev_deleted + count( $associated_tickets );
-                                    wp_delete_post( $order_id );
-                                    tickera_do_action( 'tickera_after_bulk_delete_ticket_order', $order_id );
-                                } else {
-                                    if ( get_post( $ticket_instance_id ) ) {
-                                        $prev_deleted++;
-                                        wp_delete_post( $ticket_instance_id );
-                                    }
-                                }
-                            } else {
-                                if ( get_post( $ticket_instance_id ) ) {
-                                    $prev_deleted++;
-                                    wp_delete_post( $ticket_instance_id );
-                                }
-                            }
+                        'posts_per_page' => -1,
+                    ) );
+                    foreach ( $associated_tickets as $associated_ticket_id ) {
+                        if ( wp_delete_post( $associated_ticket_id, true ) ) {
+                            $deleted++;
+                        } else {
+                            $failed++;
                         }
-                        $resposne = [];
-                        $resposne['page'] = $page;
-                        $resposne['deleted'] = $prev_deleted;
-                        wp_send_json( $resposne );
+                    }
+                    if ( wp_delete_post( $order_id, true ) ) {
+                        tickera_do_action( 'tickera_after_bulk_delete_ticket_order', $order_id );
+                    } else {
+                        $failed++;
+                    }
+                }
+                $ticket_instances = $orphaned_ticket_ids;
+            }
+            foreach ( $ticket_instances as $ticket_instance_id ) {
+                if ( get_post( $ticket_instance_id ) ) {
+                    if ( wp_delete_post( $ticket_instance_id, true ) ) {
+                        $deleted++;
+                    } else {
+                        $failed++;
                     }
                 }
             }
-            wp_send_json( [] );
+            if ( $failed ) {
+                wp_send_json_error( array(
+                    'message'   => __( 'Some records could not be permanently deleted. Processing stopped to prevent an endless retry.', 'tickera-event-ticketing-system' ),
+                    'deleted'   => $deleted,
+                    'failed'    => $failed,
+                    'processed' => $batch_size,
+                ), 500 );
+            }
+            wp_send_json_success( array(
+                'completed' => $batch_size < $post_per_page,
+                'deleted'   => $deleted,
+                'processed' => $batch_size,
+            ) );
+        }
+
+        /**
+         * Remove check-in and checkout histories for tickets belonging to selected events.
+         * Tickera > Settings > Delete Info > Bulk Remove Check-ins
+         */
+        function tc_remove_event_checkins() {
+            if ( !check_ajax_referer( 'tc_ajax_nonce', 'nonce', false ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Security check failed. Refresh the page and try again.', 'tickera-event-ticketing-system' ),
+                ), 403 );
+            }
+            if ( !current_user_can( 'manage_options' ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'You do not have permission to perform this action.', 'tickera-event-ticketing-system' ),
+                ), 403 );
+            }
+            $events_ids = ( isset( $_POST['event_ids'] ) ? array_values( array_unique( array_filter( array_map( 'absint', (array) wp_unslash( $_POST['event_ids'] ) ) ) ) ) : array() );
+            if ( !$this->tc_delete_info_event_ids_are_valid( $events_ids ) ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Select one or more valid events.', 'tickera-event-ticketing-system' ),
+                ), 400 );
+            }
+            $date_from_raw = ( isset( $_POST['date_from'] ) ? sanitize_text_field( wp_unslash( $_POST['date_from'] ) ) : '' );
+            $date_to_raw = ( isset( $_POST['date_to'] ) ? sanitize_text_field( wp_unslash( $_POST['date_to'] ) ) : '' );
+            $date_from = $this->tc_parse_delete_info_date( $date_from_raw, false );
+            $date_to = $this->tc_parse_delete_info_date( $date_to_raw, true );
+            if ( '' !== $date_from_raw && !$date_from || '' !== $date_to_raw && !$date_to ) {
+                wp_send_json_error( array(
+                    'message' => __( 'Enter a valid ticket creation date and time.', 'tickera-event-ticketing-system' ),
+                ), 400 );
+            }
+            if ( $date_from && $date_to && $date_from > $date_to ) {
+                wp_send_json_error( array(
+                    'message' => __( 'The From date must be earlier than the To date.', 'tickera-event-ticketing-system' ),
+                ), 400 );
+            }
+            $post_per_page = min( 500, max( 1, absint( tickera_apply_filters( 'tickera_remove_checkins_post_per_page', 100 ) ) ) );
+            $query_args = array(
+                'post_type'      => 'tc_tickets_instances',
+                'post_status'    => get_post_stati(),
+                'meta_query'     => array(
+                    'relation' => 'AND',
+                    array(
+                        'key'     => 'event_id',
+                        'value'   => $events_ids,
+                        'compare' => 'IN',
+                    ),
+                    array(
+                        'key'     => 'tc_checkins',
+                        'value'   => array(
+                            '',
+                            'a:0:{}',
+                            'N;',
+                            'b:0;'
+                        ),
+                        'compare' => 'NOT IN',
+                    ),
+                ),
+                'fields'         => 'ids',
+                'paged'          => 1,
+                'posts_per_page' => $post_per_page,
+                'orderby'        => 'ID',
+                'order'          => 'ASC',
+                'no_found_rows'  => true,
+            );
+            if ( $date_from || $date_to ) {
+                $date_clause = array(
+                    'inclusive' => true,
+                    'column'    => 'post_date',
+                );
+                if ( $date_from ) {
+                    $date_clause['after'] = $date_from->format( 'Y-m-d H:i:s' );
+                }
+                if ( $date_to ) {
+                    $date_clause['before'] = $date_to->format( 'Y-m-d H:i:s' );
+                }
+                $query_args['date_query'] = array($date_clause);
+            }
+            $preview = isset( $_POST['preview'] ) && 'yes' === sanitize_key( wp_unslash( $_POST['preview'] ) );
+            if ( $preview ) {
+                $preview_args = $query_args;
+                $preview_args['posts_per_page'] = 1;
+                $preview_args['no_found_rows'] = false;
+                $preview_query = new \WP_Query($preview_args);
+                wp_send_json_success( array(
+                    'preview'         => true,
+                    'matched_tickets' => (int) $preview_query->found_posts,
+                ) );
+            }
+            $ticket_instances = get_posts( $query_args );
+            if ( !$ticket_instances ) {
+                wp_send_json_success( array(
+                    'completed'         => true,
+                    'tickets_updated'   => 0,
+                    'checkins_removed'  => 0,
+                    'checkouts_removed' => 0,
+                    'processed'         => 0,
+                ) );
+            }
+            $tickets_updated = 0;
+            $checkins_removed = 0;
+            $checkouts_removed = 0;
+            $failed = 0;
+            $batch_size = count( $ticket_instances );
+            foreach ( $ticket_instances as $ticket_instance_id ) {
+                $checkins = \Tickera\TC_Ticket_Instance::get_attendance_records( $ticket_instance_id );
+                $checkouts = array_values( array_filter( $checkins, function ( $record ) {
+                    return 'out' === $record['direction'];
+                } ) );
+                $had_checkins_meta = metadata_exists( 'post', $ticket_instance_id, 'tc_checkins' );
+                tickera_do_action(
+                    'tickera_before_bulk_remove_ticket_checkins',
+                    $ticket_instance_id,
+                    $checkins,
+                    $checkouts
+                );
+                $checkins_deleted = !$had_checkins_meta || delete_post_meta( $ticket_instance_id, 'tc_checkins' );
+                if ( !$checkins_deleted ) {
+                    $failed++;
+                    continue;
+                }
+                if ( !empty( $checkins ) ) {
+                    $tickets_updated++;
+                    $checkouts_removed += count( $checkouts );
+                    $checkins_removed += count( $checkins ) - count( $checkouts );
+                    tickera_do_action( 'tickera_check_in_deleted', $ticket_instance_id, array() );
+                    tickera_do_action(
+                        'tickera_after_bulk_remove_ticket_checkins',
+                        $ticket_instance_id,
+                        $checkins,
+                        $checkouts
+                    );
+                }
+            }
+            if ( $failed ) {
+                wp_send_json_error( array(
+                    'message'           => __( 'Some check-in histories could not be removed. Processing stopped to prevent an endless retry.', 'tickera-event-ticketing-system' ),
+                    'tickets_updated'   => $tickets_updated,
+                    'checkins_removed'  => $checkins_removed,
+                    'checkouts_removed' => $checkouts_removed,
+                    'failed'            => $failed,
+                    'processed'         => $batch_size,
+                ), 500 );
+            }
+            wp_send_json_success( array(
+                'completed'         => count( $ticket_instances ) < $post_per_page,
+                'tickets_updated'   => $tickets_updated,
+                'checkins_removed'  => $checkins_removed,
+                'checkouts_removed' => $checkouts_removed,
+                'processed'         => $batch_size,
+            ) );
+        }
+
+        /**
+         * Confirm that all requested IDs are existing Tickera events.
+         *
+         * @param array $event_ids Event post IDs.
+         * @return bool
+         */
+        private function tc_delete_info_event_ids_are_valid( $event_ids ) {
+            if ( empty( $event_ids ) ) {
+                return false;
+            }
+            foreach ( $event_ids as $event_id ) {
+                if ( 'tc_events' !== get_post_type( $event_id ) ) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /**
+         * Parse a Delete Info date using the formats emitted by Tickera's date picker.
+         *
+         * @param string $value      Submitted date.
+         * @param bool   $end_of_day Whether date-only values represent the end of the day.
+         * @return DateTimeImmutable|false|null
+         */
+        private function tc_parse_delete_info_date( $value, $end_of_day = false ) {
+            if ( '' === $value ) {
+                return null;
+            }
+            $formats = array(
+                'Y/m/d H:i' => true,
+                'Y-m-d H:i' => true,
+                'Y/m/d'     => false,
+                'Y-m-d'     => false,
+            );
+            foreach ( $formats as $format => $has_time ) {
+                $date = \DateTimeImmutable::createFromFormat( '!' . $format, $value, wp_timezone() );
+                $errors = \DateTimeImmutable::getLastErrors();
+                if ( $date && (false === $errors || 0 === $errors['warning_count'] && 0 === $errors['error_count']) ) {
+                    return ( $end_of_day && !$has_time ? $date->setTime( 23, 59, 59 ) : $date );
+                }
+            }
+            return false;
         }
 
         /**
@@ -3909,6 +4179,8 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                 if ( isset( $owner_record['ticket_type_id_post_meta'] ) ) {
                     $metas = [];
                     foreach ( $owner_record as $owner_field_name => $owner_field_value ) {
+                        // Validate serialized object to prevent PHP Injection
+                        $owner_field_value = ( is_serialized( $owner_field_value ) || !is_scalar( $owner_field_value ) ? '' : $owner_field_value );
                         if ( preg_match( '/_post_title/', $owner_field_name ) ) {
                             $title = sanitize_text_field( $owner_field_value );
                         } elseif ( preg_match( '/_post_excerpt/', $owner_field_name ) ) {
@@ -3916,7 +4188,6 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         } elseif ( preg_match( '/_post_content/', $owner_field_name ) ) {
                             $content = wp_filter_post_kses( $owner_field_value );
                         } elseif ( preg_match( '/_post_meta/', $owner_field_name ) ) {
-                            $owner_field_value = maybe_unserialize( $owner_field_value );
                             $metas[str_replace( '_post_meta', '', $owner_field_name )] = ( is_array( $owner_field_value ) ? tickera_sanitize_array( $owner_field_value, false, true ) : sanitize_text_field( $owner_field_value ) );
                         }
                     }
@@ -4161,8 +4432,10 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             $cookie_id = 'cart_info_' . COOKIEHASH;
             if ( isset( $_COOKIE[$cookie_id] ) ) {
                 $cart_obj = json_decode( stripslashes( sanitize_text_field( wp_unslash( $_COOKIE[$cookie_id] ) ) ), true );
-                foreach ( $cart_obj as $ticket_id => $qty ) {
-                    $cart[(int) $ticket_id] = (int) $qty;
+                if ( $cart_obj ) {
+                    foreach ( $cart_obj as $ticket_id => $qty ) {
+                        $cart[(int) $ticket_id] = (int) $qty;
+                    }
                 }
             } else {
                 $cart = [];
@@ -5115,6 +5388,10 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     'ajaxNonce'                                  => wp_create_nonce( 'tc_ajax_nonce' ),
                     'animated_transitions'                       => tickera_apply_filters( 'tickera_animated_transitions', true ),
                     'delete_confirmation_message'                => __( 'Please confirm that you want to delete it permanently?', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_api_key_confirmation_message'   => __( 'Permanently delete %d API key? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_api_keys_confirmation_message'  => __( 'Permanently delete %d API keys? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_discount_confirmation_message'  => __( 'Permanently delete %d discount code? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_discounts_confirmation_message' => __( 'Permanently delete %d discount codes? This cannot be undone.', 'tickera-event-ticketing-system' ),
                     'order_status_changed_message'               => __( 'Order status changed successfully.', 'tickera-event-ticketing-system' ),
                     'order_confirmation_email_resent_message'    => __( 'Order confirmation e-mail has been sent successfully.', 'tickera-event-ticketing-system' ),
                     'order_confirmation_email_resending_message' => __( 'Sending...', 'tickera-event-ticketing-system' ),
@@ -5149,12 +5426,24 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     false
                 );
                 wp_localize_script( $this->name . '-admin', 'tc_vars', array(
-                    'ajaxUrl'                   => tickera_apply_filters( 'tickera_ajaxurl', admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ) ),
-                    'ajaxNonce'                 => wp_create_nonce( 'tc_ajax_nonce' ),
-                    'tc_check_page'             => sanitize_key( wp_unslash( $_GET['page'] ) ),
-                    'tickets_have_been_removed' => __( 'tickets have been deleted.', 'tickera-event-ticketing-system' ),
-                    'something_went_wrong'      => __( 'Something went wrong. Please try again.', 'tickera-event-ticketing-system' ),
-                    'confirm_action_message'    => __( 'Please confirm if you want to proceed.', 'tickera-event-ticketing-system' ),
+                    'ajaxUrl'                                    => tickera_apply_filters( 'tickera_ajaxurl', admin_url( 'admin-ajax.php', ( is_ssl() ? 'https' : 'http' ) ) ),
+                    'ajaxNonce'                                  => wp_create_nonce( 'tc_ajax_nonce' ),
+                    'tc_check_page'                              => sanitize_key( wp_unslash( $_GET['page'] ) ),
+                    'tickets_have_been_removed'                  => __( 'tickets have been deleted.', 'tickera-event-ticketing-system' ),
+                    'tickets_removed_message'                    => __( '%d tickets have been permanently deleted.', 'tickera-event-ticketing-system' ),
+                    'select_event_message'                       => __( 'Select at least one event.', 'tickera-event-ticketing-system' ),
+                    'remove_checkins_one_confirmation_message'   => __( 'Permanently remove check-in and checkout history from %d matching ticket? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'remove_checkins_many_confirmation_message'  => __( 'Permanently remove check-in and checkout history from %d matching tickets? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'checkins_removed_message'                   => __( 'Removed history from %1$d tickets (%2$d check-ins and %3$d checkouts).', 'tickera-event-ticketing-system' ),
+                    'checkins_preview_message'                   => __( 'Checking for matching check-in history...', 'tickera-event-ticketing-system' ),
+                    'checkins_no_matches_message'                => __( 'No matching check-in or check-out history was found.', 'tickera-event-ticketing-system' ),
+                    'checkins_cancelled_message'                 => __( 'No check-in history was removed.', 'tickera-event-ticketing-system' ),
+                    'something_went_wrong'                       => __( 'Something went wrong. Please try again.', 'tickera-event-ticketing-system' ),
+                    'confirm_action_message'                     => __( 'Please confirm if you want to proceed.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_api_key_confirmation_message'   => __( 'Permanently delete %d API key? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_api_keys_confirmation_message'  => __( 'Permanently delete %d API keys? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_discount_confirmation_message'  => __( 'Permanently delete %d discount code? This cannot be undone.', 'tickera-event-ticketing-system' ),
+                    'bulk_delete_discounts_confirmation_message' => __( 'Permanently delete %d discount codes? This cannot be undone.', 'tickera-event-ticketing-system' ),
                 ) );
             }
             // phpcs:enable WordPress.Security.NonceVerification.Recommended

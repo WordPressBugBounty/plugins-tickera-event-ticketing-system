@@ -429,7 +429,8 @@ a[href="post-new.php?post_type=tc_events"] {
     width: 70%;
 }
 
-.wp-picker-container.wp-picker-active {
+.tc_wrap .wp-picker-container.wp-picker-active,
+.tc_wrap_zxy .wp-picker-container.wp-picker-active {
     position: absolute;
     z-index: 9;
     background: #fff;
@@ -437,7 +438,8 @@ a[href="post-new.php?post_type=tc_events"] {
     padding: 10px;
 }
 
-.wp-picker-container.wp-picker-active label {
+.tc_wrap .wp-picker-container.wp-picker-active label,
+.tc_wrap_zxy .wp-picker-container.wp-picker-active label {
     display: inline-block;
     width: initial;
     margin-top: 0;
@@ -680,6 +682,11 @@ a.tc_link:hover {
     min-width: 1em !important;
 }
 
+.tc_wrap select.tc-bulk-action-select {
+    width: auto;
+    min-width: 0 !important;
+}
+
 .tickera_page_tc_settings .chosen-container-single,
 .tickera_page_tc_ticket_templates .chosen-container-single,
 .discount-table .chosen-container-single,
@@ -708,17 +715,6 @@ a.tc_link:hover {
 .tc_wrap.tc-api-access-content .tc-api-keys > .tablenav .displaying-num { padding-top: 0; }
 .tc_wrap.tc-api-access-content { padding-top: 9px; }
 .tc_wrap.tc-api-access-content #poststuff.metabox-holder { padding-top: 0; }
-
-.tc_wrap.tc-api-access-content .tc-api-keys .postbox .tablenav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f3f3f3;
-    width: 100%;
-    height: initial;
-    padding: 0;
-    margin: 0;
-}
 
 .tc_wrap.tc-api-access-content .tc-api-keys .postbox .tablenav h3,
 .tc_wrap.tc-api-access-content .tc-api-keys .postbox .tablenav form {
@@ -1332,16 +1328,8 @@ ul.tc_order_notes li p.meta .exact-date {
     border: 1px solid #ffdf3b;
 }
 
-.tc_wrap input[type="submit"] {
-    margin-left: 20px;
-}
-
 .tc_wrap .inside input[type="submit"] {
     margin-left: 0;
-}
-
-.tc_wrap .search-box input[type="submit"] {
-    margin-left: 5px;
 }
 
 .tc-tablenav .tablenav-pages a {
@@ -1471,6 +1459,28 @@ select.tc-event-filter ~ .chosen-container .tc-loader {
 
 .tc-dl-error {
     color: red;
+}
+
+.tc-remove-checkins-date-fields {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.tc-remove-checkins-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#tc_delete_info .tc-delete-tickets-status-row,
+#tc_delete_info .tc-delete-tickets-status-row > th,
+#tc_delete_info .tc-delete-tickets-status-row > td,
+#tc_delete_info .tc-remove-checkins-status-row,
+#tc_delete_info .tc-remove-checkins-status-row > th,
+#tc_delete_info .tc-remove-checkins-status-row > td {
+    border: 0;
 }
 
 .tc-dl-inner-container input[type="radio"] {

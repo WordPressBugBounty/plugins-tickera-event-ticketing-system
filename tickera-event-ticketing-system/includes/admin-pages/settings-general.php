@@ -2,6 +2,15 @@
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- This file is used only on Tickera-specific admin-side custom settings or sections.
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $tickera_general_settings, $wp_rewrite;
+if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_general_settings_cap' ) ) { 
+    // Allow access to this page
+} else {
+    wp_die(
+        __( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
+        'Access Denied',
+        [ 'response' => 403 ]
+    );
+}
 
 if ( isset( $_POST[ 'save_tc_settings' ] ) ) {
 

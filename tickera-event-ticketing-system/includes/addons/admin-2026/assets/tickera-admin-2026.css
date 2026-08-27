@@ -363,7 +363,7 @@ body.tc-admin-2026 #poststuff .postbox .inside,
 body.tc-admin-2026 .edit-post-meta-boxes-area .postbox .inside,
 body.tc-admin-2026 .editor-meta-boxes-area .postbox .inside {
 	margin: 0 !important;
-	padding-top: 0.55rem !important;
+	padding-top: 0.55rem;
 }
 /* Event-style metaboxes wrap each field in a label.tc-metabox-field whose first
    line (the field name) already adds ~12px of leading space; drop the .inside
@@ -515,8 +515,7 @@ body.tc-admin-2026 .tc_wrap [class*="-form-actions"] .tc-tickera-secondary {
    from the table below — instead of a flush, left-stuck plain heading. */
 body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	flex-direction: column;
 	gap: 12px;
 	height: auto;
 	margin: 0;
@@ -540,6 +539,8 @@ body.tc-admin-2026 .tc_wrap .postbox > .tablenav:first-child:has(> h3) form {
 	float: none;
 	margin: 0;
 	display: flex;
+    padding: 0;
+    justify-content: space-between;
 	align-items: center;
 	gap: 8px;
 }
@@ -563,6 +564,15 @@ body.tc-admin-2026 .tc_wrap .postbox .inside table.form-table th {
 	padding-right: 24px;
 	font-weight: 600;
 	color: var(--tc-ink);
+}
+
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-delete-tickets-status-row,
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-delete-tickets-status-row > th,
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-delete-tickets-status-row > td,
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-remove-checkins-status-row,
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-remove-checkins-status-row > th,
+body.tc-admin-2026 #tc_delete_info .postbox .inside table.form-table .tc-remove-checkins-status-row > td {
+	border: 0;
 }
 /* Section sub-headings between the form-tables → small uppercase label. */
 body.tc-admin-2026 .tc_wrap .postbox .inside > h2,
@@ -696,7 +706,7 @@ body.tc-admin-2026 .tc_wrap .postbox > .hndle,
 body.tc-admin-2026 .tc_wrap .postbox > .postbox-header,
 body.tc-admin-2026 .tc_wrap .stuffbox > h3:first-child {
 	display: flex;
-	align-items: center;
+	flex-direction: column;
 	justify-content: space-between;
 	gap: 12px;
 	background: #fff !important;
@@ -718,6 +728,7 @@ body.tc-admin-2026 .tc_wrap .postbox > h3:first-child .search-form p {
 	float: none !important;
 	margin: 0 !important;
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
 	gap: 8px;
 }
@@ -737,7 +748,7 @@ body.tc-admin-2026 .tc_wrap .tablenav > h3 {
 	border: 0 !important;
 	border-radius: 0 !important;
 	box-shadow: none !important;
-	padding: 0 0 0.5rem 0 !important;
+	padding: 0 0 0 0 !important;
 	margin: 0 0 0.75rem 0;
 	width: auto;
 }

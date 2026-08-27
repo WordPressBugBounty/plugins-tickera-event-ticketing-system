@@ -41,19 +41,13 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
         }
 
         function get_number_of_checkins( $checkin_type = 'pass' ) {
-            $checkins = get_post_meta( $this->id, 'tc_checkins', false );
+            $checkins = self::get_attendance_records( $this->id );
             $checkins_num = 0;
 
             if ( is_array( $checkins ) && count( $checkins ) > 0 ) {
-
-                if ( isset( $checkins[ 0 ] ) ) {
-                    if ( is_array( $checkins ) && count( $checkins ) > 0 && $checkins[ 0 ] != '' ) {
-                        $checkins = $checkins[ 0 ];
-                        foreach ( $checkins as $checkin ) {
-                            if ( strtolower( $checkin[ 'status' ] ) == $checkin_type ) {
-                                $checkins_num++;
-                            }
-                        }
+                foreach ( $checkins as $checkin ) {
+                    if ( 'in' === $checkin[ 'direction' ] && strtolower( $checkin[ 'status' ] ) == $checkin_type ) {
+                        $checkins_num++;
                     }
                 }
                 return $checkins_num;
@@ -68,16 +62,8 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
          * @return bool|mixed
          */
         function get_ticket_checkins() {
-
-            $checkins = get_post_meta( $this->id, 'tc_checkins', false );
-
-            if ( is_array( $checkins ) && count( $checkins ) > 0 ) {
-                $checkins = $checkins[ 0 ];
-                return $checkins;
-
-            } else {
-                return false;
-            }
+            $checkins = self::get_attendance_records( $this->id );
+            return $checkins ? $checkins : false;
         }
 
         /**
@@ -86,15 +72,84 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Instance' ) ) {
          * @return bool|mixed
          */
         function get_ticket_checkouts() {
-            $checkouts = get_post_meta( $this->id, 'tc_checkouts', false );
+            $checkouts = array_filter( self::get_attendance_records( $this->id ), function ( $record ) {
+                return 'out' === $record[ 'direction' ];
+            } );
 
-            if ( is_array( $checkouts ) && count( $checkouts ) > 0 ) {
-                $checkouts = $checkouts[ 0 ];
-                return $checkouts;
+            return $checkouts ? array_values( $checkouts ) : false;
+        }
 
-            } else {
-                return false;
+        /**
+         * Return the unified, chronological attendance log and migrate legacy checkouts.
+         *
+         * @param int $ticket_instance_id Ticket instance ID.
+         * @return array
+         */
+        public static function get_attendance_records( $ticket_instance_id ) {
+            $records = get_post_meta( $ticket_instance_id, 'tc_checkins', true );
+            $records = is_array( $records ) ? $records : array();
+            $legacy_checkouts = get_post_meta( $ticket_instance_id, 'tc_checkouts', true );
+            $legacy_checkouts = is_array( $legacy_checkouts ) ? $legacy_checkouts : array();
+            $records_changed = false;
+
+            if ( isset( $legacy_checkouts[ 'outs' ] ) && is_array( $legacy_checkouts[ 'outs' ] ) ) {
+                $legacy_checkouts = $legacy_checkouts[ 'outs' ];
             }
+
+            foreach ( $records as &$record ) {
+                if ( is_array( $record ) && ! isset( $record[ 'direction' ] ) ) {
+                    $record[ 'direction' ] = 'in';
+                    $records_changed = true;
+                }
+            }
+            unset( $record );
+
+            foreach ( $legacy_checkouts as $checkout ) {
+                if ( is_array( $checkout ) && isset( $checkout[ 'date_checked' ] ) ) {
+                    $checkout[ 'direction' ] = 'out';
+                    $records[] = $checkout;
+                    $records_changed = true;
+                }
+            }
+
+            $unsorted_records = $records;
+            self::sort_attendance_records( $records );
+            if ( $records !== $unsorted_records ) {
+                $records_changed = true;
+            }
+
+            if ( $records_changed || metadata_exists( 'post', $ticket_instance_id, 'tc_checkouts' ) ) {
+                update_post_meta( $ticket_instance_id, 'tc_checkins', $records );
+            }
+
+            if ( metadata_exists( 'post', $ticket_instance_id, 'tc_checkouts' ) ) {
+                delete_post_meta( $ticket_instance_id, 'tc_checkouts' );
+            }
+
+            return $records;
+        }
+
+        /**
+         * Sort attendance records from oldest to newest without losing equal timestamps.
+         *
+         * @param array $records Attendance records.
+         * @return array
+         */
+        public static function sort_attendance_records( &$records ) {
+            $indexed = array();
+            foreach ( array_values( $records ) as $index => $record ) {
+                if ( is_array( $record ) ) {
+                    $indexed[] = array( 'index' => $index, 'record' => $record );
+                }
+            }
+
+            usort( $indexed, function ( $left, $right ) {
+                $comparison = (int) ( $left[ 'record' ][ 'date_checked' ] ?? 0 ) <=> (int) ( $right[ 'record' ][ 'date_checked' ] ?? 0 );
+                return 0 !== $comparison ? $comparison : $left[ 'index' ] <=> $right[ 'index' ];
+            } );
+
+            $records = array_column( $indexed, 'record' );
+            return $records;
         }
 
         function get_ticket_instance() {

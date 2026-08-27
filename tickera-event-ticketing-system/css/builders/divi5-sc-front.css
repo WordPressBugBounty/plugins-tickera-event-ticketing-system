@@ -1,0 +1,70 @@
+.et-vb-field-richtext-buttons .tc-divi5-shortcode-builder-button {
+    position: relative;
+    top: -8px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: auto !important;
+    height: 28px;
+    margin: -2px auto 0 8px !important;
+    padding: 0 10px;
+    line-height: 26px !important;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.et-vb-field-richtext-buttons .tc-divi5-shortcode-builder-button .dashicons {
+    display: block;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.et-vb-field-richtext-buttons .tc-divi5-shortcode-builder-button .tc-divi5-button-label {
+    display: block;
+    line-height: 16px;
+}
+
+body.rtl.et-db:not(.et-vb-no-rtl) #et-boc .et-l .et-vb-field-richtext-buttons .tc-divi5-shortcode-builder-button {
+    order: 1;
+    margin: -2px 8px 0 auto !important;
+}
+
+#tc-shortcode-builder-divi5-wrap {
+    display: none;
+}
+
+#tc-modal.tc-modal-open {
+    position: fixed;
+    width: min(680px, calc(100vw - 48px));
+    height: fit-content;
+    max-height: 85vh;
+}
+
+#tc-modal-overlay.tc-modal-open {
+    position: fixed;
+}
+
+#tc-modal #tc-shortcode-builder {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#tc-modal .chosen-container {
+    width: 100% !important;
+    max-width: 350px;
+}
+
+@media (max-width: 782px) {
+    .et-vb-field-richtext-buttons .tc-divi5-shortcode-builder-button {
+        margin-left: 4px !important;
+    }
+
+    #tc-modal.tc-modal-open {
+        width: calc(100vw - 24px);
+    }
+}

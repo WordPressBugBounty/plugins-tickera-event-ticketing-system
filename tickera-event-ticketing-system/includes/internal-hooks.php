@@ -599,8 +599,26 @@ tickera_add_filter( 'tickera_checkins_api_key_id', 'tickera_checkins_api_key_id'
 if ( ! function_exists( 'tickera_checkins_api_key_id' ) ) {
 
     function tickera_checkins_api_key_id( $api_key_id ) {
+        // tickera_apply_filters() invokes both the legacy and current hook names.
+        // Preserve the value after the first invocation instead of formatting it twice.
+        if ( ! is_numeric( $api_key_id ) ) {
+            return $api_key_id;
+        }
+
+        $api_key_id = (int) $api_key_id;
+
+        if ( ! $api_key_id ) {
+            return esc_html__( 'Not available', 'tickera-event-ticketing-system' );
+        }
+
         $api_key = new \Tickera\TC_API_Key( $api_key_id );
-        return '<a href="' . esc_url( admin_url( 'edit.php?post_type=tc_events&page=tc_settings&tab=api&action=edit&ID=' . (int) $api_key_id ) ) . '">' . esc_html( $api_key->details->api_key_name ) . '</a>';;
+        $api_key_value = isset( $api_key->details->api_key ) ? trim( (string) $api_key->details->api_key ) : '';
+
+        if ( ! $api_key_value ) {
+            return esc_html__( 'Not available', 'tickera-event-ticketing-system' );
+        }
+
+        return esc_html( $api_key_value );
     }
 }
 

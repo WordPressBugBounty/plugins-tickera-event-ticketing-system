@@ -41,10 +41,10 @@ if ( ! class_exists( '\Tickera\TC_Discount' ) ) {
         function delete_discount( $force_delete = false ) {
 
             if ( $force_delete ) {
-                wp_delete_post( $this->id );
+                return wp_delete_post( $this->id, true );
 
             } else {
-                wp_trash_post( $this->id );
+                return wp_trash_post( $this->id );
             }
         }
 

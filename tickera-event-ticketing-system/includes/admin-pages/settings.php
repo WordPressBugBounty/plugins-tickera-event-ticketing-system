@@ -8,9 +8,6 @@ wp_reset_vars(array('action', 'page'));
 $page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin settings tab parameter is sanitized before rendering tabs.
 $tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
-if (empty($tab)) {
-    $tab = 'general';
-}
 ?>
 <div class="wrap tc_outside_wrap nosubsub">
     <div class="icon32 icon32-posts-page" id="icon-options-general"><br></div>
@@ -36,7 +33,7 @@ if (empty($tab)) {
             ?></p>
         </div>
     <?php }
-    $tickera_setting_menus = array();
+    $tickera_setting_menus = [];
     $tickera_setting_menus['general'] = __('General', 'tickera-event-ticketing-system');
     $tickera_setting_menus['gateways'] = __('Payment Gateways', 'tickera-event-ticketing-system');
     $tickera_setting_menus['email'] = __('E-mail', 'tickera-event-ticketing-system');
@@ -45,20 +42,27 @@ if (empty($tab)) {
     ?>
     <div class="nav-tab-wrapper">
         <ul>
-            <?php foreach ($tickera_setting_menus as $tickera_setting_key => $tickera_menu) {
-                $tickera_setting_tab_url = add_query_arg(array(
-                        'post_type' => 'tc_events',
-                        'page' => $page,
-                        'tab' => $tickera_setting_key,
-                    ), admin_url('edit.php'));
-                ?>
-                <li>
-                    <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $tickera_setting_key ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tickera_setting_tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $tickera_menu ) ); ?></a>
-                </li>
-            <?php } ?>
+            <?php 
+                $tab_index = 0;
+                foreach ($tickera_setting_menus as $tickera_setting_key => $tickera_menu) {
+                    $tickera_setting_tab_url = add_query_arg(array(
+                            'post_type' => 'tc_events',
+                            'page' => $page,
+                            'tab' => $tickera_setting_key,
+                        ), admin_url('edit.php'));
+                    if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_' . sanitize_text_field( $tickera_setting_key ) . '_settings_cap' ) ) { ?>
+                        <li>
+                            <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $tickera_setting_key || ( ! $tab && ! $tab_index ) ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tickera_setting_tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $tickera_menu ) ); ?></a>
+                        </li><?php 
+                        $tab = ( ! $tab && ! $tab_index ) ? $tickera_setting_key : $tab;
+                        $tab_index++;
+                    }
+                } 
+            ?>
         </ul>
     </div>
-    <?php switch ($tab) {
+    <?php 
+    switch ($tab) {
 
         case 'general':
             $tc->show_page_tab('general');

@@ -64,6 +64,28 @@ if ( ! function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) ) {
 			}
 		}
 
+		// TCPDF loads its barcode helper classes lazily, normally only when
+		// write1DBarcode()/write2DBarcode() is called. The Designer needs the 1D
+		// helper earlier so it can build a bitmap and stretch that bitmap to the
+		// exact width/height saved by the canvas. Without loading it here, the
+		// renderer falls through to TCPDF's vector barcode path; that path keeps
+		// its intrinsic module width when the requested box is larger, making a
+		// resized barcode appear much smaller in the generated PDF.
+		if ( isset( $tc ) && ! empty( $tc->plugin_dir ) ) {
+			$barcode_helpers = array(
+				'TCPDFBarcode'   => 'tcpdf_barcodes_1d.php',
+				'TCPDF2DBarcode' => 'tcpdf_barcodes_2d.php',
+			);
+			foreach ( $barcode_helpers as $barcode_class => $barcode_file ) {
+				if ( ! class_exists( '\\Tickera\\' . $barcode_class, false ) ) {
+					$barcode_path = $tc->plugin_dir . 'includes/tcpdf/vendor/' . $barcode_file;
+					if ( file_exists( $barcode_path ) ) {
+						require_once $barcode_path;
+					}
+				}
+			}
+		}
+
 		// Alias the namespaced classes to the global names the module references.
 		// TCPDF_FONTS is required so the PDF generator can embed the bundled TTF
 		// fonts via addTTFfont; without it, class_exists('TCPDF_FONTS') is false,

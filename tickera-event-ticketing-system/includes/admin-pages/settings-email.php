@@ -2,6 +2,16 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 global $tickera_email_settings, $wp_rewrite;
 
+if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_email_settings_cap' ) ) { 
+    // Allow access to this page
+} else {
+    wp_die(
+        __( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
+        'Access Denied',
+        [ 'response' => 403 ]
+    );
+}
+
 /**
  * Update Email Settings on clicked save button
  */
