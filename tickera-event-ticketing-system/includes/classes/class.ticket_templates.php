@@ -59,10 +59,11 @@ if ( ! class_exists( '\Tickera\TC_Ticket_Templates' ) ) {
             // Display all errors if TC_DEBUG is true
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Ticket template preview debug flag only controls temporary error display during preview generation.
             if ( defined( 'TC_DEBUG' ) || isset( $_GET[ 'TC_DEBUG' ] ) ) {
-                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
+                
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall
                 error_reporting( E_ALL );
 
-                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors
                 @ini_set( 'display_errors', 'On' );
             }
 

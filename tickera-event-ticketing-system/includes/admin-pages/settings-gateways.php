@@ -6,7 +6,7 @@ if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_gateways_
     // Allow access to this page
 } else {
     wp_die(
-        __( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
+        esc_html__( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
         'Access Denied',
         [ 'response' => 403 ]
     );
@@ -22,14 +22,16 @@ if ( isset( $_POST[ 'gateway_settings' ] ) ) {
 
             if ( isset( $_POST[ 'tc' ] ) ) {
 
-                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
-                $post_data = tickera_sanitize_array( wp_unslash( $_POST[ 'tc' ] ), true, true );
-                $post_data = $post_data ? $post_data : [];
-
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- The gateway filter receives unslashed form data; settings are sanitized before update_option() below.
+                $post_data = wp_unslash( $_POST[ 'tc' ] );
+                $post_data = is_array( $post_data ) ? $post_data : [];
                 $filtered_settings = tickera_apply_filters( 'tickera_gateway_settings_filter', $post_data );
-                $settings = array_merge( $settings, $filtered_settings );
 
-                update_option( 'tickera_settings', tickera_sanitize_array( $settings, true, true ) );
+                $settings = array_merge( $settings, $filtered_settings );
+                $settings = tickera_sanitize_array( $settings, true, true );
+                
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized within tickera_sanitize_array().
+                update_option( 'tickera_settings', $settings );
                 tickera_do_action( 'tickera_save_tc_gateway_settings' );
             }
 

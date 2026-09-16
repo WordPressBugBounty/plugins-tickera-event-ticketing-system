@@ -6,7 +6,7 @@ if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_email_set
     // Allow access to this page
 } else {
     wp_die(
-        __( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
+        esc_html__( 'You do not have permission to access this page.', 'tickera-event-ticketing-system' ),
         'Access Denied',
         [ 'response' => 403 ]
     );

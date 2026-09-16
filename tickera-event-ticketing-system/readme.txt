@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 3.6.0.3
+Stable tag: 3.6.0.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -182,6 +182,14 @@ Removes the "Powered by Tickera" credit from tickets.
 Introduces the new drag & drop Ticket Designer, unlimited ticket designs and selectable front-end themes. If you sell tickets through WooCommerce, please also update Bridge for WooCommerce to 1.7.5 or higher.
 
 == Changelog ==
+
+
+= 3.6.0.4 16/09/2026 =
+* Replaced "API Key" with "API Name" in Attendees & Tickets check-in records.
+* Improved Checkout payment method initialization to load only active payment methods.
+* Security: Fixed an unauthenticated payment bypass vulnerability in the 2Checkout IPN handler.
+* Render the event date and time only once in Ticket Designer when the start and end date/time are identical (e.g., September 9, 2026 at 7:00 PM instead of September 9, 2026 7:00 PM – September 9, 2026 7:00 PM)
+* Additional patches for "Cancel Pending Orders" scheduled task bug. Supports both legacy and migrated options.
 
 = 3.6.0.3 27/08/2026 =
 * Added secure bulk removal of event check-in and checkout history under Settings > Delete Info.

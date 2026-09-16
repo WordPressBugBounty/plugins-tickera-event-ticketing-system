@@ -102,6 +102,14 @@ body.tc-admin-2026 #wpbody-content .wrap a:not(.button):not(.button-primary):not
 	color: var(--tc-brand-deep);
 }
 
+body.tc-admin-2026 #wpbody-content .wrap .notice-warning.tc-notice-bridge a:not(.button):not(.button-primary):not(.nav-tab):not(.page-title-action):not(.add-new-h2):not(.row-title) {
+	color: #fff;
+}
+
+body.tc-admin-2026 #wpbody-content .wrap .notice-warning.tc-notice-bridge a:not(.button):not(.button-primary):not(.nav-tab):not(.page-title-action):not(.add-new-h2):not(.row-title):hover {
+	color: var(--tc-brand-deep);
+}
+
 /* ================================================================== *
  * 3. BUTTONS
  * ================================================================== */

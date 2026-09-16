@@ -998,12 +998,15 @@ class TC_Ticket_Designer_Download {
 		$filename    = sprintf( 'tickets-order-%d.pdf', $order->get_id() );
 		$disposition = ! empty( $_GET['vp_print'] ) ? 'inline' : 'attachment';
 
-		$display_errors = @ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged -- Temporarily disable error display so stray notices cannot corrupt the binary PDF stream; restored after generation.
+		// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Temporarily disable error display so stray notices cannot corrupt the binary PDF stream; restored after generation.
+		$display_errors = @ini_set( 'display_errors', '0' );
+
 		ob_start();
 		$pdf = TC_Ticket_Designer_PDF_Generator::generate_multi( $payloads, 'S' );
 		ob_end_clean();
 		if ( false !== $display_errors ) {
-			@ini_set( 'display_errors', $display_errors ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged -- Restoring the previous display_errors value.
+			// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Restoring the previous display_errors value.
+			@ini_set( 'display_errors', $display_errors );
 		}
 
 		header( 'Content-Type: application/pdf' );
@@ -1078,12 +1081,16 @@ class TC_Ticket_Designer_Download {
 		// printed during generation (e.g. TCPDF's imagedestroy() deprecation on
 		// PHP 8.x when display_errors is on) cannot leak into and corrupt the binary
 		// PDF stream. Errors are still logged; we only stop them being echoed here.
-		$display_errors = @ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged -- Temporarily disable error display so stray notices cannot corrupt the binary PDF stream; restored after generation.
+		
+		// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Temporarily disable error display so stray notices cannot corrupt the binary PDF stream; restored after generation.
+		$display_errors = @ini_set( 'display_errors', '0' );
+		
 		ob_start();
 		$pdf = TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, 'S' );
 		ob_end_clean();
 		if ( false !== $display_errors ) {
-			@ini_set( 'display_errors', $display_errors ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged -- Restoring the previous display_errors value.
+			// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Restoring the previous display_errors value.
+			@ini_set( 'display_errors', $display_errors );
 		}
 
 		// Set headers for PDF. "vp_print=1" serves the PDF inline (opens in the

@@ -1,6 +1,13 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.4 16/09/2026 =
+* Replaced "API Key" with "API Name" in Attendees & Tickets check-in records.
+* Improved Checkout payment method initialization to load only active payment methods.
+* Security: Fixed an unauthenticated payment bypass vulnerability in the 2Checkout IPN handler.
+* Render the event date and time only once in Ticket Designer when the start and end date/time are identical (e.g., September 9, 2026 at 7:00 PM instead of September 9, 2026 7:00 PM – September 9, 2026 7:00 PM)
+* Additional patches for "Cancel Pending Orders" scheduled task bug. Supports both legacy and migrated options.
+
 = 3.6.0.3 27/08/2026 =
 * Added secure bulk removal of event check-in and checkout history under Settings > Delete Info.
 * Improved Delete Info batch processing with permanent ticket deletion, validation, scoped progress indicators, and reliable AJAX error recovery.

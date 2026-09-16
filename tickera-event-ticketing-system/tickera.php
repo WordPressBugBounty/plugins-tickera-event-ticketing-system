@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.3
+ * Version: 3.6.0.4
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.3';
+        var $version = '3.6.0.4';
 
         var $title = 'Tickera';
 
@@ -2532,45 +2532,46 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * @return string
          */
         function tc_checkout_payment_form( $content, $cart ) {
-            global $tickera_gateway_active_plugins, $tickera_gateway_plugins;
+            global $tickera_gateway_plugins;
             $settings = get_option( 'tickera_settings' );
             $tickera_general_settings = get_option( 'tickera_general_setting', false );
             $skip_payment_summary = ( isset( $tickera_general_settings['skip_payment_summary_page'] ) ? $tickera_general_settings['skip_payment_summary_page'] : 'no' );
             $session = $this->session->get();
             $cart_total = ( isset( $session['tc_cart_total'] ) ? (float) $session['tc_cart_total'] : null );
+            $gateway_plugins = (array) $tickera_gateway_plugins;
             if ( is_null( $cart_total ) ) {
-                $tickera_gateway_plugins = [];
+                $gateway_plugins = [];
             } elseif ( 0 == $cart_total ) {
-                $free_tc_gateway_plugins = [];
-                $free_tc_gateway_plugins['free_orders'] = $tickera_gateway_plugins['free_orders'];
-                $tickera_gateway_plugins = $free_tc_gateway_plugins;
+                $gateway_plugins = ( isset( $gateway_plugins['free_orders'] ) ? [
+                    'free_orders' => $gateway_plugins['free_orders'],
+                ] : [] );
             } else {
-                unset($tickera_gateway_plugins['free_orders']);
+                unset($gateway_plugins['free_orders']);
             }
-            $key = 0;
-            $active_gateways_num = 0;
+            $active_gateways = ( isset( $settings['gateways']['active'] ) && is_array( $settings['gateways']['active'] ) ? $settings['gateways']['active'] : [] );
+            $gateways_to_render = [];
             $skip_payment_screen = false;
-            foreach ( (array) $tickera_gateway_plugins as $code => $plugin ) {
+            foreach ( $gateway_plugins as $code => $plugin ) {
                 if ( $this->gateway_is_network_allowed( $code ) ) {
                     $class_name = $plugin[0];
+                    $gateway_defaults = ( class_exists( $class_name ) ? get_class_vars( $class_name ) : [] );
+                    $is_active = in_array( $code, $active_gateways, true ) || !empty( $gateway_defaults['permanently_active'] ) || !$active_gateways && !empty( $gateway_defaults['default_status'] );
+                    // Do not initialize inactive gateways on the checkout page.
+                    if ( !$is_active ) {
+                        continue;
+                    }
                     $gateway = new $class_name();
                     $plugin_name = ( $gateway->plugin_name == 'checkout' ? '2checkout' : $gateway->plugin_name );
-                    $active_gateways = ( isset( $settings['gateways']['active'] ) ? $settings['gateways']['active'] : [] );
                     $gateway_show_priority = ( isset( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) && is_numeric( $settings['gateways'][$plugin_name]['gateway_show_priority'] ) ? $settings['gateways'][$plugin_name]['gateway_show_priority'] : '30' );
-                    if ( in_array( $code, $active_gateways ) || isset( $gateway->permanently_active ) && $gateway->permanently_active || !$active_gateways && isset( $gateway->default_status ) && $gateway->default_status ) {
-                        $visible = true;
-                        $active_gateways_num++;
-                    } else {
-                        $visible = false;
-                    }
-                    if ( 'custom_offline_payments' == $plugin_name && in_array( $code, $active_gateways ) ) {
+                    $visible = true;
+                    if ( 'custom_offline_payments' == $plugin_name && in_array( $code, $active_gateways, true ) ) {
                         $show_gateway_to_specific_user_roles = ( isset( $settings['gateways']['custom_offline_payments']['user_roles_gateway'] ) ? (array) $settings['gateways']['custom_offline_payments']['user_roles_gateway'] : ['any'] );
-                        if ( in_array( 'any', $show_gateway_to_specific_user_roles ) ) {
+                        if ( in_array( 'any', $show_gateway_to_specific_user_roles, true ) ) {
                             $visible = true;
                         } else {
                             $visible = false;
                             foreach ( $show_gateway_to_specific_user_roles as $role ) {
-                                if ( in_array( $role, (array) wp_get_current_user()->roles ) ) {
+                                if ( in_array( $role, (array) wp_get_current_user()->roles, true ) ) {
                                     $visible = true;
                                     break;
                                 }
@@ -2578,33 +2579,46 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         }
                     }
                     if ( $visible ) {
-                        $current_payment_method = ( isset( $session['tc_payment_method'] ) ? $session['tc_payment_method'] : '' );
-                        if ( !$current_payment_method && !$key ) {
-                            $current_payment_method = $gateway->plugin_name;
-                        }
-                        $skip_payment_screen = $gateway->skip_payment_screen;
-                        $content .= '<div class="tickera tickera-payment-gateways' . (( !$key ? ' active' : '' )) . '" data-gateway_show_priority="' . (int) $gateway_show_priority . '">' . '<div class="' . esc_attr( $gateway->plugin_name ) . ' plugin-title">' . '<label>';
-                        $content .= ( count( (array) $tickera_gateway_active_plugins ) <= 2 ? '<input type="radio" class="tc_choose_gateway tickera-hide-button" id="' . esc_attr( $gateway->plugin_name ) . '" name="tc_choose_gateway" value="' . esc_attr( $gateway->plugin_name ) . '" checked ' . checked( $current_payment_method, $gateway->plugin_name, false ) . '/>' : '<input type="radio" class="tc_choose_gateway" id="' . esc_attr( $gateway->plugin_name ) . '" name="tc_choose_gateway" value="' . esc_attr( $gateway->plugin_name ) . '" ' . checked( $current_payment_method, $gateway->plugin_name, false ) . '/>' );
-                        $content .= $gateway->public_name . '<img src="' . esc_url( $gateway->method_img_url ) . '" class="tickera-payment-options" alt="' . esc_attr( $gateway->plugin_name ) . '" /></label>' . '</div>' . '<div class="tc_gateway_form" id="' . esc_attr( $gateway->plugin_name ) . '">';
-                        $content .= '<div class="inner-wrapper">';
-                        $content .= '<p class="tc_redirect_message">';
-                        $content .= tickera_apply_filters( 'tickera_redirect_gateway_message', sprintf( 
-                            /* translators: %s: Gateway public name. */
-                            __( 'Redirecting to %s payment page...', 'tickera-event-ticketing-system' ),
-                            $gateway->public_name
-                         ), $gateway->public_name );
-                        $content .= '</p>';
-                        $content .= $gateway->payment_form( $cart ) . '<div class="actions">';
-                        if ( 'free_orders' == $gateway->plugin_name ) {
-                            $content .= '<input type="submit" name="tc_payment_submit" id="tc_payment_confirm" class="tickera-button tc_payment_confirm" value="' . esc_attr__( 'Continue &raquo;', 'tickera-event-ticketing-system' ) . '" />';
-                        } else {
-                            $content .= '<input type="submit" name="tc_payment_submit" id="tc_payment_confirm" class="tickera-button tc_payment_confirm" data-tc-check-value="tc-check-' . esc_attr( $plugin_name ) . '" value="' . esc_attr__( 'Continue Checkout &raquo;', 'tickera-event-ticketing-system' ) . '" />';
-                        }
-                        $content .= '</div></div></div></div>';
-                        // Increment only for those visible(frontend) payment methods.
-                        $key++;
+                        $gateways_to_render[] = [
+                            'gateway'       => $gateway,
+                            'plugin_name'   => $plugin_name,
+                            'show_priority' => $gateway_show_priority,
+                        ];
                     }
                 }
+            }
+            $active_gateways_num = count( $gateways_to_render );
+            $current_payment_method = ( isset( $session['tc_payment_method'] ) ? sanitize_key( $session['tc_payment_method'] ) : '' );
+            $available_payment_methods = array_map( static function ( $gateway_data ) {
+                return $gateway_data['gateway']->plugin_name;
+            }, $gateways_to_render );
+            if ( !in_array( $current_payment_method, $available_payment_methods, true ) ) {
+                $current_payment_method = ( isset( $available_payment_methods[0] ) ? $available_payment_methods[0] : '' );
+            }
+            foreach ( $gateways_to_render as $gateway_data ) {
+                $gateway = $gateway_data['gateway'];
+                $plugin_name = $gateway_data['plugin_name'];
+                $gateway_show_priority = $gateway_data['show_priority'];
+                $is_current_gateway = $current_payment_method === $gateway->plugin_name;
+                $skip_payment_screen = $gateway->skip_payment_screen;
+                $content .= '<div class="tickera tickera-payment-gateways' . (( $is_current_gateway ? ' active' : '' )) . '" data-gateway_show_priority="' . (int) $gateway_show_priority . '">' . '<div class="' . esc_attr( $gateway->plugin_name ) . ' plugin-title">' . '<label>';
+                $content .= '<input type="radio" class="tc_choose_gateway' . (( 1 === $active_gateways_num ? ' tickera-hide-button' : '' )) . '" id="' . esc_attr( $gateway->plugin_name ) . '" name="tc_choose_gateway" value="' . esc_attr( $gateway->plugin_name ) . '" ' . checked( $is_current_gateway, true, false ) . '/>';
+                $content .= $gateway->public_name . '<img src="' . esc_url( $gateway->method_img_url ) . '" class="tickera-payment-options" alt="' . esc_attr( $gateway->plugin_name ) . '" /></label>' . '</div>' . '<div class="tc_gateway_form" id="' . esc_attr( $gateway->plugin_name ) . '">';
+                $content .= '<div class="inner-wrapper">';
+                $content .= '<p class="tc_redirect_message">';
+                $content .= tickera_apply_filters( 'tickera_redirect_gateway_message', sprintf( 
+                    /* translators: %s: Gateway public name. */
+                    __( 'Redirecting to %s payment page...', 'tickera-event-ticketing-system' ),
+                    $gateway->public_name
+                 ), $gateway->public_name );
+                $content .= '</p>';
+                $content .= $gateway->payment_form( $cart ) . '<div class="actions">';
+                if ( 'free_orders' == $gateway->plugin_name ) {
+                    $content .= '<input type="submit" name="tc_payment_submit" id="tc_payment_confirm" class="tickera-button tc_payment_confirm" value="' . esc_attr__( 'Continue &raquo;', 'tickera-event-ticketing-system' ) . '" />';
+                } else {
+                    $content .= '<input type="submit" name="tc_payment_submit" id="tc_payment_confirm" class="tickera-button tc_payment_confirm" data-tc-check-value="tc-check-' . esc_attr( $plugin_name ) . '" value="' . esc_attr__( 'Continue Checkout &raquo;', 'tickera-event-ticketing-system' ) . '" />';
+                }
+                $content .= '</div></div></div></div>';
             }
             if ( 1 == $active_gateways_num && 'yes' == $skip_payment_summary ) {
                 if ( !$skip_payment_screen ) {

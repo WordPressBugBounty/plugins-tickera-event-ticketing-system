@@ -43,7 +43,7 @@ $tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
     <div class="nav-tab-wrapper">
         <ul>
             <?php 
-                $tab_index = 0;
+                $tickera_tab_index = 0;
                 foreach ($tickera_setting_menus as $tickera_setting_key => $tickera_menu) {
                     $tickera_setting_tab_url = add_query_arg(array(
                             'post_type' => 'tc_events',
@@ -52,10 +52,10 @@ $tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
                         ), admin_url('edit.php'));
                     if ( current_user_can( 'manage_options' ) || current_user_can( 'manage_' . sanitize_text_field( $tickera_setting_key ) . '_settings_cap' ) ) { ?>
                         <li>
-                            <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $tickera_setting_key || ( ! $tab && ! $tab_index ) ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tickera_setting_tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $tickera_menu ) ); ?></a>
+                            <a class="nav-tab<?php echo wp_kses_post( ( ( $tab == $tickera_setting_key || ( ! $tab && ! $tickera_tab_index ) ) ? ' nav-tab-active' : '' ) ); ?>" href="<?php echo esc_url( sanitize_text_field( $tickera_setting_tab_url ) ); ?>"><?php echo esc_html( sanitize_text_field( $tickera_menu ) ); ?></a>
                         </li><?php 
-                        $tab = ( ! $tab && ! $tab_index ) ? $tickera_setting_key : $tab;
-                        $tab_index++;
+                        $tab = ( ! $tab && ! $tickera_tab_index ) ? $tickera_setting_key : $tab;
+                        $tickera_tab_index++;
                     }
                 } 
             ?>

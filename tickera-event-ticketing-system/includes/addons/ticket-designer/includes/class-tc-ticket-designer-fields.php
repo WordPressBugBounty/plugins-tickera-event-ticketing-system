@@ -477,7 +477,10 @@ class TC_Ticket_Designer_Fields {
 			$data['event_date']     = $start ? date_i18n( get_option( 'date_format' ), strtotime( $start ) ) : '';
 			$data['event_time']     = $start ? date_i18n( get_option( 'time_format' ), strtotime( $start ) ) : '';
 			$data['event_datetime'] = $start ? date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $start ) ) : '';
-			if ( $end ) {
+			// Only show a "start - end" range when the end actually differs from the
+			// start; otherwise the range is redundant (e.g. "Sep 9, 2026 7:00 PM to
+			// Sep 9, 2026 7:00 PM") and the date/time should be printed once.
+			if ( $end && strtotime( $end ) !== strtotime( $start ) ) {
 				$data['event_datetime'] .= ' - ' . date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $end ) );
 			}
 			$data['venue_name']    = (string) get_post_meta( $event_id, 'event_location', true );

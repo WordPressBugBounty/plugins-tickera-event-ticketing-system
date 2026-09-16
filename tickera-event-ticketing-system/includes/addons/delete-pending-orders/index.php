@@ -22,12 +22,42 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
         var $plugin_url = '';
 
         function __construct() {
+
+            // Register the "every_minute" schedule ourselves - it's not a WP core schedule, and
+            // this addon must not depend on WooCommerce/Action Scheduler (which happens to
+            // register a schedule of the same name) being active to be able to use it.
+            add_filter( 'cron_schedules', array( $this, 'add_every_minute_cron_schedule' ) ); // phpcs:ignore WordPress.WP.CronInterval.CronSchedulesInterval
+
             if ( tickera_apply_filters( 'tickera_bridge_for_woocommerce_is_active', false ) == false ) {
                 $this->title = __( 'Cancel Pending Orders', 'tickera-event-ticketing-system' );
-                add_filter( 'tickera_general_settings_miscellaneous_fields', array( &$this, 'cancel_pending_orders_misc_settings_field' ), 10, 1 );
-                add_action( 'tickera_save_tc_general_settings', array( &$this, 'schedule_cancel_pending_orders_event' ), 10, 1 );
-                add_action( 'tickera_maybe_delete_pending_posts_hook', array( &$this, 'tc_maybe_cancel_pending_posts' ), 10, 1 );
+                add_filter( 'tickera_general_settings_miscellaneous_fields', array( $this, 'cancel_pending_orders_misc_settings_field' ), 10, 1 );
+                add_action( 'tickera_save_tc_general_settings', array( $this, 'schedule_cancel_pending_orders_event' ), 10, 1 );
+                tickera_add_action( 'tickera_maybe_delete_pending_posts_hook', array( $this, 'tc_maybe_cancel_pending_posts' ), 10, 1, [ 'tc_maybe_delete_pending_posts_hook' ] );
             }
+        }
+
+        /**
+         * Adds the "every_minute" WP-Cron schedule.
+         *
+         * wp_schedule_event() only accepts schedules registered here - "every_minute" isn't
+         * one of WP core's defaults (hourly/twicedaily/daily/weekly). WooCommerce's Action
+         * Scheduler happens to register an interval of the same name, but this addon has to
+         * keep working on a standalone Tickera site where WooCommerce may never be installed,
+         * so it can't rely on that registration existing.
+         *
+         * @param array $schedules
+         * @return array
+         */
+        function add_every_minute_cron_schedule( $schedules ) {
+
+            if ( ! isset( $schedules[ 'every_minute' ] ) ) {
+                $schedules[ 'every_minute' ] = array(
+                    'interval' => 60,
+                    'display' => __( 'Every Minute', 'tickera-event-ticketing-system' ),
+                );
+            }
+
+            return $schedules;
         }
 
         function cancel_pending_orders_misc_settings_field( $settings_fields ) {
@@ -89,8 +119,11 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
 
             if ( $delete_pending_orders == 'yes' ) {
 
-                if ( ! wp_next_scheduled( 'tc_maybe_delete_pending_posts_hook' ) ) {
+                if ( ! wp_next_scheduled( 'tickera_maybe_delete_pending_posts_hook' ) ) {
                     wp_schedule_event( time(), 'every_minute', 'tickera_maybe_delete_pending_posts_hook' );
+
+                    // Cancel outdated cron hook
+                    wp_clear_scheduled_hook( 'tc_maybe_delete_pending_posts_hook' );
                 }
                 $this->tc_maybe_cancel_pending_posts();
 
@@ -129,6 +162,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Cancel_Pending_Orders' ) ) {
 
                 // Cancel cron hook
                 wp_clear_scheduled_hook( 'tc_maybe_delete_pending_posts_hook' );
+                wp_clear_scheduled_hook( 'tickera_maybe_delete_pending_posts_hook' );
             }
         }
 

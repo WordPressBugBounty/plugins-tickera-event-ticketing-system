@@ -612,13 +612,13 @@ if ( ! function_exists( 'tickera_checkins_api_key_id' ) ) {
         }
 
         $api_key = new \Tickera\TC_API_Key( $api_key_id );
-        $api_key_value = isset( $api_key->details->api_key ) ? trim( (string) $api_key->details->api_key ) : '';
+        $api_key_name = isset( $api_key->details->api_key_name ) ? trim( (string) $api_key->details->api_key_name ) : '';
 
-        if ( ! $api_key_value ) {
+        if ( ! $api_key_name ) {
             return esc_html__( 'Not available', 'tickera-event-ticketing-system' );
         }
 
-        return esc_html( $api_key_value );
+        return esc_html( $api_key_name );
     }
 }
 

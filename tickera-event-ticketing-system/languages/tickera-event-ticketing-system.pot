@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Tickera – Sell Tickets & Manage Events\n"
-"POT-Creation-Date: 2026-08-27 14:05+0200\n"
+"POT-Creation-Date: 2026-09-16 13:22+0200\n"
 "PO-Revision-Date: 2026-05-12 11:11+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -30,8 +30,8 @@ msgid "Check in attendees faster with the premium Checkinera app"
 msgstr ""
 
 #: includes/addons/barcode-reader/includes/admin-pages/tc_barcode_reader.php:30
-#: includes/addons/better-attendees-and-tickets/index.php:855
-#: includes/addons/better-attendees-and-tickets/index.php:991
+#: includes/addons/better-attendees-and-tickets/index.php:857
+#: includes/addons/better-attendees-and-tickets/index.php:993
 msgid "API Key"
 msgstr ""
 
@@ -50,8 +50,8 @@ msgid "Checking in..."
 msgstr ""
 
 #: includes/addons/barcode-reader/index.php:141
-#: includes/addons/better-attendees-and-tickets/index.php:659
-#: includes/classes/class.checkin_api.php:726
+#: includes/addons/better-attendees-and-tickets/index.php:661
+#: includes/classes/class.checkin_api.php:727
 msgid "Insufficient permissions. This API key cannot check in this ticket."
 msgstr ""
 
@@ -81,100 +81,100 @@ msgstr ""
 
 #: includes/addons/better-attendees-and-tickets/index.php:90
 #: includes/addons/better-attendees-and-tickets/index.php:132
-#: includes/addons/better-attendees-and-tickets/index.php:366
+#: includes/addons/better-attendees-and-tickets/index.php:368
 #: includes/addons/better-orders/index.php:179
 #: includes/general-functions.php:4627 includes/internal-hooks.php:1070
 #: includes/internal-hooks.php:1073
 msgid "All Events"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:388
+#: includes/addons/better-attendees-and-tickets/index.php:390
 #: includes/addons/better-orders/index.php:201
 msgid "All Order Statuses"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:418
+#: includes/addons/better-attendees-and-tickets/index.php:420
 msgid "Ticket checked in successfully."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:635
+#: includes/addons/better-attendees-and-tickets/index.php:637
 msgid "Attendee updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:636
+#: includes/addons/better-attendees-and-tickets/index.php:638
 #: includes/addons/better-events/index.php:344
 #: includes/addons/better-orders/index.php:366
 #: includes/addons/better-ticket-types/index.php:171
 msgid "Custom field updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:637
+#: includes/addons/better-attendees-and-tickets/index.php:639
 #: includes/addons/better-events/index.php:345
 #: includes/addons/better-orders/index.php:367
 #: includes/addons/better-ticket-types/index.php:172
 msgid "Custom field deleted."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:638
+#: includes/addons/better-attendees-and-tickets/index.php:640
 msgid "Check-in records updated."
 msgstr ""
 
 #. translators: %s: Formatted datetime timestamp of a revision.
-#: includes/addons/better-attendees-and-tickets/index.php:644
+#: includes/addons/better-attendees-and-tickets/index.php:646
 #, php-format
 msgid "Attendee data restored to revision from %s"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:649
+#: includes/addons/better-attendees-and-tickets/index.php:651
 msgid "Attendee data published."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:650
+#: includes/addons/better-attendees-and-tickets/index.php:652
 msgid "Attendee data saved."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:651
+#: includes/addons/better-attendees-and-tickets/index.php:653
 msgid "Attendee data submitted."
 msgstr ""
 
 #. translators: 1: Formatted datetime timestamp of a scheduled ticket instance.
-#: includes/addons/better-attendees-and-tickets/index.php:654
+#: includes/addons/better-attendees-and-tickets/index.php:656
 #, php-format
 msgid "Attendee data scheduled for: <strong>%1$s</strong>."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:657
+#: includes/addons/better-attendees-and-tickets/index.php:659
 msgid "Attendee data draft updated."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:658
+#: includes/addons/better-attendees-and-tickets/index.php:660
 msgid "Ticket is invalid or expired"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:796
+#: includes/addons/better-attendees-and-tickets/index.php:798
 msgid "Check-in List"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:839
+#: includes/addons/better-attendees-and-tickets/index.php:841
 msgid "Check-in record deleted successfully."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:852
+#: includes/addons/better-attendees-and-tickets/index.php:854
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:102
 msgid "Date & Time"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:853
+#: includes/addons/better-attendees-and-tickets/index.php:855
 #: includes/classes/class.orders.php:69 includes/internal-hooks.php:158
 #: includes/templates/shortcode-order-history-contents.php:24
 msgid "Status"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:854
+#: includes/addons/better-attendees-and-tickets/index.php:856
 msgid "Direction"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:857
+#: includes/addons/better-attendees-and-tickets/index.php:859
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:61
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:925
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:961
@@ -188,32 +188,32 @@ msgstr ""
 #: includes/classes/class.cart_form.php:166
 #: includes/classes/class.discounts.php:681
 #: includes/classes/class.events.php:155 includes/classes/class.orders.php:383
-#: includes/classes/class.ticket_templates-new.php:463
-#: includes/classes/class.ticket_templates.php:376
+#: includes/classes/class.ticket_templates-new.php:464
+#: includes/classes/class.ticket_templates.php:377
 #: includes/classes/class.tickets.php:260
 #: includes/classes/class.tickets_instances.php:140
 msgid "Delete"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:869
+#: includes/addons/better-attendees-and-tickets/index.php:871
 msgid "Out"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:869
+#: includes/addons/better-attendees-and-tickets/index.php:871
 msgid "In"
 msgstr ""
 
 #. translators: %s: Delete checkin url.
-#: includes/addons/better-attendees-and-tickets/index.php:877
+#: includes/addons/better-attendees-and-tickets/index.php:879
 #, php-format
 msgid "<a class=\"tc_delete_link\" href=\"%s\">Delete</a>"
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:888
+#: includes/addons/better-attendees-and-tickets/index.php:890
 msgid "There are no any check-ins for this ticket yet."
 msgstr ""
 
-#: includes/addons/better-attendees-and-tickets/index.php:1009
+#: includes/addons/better-attendees-and-tickets/index.php:1011
 msgid "Check In"
 msgstr ""
 
@@ -609,7 +609,7 @@ msgstr ""
 
 #: includes/addons/better-orders/index.php:580
 #: includes/addons/frontend-2026/index.php:213
-#: includes/admin-pages/settings-gateways.php:123
+#: includes/admin-pages/settings-gateways.php:125
 #: includes/network-admin-pages/network_settings-gateways.php:87
 msgid "Save Changes"
 msgstr ""
@@ -734,8 +734,8 @@ msgstr ""
 
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:88
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:142
-#: includes/classes/class.events.php:15 tickera.php:3768 tickera.php:5240
-#: tickera.php:5241
+#: includes/classes/class.events.php:15 tickera.php:3784 tickera.php:5256
+#: tickera.php:5257
 msgid "Events"
 msgstr ""
 
@@ -752,7 +752,7 @@ msgid "Delete Associated Orders"
 msgstr ""
 
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:108
-#: includes/addons/export-attendee-list/index.php:286
+#: includes/addons/export-attendee-list/index.php:287
 #: includes/admin-pages/installation-wizard/settings.php:74
 #: includes/admin-pages/installation-wizard/settings.php:93
 #: includes/classes/class.elementor_shortcodes.php:221
@@ -782,7 +782,7 @@ msgid "Yes"
 msgstr ""
 
 #: includes/addons/delete-info/includes/admin-pages/settings-tickera_delete_info.php:111
-#: includes/addons/export-attendee-list/index.php:286
+#: includes/addons/export-attendee-list/index.php:287
 #: includes/admin-pages/installation-wizard/settings.php:77
 #: includes/admin-pages/installation-wizard/settings.php:96
 #: includes/classes/class.elementor_shortcodes.php:220
@@ -858,23 +858,27 @@ msgstr ""
 msgid "Delete Info"
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:26
-#: includes/addons/delete-pending-orders/index.php:38
+#: includes/addons/delete-pending-orders/index.php:32
+#: includes/addons/delete-pending-orders/index.php:68
 msgid "Cancel Pending Orders"
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:42
+#: includes/addons/delete-pending-orders/index.php:56
+msgid "Every Minute"
+msgstr ""
+
+#: includes/addons/delete-pending-orders/index.php:72
 msgid ""
 "Cancel pending orders (which are not paid for \"Cancel Pending Orders "
 "Interval\" hours). Note: all pending orders will be cancelled made via all "
 "payment gateways except Free Orders and Offline Payments."
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:48
+#: includes/addons/delete-pending-orders/index.php:78
 msgid "Cancel Pending Orders Interval"
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:52
+#: includes/addons/delete-pending-orders/index.php:82
 msgid ""
 "Set after how many hours an order will be cancelled if it's not paid. It is "
 "good practice to use 12 or more hours (depending on a payment gateway used) "
@@ -883,15 +887,15 @@ msgid ""
 "wp-cron."
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:74
+#: includes/addons/delete-pending-orders/index.php:104
 msgid "Return Cancelled Orders in Stock"
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:78
+#: includes/addons/delete-pending-orders/index.php:108
 msgid "Set to \"Yes\" to return the committed stocks of a cancelled order."
 msgstr ""
 
-#: includes/addons/delete-pending-orders/index.php:172
+#: includes/addons/delete-pending-orders/index.php:206
 msgid "Unpaid order cancelled - time limit reached."
 msgstr ""
 
@@ -922,7 +926,7 @@ msgstr ""
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:141
 #: includes/addons/gutenberg/assets/woo_event_add_to_cart_group/tc_woo_event_add_to_cart_group_block_editor.js:488
 #: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:76
-#: includes/classes/class.checkin_api.php:955
+#: includes/classes/class.checkin_api.php:956
 #: includes/classes/class.elementor_shortcodes.php:265
 #: includes/classes/class.elementor_shortcodes.php:284
 #: includes/classes/class.elementor_shortcodes.php:361
@@ -978,7 +982,7 @@ msgid "Payment date"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:50
-#: includes/addons/export-attendee-list/index.php:175
+#: includes/addons/export-attendee-list/index.php:176
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:542
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:551
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1427
@@ -1006,7 +1010,7 @@ msgid "Buyer email address"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:71
-#: includes/addons/export-attendee-list/index.php:199
+#: includes/addons/export-attendee-list/index.php:200
 msgid "Checked-in"
 msgstr ""
 
@@ -1223,7 +1227,7 @@ msgid "Document title"
 msgstr ""
 
 #: includes/addons/export-attendee-list/includes/admin-pages/settings-tickera_export_mixed_data.php:165
-#: includes/addons/export-attendee-list/index.php:339
+#: includes/addons/export-attendee-list/index.php:340
 msgid "Attendee List"
 msgstr ""
 
@@ -1235,19 +1239,19 @@ msgstr ""
 msgid "Export PDF"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:163
+#: includes/addons/export-attendee-list/index.php:164
 msgid "Check"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:167
+#: includes/addons/export-attendee-list/index.php:168
 msgid "Ticket Owner"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:171
+#: includes/addons/export-attendee-list/index.php:172
 msgid "Payment Date"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:179
+#: includes/addons/export-attendee-list/index.php:180
 #: includes/addons/gutenberg/assets/add_to_cart_group/tc_add_to_cart_group_block_editor.js:99
 #: includes/addons/gutenberg/assets/event_add_to_cart_group/tc_event_add_to_cart_group_block_editor.js:82
 #: includes/addons/gutenberg/assets/tickets_left/tc_tickets_left_block_editor.js:107
@@ -1257,7 +1261,7 @@ msgstr ""
 #: includes/addons/gutenberg/index.php:2008
 #: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:88
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:111
-#: includes/classes/class.checkin_api.php:954
+#: includes/classes/class.checkin_api.php:955
 #: includes/classes/class.elementor_shortcodes.php:188
 #: includes/classes/class.elementor_shortcodes.php:300
 #: includes/classes/class.elementor_shortcodes.php:614
@@ -1268,7 +1272,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:466
 #: includes/classes/class.shortcode_builder.php:483
 #: includes/classes/class.shortcodes.php:68
-#: includes/classes/class.shortcodes.php:111
+#: includes/classes/class.shortcodes.php:110
 #: includes/classes/class.tickets_instances.php:57
 #: includes/general-functions.php:4675
 #: includes/templates/shortcode-cart-contents.php:107
@@ -1279,16 +1283,16 @@ msgstr ""
 msgid "Ticket Type"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:183
-#: includes/classes/class.checkin_api.php:956
+#: includes/addons/export-attendee-list/index.php:184
+#: includes/classes/class.checkin_api.php:957
 msgid "Buyer Name"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:187
+#: includes/addons/export-attendee-list/index.php:188
 msgid "Buyer Email"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:191
+#: includes/addons/export-attendee-list/index.php:192
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:549
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1114
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:44
@@ -1299,7 +1303,7 @@ msgstr ""
 msgid "Barcode"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:195
+#: includes/addons/export-attendee-list/index.php:196
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:540
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1110
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-element.php:38
@@ -1310,16 +1314,16 @@ msgstr ""
 msgid "QR Code"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:203
+#: includes/addons/export-attendee-list/index.php:204
 #: includes/classes/class.tickets_instances.php:103
 msgid "Check-ins"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:270
+#: includes/addons/export-attendee-list/index.php:271
 msgid "BARCODE"
 msgstr ""
 
-#: includes/addons/export-attendee-list/index.php:274
+#: includes/addons/export-attendee-list/index.php:275
 msgid "QRCODE"
 msgstr ""
 
@@ -1442,11 +1446,11 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:271
 #: includes/classes/class.shortcode_builder.php:293
 #: includes/classes/class.shortcodes.php:71
-#: includes/classes/class.shortcodes.php:127
-#: includes/classes/class.shortcodes.php:232
+#: includes/classes/class.shortcodes.php:126
+#: includes/classes/class.shortcodes.php:231
 #: includes/classes/class.visual_composer_shortcodes.php:18
 #: includes/widgets/cart-widget.php:20 tickera.php:2277 tickera.php:2304
-#: tickera.php:2810
+#: tickera.php:2826
 msgid "Cart"
 msgstr ""
 
@@ -1458,7 +1462,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:153
 #: includes/classes/class.shortcode_builder.php:277
 #: includes/classes/class.shortcodes.php:72
-#: includes/classes/class.shortcodes.php:214 tickera.php:3102
+#: includes/classes/class.shortcodes.php:213 tickera.php:3118
 msgid "Tickets are sold out."
 msgstr ""
 
@@ -1525,11 +1529,11 @@ msgstr ""
 #: includes/addons/gutenberg/assets/woo_add_to_cart_group/tc_woo_add_to_cart_group_block_editor.js:293
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1310
 #: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:86
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1499
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1506
 #: includes/admin-pages/ticket_templates.php:308
 #: includes/classes/class.orders.php:328
 #: includes/classes/class.tickets_instances.php:94
-#: includes/general-functions.php:2355 tickera.php:5327
+#: includes/general-functions.php:2355 tickera.php:5343
 msgid "Ticket"
 msgstr ""
 
@@ -1542,7 +1546,7 @@ msgstr ""
 #: includes/classes/class.elementor_shortcodes.php:306
 #: includes/classes/class.shortcode_builder.php:259
 #: includes/classes/class.shortcodes.php:70
-#: includes/classes/class.shortcodes.php:113
+#: includes/classes/class.shortcodes.php:112
 #: includes/classes/class.tickets.php:72
 msgid "Price"
 msgstr ""
@@ -1558,7 +1562,7 @@ msgstr ""
 #: includes/classes/class.shortcode_builder.php:147
 #: includes/classes/class.shortcode_builder.php:247
 #: includes/classes/class.shortcodes.php:77
-#: includes/classes/class.shortcodes.php:210 tickera.php:3101
+#: includes/classes/class.shortcodes.php:209 tickera.php:3117
 msgid "Add to Cart"
 msgstr ""
 
@@ -1669,8 +1673,8 @@ msgid "Shows date of an event"
 msgstr ""
 
 #: includes/addons/gutenberg/assets/event_date/tc_event_date_block_editor.js:83
-#: includes/classes/class.ticket_templates-new.php:440
-#: includes/classes/class.ticket_templates.php:353
+#: includes/classes/class.ticket_templates-new.php:441
+#: includes/classes/class.ticket_templates.php:354
 #: includes/internal-hooks.php:159
 #: includes/templates/shortcode-order-history-contents.php:26
 msgid "Date"
@@ -1767,7 +1771,7 @@ msgstr ""
 
 #: includes/addons/gutenberg/assets/order_history/tc_order_history_block_editor.js:82
 #: includes/classes/class.tickets_instances.php:76
-#: includes/general-functions.php:2358 tickera.php:2909 tickera.php:5439
+#: includes/general-functions.php:2358 tickera.php:2925 tickera.php:5455
 msgid "Order"
 msgstr ""
 
@@ -1868,7 +1872,7 @@ msgstr ""
 #: includes/addons/gutenberg/index.php:1057
 #: includes/addons/gutenberg/index.php:2028
 #: includes/addons/gutenberg/index.php:2031
-#: includes/classes/class.shortcodes.php:122
+#: includes/classes/class.shortcodes.php:121
 #: includes/templates/shortcode-cart-contents.php:111 tickera.php:791
 msgid "Quantity"
 msgstr ""
@@ -2250,8 +2254,8 @@ msgid "The version of cURL installed on your server."
 msgstr ""
 
 #: includes/addons/system-info/includes/admin-pages/settings-tickera_system_info.php:213
-#: includes/classes/class.checkin_api.php:369
 #: includes/classes/class.checkin_api.php:370
+#: includes/classes/class.checkin_api.php:371
 #: includes/gateways/paypal-standard.php:405
 #: includes/gateways/paypal-standard.php:418
 #: includes/general-functions.php:3270 includes/general-functions.php:3304
@@ -3049,7 +3053,7 @@ msgstr ""
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:578
 #: includes/admin-pages/discount_codes.php:330
 #: includes/admin-pages/settings-api.php:354
-#: includes/templates/shortcode-cart-contents.php:209 tickera.php:5752
+#: includes/templates/shortcode-cart-contents.php:209 tickera.php:5772
 msgid "Apply"
 msgstr ""
 
@@ -3124,7 +3128,7 @@ msgid "Done"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:626
-#: includes/gateways/paygate.php:188 tickera.php:5780
+#: includes/gateways/paygate.php:188 tickera.php:5804
 msgid "Something went wrong. Please try again."
 msgstr ""
 
@@ -3242,10 +3246,10 @@ msgstr ""
 #: includes/classes/class.cart_form.php:165
 #: includes/classes/class.discounts.php:680
 #: includes/classes/class.events.php:154
-#: includes/classes/class.ticket_templates-new.php:462
-#: includes/classes/class.ticket_templates.php:375
-#: includes/classes/class.tickets.php:259 tickera.php:5245 tickera.php:5331
-#: tickera.php:5374 tickera.php:5397 tickera.php:5440 tickera.php:5519
+#: includes/classes/class.ticket_templates-new.php:463
+#: includes/classes/class.ticket_templates.php:376
+#: includes/classes/class.tickets.php:259 tickera.php:5261 tickera.php:5347
+#: tickera.php:5390 tickera.php:5413 tickera.php:5456 tickera.php:5535
 msgid "Edit"
 msgstr ""
 
@@ -3484,7 +3488,7 @@ msgid "Ticket Preview"
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/admin/class-venuera-ticket-designer-admin.php:1367
-#: tickera.php:5754
+#: tickera.php:5774
 msgid "Close"
 msgstr ""
 
@@ -3649,7 +3653,7 @@ msgstr ""
 
 #: includes/addons/ticket-designer/includes/class-tc-ticket-designer-fields.php:95
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:659
-#: includes/classes/class.tickets_instances.php:39 tickera.php:5393
+#: includes/classes/class.tickets_instances.php:39 tickera.php:5409
 msgid "Attendee"
 msgstr ""
 
@@ -3794,80 +3798,80 @@ msgid "No tickets found for this order."
 msgstr ""
 
 #: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:995
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1028
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1040
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1064
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1071
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1031
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1043
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1067
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1074
 msgid "Error"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1028
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1031
 msgid "Invalid download link."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1034
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1037
 msgid ""
 "This download link has expired or is invalid. Please go to your orders page "
 "to get a new link."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1034
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1037
 msgid "Link Expired"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1040
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1043
 msgid "Order not found."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1050
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1053
 msgid "You do not have permission to download this ticket."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1050
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1053
 msgid "Access Denied"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1064
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1067
 msgid "Ticket not found."
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1071
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1074
 msgid "Ticket template not found."
 msgstr ""
 
 #. translators: placeholders are dynamic values.
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1230
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1237
 #, php-format
 msgid "Ticket #%d"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1323
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1330
 msgid "Your Tickets"
 msgstr ""
 
 #. translators: 1: ticket number, 2: total tickets.
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1356
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1363
 #, php-format
 msgid "Ticket %1$d of %2$d"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1392
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1399
 msgid "Ticket QR code"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1400
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1407
 msgid "Download PDF"
 msgstr ""
 
 #. translators: placeholders are dynamic values.
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1470
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1486
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1477
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1493
 #, php-format
 msgid "Download Ticket %d"
 msgstr ""
 
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1471
-#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1487
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1478
+#: includes/addons/ticket-designer/includes/class-venuera-ticket-download.php:1494
 msgid "Download Ticket"
 msgstr ""
 
@@ -4090,7 +4094,7 @@ msgstr ""
 #: includes/admin-pages/settings-api.php:75
 #: includes/admin-pages/settings-api.php:151
 #: includes/admin-pages/settings-email.php:33
-#: includes/admin-pages/settings-gateways.php:39
+#: includes/admin-pages/settings-gateways.php:41
 #: includes/admin-pages/settings-general.php:35
 #: includes/admin-pages/ticket_templates.php:20
 #: includes/admin-pages/ticket_templates.php:43
@@ -4144,7 +4148,7 @@ msgid "Update"
 msgstr ""
 
 #: includes/admin-pages/discount_codes.php:317
-#: includes/classes/class.discounts.php:17 tickera.php:3770
+#: includes/classes/class.discounts.php:17 tickera.php:3786
 msgid "Discount Codes"
 msgstr ""
 
@@ -4335,7 +4339,7 @@ msgstr ""
 
 #: includes/admin-pages/installation-wizard/settings.php:25
 #: includes/classes/class.settings_general.php:66
-#: includes/gateways/2checkout.php:263
+#: includes/gateways/2checkout.php:281
 #: includes/gateways/authorizenet-aim.php:466
 #: includes/gateways/beanstream.php:195
 #: includes/gateways/braintree-3ds2.php:482 includes/gateways/braintree.php:388
@@ -4481,7 +4485,7 @@ msgid "API Access"
 msgstr ""
 
 #: includes/admin-pages/settings-api.php:341
-#: includes/classes/class.api_keys.php:16 tickera.php:5369
+#: includes/classes/class.api_keys.php:16 tickera.php:5385
 msgid "API Keys"
 msgstr ""
 
@@ -4514,28 +4518,28 @@ msgstr ""
 msgid "Save Settings"
 msgstr ""
 
-#: includes/admin-pages/settings-gateways.php:36
+#: includes/admin-pages/settings-gateways.php:38
 #: includes/network-admin-pages/network_settings-gateways.php:25
 msgid "Settings saved."
 msgstr ""
 
-#: includes/admin-pages/settings-gateways.php:57
+#: includes/admin-pages/settings-gateways.php:59
 msgid "Enable Payment Gateway(s)"
 msgstr ""
 
-#: includes/admin-pages/settings-gateways.php:58
+#: includes/admin-pages/settings-gateways.php:60
 msgid ""
 "Enable payment gateways you want to use by clicking the icon of the desired "
 "payment gateway below."
 msgstr ""
 
-#: includes/admin-pages/settings-gateways.php:97
+#: includes/admin-pages/settings-gateways.php:99
 msgid ""
 "Get premium support, more payment gateways and unlock additional features"
 msgstr ""
 
-#: includes/admin-pages/settings.php:15 tickera.php:3771 tickera.php:3840
-#: tickera.php:3885
+#: includes/admin-pages/settings.php:15 tickera.php:3787 tickera.php:3856
+#: tickera.php:3901
 msgid "Settings"
 msgstr ""
 
@@ -4581,7 +4585,7 @@ msgstr ""
 msgid "Post creation failed, could not find original post: "
 msgstr ""
 
-#: includes/admin-pages/ticket_templates.php:167 tickera.php:3769
+#: includes/admin-pages/ticket_templates.php:167 tickera.php:3785
 msgid "Ticket Templates"
 msgstr ""
 
@@ -4723,8 +4727,8 @@ msgstr ""
 #: includes/classes/class.cart_form.php:159
 #: includes/classes/class.discounts.php:674
 #: includes/classes/class.events.php:148 includes/classes/class.orders.php:214
-#: includes/classes/class.ticket_templates-new.php:456
-#: includes/classes/class.ticket_templates.php:369
+#: includes/classes/class.ticket_templates-new.php:457
+#: includes/classes/class.ticket_templates.php:370
 #: includes/classes/class.tickets.php:30
 msgid "ID"
 msgstr ""
@@ -4761,22 +4765,22 @@ msgstr ""
 msgid "Confirm E-Mail"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:368
+#: includes/classes/class.checkin_api.php:369
 msgid "Multiple Events"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:700
-#: includes/classes/class.checkin_api.php:712
+#: includes/classes/class.checkin_api.php:701
+#: includes/classes/class.checkin_api.php:713
 #: includes/classes/class.sales_api.php:311
 #: includes/classes/class.sales_api.php:317
 msgid "Ticket does not exist"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:957
+#: includes/classes/class.checkin_api.php:958
 msgid "Buyer E-mail"
 msgstr ""
 
-#: includes/classes/class.checkin_api.php:961
+#: includes/classes/class.checkin_api.php:962
 msgid "Attendee E-mail"
 msgstr ""
 
@@ -4884,7 +4888,7 @@ msgid "Shortcodes"
 msgstr ""
 
 #: includes/classes/class.divi_shortcodes.php:96
-#: includes/classes/class.shortcode_builder.php:510 tickera.php:5749
+#: includes/classes/class.shortcode_builder.php:510 tickera.php:5769
 msgid "Please enter at least 3 characters."
 msgstr ""
 
@@ -5120,7 +5124,7 @@ msgid ""
 "the number, the higher in the list it goes. 30 is the default value."
 msgstr ""
 
-#: includes/classes/class.orders.php:16 tickera.php:5438
+#: includes/classes/class.orders.php:16 tickera.php:5454
 msgid "Orders"
 msgstr ""
 
@@ -5245,7 +5249,7 @@ msgid ""
 "plugin!"
 msgstr ""
 
-#: includes/classes/class.payment_gateways.php:404 tickera.php:5169
+#: includes/classes/class.payment_gateways.php:404 tickera.php:5185
 msgid "Your transaction has been canceled."
 msgstr ""
 
@@ -6012,19 +6016,19 @@ msgid ""
 "constant variable (e.g AUTH_KEY) is configured to regenerate over time."
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:206
+#: includes/classes/class.shortcodes.php:205
 msgid "Press enter key to add this ticket to cart."
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:207
+#: includes/classes/class.shortcodes.php:206
 msgid "Press enter key to view your cart."
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:232
+#: includes/classes/class.shortcodes.php:231
 msgid "Ticket added to"
 msgstr ""
 
-#: includes/classes/class.shortcodes.php:254
+#: includes/classes/class.shortcodes.php:253
 msgid "Unknown ticket ID"
 msgstr ""
 
@@ -6193,23 +6197,23 @@ msgstr ""
 msgid "Sarabun (Thai)"
 msgstr ""
 
-#: includes/classes/class.ticket_templates-new.php:147
-#: includes/classes/class.ticket_templates.php:108
+#: includes/classes/class.ticket_templates-new.php:148
+#: includes/classes/class.ticket_templates.php:109
 msgid "Something went wrong. Ticket does not exists."
 msgstr ""
 
-#: includes/classes/class.ticket_templates-new.php:151
-#: includes/classes/class.ticket_templates.php:113
+#: includes/classes/class.ticket_templates-new.php:152
+#: includes/classes/class.ticket_templates.php:114
 msgid "preview"
 msgstr ""
 
-#: includes/classes/class.ticket_templates-new.php:432
-#: includes/classes/class.ticket_templates.php:345
+#: includes/classes/class.ticket_templates-new.php:433
+#: includes/classes/class.ticket_templates.php:346
 msgid "Template Name"
 msgstr ""
 
-#: includes/classes/class.ticket_templates-new.php:467
-#: includes/classes/class.ticket_templates.php:380
+#: includes/classes/class.ticket_templates-new.php:468
+#: includes/classes/class.ticket_templates.php:381
 msgid "Action"
 msgstr ""
 
@@ -6348,7 +6352,7 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: includes/classes/class.tickets_instances.php:16 tickera.php:5392
+#: includes/classes/class.tickets_instances.php:16 tickera.php:5408
 msgid "Attendees & Tickets"
 msgstr ""
 
@@ -6361,22 +6365,22 @@ msgid "Display the cart contents"
 msgstr ""
 
 #: includes/gateways/2checkout.php:37 includes/gateways/2checkout.php:38
-#: includes/gateways/2checkout.php:346
+#: includes/gateways/2checkout.php:368
 msgid "2Checkout"
 msgstr ""
 
-#: includes/gateways/2checkout.php:49 includes/gateways/braintree-3ds2.php:228
+#: includes/gateways/2checkout.php:59 includes/gateways/braintree-3ds2.php:228
 #: includes/gateways/braintree.php:212
 #: includes/gateways/stripe-elements-3ds.php:134
 #: includes/gateways/stripe.php:129
 msgid "AED - United Arab Emirates Dirham"
 msgstr ""
 
-#: includes/gateways/2checkout.php:50
+#: includes/gateways/2checkout.php:60
 msgid "ARS - Argentina Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:51 includes/gateways/authorizenet-aim.php:57
+#: includes/gateways/2checkout.php:61 includes/gateways/authorizenet-aim.php:57
 #: includes/gateways/braintree-3ds2.php:80 includes/gateways/braintree.php:64
 #: includes/gateways/ipay88.php:66 includes/gateways/paypal-payments.php:65
 #: includes/gateways/paypal-pro.php:59 includes/gateways/paypal-standard.php:58
@@ -6385,7 +6389,7 @@ msgstr ""
 msgid "AUD - Australian Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:52 includes/gateways/braintree-3ds2.php:91
+#: includes/gateways/2checkout.php:62 includes/gateways/braintree-3ds2.php:91
 #: includes/gateways/braintree.php:75 includes/gateways/paypal-standard.php:59
 #: includes/gateways/payu-latam.php:67
 #: includes/gateways/stripe-elements-3ds.php:152
@@ -6393,7 +6397,7 @@ msgstr ""
 msgid "BRL - Brazilian Real"
 msgstr ""
 
-#: includes/gateways/2checkout.php:53 includes/gateways/authorizenet-aim.php:56
+#: includes/gateways/2checkout.php:63 includes/gateways/authorizenet-aim.php:56
 #: includes/gateways/beanstream.php:49 includes/gateways/braintree-3ds2.php:96
 #: includes/gateways/braintree.php:80 includes/gateways/ipay88.php:68
 #: includes/gateways/paypal-payments.php:66 includes/gateways/paypal-pro.php:60
@@ -6403,7 +6407,7 @@ msgstr ""
 msgid "CAD - Canadian Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:54 includes/gateways/authorizenet-aim.php:59
+#: includes/gateways/2checkout.php:64 includes/gateways/authorizenet-aim.php:59
 #: includes/gateways/paymill.php:59 includes/gateways/paypal-payments.php:79
 #: includes/gateways/paypal-pro.php:73 includes/gateways/paypal-standard.php:78
 #: includes/gateways/stripe-elements-3ds.php:158
@@ -6411,7 +6415,7 @@ msgstr ""
 msgid "CHF - Swiss Franc"
 msgstr ""
 
-#: includes/gateways/2checkout.php:55 includes/gateways/authorizenet-aim.php:60
+#: includes/gateways/2checkout.php:65 includes/gateways/authorizenet-aim.php:60
 #: includes/gateways/braintree-3ds2.php:111 includes/gateways/braintree.php:95
 #: includes/gateways/paymill.php:54 includes/gateways/paypal-payments.php:68
 #: includes/gateways/paypal-pro.php:62 includes/gateways/paypal-standard.php:62
@@ -6420,7 +6424,7 @@ msgstr ""
 msgid "DKK - Danish Krone"
 msgstr ""
 
-#: includes/gateways/2checkout.php:56 includes/gateways/authorizenet-aim.php:61
+#: includes/gateways/2checkout.php:66 includes/gateways/authorizenet-aim.php:61
 #: includes/gateways/beanstream.php:50 includes/gateways/ipay88.php:69
 #: includes/gateways/paymill.php:52 includes/gateways/paypal-payments.php:69
 #: includes/gateways/paypal-pro.php:63 includes/gateways/paypal-standard.php:63
@@ -6429,7 +6433,7 @@ msgstr ""
 msgid "EUR - Euro"
 msgstr ""
 
-#: includes/gateways/2checkout.php:57 includes/gateways/beanstream.php:51
+#: includes/gateways/2checkout.php:67 includes/gateways/beanstream.php:51
 #: includes/gateways/ipay88.php:67 includes/gateways/paygate.php:299
 #: includes/gateways/paymill.php:65 includes/gateways/paypal-payments.php:76
 #: includes/gateways/paypal-pro.php:70 includes/gateways/pin.php:58
@@ -6438,7 +6442,7 @@ msgstr ""
 msgid "GBP - British Pound"
 msgstr ""
 
-#: includes/gateways/2checkout.php:58 includes/gateways/braintree-3ds2.php:135
+#: includes/gateways/2checkout.php:68 includes/gateways/braintree-3ds2.php:135
 #: includes/gateways/braintree.php:119 includes/gateways/paypal-payments.php:70
 #: includes/gateways/paypal-pro.php:64 includes/gateways/paypal-standard.php:64
 #: includes/gateways/pin.php:59 includes/gateways/stripe-elements-3ds.php:182
@@ -6446,24 +6450,24 @@ msgstr ""
 msgid "HKD - Hong Kong Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:59 includes/gateways/braintree-3ds2.php:138
+#: includes/gateways/2checkout.php:69 includes/gateways/braintree-3ds2.php:138
 #: includes/gateways/braintree.php:122 includes/gateways/payumoney.php:52
 #: includes/gateways/stripe-elements-3ds.php:189
 #: includes/gateways/stripe.php:184
 msgid "INR - Indian Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:60 includes/gateways/paypal-standard.php:66
+#: includes/gateways/2checkout.php:70 includes/gateways/paypal-standard.php:66
 msgid "ILS - Israeli New Shekel"
 msgstr ""
 
-#: includes/gateways/2checkout.php:61 includes/gateways/paymill.php:60
+#: includes/gateways/2checkout.php:71 includes/gateways/paymill.php:60
 #: includes/gateways/stripe-elements-3ds.php:205
 #: includes/gateways/stripe.php:200
 msgid "LTL - Lithuanian Litas"
 msgstr ""
 
-#: includes/gateways/2checkout.php:62 includes/gateways/braintree-3ds2.php:144
+#: includes/gateways/2checkout.php:72 includes/gateways/braintree-3ds2.php:144
 #: includes/gateways/braintree.php:128 includes/gateways/komoju.php:71
 #: includes/gateways/paypal-payments.php:72 includes/gateways/paypal-pro.php:66
 #: includes/gateways/paypal-standard.php:67 includes/gateways/pin.php:60
@@ -6472,14 +6476,14 @@ msgstr ""
 msgid "JPY - Japanese Yen"
 msgstr ""
 
-#: includes/gateways/2checkout.php:63 includes/gateways/ipay88.php:62
+#: includes/gateways/2checkout.php:73 includes/gateways/ipay88.php:62
 #: includes/gateways/paypal-standard.php:68
 #: includes/gateways/stripe-elements-3ds.php:218
 #: includes/gateways/stripe.php:213
 msgid "MYR - Malaysian Ringgit"
 msgstr ""
 
-#: includes/gateways/2checkout.php:64 includes/gateways/braintree-3ds2.php:170
+#: includes/gateways/2checkout.php:74 includes/gateways/braintree-3ds2.php:170
 #: includes/gateways/braintree.php:154 includes/gateways/paypal-standard.php:69
 #: includes/gateways/payu-latam.php:70
 #: includes/gateways/stripe-elements-3ds.php:217
@@ -6487,7 +6491,7 @@ msgstr ""
 msgid "MXN - Mexican Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:65 includes/gateways/authorizenet-aim.php:63
+#: includes/gateways/2checkout.php:75 includes/gateways/authorizenet-aim.php:63
 #: includes/gateways/paymill.php:61 includes/gateways/paypal-payments.php:73
 #: includes/gateways/paypal-pro.php:67 includes/gateways/paypal-standard.php:70
 #: includes/gateways/stripe-elements-3ds.php:223
@@ -6495,7 +6499,7 @@ msgstr ""
 msgid "NOK - Norwegian Krone"
 msgstr ""
 
-#: includes/gateways/2checkout.php:66 includes/gateways/authorizenet-aim.php:58
+#: includes/gateways/2checkout.php:76 includes/gateways/authorizenet-aim.php:58
 #: includes/gateways/braintree-3ds2.php:182 includes/gateways/braintree.php:166
 #: includes/gateways/paypal-payments.php:74 includes/gateways/paypal-pro.php:68
 #: includes/gateways/paypal-standard.php:71 includes/gateways/pin.php:55
@@ -6504,25 +6508,25 @@ msgstr ""
 msgid "NZD - New Zealand Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:67 includes/gateways/braintree-3ds2.php:191
+#: includes/gateways/2checkout.php:77 includes/gateways/braintree-3ds2.php:191
 #: includes/gateways/braintree.php:175 includes/gateways/paypal-standard.php:72
 #: includes/gateways/stripe-elements-3ds.php:229
 #: includes/gateways/stripe.php:224
 msgid "PHP - Philippine Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:68
+#: includes/gateways/2checkout.php:78
 msgid "RON - Romanian New Leu"
 msgstr ""
 
-#: includes/gateways/2checkout.php:69 includes/gateways/braintree-3ds2.php:196
+#: includes/gateways/2checkout.php:79 includes/gateways/braintree-3ds2.php:196
 #: includes/gateways/braintree.php:180 includes/gateways/paypal-standard.php:75
 #: includes/gateways/stripe-elements-3ds.php:236
 #: includes/gateways/stripe.php:231
 msgid "RUB - Russian Ruble"
 msgstr ""
 
-#: includes/gateways/2checkout.php:70 includes/gateways/authorizenet-aim.php:65
+#: includes/gateways/2checkout.php:80 includes/gateways/authorizenet-aim.php:65
 #: includes/gateways/paymill.php:63 includes/gateways/paypal-payments.php:78
 #: includes/gateways/paypal-pro.php:72 includes/gateways/paypal-standard.php:77
 #: includes/gateways/stripe-elements-3ds.php:241
@@ -6530,7 +6534,7 @@ msgstr ""
 msgid "SEK - Swedish Krona"
 msgstr ""
 
-#: includes/gateways/2checkout.php:71 includes/gateways/braintree-3ds2.php:204
+#: includes/gateways/2checkout.php:81 includes/gateways/braintree-3ds2.php:204
 #: includes/gateways/braintree.php:188 includes/gateways/ipay88.php:64
 #: includes/gateways/paypal-payments.php:77 includes/gateways/paypal-pro.php:71
 #: includes/gateways/paypal-standard.php:76
@@ -6539,178 +6543,178 @@ msgstr ""
 msgid "SGD - Singapore Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:72 includes/gateways/paymill.php:64
+#: includes/gateways/2checkout.php:82 includes/gateways/paymill.php:64
 #: includes/gateways/paypal-standard.php:80
 #: includes/gateways/stripe-elements-3ds.php:253
 #: includes/gateways/stripe.php:248
 msgid "TRY - Turkish Lira"
 msgstr ""
 
-#: includes/gateways/2checkout.php:73 includes/gateways/authorizenet-aim.php:55
+#: includes/gateways/2checkout.php:83 includes/gateways/authorizenet-aim.php:55
 #: includes/gateways/ipay88.php:70 includes/gateways/paygate.php:300
 #: includes/gateways/paypal-payments.php:80 includes/gateways/paypal-pro.php:74
 #: includes/gateways/paypal-standard.php:81
 msgid "USD - U.S. Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:74
+#: includes/gateways/2checkout.php:84
 #: includes/gateways/stripe-elements-3ds.php:271
 #: includes/gateways/stripe.php:266
 msgid "ZAR - South African Rand"
 msgstr ""
 
-#: includes/gateways/2checkout.php:75
+#: includes/gateways/2checkout.php:85
 #: includes/gateways/stripe-elements-3ds.php:135
 #: includes/gateways/stripe.php:130
 msgid "AFN - Afghan Afghani"
 msgstr ""
 
-#: includes/gateways/2checkout.php:76 includes/gateways/braintree-3ds2.php:75
+#: includes/gateways/2checkout.php:86 includes/gateways/braintree-3ds2.php:75
 #: includes/gateways/braintree.php:59
 #: includes/gateways/stripe-elements-3ds.php:136
 #: includes/gateways/stripe.php:131
 msgid "ALL - Albanian Lek"
 msgstr ""
 
-#: includes/gateways/2checkout.php:77 includes/gateways/braintree-3ds2.php:81
+#: includes/gateways/2checkout.php:87 includes/gateways/braintree-3ds2.php:81
 #: includes/gateways/braintree.php:65
 msgid "AZN - Azerbaijani an Manat"
 msgstr ""
 
-#: includes/gateways/2checkout.php:78 includes/gateways/braintree-3ds2.php:82
+#: includes/gateways/2checkout.php:88 includes/gateways/braintree-3ds2.php:82
 #: includes/gateways/braintree.php:66
 #: includes/gateways/stripe-elements-3ds.php:153
 #: includes/gateways/stripe.php:148
 msgid "BSD - Bahamian Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:79 includes/gateways/braintree-3ds2.php:84
+#: includes/gateways/2checkout.php:89 includes/gateways/braintree-3ds2.php:84
 #: includes/gateways/braintree.php:68
 #: includes/gateways/stripe-elements-3ds.php:146
 #: includes/gateways/stripe.php:141
 msgid "BDT - Bangladeshi Taka"
 msgstr ""
 
-#: includes/gateways/2checkout.php:80 includes/gateways/braintree-3ds2.php:85
+#: includes/gateways/2checkout.php:90 includes/gateways/braintree-3ds2.php:85
 #: includes/gateways/braintree.php:69
 msgid "BBD - Barbados Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:81 includes/gateways/braintree-3ds2.php:87
+#: includes/gateways/2checkout.php:91 includes/gateways/braintree-3ds2.php:87
 #: includes/gateways/braintree.php:71
 msgid "BZD - Belizean dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:82 includes/gateways/braintree-3ds2.php:88
+#: includes/gateways/2checkout.php:92 includes/gateways/braintree-3ds2.php:88
 #: includes/gateways/braintree.php:72
 #: includes/gateways/stripe-elements-3ds.php:149
 #: includes/gateways/stripe.php:144
 msgid "BMD - Bermudian Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:83 includes/gateways/braintree-3ds2.php:89
+#: includes/gateways/2checkout.php:93 includes/gateways/braintree-3ds2.php:89
 #: includes/gateways/braintree.php:73
 #: includes/gateways/stripe-elements-3ds.php:151
 #: includes/gateways/stripe.php:146
 msgid "BOB - Bolivian Boliviano"
 msgstr ""
 
-#: includes/gateways/2checkout.php:84 includes/gateways/braintree-3ds2.php:90
+#: includes/gateways/2checkout.php:94 includes/gateways/braintree-3ds2.php:90
 #: includes/gateways/braintree.php:74
 #: includes/gateways/stripe-elements-3ds.php:154
 #: includes/gateways/stripe.php:149
 msgid "BWP - Botswana Pula"
 msgstr ""
 
-#: includes/gateways/2checkout.php:85 includes/gateways/braintree-3ds2.php:92
+#: includes/gateways/2checkout.php:95 includes/gateways/braintree-3ds2.php:92
 #: includes/gateways/braintree.php:76
 #: includes/gateways/stripe-elements-3ds.php:150
 #: includes/gateways/stripe.php:145
 msgid "BND - Brunei Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:86 includes/gateways/braintree-3ds2.php:93
+#: includes/gateways/2checkout.php:96 includes/gateways/braintree-3ds2.php:93
 #: includes/gateways/braintree.php:77
 #: includes/gateways/stripe-elements-3ds.php:147
 #: includes/gateways/stripe.php:142
 msgid "BGN - Bulgarian Lev"
 msgstr ""
 
-#: includes/gateways/2checkout.php:87 includes/gateways/braintree-3ds2.php:101
+#: includes/gateways/2checkout.php:97 includes/gateways/braintree-3ds2.php:101
 #: includes/gateways/braintree.php:85 includes/gateways/payu-latam.php:68
 #: includes/gateways/stripe-elements-3ds.php:159
 #: includes/gateways/stripe.php:154
 msgid "CLP - Chilean Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:88 includes/gateways/braintree-3ds2.php:102
+#: includes/gateways/2checkout.php:98 includes/gateways/braintree-3ds2.php:102
 #: includes/gateways/braintree.php:86 includes/gateways/ipay88.php:65
 msgid "CNY - Chinese Yuan Renminbi"
 msgstr ""
 
-#: includes/gateways/2checkout.php:89 includes/gateways/braintree-3ds2.php:103
+#: includes/gateways/2checkout.php:99 includes/gateways/braintree-3ds2.php:103
 #: includes/gateways/braintree.php:87 includes/gateways/payu-latam.php:69
 #: includes/gateways/stripe-elements-3ds.php:161
 #: includes/gateways/stripe.php:156
 msgid "COP - Colombian Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:90 includes/gateways/braintree-3ds2.php:106
+#: includes/gateways/2checkout.php:100 includes/gateways/braintree-3ds2.php:106
 #: includes/gateways/braintree.php:90
 #: includes/gateways/stripe-elements-3ds.php:162
 #: includes/gateways/stripe.php:157
 msgid "CRC - Costa Rican Colon"
 msgstr ""
 
-#: includes/gateways/2checkout.php:91 includes/gateways/braintree-3ds2.php:107
+#: includes/gateways/2checkout.php:101 includes/gateways/braintree-3ds2.php:107
 #: includes/gateways/braintree.php:91
 #: includes/gateways/stripe-elements-3ds.php:184
 #: includes/gateways/stripe.php:179
 msgid "HRK - Croatian Kuna"
 msgstr ""
 
-#: includes/gateways/2checkout.php:92 includes/gateways/braintree-3ds2.php:110
+#: includes/gateways/2checkout.php:102 includes/gateways/braintree-3ds2.php:110
 #: includes/gateways/braintree.php:94
 msgid "CZK - Czech Republic Koruna"
 msgstr ""
 
-#: includes/gateways/2checkout.php:93 includes/gateways/braintree-3ds2.php:113
+#: includes/gateways/2checkout.php:103 includes/gateways/braintree-3ds2.php:113
 #: includes/gateways/braintree.php:97
 #: includes/gateways/stripe-elements-3ds.php:167
 #: includes/gateways/stripe.php:162
 msgid "DOP - Dominican Peso"
 msgstr ""
 
-#: includes/gateways/2checkout.php:94 includes/gateways/braintree-3ds2.php:114
+#: includes/gateways/2checkout.php:104 includes/gateways/braintree-3ds2.php:114
 #: includes/gateways/braintree.php:98
 #: includes/gateways/stripe-elements-3ds.php:267
 #: includes/gateways/stripe.php:262
 msgid "XCD - East Caribbean Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:95 includes/gateways/braintree-3ds2.php:116
+#: includes/gateways/2checkout.php:105 includes/gateways/braintree-3ds2.php:116
 #: includes/gateways/braintree.php:100
 #: includes/gateways/stripe-elements-3ds.php:170
 #: includes/gateways/stripe.php:165
 msgid "EGP - Egyptian Pound"
 msgstr ""
 
-#: includes/gateways/2checkout.php:96 includes/gateways/braintree-3ds2.php:123
+#: includes/gateways/2checkout.php:106 includes/gateways/braintree-3ds2.php:123
 #: includes/gateways/braintree.php:107
 msgid "FJD - Fiji Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:97 includes/gateways/braintree-3ds2.php:129
+#: includes/gateways/2checkout.php:107 includes/gateways/braintree-3ds2.php:129
 #: includes/gateways/braintree.php:113
 msgid "GTQ - Guatemala Quetzal"
 msgstr ""
 
-#: includes/gateways/2checkout.php:98 includes/gateways/braintree-3ds2.php:134
+#: includes/gateways/2checkout.php:108 includes/gateways/braintree-3ds2.php:134
 #: includes/gateways/braintree.php:118
 msgid "HNL - Honduras Lempira"
 msgstr ""
 
-#: includes/gateways/2checkout.php:99 includes/gateways/braintree-3ds2.php:136
+#: includes/gateways/2checkout.php:109 includes/gateways/braintree-3ds2.php:136
 #: includes/gateways/braintree.php:120 includes/gateways/paymill.php:55
 #: includes/gateways/paypal-payments.php:71 includes/gateways/paypal-pro.php:65
 #: includes/gateways/paypal-standard.php:65
@@ -6719,219 +6723,219 @@ msgstr ""
 msgid "HUF - Hungarian Forint"
 msgstr ""
 
-#: includes/gateways/2checkout.php:100 includes/gateways/braintree-3ds2.php:139
+#: includes/gateways/2checkout.php:110 includes/gateways/braintree-3ds2.php:139
 #: includes/gateways/braintree.php:123
 #: includes/gateways/stripe-elements-3ds.php:187
 #: includes/gateways/stripe.php:182
 msgid "IDR - Indonesian Rupiah"
 msgstr ""
 
-#: includes/gateways/2checkout.php:101 includes/gateways/braintree-3ds2.php:143
+#: includes/gateways/2checkout.php:111 includes/gateways/braintree-3ds2.php:143
 #: includes/gateways/braintree.php:127
 #: includes/gateways/stripe-elements-3ds.php:191
 #: includes/gateways/stripe.php:186
 msgid "JMD - Jamaican Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:102 includes/gateways/braintree-3ds2.php:146
+#: includes/gateways/2checkout.php:112 includes/gateways/braintree-3ds2.php:146
 #: includes/gateways/braintree.php:130
 msgid "KZT - Kazakhstan Tenge"
 msgstr ""
 
-#: includes/gateways/2checkout.php:103 includes/gateways/braintree-3ds2.php:147
+#: includes/gateways/2checkout.php:113 includes/gateways/braintree-3ds2.php:147
 #: includes/gateways/braintree.php:131
 #: includes/gateways/stripe-elements-3ds.php:193
 #: includes/gateways/stripe.php:188
 msgid "KES - Kenyan Shilling"
 msgstr ""
 
-#: includes/gateways/2checkout.php:104 includes/gateways/braintree-3ds2.php:152
+#: includes/gateways/2checkout.php:114 includes/gateways/braintree-3ds2.php:152
 #: includes/gateways/braintree.php:136
 msgid "LAK - Laosian kip"
 msgstr ""
 
-#: includes/gateways/2checkout.php:105 includes/gateways/braintree-3ds2.php:175
+#: includes/gateways/2checkout.php:115 includes/gateways/braintree-3ds2.php:175
 #: includes/gateways/braintree.php:159
 msgid "MMK - Myanmar Kyat"
 msgstr ""
 
-#: includes/gateways/2checkout.php:106 includes/gateways/braintree-3ds2.php:154
+#: includes/gateways/2checkout.php:116 includes/gateways/braintree-3ds2.php:154
 #: includes/gateways/braintree.php:138
 #: includes/gateways/stripe-elements-3ds.php:201
 #: includes/gateways/stripe.php:196
 msgid "LBP - Lebanese Pound"
 msgstr ""
 
-#: includes/gateways/2checkout.php:107 includes/gateways/braintree-3ds2.php:155
+#: includes/gateways/2checkout.php:117 includes/gateways/braintree-3ds2.php:155
 #: includes/gateways/braintree.php:139
 #: includes/gateways/stripe-elements-3ds.php:203
 #: includes/gateways/stripe.php:198
 msgid "LRD - Liberian Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:108 includes/gateways/braintree-3ds2.php:159
+#: includes/gateways/2checkout.php:118 includes/gateways/braintree-3ds2.php:159
 #: includes/gateways/braintree.php:143
 #: includes/gateways/stripe-elements-3ds.php:212
 #: includes/gateways/stripe.php:207
 msgid "MOP - Macanese Pataca"
 msgstr ""
 
-#: includes/gateways/2checkout.php:109 includes/gateways/braintree-3ds2.php:166
+#: includes/gateways/2checkout.php:119 includes/gateways/braintree-3ds2.php:166
 #: includes/gateways/braintree.php:150
 msgid "MVR - Maldiveres Rufiyaa"
 msgstr ""
 
-#: includes/gateways/2checkout.php:110 includes/gateways/braintree-3ds2.php:168
+#: includes/gateways/2checkout.php:120 includes/gateways/braintree-3ds2.php:168
 #: includes/gateways/braintree.php:152
 #: includes/gateways/stripe-elements-3ds.php:213
 #: includes/gateways/stripe.php:208
 msgid "MRO - Mauritanian Ouguiya"
 msgstr ""
 
-#: includes/gateways/2checkout.php:111 includes/gateways/braintree-3ds2.php:169
+#: includes/gateways/2checkout.php:121 includes/gateways/braintree-3ds2.php:169
 #: includes/gateways/braintree.php:153
 msgid "MUR - Mauritius Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:112 includes/gateways/braintree-3ds2.php:173
+#: includes/gateways/2checkout.php:122 includes/gateways/braintree-3ds2.php:173
 #: includes/gateways/braintree.php:157
 #: includes/gateways/stripe-elements-3ds.php:207
 #: includes/gateways/stripe.php:202
 msgid "MAD - Moroccan Dirham"
 msgstr ""
 
-#: includes/gateways/2checkout.php:113 includes/gateways/braintree-3ds2.php:177
+#: includes/gateways/2checkout.php:123 includes/gateways/braintree-3ds2.php:177
 #: includes/gateways/braintree.php:161
 #: includes/gateways/stripe-elements-3ds.php:224
 #: includes/gateways/stripe.php:219
 msgid "NPR - Nepalese Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:114 includes/gateways/braintree-3ds2.php:180
+#: includes/gateways/2checkout.php:124 includes/gateways/braintree-3ds2.php:180
 #: includes/gateways/braintree.php:164
 #: includes/gateways/stripe-elements-3ds.php:255
 #: includes/gateways/stripe.php:250
 msgid "TWD - New Taiwan Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:115 includes/gateways/braintree-3ds2.php:183
+#: includes/gateways/2checkout.php:125 includes/gateways/braintree-3ds2.php:183
 #: includes/gateways/braintree.php:167
 #: includes/gateways/stripe-elements-3ds.php:222
 #: includes/gateways/stripe.php:217
 msgid "NIO - Nicaraguan Cordoba"
 msgstr ""
 
-#: includes/gateways/2checkout.php:116 includes/gateways/braintree-3ds2.php:187
+#: includes/gateways/2checkout.php:126 includes/gateways/braintree-3ds2.php:187
 #: includes/gateways/braintree.php:171
 msgid "PKR - Pakistan Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:117 includes/gateways/braintree-3ds2.php:179
+#: includes/gateways/2checkout.php:127 includes/gateways/braintree-3ds2.php:179
 #: includes/gateways/braintree.php:163
 msgid "PGK - New Guinea kina"
 msgstr ""
 
-#: includes/gateways/2checkout.php:118 includes/gateways/braintree-3ds2.php:190
+#: includes/gateways/2checkout.php:128 includes/gateways/braintree-3ds2.php:190
 #: includes/gateways/braintree.php:174
 msgid "PEN - Peru Nuevo Sol"
 msgstr ""
 
-#: includes/gateways/2checkout.php:119 includes/gateways/braintree-3ds2.php:192
+#: includes/gateways/2checkout.php:129 includes/gateways/braintree-3ds2.php:192
 #: includes/gateways/braintree.php:176
 msgid "PLN - Poland Zloty"
 msgstr ""
 
-#: includes/gateways/2checkout.php:120 includes/gateways/braintree-3ds2.php:193
+#: includes/gateways/2checkout.php:130 includes/gateways/braintree-3ds2.php:193
 #: includes/gateways/braintree.php:177
 msgid "QAR - Qatari Rial"
 msgstr ""
 
-#: includes/gateways/2checkout.php:121 includes/gateways/braintree-3ds2.php:198
+#: includes/gateways/2checkout.php:131 includes/gateways/braintree-3ds2.php:198
 #: includes/gateways/braintree.php:182
 #: includes/gateways/stripe-elements-3ds.php:265
 #: includes/gateways/stripe.php:260
 msgid "WST - Samoan Tala"
 msgstr ""
 
-#: includes/gateways/2checkout.php:122 includes/gateways/braintree-3ds2.php:200
+#: includes/gateways/2checkout.php:132 includes/gateways/braintree-3ds2.php:200
 #: includes/gateways/braintree.php:184
 msgid "SAR - Saudi Arabian riyal"
 msgstr ""
 
-#: includes/gateways/2checkout.php:123 includes/gateways/braintree-3ds2.php:202
+#: includes/gateways/2checkout.php:133 includes/gateways/braintree-3ds2.php:202
 #: includes/gateways/braintree.php:186
 msgid "SCR - Seychelles Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:124 includes/gateways/braintree-3ds2.php:207
+#: includes/gateways/2checkout.php:134 includes/gateways/braintree-3ds2.php:207
 #: includes/gateways/braintree.php:191
 #: includes/gateways/stripe-elements-3ds.php:239
 #: includes/gateways/stripe.php:234
 msgid "SBD - Solomon Islands Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:125 includes/gateways/braintree-3ds2.php:210
+#: includes/gateways/2checkout.php:135 includes/gateways/braintree-3ds2.php:210
 #: includes/gateways/braintree.php:194
 #: includes/gateways/stripe-elements-3ds.php:197
 #: includes/gateways/stripe.php:192
 msgid "KRW - South Korean Won"
 msgstr ""
 
-#: includes/gateways/2checkout.php:126 includes/gateways/braintree-3ds2.php:211
+#: includes/gateways/2checkout.php:136 includes/gateways/braintree-3ds2.php:211
 #: includes/gateways/braintree.php:195
 msgid "LKR - Sri Lanka Rupee"
 msgstr ""
 
-#: includes/gateways/2checkout.php:127 includes/gateways/braintree-3ds2.php:217
+#: includes/gateways/2checkout.php:137 includes/gateways/braintree-3ds2.php:217
 #: includes/gateways/braintree.php:201
 msgid "CHF - Switzerland Franc"
 msgstr ""
 
-#: includes/gateways/2checkout.php:128 includes/gateways/braintree-3ds2.php:218
+#: includes/gateways/2checkout.php:138 includes/gateways/braintree-3ds2.php:218
 #: includes/gateways/braintree.php:202
 msgid "SYP - Syrian Arab Republic Pound"
 msgstr ""
 
-#: includes/gateways/2checkout.php:129 includes/gateways/braintree-3ds2.php:221
+#: includes/gateways/2checkout.php:139 includes/gateways/braintree-3ds2.php:221
 #: includes/gateways/braintree.php:205 includes/gateways/ipay88.php:63
 msgid "THB - Thailand Baht"
 msgstr ""
 
-#: includes/gateways/2checkout.php:130 includes/gateways/braintree-3ds2.php:222
+#: includes/gateways/2checkout.php:140 includes/gateways/braintree-3ds2.php:222
 #: includes/gateways/braintree.php:206
 msgid "TOP - Tonga Pa&#x27;anga"
 msgstr ""
 
-#: includes/gateways/2checkout.php:131 includes/gateways/braintree-3ds2.php:223
+#: includes/gateways/2checkout.php:141 includes/gateways/braintree-3ds2.php:223
 #: includes/gateways/braintree.php:207
 #: includes/gateways/stripe-elements-3ds.php:254
 #: includes/gateways/stripe.php:249
 msgid "TTD - Trinidad and Tobago Dollar"
 msgstr ""
 
-#: includes/gateways/2checkout.php:132 includes/gateways/braintree-3ds2.php:227
+#: includes/gateways/2checkout.php:142 includes/gateways/braintree-3ds2.php:227
 #: includes/gateways/braintree.php:211
 msgid "UAH - Ukraine Hryvnia"
 msgstr ""
 
-#: includes/gateways/2checkout.php:133 includes/gateways/braintree-3ds2.php:233
+#: includes/gateways/2checkout.php:143 includes/gateways/braintree-3ds2.php:233
 #: includes/gateways/braintree.php:217
 #: includes/gateways/stripe-elements-3ds.php:264
 #: includes/gateways/stripe.php:259
 msgid "VUV - Vanuatu Vatu"
 msgstr ""
 
-#: includes/gateways/2checkout.php:134 includes/gateways/braintree-3ds2.php:235
+#: includes/gateways/2checkout.php:144 includes/gateways/braintree-3ds2.php:235
 #: includes/gateways/braintree.php:219
 msgid "VND - Vietnam Dong"
 msgstr ""
 
-#: includes/gateways/2checkout.php:135 includes/gateways/braintree-3ds2.php:236
+#: includes/gateways/2checkout.php:145 includes/gateways/braintree-3ds2.php:236
 #: includes/gateways/braintree.php:220
 msgid "XOF - West African CFA Franc BCEAO"
 msgstr ""
 
-#: includes/gateways/2checkout.php:136 includes/gateways/braintree-3ds2.php:237
+#: includes/gateways/2checkout.php:146 includes/gateways/braintree-3ds2.php:237
 #: includes/gateways/braintree.php:221
 #: includes/gateways/stripe-elements-3ds.php:270
 #: includes/gateways/stripe.php:265
@@ -6959,7 +6963,7 @@ msgstr ""
 #. translators: %s: Stripe Payment Gateway admin name
 #. translators: %s: Payment Gateway admin name
 #. translators: %s: VoguePay Payment Gateway admin name
-#: includes/gateways/2checkout.php:236
+#: includes/gateways/2checkout.php:248
 #: includes/gateways/authorizenet-aim.php:429
 #: includes/gateways/beanstream.php:164
 #: includes/gateways/braintree-3ds2.php:448 includes/gateways/braintree.php:354
@@ -6978,13 +6982,13 @@ msgstr ""
 msgid "%s Settings"
 msgstr ""
 
-#: includes/gateways/2checkout.php:237
+#: includes/gateways/2checkout.php:249
 msgid ""
 "Sell your tickets via <a target=\"_blank\" href=\"https://www.2checkout.com/"
 "referral?r=95d26f72d1\">2Checkout.com</a>"
 msgstr ""
 
-#: includes/gateways/2checkout.php:243
+#: includes/gateways/2checkout.php:255
 #: includes/gateways/authorizenet-aim.php:436
 #: includes/gateways/beanstream.php:173
 #: includes/gateways/braintree-3ds2.php:455 includes/gateways/braintree.php:361
@@ -6998,7 +7002,7 @@ msgstr ""
 msgid "Mode"
 msgstr ""
 
-#: includes/gateways/2checkout.php:246
+#: includes/gateways/2checkout.php:258
 #: includes/gateways/authorizenet-aim.php:439
 #: includes/gateways/beanstream.php:178
 #: includes/gateways/braintree-3ds2.php:458 includes/gateways/braintree.php:364
@@ -7012,7 +7016,7 @@ msgstr ""
 msgid "Sandbox / Test"
 msgstr ""
 
-#: includes/gateways/2checkout.php:247
+#: includes/gateways/2checkout.php:259
 #: includes/gateways/authorizenet-aim.php:440
 #: includes/gateways/beanstream.php:179 includes/gateways/komoju.php:201
 #: includes/gateways/netbanx.php:169 includes/gateways/paypal-payments.php:588
@@ -7024,38 +7028,42 @@ msgstr ""
 msgid "Live"
 msgstr ""
 
-#: includes/gateways/2checkout.php:252
+#: includes/gateways/2checkout.php:264
 msgid "Seller ID"
 msgstr ""
 
-#: includes/gateways/2checkout.php:254
+#: includes/gateways/2checkout.php:266
 msgid ""
 "Login to your 2Checkout dashboard to obtain the seller ID and secret word. "
 "<a target=\"_blank\" href=\"http://help.2checkout.com/articles/FAQ/Where-do-"
 "I-set-up-the-Secret-Word/\">Instructions &raquo;</a>"
 msgstr ""
 
-#: includes/gateways/2checkout.php:257
-msgid "Secret word"
+#: includes/gateways/2checkout.php:269
+msgid "Merchant Secret Word"
 msgstr ""
 
-#: includes/gateways/2checkout.php:300
+#: includes/gateways/2checkout.php:275
+msgid "Instant Notification Service (INS) Secret Word"
+msgstr ""
+
+#: includes/gateways/2checkout.php:318
 msgid "Invoice not found"
 msgstr ""
 
-#: includes/gateways/2checkout.php:313
+#: includes/gateways/2checkout.php:334
 msgid "2Checkout hash key doesn't match"
 msgstr ""
 
-#: includes/gateways/2checkout.php:324
+#: includes/gateways/2checkout.php:346
 msgid "Waiting for deposited invoice status."
 msgstr ""
 
-#: includes/gateways/2checkout.php:332
+#: includes/gateways/2checkout.php:354
 msgid "Order completed and verified."
 msgstr ""
 
-#: includes/gateways/2checkout.php:338
+#: includes/gateways/2checkout.php:360
 msgid "Fraudulent order detected and changed status."
 msgstr ""
 
@@ -12189,7 +12197,7 @@ msgstr ""
 msgid "Choose any events"
 msgstr ""
 
-#: includes/general-functions.php:4619 tickera.php:5295
+#: includes/general-functions.php:4619 tickera.php:5311
 msgid "All Event Categories"
 msgstr ""
 
@@ -12211,7 +12219,7 @@ msgid "Percentage (%)"
 msgstr ""
 
 #: includes/general-functions.php:4919 includes/widgets/cart-widget.php:68
-#: tickera.php:3159
+#: tickera.php:3175
 msgid "The cart is empty"
 msgstr ""
 
@@ -12946,427 +12954,427 @@ msgid "%1$s %2$sPlease try again%3$s."
 msgstr ""
 
 #. translators: %s: Gateway public name.
-#: tickera.php:2711
+#: tickera.php:2732
 #, php-format
 msgid "Redirecting to %s payment page..."
 msgstr ""
 
-#: tickera.php:2719
+#: tickera.php:2740
 msgid "Continue &raquo;"
 msgstr ""
 
-#: tickera.php:2722
+#: tickera.php:2743
 msgid "Continue Checkout &raquo;"
 msgstr ""
 
-#: tickera.php:2834
+#: tickera.php:2850
 msgid "Payment"
 msgstr ""
 
-#: tickera.php:2886
+#: tickera.php:2902
 msgid "Process Payment"
 msgstr ""
 
-#: tickera.php:2932
+#: tickera.php:2948
 msgid "Confirmation"
 msgstr ""
 
-#: tickera.php:3196
+#: tickera.php:3212
 msgid "Invalid cart request."
 msgstr ""
 
 #. translators: %s: Ticket type name
 #. translators: %s: Ticket type name.
-#: tickera.php:3239 tickera.php:3364
+#: tickera.php:3255 tickera.php:3380
 #, php-format
 msgid "\"%s\" tickets are sold out"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A minimum number of tickets per order.
-#: tickera.php:3298
+#: tickera.php:3314
 #, php-format
 msgid "Minimum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: Ticket type name 2: A maximum number of tickets per order
-#: tickera.php:3332
+#: tickera.php:3348
 #, php-format
 msgid "Maximum order quantity for \"%1$s\" is %2$s"
 msgstr ""
 
 #. translators: 1: A number of quantity left 2: Ticket type name 3: Singular or plural form of a string "ticket".
-#: tickera.php:3350
+#: tickera.php:3366
 #, php-format
 msgid "Only %1$s \"%2$s\" %3$s left"
 msgstr ""
 
-#: tickera.php:3353
+#: tickera.php:3369
 msgid "tickets"
 msgstr ""
 
-#: tickera.php:3353
+#: tickera.php:3369
 msgid "ticket"
 msgstr ""
 
 #. translators: %s: Ticket type name.
-#: tickera.php:3390
+#: tickera.php:3406
 #, php-format
 msgid "\"%s\" You have reached the maximum number of purchases of this ticket"
 msgstr ""
 
-#: tickera.php:3467
+#: tickera.php:3483
 msgid "All fields marked with * are required."
 msgstr ""
 
-#: tickera.php:3612
+#: tickera.php:3628
 msgid "here"
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3622
+#: tickera.php:3638
 #, php-format
 msgid "You can check your order status %s."
 msgstr ""
 
 #. translators: %s: A link to the order status page.
-#: tickera.php:3630
+#: tickera.php:3646
 #, php-format
 msgid "You can check your order status and download tickets %s."
 msgstr ""
 
 #. translators: %s: Tickera
-#: tickera.php:3748
+#: tickera.php:3764
 #, php-format
 msgid ""
 "There was an issue determining where %s is installed. Please reinstall it."
 msgstr ""
 
-#: tickera.php:4211
+#: tickera.php:4227
 msgid "IPN"
 msgstr ""
 
-#: tickera.php:4377
+#: tickera.php:4393
 msgid "Something went wrong. Cart data is not available"
 msgstr ""
 
-#: tickera.php:4387
+#: tickera.php:4403
 msgid ""
 "Something went wrong. The order with the same ID already exists. Please try "
 "again."
 msgstr ""
 
-#: tickera.php:5164
+#: tickera.php:5180
 msgid "Order cancelled by client."
 msgstr ""
 
-#: tickera.php:5242 tickera.php:5328 tickera.php:5371 tickera.php:5516
+#: tickera.php:5258 tickera.php:5344 tickera.php:5387 tickera.php:5532
 msgid "Create new"
 msgstr ""
 
-#: tickera.php:5243
+#: tickera.php:5259
 msgid "Create new event"
 msgstr ""
 
-#: tickera.php:5244
+#: tickera.php:5260
 msgid "Edit events"
 msgstr ""
 
-#: tickera.php:5246
+#: tickera.php:5262
 msgid "New event"
 msgstr ""
 
-#: tickera.php:5247
+#: tickera.php:5263
 msgid "View event"
 msgstr ""
 
-#: tickera.php:5248
+#: tickera.php:5264
 msgid "Search events"
 msgstr ""
 
-#: tickera.php:5249
+#: tickera.php:5265
 msgid "No events found"
 msgstr ""
 
-#: tickera.php:5250
+#: tickera.php:5266
 msgid "No events found in the trash"
 msgstr ""
 
-#: tickera.php:5251
+#: tickera.php:5267
 msgid "View Event"
 msgstr ""
 
-#: tickera.php:5293
+#: tickera.php:5309
 msgctxt "event_category"
 msgid "Event Categories"
 msgstr ""
 
-#: tickera.php:5294
+#: tickera.php:5310
 msgctxt "event_category"
 msgid "Event Category"
 msgstr ""
 
-#: tickera.php:5296
+#: tickera.php:5312
 msgid "Edit Event Category"
 msgstr ""
 
-#: tickera.php:5297
+#: tickera.php:5313
 msgid "View Event Category"
 msgstr ""
 
-#: tickera.php:5298
+#: tickera.php:5314
 msgid "Update Event Category"
 msgstr ""
 
-#: tickera.php:5299
+#: tickera.php:5315
 msgid "Add New Event Category"
 msgstr ""
 
-#: tickera.php:5300
+#: tickera.php:5316
 msgid "New Event Category Name"
 msgstr ""
 
-#: tickera.php:5301
+#: tickera.php:5317
 msgid "Parent Event Category"
 msgstr ""
 
-#: tickera.php:5302
+#: tickera.php:5318
 msgid "Parent Event Category:"
 msgstr ""
 
-#: tickera.php:5303
+#: tickera.php:5319
 msgid "Search Event Categories"
 msgstr ""
 
-#: tickera.php:5304
+#: tickera.php:5320
 msgid "Separate event categories with commas"
 msgstr ""
 
-#: tickera.php:5305
+#: tickera.php:5321
 msgid "Add or remove event categories"
 msgstr ""
 
-#: tickera.php:5306
+#: tickera.php:5322
 msgid "Choose from the most used event categories"
 msgstr ""
 
-#: tickera.php:5307
+#: tickera.php:5323
 msgid "No event categories found"
 msgstr ""
 
-#: tickera.php:5326
+#: tickera.php:5342
 msgid "Ticket Types"
 msgstr ""
 
-#: tickera.php:5329
+#: tickera.php:5345
 msgid "Create new ticket type"
 msgstr ""
 
-#: tickera.php:5330
+#: tickera.php:5346
 msgid "Edit Ticket"
 msgstr ""
 
-#: tickera.php:5332
+#: tickera.php:5348
 msgid "New ticket"
 msgstr ""
 
-#: tickera.php:5333
+#: tickera.php:5349
 msgid "View ticket"
 msgstr ""
 
-#: tickera.php:5334
+#: tickera.php:5350
 msgid "Search tickets"
 msgstr ""
 
-#: tickera.php:5335
+#: tickera.php:5351
 msgid "No tickets found"
 msgstr ""
 
-#: tickera.php:5336
+#: tickera.php:5352
 msgid "No tickets found in the trash"
 msgstr ""
 
-#: tickera.php:5337
+#: tickera.php:5353
 msgid "View Ticket"
 msgstr ""
 
-#: tickera.php:5370
+#: tickera.php:5386
 msgid "API keys"
 msgstr ""
 
-#: tickera.php:5372
+#: tickera.php:5388
 msgid "Create new API keys"
 msgstr ""
 
-#: tickera.php:5373
+#: tickera.php:5389
 msgid "Edit API keys"
 msgstr ""
 
-#: tickera.php:5375
+#: tickera.php:5391
 msgid "New API key"
 msgstr ""
 
-#: tickera.php:5376 tickera.php:5380
+#: tickera.php:5392 tickera.php:5396
 msgid "View API key"
 msgstr ""
 
-#: tickera.php:5377
+#: tickera.php:5393
 msgid "Search API keys"
 msgstr ""
 
-#: tickera.php:5378
+#: tickera.php:5394
 msgid "No API keys found"
 msgstr ""
 
-#: tickera.php:5379
+#: tickera.php:5395
 msgid "No API keys found in the trash"
 msgstr ""
 
-#: tickera.php:5394
+#: tickera.php:5410
 msgid "Create Attendee"
 msgstr ""
 
-#: tickera.php:5395
+#: tickera.php:5411
 msgid "Create New Attendee"
 msgstr ""
 
-#: tickera.php:5396
+#: tickera.php:5412
 msgid "Check-in details"
 msgstr ""
 
-#: tickera.php:5398
+#: tickera.php:5414
 msgid "New Attendee"
 msgstr ""
 
-#: tickera.php:5399 tickera.php:5403
+#: tickera.php:5415 tickera.php:5419
 msgid "View attendee"
 msgstr ""
 
-#: tickera.php:5400
+#: tickera.php:5416
 msgid "Search attendees"
 msgstr ""
 
-#: tickera.php:5401
+#: tickera.php:5417
 msgid "No attendees found"
 msgstr ""
 
-#: tickera.php:5402
+#: tickera.php:5418
 msgid "No attendee records found in the trash"
 msgstr ""
 
-#: tickera.php:5441
+#: tickera.php:5457
 msgid "View order"
 msgstr ""
 
-#: tickera.php:5442
+#: tickera.php:5458
 msgid "Search orders"
 msgstr ""
 
-#: tickera.php:5443
+#: tickera.php:5459
 msgid "No orders found"
 msgstr ""
 
-#: tickera.php:5477
+#: tickera.php:5493
 msgid "Received"
 msgstr ""
 
 #. translators: %s: number of received orders.
-#: tickera.php:5478
+#: tickera.php:5494
 #, php-format
 msgid "Received <span class=\"count\">(%s)</span>"
 msgid_plural "Received <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5484
+#: tickera.php:5500
 msgid "Paid"
 msgstr ""
 
 #. translators: %s: number of paid orders.
-#: tickera.php:5485
+#: tickera.php:5501
 #, php-format
 msgid "Paid <span class=\"count\">(%s)</span>"
 msgid_plural "Paid <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5491
+#: tickera.php:5507
 msgid "Cancelled"
 msgstr ""
 
 #. translators: %s: number of canceled orders.
-#: tickera.php:5492
+#: tickera.php:5508
 #, php-format
 msgid "Cancelled <span class=\"count\">(%s)</span>"
 msgid_plural "Cancelled <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5498
+#: tickera.php:5514
 msgid "Refunded"
 msgstr ""
 
 #. translators: %s: number of refunded orders.
-#: tickera.php:5499
+#: tickera.php:5515
 #, php-format
 msgid "Refunded <span class=\"count\">(%s)</span>"
 msgid_plural "Refunded <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5506
+#: tickera.php:5522
 msgid "Fraud"
 msgstr ""
 
 #. translators: %s: number of fraud orders.
-#: tickera.php:5507
+#: tickera.php:5523
 #, php-format
 msgid "Fraud <span class=\"count\">(%s)</span>"
 msgid_plural "Fraud <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: tickera.php:5514 tickera.php:5515
+#: tickera.php:5530 tickera.php:5531
 msgid "Templates"
 msgstr ""
 
-#: tickera.php:5517
+#: tickera.php:5533
 msgid "Create new template"
 msgstr ""
 
-#: tickera.php:5518
+#: tickera.php:5534
 msgid "Edit templates"
 msgstr ""
 
-#: tickera.php:5520
+#: tickera.php:5536
 msgid "New template"
 msgstr ""
 
-#: tickera.php:5521
+#: tickera.php:5537
 msgid "View template"
 msgstr ""
 
-#: tickera.php:5522
+#: tickera.php:5538
 msgid "Search templates"
 msgstr ""
 
-#: tickera.php:5523
+#: tickera.php:5539
 msgid "No templates found"
 msgstr ""
 
-#: tickera.php:5524
+#: tickera.php:5540
 msgid "No templates found in the trash"
 msgstr ""
 
-#: tickera.php:5525
+#: tickera.php:5541
 msgid "View Template"
 msgstr ""
 
-#: tickera.php:5644 tickera.php:5648
+#: tickera.php:5660 tickera.php:5664
 msgid "Bridge for WooCommerce"
 msgstr ""
 
 #. translators: 1: Bridge for WooCommerce add-on link. 2: Bridge for WooCommerce add-on link.
-#: tickera.php:5652
+#: tickera.php:5668
 #, php-format
 msgid ""
 "Unleash the power of seamless event ticketing with %1$s add-on for Tickera. "
@@ -13375,222 +13383,230 @@ msgid ""
 "unlock the full potential of your event ticketing and e-commerce strategy."
 msgstr ""
 
-#: tickera.php:5736
+#: tickera.php:5752
 msgid "Please confirm that you want to delete it permanently?"
 msgstr ""
 
-#: tickera.php:5737 tickera.php:5782
+#. translators: %d: Number of API Key to delete.
+#: tickera.php:5754 tickera.php:5807
 #, php-format
 msgid "Permanently delete %d API key? This cannot be undone."
 msgstr ""
 
-#: tickera.php:5738 tickera.php:5783
+#. translators: %d: Number of API Keys to delete.
+#: tickera.php:5756 tickera.php:5809
 #, php-format
 msgid "Permanently delete %d API keys? This cannot be undone."
 msgstr ""
 
-#: tickera.php:5739 tickera.php:5784
+#. translators: %d: Number of discount code to delete.
+#: tickera.php:5758 tickera.php:5811
 #, php-format
 msgid "Permanently delete %d discount code? This cannot be undone."
 msgstr ""
 
-#: tickera.php:5740 tickera.php:5785
+#. translators: %d: Number of discount codes to delete.
+#: tickera.php:5760 tickera.php:5813
 #, php-format
 msgid "Permanently delete %d discount codes? This cannot be undone."
 msgstr ""
 
-#: tickera.php:5741
+#: tickera.php:5761
 msgid "Order status changed successfully."
 msgstr ""
 
-#: tickera.php:5742
+#: tickera.php:5762
 msgid "Order confirmation e-mail has been sent successfully."
 msgstr ""
 
-#: tickera.php:5743
+#: tickera.php:5763
 msgid "Sending..."
 msgstr ""
 
-#: tickera.php:5744
+#: tickera.php:5764
 msgid "Sent"
 msgstr ""
 
-#: tickera.php:5745
+#: tickera.php:5765
 msgid "Failed"
 msgstr ""
 
-#: tickera.php:5746
+#: tickera.php:5766
 msgid ""
 "Are you sure you want to delete all Ticket Types? You have tickets sold for "
 "some of the selected ticket types."
 msgstr ""
 
-#: tickera.php:5750
+#: tickera.php:5770
 msgid "Are you sure you want to insert this element onto the template?"
 msgstr ""
 
-#: tickera.php:5751
+#: tickera.php:5771
 msgid "Please select how you’d like to proceed"
 msgstr ""
 
-#: tickera.php:5753
+#: tickera.php:5773
 msgid "Move"
 msgstr ""
 
-#: tickera.php:5771
+#: tickera.php:5791
 msgid "tickets have been deleted."
 msgstr ""
 
-#: tickera.php:5772
+#. translators: %d: Number of tickets have been deleted.
+#: tickera.php:5793
 #, php-format
 msgid "%d tickets have been permanently deleted."
 msgstr ""
 
-#: tickera.php:5773
+#: tickera.php:5794
 msgid "Select at least one event."
 msgstr ""
 
-#: tickera.php:5774
+#. translators: %d: Number of check-in entries deleted from a ticket.
+#: tickera.php:5796
 #, php-format
 msgid ""
 "Permanently remove check-in and checkout history from %d matching ticket? "
 "This cannot be undone."
 msgstr ""
 
-#: tickera.php:5775
+#. translators: %d: Number of check-in entries deleted from tickets.
+#: tickera.php:5798
 #, php-format
 msgid ""
 "Permanently remove check-in and checkout history from %d matching tickets? "
 "This cannot be undone."
 msgstr ""
 
-#: tickera.php:5776
+#. translators: %d: Number of check-ins and check-outs to remove from tickets.
+#: tickera.php:5800
 #, php-format
 msgid "Removed history from %1$d tickets (%2$d check-ins and %3$d checkouts)."
 msgstr ""
 
-#: tickera.php:5777
+#: tickera.php:5801
 msgid "Checking for matching check-in history..."
 msgstr ""
 
-#: tickera.php:5778
+#: tickera.php:5802
 msgid "No matching check-in or check-out history was found."
 msgstr ""
 
-#: tickera.php:5779
+#: tickera.php:5803
 msgid "No check-in history was removed."
 msgstr ""
 
-#: tickera.php:5781
+#: tickera.php:5805
 msgid "Please confirm if you want to proceed."
 msgstr ""
 
-#: tickera.php:5834
+#: tickera.php:5862
 msgid "This field is required."
 msgstr ""
 
-#: tickera.php:5835
+#: tickera.php:5863
 msgid "Please fix this field."
 msgstr ""
 
-#: tickera.php:5836
+#: tickera.php:5864
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: tickera.php:5837
+#: tickera.php:5865
 msgid "Please enter a valid URL."
 msgstr ""
 
-#: tickera.php:5838
+#: tickera.php:5866
 msgid "Please enter a valid date."
 msgstr ""
 
-#: tickera.php:5839
+#: tickera.php:5867
 msgid "Please enter a valid date (ISO)."
 msgstr ""
 
-#: tickera.php:5840
+#: tickera.php:5868
 msgid "Please enter a valid number."
 msgstr ""
 
-#: tickera.php:5841
+#: tickera.php:5869
 msgid "Please enter only digits."
 msgstr ""
 
-#: tickera.php:5842
+#: tickera.php:5870
 msgid "Please enter the same value again."
 msgstr ""
 
-#: tickera.php:5843
+#: tickera.php:5871
 msgid "Please enter no more than {0} characters."
 msgstr ""
 
-#: tickera.php:5844
+#: tickera.php:5872
 msgid "Please enter at least {0} characters."
 msgstr ""
 
-#: tickera.php:5845
+#: tickera.php:5873
 msgid "Please enter a value between {0} and {1} characters long."
 msgstr ""
 
-#: tickera.php:5846
+#: tickera.php:5874
 msgid "Please enter a value between {0} and {1}."
 msgstr ""
 
-#: tickera.php:5847
+#: tickera.php:5875
 msgid "Please enter a value less than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5848
+#: tickera.php:5876
 msgid "Please enter a value greater than or equal to {0}."
 msgstr ""
 
-#: tickera.php:5849
+#: tickera.php:5877
 msgid "Please enter a multiple of {0}."
 msgstr ""
 
-#: tickera.php:5859
+#: tickera.php:5887
 msgid ""
 "Only customers aged 16 or older are permitted for purchase on this website"
 msgstr ""
 
-#: tickera.php:5868
+#: tickera.php:5896
 msgid "In order to continue you need to agree to provide your details."
 msgstr ""
 
-#: tickera.php:5875
+#: tickera.php:5903
 msgid "Are you sure you want to remove all tickets from your cart?"
 msgstr ""
 
-#: tickera.php:5876
+#: tickera.php:5904
 msgid "Ticket Added!"
 msgstr ""
 
-#: tickera.php:5878
+#: tickera.php:5906
 msgid "Adding ticket to cart..."
 msgstr ""
 
-#: tickera.php:5879
+#: tickera.php:5907
 msgid "In Your Cart"
 msgstr ""
 
-#: tickera.php:5881
+#: tickera.php:5909
 msgid "Please update your cart before to proceed."
 msgstr ""
 
-#: tickera.php:5882
+#: tickera.php:5910
 msgid "Please confirm to remove all of the items from your cart."
 msgstr ""
 
-#: tickera.php:5887
+#: tickera.php:5915
 msgid "This field is required *"
 msgstr ""
 
-#: tickera.php:5888
+#: tickera.php:5916
 msgid "Please use alphanumeric characters only."
 msgstr ""
 
-#: tickera.php:5914
+#: tickera.php:5942
 msgid ""
 "You have both FREE and PREMIUM version of Tickera plugin activated. In order "
 "to avoid conflicts, please deactivate one of them. </br> Once premium "

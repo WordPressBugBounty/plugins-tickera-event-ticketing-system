@@ -22,10 +22,11 @@ if ( ! class_exists( '\Tickera\TC_Checkin_API' ) ) {
 
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public check-in API debug flag only controls temporary error display.
             if ( defined( 'TC_DEBUG' ) || isset( $_GET[ 'tc_debug' ] ) ) {
-                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
+
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting, PluginCheck.CodeAnalysis.PHPErrorReporting.DirectErrorReportingCall
                 error_reporting( E_ALL );
 
-                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged
+                // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors
                 @ini_set( 'display_errors', 'On' );
             }
 

@@ -250,6 +250,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
 
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin list filter; the value is sanitized and checked against eligible statuses below.
                 if ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) ) {
 
                     // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the attendee list query.
@@ -271,6 +272,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
         function pre_get_posts_order_status_filter_where( $where ) {
 
             global $wpdb;
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin list query; the value is sanitized and checked against eligible statuses below.
             if ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) ) {
 
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Admin order status filter is sanitized before changing the SQL condition.

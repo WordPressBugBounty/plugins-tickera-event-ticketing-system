@@ -19,7 +19,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
         var $admin_img_url = '';
         var $force_ssl = false;
         var $ipn_url;
-        var $API_Username, $API_Password, $SandboxFlag, $returnURL, $API_Endpoint, $version, $currency, $locale;
+        var $API_Username, $API_Password, $INS_Password, $SandboxFlag, $returnURL, $API_Endpoint, $version, $currency, $locale;
         var $currencies = array();
         var $permanently_active = false;
         var $skip_payment_screen = true;
@@ -42,7 +42,17 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
 
             $this->currency = $this->get_option( 'currency', 'USD', '2checkout' );
             $this->API_Username = $this->get_option( 'sid', '', '2checkout' );
-            $this->API_Password = $this->get_option( 'secret_word', '', '2checkout' );
+            
+            $this->API_Password = wp_specialchars_decode(
+                (string) $this->get_option( 'secret_word', '', '2checkout' ),
+                ENT_QUOTES
+            );
+            
+            $this->INS_Password = wp_specialchars_decode(
+                (string) $this->get_option( 'ins_secret_word', '', '2checkout' ),
+                ENT_QUOTES
+            );
+
             $this->SandboxFlag = $this->get_option( 'mode', 'sandbox', '2checkout' );
 
             $currencies = array(
@@ -139,9 +149,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
             $this->currencies = $currencies;
         }
 
-        function payment_form( $cart ) {
-
-        }
+        function payment_form( $cart ) {}
 
         function process_payment( $cart ) {
 
@@ -198,17 +206,19 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
         function order_confirmation( $order, $payment_info = '', $cart_info = '' ) {
             global $tc;
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout return total is cast before hash validation.
-            $total = isset( $_REQUEST[ 'total' ] ) ? (float) $_REQUEST[ 'total' ] : 0;
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout return total is sanitized before hash validation.
+            $total = isset( $_REQUEST[ 'total' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'total' ] ) ) : 0;
 
-            $hashSecretWord = $this->get_option( 'secret_word', '', '2checkout' ); //2Checkout Secret Word
-            $hashSid = $this->get_option( 'sid', '', '2checkout' );
+            $hashSecretWord = $this->INS_Password; //2Checkout Secret Word
+            $hashSid = $this->API_Username;
+
             $hashTotal = $total; // Sale total to validate against
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout order number is sanitized before hash validation.
             $hashOrder = isset( $_REQUEST[ 'order_number' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'order_number' ] ) ) : ''; // 2Checkout Order Number
 
             if ( $this->SandboxFlag == 'sandbox' ) {
                 $StringToHash = strtoupper( md5( $hashSecretWord . $hashSid . 1 . $hashTotal ) );
+
             } else {
                 $StringToHash = strtoupper( md5( $hashSecretWord . $hashSid . $hashOrder . $hashTotal ) );
             }
@@ -217,7 +227,9 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
             $request_key = isset( $_REQUEST[ 'key' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'key' ] ) ) : '';
 
             if ( $StringToHash != $request_key ) {
+                $order = tickera_get_order_id_by_name( $order );
                 $tc->update_order_status( $order->ID, 'order_fraud' );
+
             } else {
                 $paid = true;
                 $order = tickera_get_order_id_by_name( $order );
@@ -254,10 +266,16 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
                             'description' => __( 'Login to your 2Checkout dashboard to obtain the seller ID and secret word. <a target="_blank" href="http://help.2checkout.com/articles/FAQ/Where-do-I-set-up-the-Secret-Word/">Instructions &raquo;</a>', 'tickera-event-ticketing-system' )
                         ),
                         'secret_word' => array(
-                            'title' => __( 'Secret word', 'tickera-event-ticketing-system' ),
+                            'title' => __( 'Merchant Secret Word', 'tickera-event-ticketing-system' ),
                             'type' => 'text',
                             'description' => '',
-                            'default' => 'tango'
+                            'default' => ''
+                        ),
+                        'ins_secret_word' => array(
+                            'title' => __( 'Instant Notification Service (INS) Secret Word', 'tickera-event-ticketing-system' ),
+                            'type' => 'text',
+                            'description' => 'Used to securely validate 2Checkout payment notifications and order confirmations.',
+                            'default' => ''
                         ),
                         'currency' => array(
                             'title' => __( 'Currency', 'tickera-event-ticketing-system' ),
@@ -305,13 +323,17 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
                 $invoice_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_id' ] ) );
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout MD5 hash is sanitized before hash validation.
                 $md5_hash = sanitize_text_field( wp_unslash( $_REQUEST[ 'md5_hash' ] ) );
-                $hash = md5( $sale_id . $this->get_option( 'sid', '', '2checkout' ) . $invoice_id . $this->get_option( 'sid', 'secret_word', '2checkout' ) );
 
-                if ( $md5_hash != strtolower( $hash ) ) {
-                    header( 'HTTP/1.0 403 Forbidden' );
-                    header( 'Content-type: text/plain; charset=UTF-8' );
-                    esc_html_e( "2Checkout hash key doesn't match", 'tickera-event-ticketing-system' );
-                    exit;
+                if ( $this->API_Username && $this->API_Password ) {
+
+                    $hash = md5( $sale_id . $this->get_option( 'sid', '', '2checkout' ) . $invoice_id . $this->get_option( 'secret_word', '', '2checkout' ) );
+
+                    if ( $md5_hash != strtolower( $hash ) ) {
+                        header( 'HTTP/1.0 403 Forbidden' );
+                        header( 'Content-type: text/plain; charset=UTF-8' );
+                        esc_html_e( "2Checkout hash key doesn't match", 'tickera-event-ticketing-system' );
+                        exit;
+                    }
                 }
 
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice status is sanitized before payment handling.
