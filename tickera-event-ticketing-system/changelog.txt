@@ -1,6 +1,10 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.5 22/09/2026 =
+* Removed Transaction ID exposure from the Order Details page.
+* Security: Fixed an unauthenticated payment bypass vulnerability across payment methods IPN handler.
+
 = 3.6.0.4 16/09/2026 =
 * Replaced "API Key" with "API Name" in Attendees & Tickets check-in records.
 * Improved Checkout payment method initialization to load only active payment methods.

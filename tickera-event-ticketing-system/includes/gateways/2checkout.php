@@ -301,10 +301,21 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout IPN parameters are validated with the gateway hash before payment updates.
             if ( isset( $_REQUEST[ 'message_type' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'message_type' ] ) ) == 'INVOICE_STATUS_CHANGED' && isset( $_REQUEST[ 'sale_id' ] ) && isset( $_REQUEST[ 'vendor_order_id' ] ) && isset( $_REQUEST[ 'invoice_list_amount' ] ) && isset( $_REQUEST[ 'invoice_id' ] ) && isset( $_REQUEST[ 'md5_hash' ] ) ) {
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout sale ID is sanitized before hash validation.
-                $sale_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'sale_id' ] ) ); // Just for calculating hash
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout vendor order ID is sanitized before resolving the order.
                 $tco_vendor_order_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'vendor_order_id' ] ) ); // Order "name"
+
+                // Validate the source of the order
+                if ( $this->plugin_name != tickera_get_order_payment_plugin_name( $tco_vendor_order_id ) ) {
+                    wp_die(
+                        esc_html__( 'This order is not associated with the selected payment method.', 'tickera-event-ticketing-system' ),
+                        '',
+                        [ 'response' => 400 ]
+                    );            
+                }
+
+                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout sale ID is sanitized before hash validation.
+                $sale_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'sale_id' ] ) ); // Just for calculating hash                
+                
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice amount is sanitized before payment validation.
                 $total = sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_list_amount' ] ) );
 
@@ -321,6 +332,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
 
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice ID is sanitized before hash validation.
                 $invoice_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_id' ] ) );
+                
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout MD5 hash is sanitized before hash validation.
                 $md5_hash = sanitize_text_field( wp_unslash( $_REQUEST[ 'md5_hash' ] ) );
 

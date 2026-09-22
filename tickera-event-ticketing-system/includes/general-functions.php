@@ -3870,9 +3870,6 @@ if ( ! function_exists( 'tickera_get_order_details_front' ) ) {
             <label id="order_title"><span class="order_details_title"><?php esc_html_e( 'Order: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_id ); ?></label>
             <label id="order_date"><span class="order_details_title"><?php esc_html_e( 'Order date: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_date ); ?></label>
             <label id="order_status"><span class="order_details_title"><?php esc_html_e( 'Order status: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $order_status ); ?></label>
-            <?php if ( isset( $transaction_id ) && $transaction_id !== '' ) : ?>
-                <label id="order_transaction_id"><span class="order_details_title"><?php esc_html_e( 'Transaction ID: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $transaction_id ); ?></label>
-            <?php endif; ?>
             <label id="order_subtotal"><span class="order_details_title"><?php esc_html_e( 'Subtotal: ', 'tickera-event-ticketing-system' ); ?></span> <?php echo esc_html( $subtotal ); ?></label>
             <?php if ( $discount_total !== 0 ) : ?>
                 <?php $order_discount_code = get_post_meta( $order->details->ID, 'tc_discount_code', true ); ?>
@@ -4094,6 +4091,56 @@ if ( ! function_exists( 'tickera_get_order_date' ) ) {
  */
 if ( ! function_exists( 'tickera_get_order_tickets_info' ) ) {
     function tickera_get_order_tickets_info( $field_name = '', $post_id = '' ) {}
+}
+
+if ( ! function_exists( 'tickera_is_payment_gateway_active' ) ) {
+
+    function tickera_is_payment_gateway_active( string $gateway_name ) {
+
+        $settings = get_option( 'tickera_settings' );
+        $active_gateways = isset( $settings[ 'gateways' ] ) ? $settings[ 'gateways' ][ 'active' ] : [];
+
+        if ( in_array( $gateway_name, $active_gateways ) ) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists( 'tickera_is_payment_gateway_active' ) ) {
+
+    function tickera_is_payment_gateway_active( string $gateway_name ) {
+
+        $settings = get_option( 'tickera_settings' );
+        $active_gateways = isset( $settings[ 'gateways' ] ) ? $settings[ 'gateways' ][ 'active' ] : [];
+
+        if ( in_array( $gateway_name, $active_gateways ) ) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+if ( ! function_exists( 'tickera_get_order_payment_plugin_name' ) ) {
+
+    function tickera_get_order_payment_plugin_name( string $order_title, $order_id = '') {
+
+        if ( ! $order_id ) {
+            $order = tickera_get_order_id_by_name( $order_title );
+            $order_id = $order && isset( $order->ID ) ? $order->ID : null;
+        }
+                
+        if ( $order_id ) {
+            $order = new \Tickera\TC_Order( $order_id );
+            $cart_info = $order->details->tc_cart_info;
+            $gateway = isset( $cart_info ) ? $cart_info[ 'gateway' ] : '';
+            return $gateway;
+        }
+
+        return '';
+    }
 }
 
 /**

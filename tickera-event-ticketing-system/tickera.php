@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.4
+ * Version: 3.6.0.5
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.4';
+        var $version = '3.6.0.5';
 
         var $title = 'Tickera';
 
@@ -3931,6 +3931,13 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             }
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Payment gateway return listeners must accept gateway GET callbacks without a browser nonce.
             if ( isset( $wp_query->query_vars['payment_gateway_return'] ) && !empty( $wp_query->query_vars['payment_gateway_return'] ) || isset( $_GET['payment_gateway_return'] ) && '' !== sanitize_key( wp_unslash( $_GET['payment_gateway_return'] ) ) ) {
+                $payment_gateway = ( isset( $wp_query->query_vars['payment_gateway_return'] ) ? sanitize_key( $wp_query->query_vars['payment_gateway_return'] ) : sanitize_key( wp_unslash( $_GET['payment_gateway_return'] ) ) );
+                // Validate payment gateway if it exists, active, valid and if the order belongs to it.
+                if ( !tickera_is_payment_gateway_active( $payment_gateway ) ) {
+                    wp_die( esc_html__( 'Payment method is unavailable. Please try again later or contact the merchant for assistance.', 'tickera-event-ticketing-system' ), '', [
+                        'response' => 503,
+                    ] );
+                }
                 $vars = array();
                 $theme_file = locate_template( array('page-ipn.php') );
                 if ( '' != $theme_file ) {
@@ -3947,7 +3954,6 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         'is_archive'  => FALSE,
                     ]);
                 }
-                $payment_gateway = ( isset( $wp_query->query_vars['payment_gateway_return'] ) ? sanitize_key( $wp_query->query_vars['payment_gateway_return'] ) : sanitize_key( wp_unslash( $_GET['payment_gateway_return'] ) ) );
                 tickera_do_action( 'tickera_handle_payment_return_' . $payment_gateway );
             }
             // phpcs:enable WordPress.Security.NonceVerification.Recommended

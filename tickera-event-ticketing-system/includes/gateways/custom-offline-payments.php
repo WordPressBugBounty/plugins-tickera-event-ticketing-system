@@ -71,6 +71,7 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_Custom_Offline_Payments' ) ) {
             $placeholders = array( 'ORDER_ID', 'ORDER_TOTAL', 'BUYER_NAME' );
             $placeholder_values = array( strtoupper( $order->details->post_title ), apply_filters( 'tickera_cart_currency_and_format', $payment_info[ 'total' ] ), $buyer_name );
 
+            $message = $message ? $message : '';
             $message = str_replace( $placeholders, $placeholder_values, $message );
 
             return $message;

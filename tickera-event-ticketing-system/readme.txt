@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 3.6.0.4
+Stable tag: 3.6.0.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -183,6 +183,9 @@ Introduces the new drag & drop Ticket Designer, unlimited ticket designs and sel
 
 == Changelog ==
 
+= 3.6.0.5 22/09/2026 =
+* Removed Transaction ID exposure from the Order Details page.
+* Security: Fixed an unauthenticated payment bypass vulnerability across payment methods IPN handler.
 
 = 3.6.0.4 16/09/2026 =
 * Replaced "API Key" with "API Name" in Attendees & Tickets check-in records.
