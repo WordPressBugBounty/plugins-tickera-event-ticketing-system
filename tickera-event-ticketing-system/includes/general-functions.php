@@ -4108,21 +4108,6 @@ if ( ! function_exists( 'tickera_is_payment_gateway_active' ) ) {
     }
 }
 
-if ( ! function_exists( 'tickera_is_payment_gateway_active' ) ) {
-
-    function tickera_is_payment_gateway_active( string $gateway_name ) {
-
-        $settings = get_option( 'tickera_settings' );
-        $active_gateways = isset( $settings[ 'gateways' ] ) ? $settings[ 'gateways' ][ 'active' ] : [];
-
-        if ( in_array( $gateway_name, $active_gateways ) ) {
-            return true;
-        }
-
-        return false;
-    }
-}
-
 if ( ! function_exists( 'tickera_get_order_payment_plugin_name' ) ) {
 
     function tickera_get_order_payment_plugin_name( string $order_title, $order_id = '') {

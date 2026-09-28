@@ -62,13 +62,13 @@ class TC_Ticket_Designer_Frontend {
 			'venuera-ticket-designer-frontend',
 			$addon_url . 'assets/css/frontend.css',
 			array(),
-			file_exists( $frontend_css ) ? filemtime( $frontend_css ) : TC_TICKET_DESIGNER_VERSION
+			file_exists( $frontend_css ) ? filemtime( $frontend_css ) : TICKERA_TICKET_DESIGNER_VERSION
 		);
 
 		// @font-face rules so the rendered HTML ticket uses the same bundled
 		// fonts as the design/PDF.
-		if ( class_exists( 'TC_Ticket_Designer_Fonts' ) ) {
-			wp_add_inline_style( 'venuera-ticket-designer-frontend', TC_Ticket_Designer_Fonts::get_font_face_css() );
+		if ( class_exists( '\Tickera\TC_Ticket_Designer_Fonts' ) ) {
+			wp_add_inline_style( 'venuera-ticket-designer-frontend', \Tickera\TC_Ticket_Designer_Fonts::get_font_face_css() );
 		}
 
 		// Frontend ticket scripts.
@@ -77,7 +77,7 @@ class TC_Ticket_Designer_Frontend {
 			'venuera-ticket-designer-frontend',
 			$addon_url . 'assets/js/frontend/ticket-render.js',
 			array( 'jquery', 'jsbarcode' ),
-			file_exists( $frontend_js ) ? filemtime( $frontend_js ) : TC_TICKET_DESIGNER_VERSION,
+			file_exists( $frontend_js ) ? filemtime( $frontend_js ) : TICKERA_TICKET_DESIGNER_VERSION,
 			true
 		);
 	}
@@ -155,7 +155,7 @@ class TC_Ticket_Designer_Frontend {
 
 		$template = null;
 		if ( $atts['template_id'] ) {
-			$template = new TC_Ticket_Designer_Template( absint( $atts['template_id'] ) );
+			$template = new \Tickera\TC_Ticket_Designer_Template( absint( $atts['template_id'] ) );
 		} else {
 			$template = self::get_template_for_ticket( $ticket_data );
 		}
@@ -171,19 +171,19 @@ class TC_Ticket_Designer_Frontend {
 	 * Get template for ticket.
 	 *
 	 * @param array $ticket_data Ticket data.
-	 * @return TC_Ticket_Designer_Template|null
+	 * @return \Tickera\TC_Ticket_Designer_Template|null
 	 */
 	private static function get_template_for_ticket( $ticket_data ) {
 		$event_id       = $ticket_data['event_id'] ?? 0;
 		$ticket_type_id = $ticket_data['product_id'] ?? 0;
 
-		return TC_Ticket_Designer_Template::get_for_ticket( $event_id, $ticket_type_id );
+		return \Tickera\TC_Ticket_Designer_Template::get_for_ticket( $event_id, $ticket_type_id );
 	}
 
 	/**
 	 * Render template with data.
 	 *
-	 * @param TC_Ticket_Designer_Template $template    Template object.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template    Template object.
 	 * @param array                   $ticket_data Ticket data.
 	 * @return string HTML output.
 	 */
@@ -204,7 +204,7 @@ class TC_Ticket_Designer_Frontend {
 		?>
 		<div class="venuera-ticket" style="width: <?php echo esc_attr( $width ); ?>px; height: <?php echo esc_attr( $height ); ?>px; background: <?php echo esc_attr( $background ); ?>; position: relative; overflow: hidden;">
 			<?php foreach ( $elements as $element ) : ?>
-				<?php echo TC_Ticket_Designer_Element::render( $element, $ticket_data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Element renderer returns pre-escaped markup. ?>
+				<?php echo \Tickera\TC_Ticket_Designer_Element::render( $element, $ticket_data ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Element renderer returns pre-escaped markup. ?>
 			<?php endforeach; ?>
 		</div>
 		<?php
@@ -219,7 +219,7 @@ class TC_Ticket_Designer_Frontend {
 	 * dataset for that specific ticket: its own attendee fields, its real
 	 * ticket UID and QR source, and its occurrence when the ticket carries one.
 	 *
-	 * @param WC_Order $order        Order object.
+	 * @param \WC_Order $order        Order object.
 	 * @param int      $item_id      Order item ID.
 	 * @param int      $ticket_index Optional 1-based ticket index within the item.
 	 *                               0 (default) keeps the legacy whole-item behavior
@@ -252,7 +252,7 @@ class TC_Ticket_Designer_Frontend {
 			return array();
 		}
 
-		$event = Venuera_Event::get( $event_id );
+		$event = \Venuera_Event::get( $event_id );
 
 		// Resolve the real ticket row for this index (1-based) where available.
 		// The order item stores the created ticket-row ids in `_venuera_ticket_ids`.
@@ -260,7 +260,7 @@ class TC_Ticket_Designer_Frontend {
 		if ( $ticket_index >= 1 && class_exists( 'Venuera_Ticket' ) ) {
 			$ticket_ids = $item->get_meta( '_venuera_ticket_ids' );
 			if ( is_array( $ticket_ids ) && isset( $ticket_ids[ $ticket_index - 1 ] ) ) {
-				$real_ticket = Venuera_Ticket::get( (int) $ticket_ids[ $ticket_index - 1 ] );
+				$real_ticket = \Venuera_Ticket::get( (int) $ticket_ids[ $ticket_index - 1 ] );
 			}
 		}
 
@@ -455,7 +455,7 @@ class TC_Ticket_Designer_Frontend {
 			return (string) $zone_id;
 		}
 
-		$chart = Venuera_Venue_Chart::get_for_event( $event_id );
+		$chart = \Venuera_Venue_Chart::get_for_event( $event_id );
 		if ( ! $chart || ! method_exists( $chart, 'get_chart_data_array' ) ) {
 			return (string) $zone_id;
 		}

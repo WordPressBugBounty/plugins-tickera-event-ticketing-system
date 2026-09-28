@@ -13,6 +13,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+ namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

@@ -6,6 +6,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -89,8 +91,8 @@ class TC_Ticket_Designer_Element {
 	 */
 	public static function get_data_fields() {
 		// Tickera field provider (core + Seating + Custom Forms + Woo/Bridge).
-		if ( class_exists( 'TC_Ticket_Designer_Fields' ) ) {
-			return TC_Ticket_Designer_Fields::data_fields();
+		if ( class_exists( '\Tickera\TC_Ticket_Designer_Fields' ) ) {
+			return \Tickera\TC_Ticket_Designer_Fields::data_fields();
 		}
 		return array(
 			'event'    => array(
@@ -154,8 +156,8 @@ class TC_Ticket_Designer_Element {
 	 */
 	public static function get_sample_data() {
 		// Tickera sample values (matches the Tickera field provider keys).
-		if ( class_exists( 'TC_Ticket_Designer_Fields' ) ) {
-			return TC_Ticket_Designer_Fields::sample_data();
+		if ( class_exists( 'Tickera\TC_Ticket_Designer_Fields' ) ) {
+			return \Tickera\TC_Ticket_Designer_Fields::sample_data();
 		}
 		$price = function_exists( 'wc_price' )
 			? html_entity_decode( wp_strip_all_tags( wc_price( 99.99 ) ), ENT_QUOTES, 'UTF-8' )
@@ -709,8 +711,8 @@ class TC_Ticket_Designer_Element {
 	 */
 	public static function generate_qr_data_uri( $data, $foreground = '#000000', $ecl = 'M' ) {
 		if ( ! class_exists( 'TCPDF2DBarcode' ) ) {
-			if ( defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) && file_exists( TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
-				require_once TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
+			if ( defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) && file_exists( TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
+				require_once TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
 			}
 		}
 
@@ -725,9 +727,9 @@ class TC_Ticket_Designer_Element {
 			$barcode = new TCPDF2DBarcode( $data, 'QRCODE,' . $ecl );
 			// Module size in px; the SVG scales losslessly to the element box.
 			$svg = $barcode->getBarcodeSVGcode( 4, 4, $color );
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
-		} catch ( Error $e ) {
+		} catch ( \Error $e ) {
 			return false;
 		}
 
@@ -751,8 +753,8 @@ class TC_Ticket_Designer_Element {
 	 */
 	public static function generate_qr_png( $data, $module = 6, $ecl = 'M' ) {
 		if ( ! class_exists( 'TCPDF2DBarcode' ) ) {
-			if ( defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) && file_exists( TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
-				require_once TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
+			if ( defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) && file_exists( TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
+				require_once TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
 			}
 		}
 
@@ -766,9 +768,9 @@ class TC_Ticket_Designer_Element {
 		try {
 			$barcode = new TCPDF2DBarcode( (string) $data, 'QRCODE,' . $ecl );
 			$png     = $barcode->getBarcodePngData( $module, $module, array( 0, 0, 0 ) );
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
-		} catch ( Error $e ) {
+		} catch ( \Error $e ) {
 			return false;
 		}
 

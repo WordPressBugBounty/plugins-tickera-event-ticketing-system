@@ -9,6 +9,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Venuera custom-table data access:
@@ -18,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Include TCPDF if available via Composer.
-if ( file_exists( TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
-	require_once TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
+if ( file_exists( TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php' ) ) {
+	require_once TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/autoload.php';
 }
 
 /**
@@ -118,7 +120,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	/**
 	 * TCPDF instance.
 	 *
-	 * @var TCPDF
+	 * @var \TCPDF
 	 */
 	private $pdf;
 
@@ -139,7 +141,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	/**
 	 * Generate PDF ticket.
 	 *
-	 * @param TC_Ticket_Designer_Template $template    Template object.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template    Template object.
 	 * @param array                   $ticket_data Ticket data.
 	 * @param string                  $output      Output mode: 'S' (string), 'F' (file), 'I' (inline), 'D' (download).
 	 * @param string                  $filename    Filename for 'F' and 'D' modes.
@@ -239,7 +241,7 @@ class TC_Ticket_Designer_PDF_Generator {
 		$w     = floatval( $first['width'] ?? 432 );
 		$h     = floatval( $first['height'] ?? 180 );
 
-		$this->pdf = new TCPDF( ( $w > $h ? 'L' : 'P' ), 'pt', array( $w, $h ), true, 'UTF-8', false );
+		$this->pdf = new \TCPDF( ( $w > $h ? 'L' : 'P' ), 'pt', array( $w, $h ), true, 'UTF-8', false );
 		// Embed the full embedded TTFs (no glyph subsetting). Tickera's bundled
 		// TCPDF mis-subsets the cmap of some library fonts (e.g. Lora), producing
 		// garbled glyphs; embedding unsubset keeps the PDF text matching the editor.
@@ -294,7 +296,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	/**
 	 * Create PDF document.
 	 *
-	 * @param TC_Ticket_Designer_Template $template    Template object.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template    Template object.
 	 * @param array                   $ticket_data Ticket data.
 	 * @param string                  $output      Output mode.
 	 * @param string                  $filename    Filename.
@@ -329,7 +331,7 @@ class TC_Ticket_Designer_PDF_Generator {
 
 		// Create PDF using POINTS as the unit (important!)
 		// This ensures 1:1 mapping with canvas coordinates.
-		$this->pdf = new TCPDF( $orientation, 'pt', array( $this->width, $page_h ), true, 'UTF-8', false );
+		$this->pdf = new \TCPDF( $orientation, 'pt', array( $this->width, $page_h ), true, 'UTF-8', false );
 		$this->pdf->setFontSubsetting( false );
 
 		// Set document information.
@@ -918,7 +920,7 @@ class TC_Ticket_Designer_PDF_Generator {
 					);
 					$rendered_via_bitmap = true;
 				}
-			} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Bitmap barcode rendering failed; the vector fallback below takes over.
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Bitmap barcode rendering failed; the vector fallback below takes over.
 			}
 		}
 
@@ -1023,7 +1025,7 @@ class TC_Ticket_Designer_PDF_Generator {
 			$png_data = ob_get_clean();
 			imagedestroy( $canvas );
 			return $png_data;
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
 		}
 	}
@@ -1041,7 +1043,7 @@ class TC_Ticket_Designer_PDF_Generator {
 		$height = floatval( $element['height'] ?? 100 );
 		$src    = $element['src'] ?? '';
 
-		if ( ( $element['type'] ?? '' ) === 'google_map' && class_exists( 'TC_Ticket_Designer_Fields' ) ) {
+		if ( ( $element['type'] ?? '' ) === 'google_map' && class_exists( '\Tickera\TC_Ticket_Designer_Fields' ) ) {
 			// Google Map: build a Static Maps URL from the element's own settings
 			// (address/zoom/type), defaulting to the event location. Matches the
 			// classic Google Map element.
@@ -1051,7 +1053,7 @@ class TC_Ticket_Designer_PDF_Generator {
 			}
 			$zoom    = isset( $element['map_zoom'] ) ? (int) $element['map_zoom'] : 14;
 			$maptype = isset( $element['map_maptype'] ) ? (string) $element['map_maptype'] : 'roadmap';
-			$src     = \TC_Ticket_Designer_Fields::google_map_url( $addr, (int) round( $width ), (int) round( $height ), $zoom, $maptype );
+			$src     = \Tickera\TC_Ticket_Designer_Fields::google_map_url( $addr, (int) round( $width ), (int) round( $height ), $zoom, $maptype );
 		} else {
 			// Data-bound images: pull the src from ticket_data using the element's
 			// dataField (event_image, event_logo, sponsors_logo, …), falling back
@@ -1108,11 +1110,11 @@ class TC_Ticket_Designer_PDF_Generator {
 		// to width×height) and the preview.
 		try {
 			$this->pdf->Image( $file, $x, $y, $width, $height, $type, '', '', false, 300, '', false, false, 0 );
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			$this->log_image_failure( $src, 'TCPDF::Image threw: ' . $e->getMessage() );
 			$this->pdf->SetFillColor( 240, 240, 240 );
 			$this->pdf->Rect( $x, $y, $width, $height, 'F' );
-		} catch ( Error $e ) {
+		} catch ( \Error $e ) {
 			$this->log_image_failure( $src, 'TCPDF::Image error: ' . $e->getMessage() );
 			$this->pdf->SetFillColor( 240, 240, 240 );
 			$this->pdf->Rect( $x, $y, $width, $height, 'F' );
@@ -1267,13 +1269,13 @@ class TC_Ticket_Designer_PDF_Generator {
 		// Prefer Imagick (better colour/alpha fidelity), fall back to GD.
 		if ( class_exists( 'Imagick' ) ) {
 			try {
-				$im = new Imagick( $path );
+				$im = new \Imagick( $path );
 				$im->setImageFormat( 'png' );
 				$im->writeImage( $png );
 				$im->clear();
 				$this->temp_image_files[] = $png;
 				return $png;
-			} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Imagick conversion failed; intentionally fall through to the GD path below.
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Imagick conversion failed; intentionally fall through to the GD path below.
 				// fall through to GD.
 			}
 		}
@@ -1503,7 +1505,7 @@ class TC_Ticket_Designer_PDF_Generator {
 		$needs_unicode = $this->needs_unicode_font( $text );
 		$style_flags   = ( $is_bold ? 'B' : '' ) . ( $is_italic ? 'I' : '' );
 
-		$key = class_exists( 'TC_Ticket_Designer_Fonts' ) ? TC_Ticket_Designer_Fonts::resolve_key( $family ) : null;
+		$key = class_exists( '\Tickera\TC_Ticket_Designer_Fonts' ) ? \Tickera\TC_Ticket_Designer_Fonts::resolve_key( $family ) : null;
 
 		// Not a bundled family → core PDF font (with DejaVu fallback for Unicode).
 		if ( null === $key ) {
@@ -1514,7 +1516,7 @@ class TC_Ticket_Designer_PDF_Generator {
 			return array( $core, $style_flags );
 		}
 
-		$fonts = TC_Ticket_Designer_Fonts::get_fonts();
+		$fonts = \Tickera\TC_Ticket_Designer_Fonts::get_fonts();
 		$font  = isset( $fonts[ $key ] ) ? $fonts[ $key ] : array(
 			'category' => 'sans',
 			'cyrillic' => false,
@@ -1604,7 +1606,7 @@ class TC_Ticket_Designer_PDF_Generator {
 		if ( array_key_exists( $name, self::$font_cw_cache ) ) {
 			return self::$font_cw_cache[ $name ];
 		}
-		$dir  = defined( 'K_PATH_FONTS' ) ? K_PATH_FONTS : ( defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) ? TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/tecnickcom/tcpdf/fonts/' : '' );
+		$dir  = defined( 'K_PATH_FONTS' ) ? \K_PATH_FONTS : ( defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) ? TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/tecnickcom/tcpdf/fonts/' : '' );
 		$file = $dir ? rtrim( $dir, '/\\' ) . '/' . $name . '.php' : '';
 		if ( ! $file || ! file_exists( $file ) ) {
 			self::$font_cw_cache[ $name ] = null;
@@ -1653,7 +1655,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	 * @return string|false TCPDF font name, or false on failure.
 	 */
 	private function register_ttf( $key, $variant ) {
-		$path = TC_Ticket_Designer_Fonts::get_variant_path( $key, $variant );
+		$path = \Tickera\TC_Ticket_Designer_Fonts::get_variant_path( $key, $variant );
 		if ( ! $path ) {
 			return false;
 		}
@@ -1666,9 +1668,9 @@ class TC_Ticket_Designer_PDF_Generator {
 		try {
 			// Converts + caches the font in K_PATH_FONTS on first use; idempotent.
 			$name = TCPDF_FONTS::addTTFfont( $path, 'TrueTypeUnicode', '', 32 );
-		} catch ( Exception $e ) {
+		} catch ( \Exception $e ) {
 			return false;
-		} catch ( Error $e ) {
+		} catch ( \Error $e ) {
 			return false;
 		}
 		if ( ! $name ) {
@@ -1808,8 +1810,8 @@ class TC_Ticket_Designer_PDF_Generator {
 			// 3) Stale plugin-folder name: a ticket-designer template asset
 			// saved under an older folder (e.g. `plugins/ticketswp/…`).
 			// Re-anchor it on the CURRENT plugin directory.
-			if ( preg_match( '#/includes/addons/ticket-designer/(.+)$#', $rel, $mm ) && defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) ) {
-				$candidate = untrailingslashit( TC_TICKET_DESIGNER_PARENT_DIR ) . '/includes/addons/ticket-designer/' . $mm[1];
+			if ( preg_match( '#/includes/addons/ticket-designer/(.+)$#', $rel, $mm ) && defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) ) {
+				$candidate = untrailingslashit( TICKERA_TICKET_DESIGNER_PARENT_DIR ) . '/includes/addons/ticket-designer/' . $mm[1];
 				if ( file_exists( $candidate ) ) {
 					return $candidate;
 				}
@@ -1874,7 +1876,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	/**
 	 * Generate HTML fallback when TCPDF is not available.
 	 *
-	 * @param TC_Ticket_Designer_Template $template    Template.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template    Template.
 	 * @param array                   $ticket_data Ticket data.
 	 * @return string HTML.
 	 */
@@ -1885,7 +1887,7 @@ class TC_Ticket_Designer_PDF_Generator {
 	/**
 	 * Generate PDF and save to file.
 	 *
-	 * @param TC_Ticket_Designer_Template $template    Template.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template    Template.
 	 * @param array                   $ticket_data Ticket data.
 	 * @return string|false File path or false on failure.
 	 */

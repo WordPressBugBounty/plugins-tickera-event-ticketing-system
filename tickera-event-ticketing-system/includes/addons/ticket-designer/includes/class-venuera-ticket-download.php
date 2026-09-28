@@ -9,6 +9,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable Squiz.PHP.DiscouragedFunctions.Discouraged, WordPress.Security.NonceVerification.Recommended -- Venuera custom-table data access:
@@ -33,7 +35,7 @@ class TC_Ticket_Designer_Download {
 	 * carry the variation product (type `event_ticket_variation`), so all three
 	 * types must be recognised for download buttons to appear.
 	 *
-	 * @param WC_Product|null $product Product object.
+	 * @param \WC_Product|null $product Product object.
 	 * @return bool
 	 */
 	private static function is_ticket_product( $product ) {
@@ -186,7 +188,7 @@ class TC_Ticket_Designer_Download {
 	 * "Print tickets" action). Returns array of { label, name, url }.
 	 *
 	 * @param array           $tickets Incoming (default empty).
-	 * @param WC_Order|object $order   Order object.
+	 * @param \WC_Order|object $order   Order object.
 	 * @return array
 	 */
 	public static function pos_order_tickets( $tickets, $order ) {
@@ -271,7 +273,7 @@ class TC_Ticket_Designer_Download {
 	 * or '' when the order has no printable tickets.
 	 *
 	 * @param string          $url   Incoming (default '').
-	 * @param WC_Order|object $order Order object.
+	 * @param \WC_Order|object $order Order object.
 	 * @return string
 	 */
 	public static function pos_order_tickets_pdf( $url, $order ) {
@@ -305,7 +307,7 @@ class TC_Ticket_Designer_Download {
 	 * }
 	 *
 	 * @param array    $payload Receipt payload.
-	 * @param WC_Order $order   Order.
+	 * @param \WC_Order $order   Order.
 	 * @return array
 	 */
 	public static function pos_receipt_payload( $payload, $order ) {
@@ -343,8 +345,8 @@ class TC_Ticket_Designer_Download {
 			$event_name = $event_id ? (string) get_the_title( (int) $event_id ) : '';
 
 			// Resolve the event object once (used for single-date fallback).
-			$event_obj = ( $event_id && class_exists( 'Venuera_Event' ) )
-				? Venuera_Event::get( (int) $event_id )
+			$event_obj = ( $event_id && class_exists( '\Venuera_Event' ) )
+				? \Venuera_Event::get( (int) $event_id )
 				: null;
 
 			// Event date & time label.
@@ -491,7 +493,7 @@ class TC_Ticket_Designer_Download {
 				 *
 				 * @param array    $ticket  The base ticket data.
 				 * @param array    $context item / attendee_entry / position / event id.
-				 * @param WC_Order $order   The order.
+				 * @param \WC_Order $order   The order.
 				 */
 				$tickets[] = apply_filters(
 					'tickera_pos_receipt_ticket_data',
@@ -861,10 +863,10 @@ class TC_Ticket_Designer_Download {
 		if ( class_exists( 'TCPDF2DBarcode' ) && class_exists( 'TCPDFBarcode' ) ) {
 			return true;
 		}
-		if ( ! defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) ) {
+		if ( ! defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) ) {
 			return false;
 		}
-		$base = TC_TICKET_DESIGNER_PARENT_DIR . 'vendor/tecnickcom/tcpdf/';
+		$base = TICKERA_TICKET_DESIGNER_PARENT_DIR . 'vendor/tecnickcom/tcpdf/';
 		if ( ! class_exists( 'TCPDF2DBarcode' ) && file_exists( $base . 'tcpdf_barcodes_2d.php' ) ) {
 			require_once $base . 'tcpdf_barcodes_2d.php';
 		}
@@ -900,7 +902,7 @@ class TC_Ticket_Designer_Download {
 			return '';
 		}
 		try {
-			$bc = new TCPDF2DBarcode( $code, 'QRCODE,M' );
+			$bc = new \Tickera\TCPDF2DBarcode( $code, 'QRCODE,M' );
 			return self::clean_inline_svg( $bc->getBarcodeSVGcode( 4, 4, 'black' ) );
 		} catch ( \Throwable $e ) {
 			return '';
@@ -918,7 +920,7 @@ class TC_Ticket_Designer_Download {
 			return '';
 		}
 		try {
-			$bc  = new TCPDFBarcode( $code, 'C128' );
+			$bc  = new \Tickera\TCPDFBarcode( $code, 'C128' );
 			$svg = self::clean_inline_svg( $bc->getBarcodeSVGcode( 1, 30, 'black' ) );
 
 			// TCPDF emits a fixed-size <svg width=".." height="30"> WITHOUT a
@@ -943,7 +945,7 @@ class TC_Ticket_Designer_Download {
 	 * Build [ {template, ticket_data}, ... ] for every ticket in an order, in
 	 * order — used to render the combined multi-page PDF.
 	 *
-	 * @param WC_Order $order Order object.
+	 * @param \WC_Order $order Order object.
 	 * @return array
 	 */
 	private static function collect_order_ticket_payloads( $order ) {
@@ -987,7 +989,7 @@ class TC_Ticket_Designer_Download {
 	/**
 	 * Stream a single combined PDF with every ticket in the order.
 	 *
-	 * @param WC_Order $order Order object.
+	 * @param \WC_Order $order Order object.
 	 */
 	private static function handle_order_download( $order ) {
 		$payloads = self::collect_order_ticket_payloads( $order );
@@ -1002,7 +1004,7 @@ class TC_Ticket_Designer_Download {
 		$display_errors = @ini_set( 'display_errors', '0' );
 
 		ob_start();
-		$pdf = TC_Ticket_Designer_PDF_Generator::generate_multi( $payloads, 'S' );
+		$pdf = \Tickera\TC_Ticket_Designer_PDF_Generator::generate_multi( $payloads, 'S' );
 		ob_end_clean();
 		if ( false !== $display_errors ) {
 			// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Restoring the previous display_errors value.
@@ -1086,7 +1088,7 @@ class TC_Ticket_Designer_Download {
 		$display_errors = @ini_set( 'display_errors', '0' );
 		
 		ob_start();
-		$pdf = TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, 'S' );
+		$pdf = \Tickera\TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, 'S' );
 		ob_end_clean();
 		if ( false !== $display_errors ) {
 			// phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed, WordPress.PHP.NoSilencedErrors.Discouraged, PluginCheck.CodeAnalysis.PHPErrorReporting.IniDirectiveDisplay_errors -- Restoring the previous display_errors value.
@@ -1113,7 +1115,7 @@ class TC_Ticket_Designer_Download {
 	 * Resolves the requested ticket to its 1-based index within the order item so
 	 * the streamed PDF carries that specific ticket's attendee data, UID and QR.
 	 *
-	 * @param WC_Order $order         Order object.
+	 * @param \WC_Order $order         Order object.
 	 * @param int      $order_item_id Order item ID.
 	 * @param mixed    $ticket_id     Requested ticket identifier (real ticket UID or
 	 *                                numeric ticket-row id for real tickets; a synthetic
@@ -1145,7 +1147,7 @@ class TC_Ticket_Designer_Download {
 	/**
 	 * Resolve a requested ticket identifier to its 1-based index within an order item.
 	 *
-	 * @param WC_Order_Item $item      Order item.
+	 * @param \WC_Order_Item $item      Order item.
 	 * @param mixed         $ticket_id Requested ticket UID or ticket-row id.
 	 * @return int 1-based index, or 0 when it cannot be resolved (legacy behavior).
 	 */
@@ -1165,7 +1167,7 @@ class TC_Ticket_Designer_Download {
 			}
 
 			// Match on the ticket UID (download links use the UID as the id).
-			$ticket = Venuera_Ticket::get( (int) $row_id );
+			$ticket = \Venuera_Ticket::get( (int) $row_id );
 			if ( $ticket && (string) $ticket->get_ticket_uid() === $requested ) {
 				return $i + 1;
 			}
@@ -1178,7 +1180,7 @@ class TC_Ticket_Designer_Download {
 	 * Get template for ticket.
 	 *
 	 * @param array $ticket_data Ticket data.
-	 * @return TC_Ticket_Designer_Template|null
+	 * @return \Tickera\TC_Ticket_Designer_Template|null
 	 */
 	private static function get_template_for_ticket( $ticket_data ) {
 		$event_id = $ticket_data['event_id'] ?? 0;
@@ -1188,15 +1190,15 @@ class TC_Ticket_Designer_Download {
 		// template the same way the email and frontend paths do.
 		$product_id = $ticket_data['product_id'] ?? 0;
 
-		return TC_Ticket_Designer_Template::get_for_ticket( $event_id, $product_id );
+		return \Tickera\TC_Ticket_Designer_Template::get_for_ticket( $event_id, $product_id );
 	}
 
 	/**
 	 * Display ticket download link in order items (My Account → Orders → View Order).
 	 *
 	 * @param int           $item_id Item ID.
-	 * @param WC_Order_Item $item    Item object.
-	 * @param WC_Order      $order   Order object.
+	 * @param \WC_Order_Item $item    Item object.
+	 * @param \WC_Order      $order   Order object.
 	 * @param bool          $plain_text Plain text email.
 	 */
 	public static function display_ticket_download_link( $item_id, $item, $order, $plain_text = false ) {
@@ -1205,7 +1207,7 @@ class TC_Ticket_Designer_Download {
 		}
 
 		// Only for line items (products).
-		if ( ! $item instanceof WC_Order_Item_Product ) {
+		if ( ! $item instanceof \WC_Order_Item_Product ) {
 			return;
 		}
 
@@ -1253,14 +1255,14 @@ class TC_Ticket_Designer_Download {
 	 * type, holder (attendee) details and ticket id — shared by the order-page
 	 * "Your Tickets" cards and the order email so both render identical tickets.
 	 *
-	 * @param WC_Order $order Order object.
+	 * @param \WC_Order $order Order object.
 	 * @return array
 	 */
 	public static function get_order_ticket_blocks( $order ) {
 		$all_tickets = array();
 
 		foreach ( $order->get_items() as $item_id => $item ) {
-			if ( ! $item instanceof WC_Order_Item_Product ) {
+			if ( ! $item instanceof \WC_Order_Item_Product ) {
 				continue;
 			}
 
@@ -1279,7 +1281,7 @@ class TC_Ticket_Designer_Download {
 					$event_id = (int) $parent->get_meta( '_event_id' );
 				}
 			}
-			$event      = ( $event_id && class_exists( 'Venuera_Event' ) ) ? Venuera_Event::get( $event_id ) : null;
+			$event      = ( $event_id && class_exists( '\Venuera_Event' ) ) ? \Venuera_Event::get( $event_id ) : null;
 			$event_name = $event ? $event->get_title() : '';
 			$event_when = ( $event && $event->get_start_datetime() ) ? $event->get_start_datetime( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) ) : '';
 
@@ -1306,7 +1308,7 @@ class TC_Ticket_Designer_Download {
 	/**
 	 * Display all tickets section on order details page.
 	 *
-	 * @param WC_Order $order Order object.
+	 * @param \WC_Order $order Order object.
 	 */
 	public static function display_order_tickets_section( $order ) {
 		// Check order status.
@@ -1391,7 +1393,7 @@ class TC_Ticket_Designer_Download {
 								<?php
 								$display_id = ! empty( $ticket['ticket_uid'] ) ? $ticket['ticket_uid'] : (string) $ticket['id'];
 								if ( 'code' === $mode ) {
-									$qr = class_exists( 'TC_Ticket_Designer_Element' ) ? TC_Ticket_Designer_Element::generate_qr_data_uri( $display_id ) : false;
+									$qr = class_exists( '\Tickera\TC_Ticket_Designer_Element' ) ? \Tickera\TC_Ticket_Designer_Element::generate_qr_data_uri( $display_id ) : false;
 									if ( $qr ) {
 										printf(
 											'<img src="%s" alt="%s" class="venuera-ticket-qr">',
@@ -1440,7 +1442,7 @@ class TC_Ticket_Designer_Download {
 	/**
 	 * Get tickets for an order item.
 	 *
-	 * @param WC_Order $order   Order object.
+	 * @param \WC_Order $order   Order object.
 	 * @param int      $item_id Order item ID.
 	 * @return array Array of ticket data.
 	 */
@@ -1462,7 +1464,7 @@ class TC_Ticket_Designer_Download {
 		if ( $ticket_ids && is_array( $ticket_ids ) && class_exists( 'Venuera_Ticket' ) ) {
 			$index = 0;
 			foreach ( $ticket_ids as $ticket_id ) {
-				$ticket = Venuera_Ticket::get( (int) $ticket_id );
+				$ticket = \Venuera_Ticket::get( (int) $ticket_id );
 				if ( ! $ticket ) {
 					continue;
 				}
@@ -1509,8 +1511,8 @@ class TC_Ticket_Designer_Download {
 	/**
 	 * Admin order item value - download link.
 	 *
-	 * @param WC_Product|null $product Product object.
-	 * @param WC_Order_Item   $item    Order item.
+	 * @param \WC_Product|null $product Product object.
+	 * @param \WC_Order_Item   $item    Order item.
 	 * @param int             $item_id Item ID.
 	 */
 	public static function admin_order_item_value( $product, $item, $item_id ) {

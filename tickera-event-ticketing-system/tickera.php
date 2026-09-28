@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.5
+ * Version: 3.6.0.6
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.5';
+        var $version = '3.6.0.6';
 
         var $title = 'Tickera';
 
@@ -123,13 +123,13 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             require_once $this->plugin_dir . 'includes/classes/class.kses.php';
             // Loading config first
             if ( defined( 'TICKET_PLUGIN_TITLE' ) ) {
-                $this->title = TICKET_PLUGIN_TITLE;
+                $this->title = \TICKET_PLUGIN_TITLE;
             }
             if ( defined( 'TICKET_PLUGIN_NAME' ) ) {
-                $this->name = TICKET_PLUGIN_NAME;
+                $this->name = \TICKET_PLUGIN_NAME;
             }
             if ( defined( 'TICKET_PLUGIN_DIR_NAME' ) ) {
-                $this->plugin_dir = TICKET_PLUGIN_DIR_NAME;
+                $this->plugin_dir = \TICKET_PLUGIN_DIR_NAME;
             }
             $this->admin_menu_position = (int) tickera_apply_filters( 'tickera_menu_position', 1000 );
             $this->title = tickera_apply_filters( 'tickera_plugin_title', $this->title );
@@ -1264,7 +1264,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          *
          * @param string $value      Submitted date.
          * @param bool   $end_of_day Whether date-only values represent the end of the day.
-         * @return DateTimeImmutable|false|null
+         * @return \DateTimeImmutable|false|null
          */
         private function tc_parse_delete_info_date( $value, $end_of_day = false ) {
             if ( '' === $value ) {
@@ -1357,7 +1357,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         $wp_filesystem->put_contents( $path, $content, 0644 );
                     }
                 }
-            } catch ( Exception $e ) {
+            } catch ( \Exception $e ) {
                 // TCPDF directory cannot be created or permissions cannot set to 0777
             }
         }
@@ -1396,7 +1396,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                         @ini_set( "session.save_handler", "files" );
                         @session_save_path( $upload_dir );
                     }
-                } catch ( Exception $e ) {
+                } catch ( \Exception $e ) {
                     // Sessions don't work, save path is not writable
                 }
             }
@@ -2008,7 +2008,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
         /**
          * DEPRECATED, use tc_get_license_key function
          *
-         * @return type
+         * @return \type
          */
         function get_license_key() {
             $tickera_general_settings = get_option( 'tickera_general_setting', false );
@@ -2672,7 +2672,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * Check for new TC Checkin API calls
          *
          * @param $wp
-         * @throws Exception
+         * @throws \Exception
          */
         function action_parse_request( &$wp ) {
             if ( array_key_exists( 'tickera', $wp->query_vars ) ) {
@@ -3922,7 +3922,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * Listen for gateway IPN returns and tie them in to proper gateway plugin
          *
          * @param $wp_query
-         * @throws Exception
+         * @throws \Exception
          */
         function handle_gateway_returns( $wp_query ) {
             global $wp;
@@ -4007,7 +4007,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          * Returns the full order details as an object
          *
          * @param $order_id
-         * @return array|bool|WP_Post|null
+         * @return array|bool|\WP_Post|null
          */
         function get_order( $order_id ) {
             if ( is_int( $order_id ) ) {

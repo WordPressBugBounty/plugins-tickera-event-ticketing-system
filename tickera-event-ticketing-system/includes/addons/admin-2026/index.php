@@ -10,6 +10,8 @@
  * @package Tickera
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

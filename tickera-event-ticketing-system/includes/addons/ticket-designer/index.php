@@ -14,26 +14,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Module version.
-if ( ! defined( 'TC_TICKET_DESIGNER_VERSION' ) ) {
-	define( 'TC_TICKET_DESIGNER_VERSION', '1.0.1' );
+if ( ! defined( 'TICKERA_TICKET_DESIGNER_VERSION' ) ) {
+	define( 'TICKERA_TICKET_DESIGNER_VERSION', '1.0.1' );
 }
 
 // Module directory / URL (this addon folder).
-if ( ! defined( 'TC_TICKET_DESIGNER_DIR' ) ) {
-	define( 'TC_TICKET_DESIGNER_DIR', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'TICKERA_TICKET_DESIGNER_DIR' ) ) {
+	define( 'TICKERA_TICKET_DESIGNER_DIR', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'TC_TICKET_DESIGNER_URL' ) ) {
-	define( 'TC_TICKET_DESIGNER_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'TICKERA_TICKET_DESIGNER_URL' ) ) {
+	define( 'TICKERA_TICKET_DESIGNER_URL', plugin_dir_url( __FILE__ ) );
 }
 
 // Parent Tickera plugin directory / URL.
 // This file lives at <tickera>/includes/addons/ticket-designer/index.php,
 // so the parent plugin root is four levels up.
-if ( ! defined( 'TC_TICKET_DESIGNER_PARENT_DIR' ) ) {
-	define( 'TC_TICKET_DESIGNER_PARENT_DIR', trailingslashit( dirname( __FILE__, 4 ) ) );
+if ( ! defined( 'TICKERA_TICKET_DESIGNER_PARENT_DIR' ) ) {
+	define( 'TICKERA_TICKET_DESIGNER_PARENT_DIR', trailingslashit( dirname( __FILE__, 4 ) ) );
 }
-if ( ! defined( 'TC_TICKET_DESIGNER_PARENT_URL' ) ) {
-	define( 'TC_TICKET_DESIGNER_PARENT_URL', plugins_url( '/', TC_TICKET_DESIGNER_PARENT_DIR . 'tickera.php' ) );
+if ( ! defined( 'TICKERA_TICKET_DESIGNER_PARENT_URL' ) ) {
+	define( 'TICKERA_TICKET_DESIGNER_PARENT_URL', plugins_url( '/', TICKERA_TICKET_DESIGNER_PARENT_DIR . 'tickera.php' ) );
 }
 
 /**

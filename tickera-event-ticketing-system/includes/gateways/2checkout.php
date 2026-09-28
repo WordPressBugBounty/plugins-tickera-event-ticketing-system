@@ -42,12 +42,12 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
 
             $this->currency = $this->get_option( 'currency', 'USD', '2checkout' );
             $this->API_Username = $this->get_option( 'sid', '', '2checkout' );
-            
+
             $this->API_Password = wp_specialchars_decode(
                 (string) $this->get_option( 'secret_word', '', '2checkout' ),
                 ENT_QUOTES
             );
-            
+
             $this->INS_Password = wp_specialchars_decode(
                 (string) $this->get_option( 'ins_secret_word', '', '2checkout' ),
                 ENT_QUOTES
@@ -204,39 +204,20 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
         }
 
         function order_confirmation( $order, $payment_info = '', $cart_info = '' ) {
+            
             global $tc;
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout return total is sanitized before hash validation.
-            $total = isset( $_REQUEST[ 'total' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'total' ] ) ) : 0;
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This public callback is authenticated using the 2Checkout INS signature.
+            $request = isset( $_REQUEST ) && is_array( $_REQUEST ) ? wp_unslash( $_REQUEST ) : [];
 
-            $hashSecretWord = $this->INS_Password; //2Checkout Secret Word
-            $hashSid = $this->API_Username;
-
-            $hashTotal = $total; // Sale total to validate against
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout order number is sanitized before hash validation.
-            $hashOrder = isset( $_REQUEST[ 'order_number' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'order_number' ] ) ) : ''; // 2Checkout Order Number
-
-            if ( $this->SandboxFlag == 'sandbox' ) {
-                $StringToHash = strtoupper( md5( $hashSecretWord . $hashSid . 1 . $hashTotal ) );
-
-            } else {
-                $StringToHash = strtoupper( md5( $hashSecretWord . $hashSid . $hashOrder . $hashTotal ) );
-            }
-
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout hash key is sanitized before validation.
-            $request_key = isset( $_REQUEST[ 'key' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'key' ] ) ) : '';
-
-            if ( $StringToHash != $request_key ) {
-                $order = tickera_get_order_id_by_name( $order );
-                $tc->update_order_status( $order->ID, 'order_fraud' );
-
-            } else {
-                $paid = true;
+            if ( $this->validate_ins_hash( $request ) ) {
                 $order = tickera_get_order_id_by_name( $order );
                 $tc->update_order_payment_status( $order->ID, true );
-            }
 
-            $this->ipn();
+            } else {
+                $order = tickera_get_order_id_by_name( $order );
+                $tc->update_order_status( $order->ID, 'order_fraud' );
+            }
         }
 
         function gateway_admin_settings( $settings, $visible ) {
@@ -268,13 +249,18 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
                         'secret_word' => array(
                             'title' => __( 'Merchant Secret Word', 'tickera-event-ticketing-system' ),
                             'type' => 'text',
-                            'description' => '',
+                            'description' => __( 'Used with the Seller ID to validate 2Checkout order returns and INS messages.', 'tickera-event-ticketing-system' ),
                             'default' => ''
                         ),
                         'ins_secret_word' => array(
-                            'title' => __( 'Instant Notification Service (INS) Secret Word', 'tickera-event-ticketing-system' ),
+                            'title' => __( 'Instant Notification Service (INS) Secret Key', 'tickera-event-ticketing-system' ),
                             'type' => 'text',
-                            'description' => 'Used to securely validate 2Checkout payment notifications and order confirmations.',
+                            'description' => sprintf(
+                                /* translators: 1: 2Checkout Webhooks & API settings URL, 2: Tickera INS callback URL. */
+                                __( 'Enter the Secret Key from <a href="%1$s" target="_blank" rel="noopener noreferrer">Integrations &rarr; Webhooks &amp; API</a> in 2Checkout. Enable INS and insert <code>%2$s</code> in the Global URL field. Tickera uses the Secret Key to validate signed INS messages.', 'tickera-event-ticketing-system' ),
+                                esc_url( 'https://secure.2checkout.com/cpanel/webhooks_api.php' ),
+                                esc_html( $this->ipn_url )
+                            ),
                             'default' => ''
                         ),
                         'currency' => array(
@@ -294,77 +280,181 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
             <?php
         }
 
+        /**
+         * Validate a 2Checkout INS invoice signature.
+         *
+         * @param array $payload Unslashed INS POST payload.
+         * @return bool
+         */
+        private function validate_ins_hash( $payload ) {
+
+            // Validate credentials
+            if ( ! $this->API_Username || ! $this->INS_Password || ! $this->API_Password ) {
+                return false;
+            }
+
+            $sid = isset( $payload[ 'sid' ] ) ? sanitize_text_field( $payload[ 'sid' ] ) : ( isset( $payload[ 'vendor_id' ] ) ? sanitize_text_field( $payload[ 'vendor_id' ] ) : null );
+            $sale_id = isset( $payload[ 'order_number' ] ) ? sanitize_text_field( $payload[ 'order_number' ] ) : ( isset( $payload[ 'sale_id' ] ) ? sanitize_text_field( $payload[ 'sale_id' ] ) : '' );
+            $invoice_id = isset( $payload[ 'invoice_id' ] ) ? sanitize_text_field( $payload[ 'invoice_id' ] ) : null;
+            $vendor_order_id = isset( $payload[ 'vendor_order_id' ] ) ? sanitize_text_field( $payload[ 'vendor_order_id' ] ) : ( isset( $payload[ 'merchant_order_id' ] ) ? sanitize_text_field( $payload[ 'merchant_order_id' ] ) : null );
+            $total = isset( $payload[ 'invoice_list_amount' ] ) ? sanitize_text_field( $payload[ 'invoice_list_amount' ] ) : ( isset( $payload[ 'total' ] ) ? sanitize_text_field( $payload[ 'total' ] ) : null );
+
+            // Validate required payloads
+            if ( ! $payload || ! $sale_id || ! $invoice_id || ! $vendor_order_id || ! $total ) {
+                return false;
+            }
+
+            // Validate hash
+            if ( isset( $payload[ 'hash' ] ) && $payload[ 'hash' ] ) {
+                $hash = sanitize_text_field( $payload[ 'hash' ] );
+
+            } elseif ( isset( $payload[ 'md5_hash' ] ) && $payload[ 'md5_hash' ] ) {
+                $hash = sanitize_text_field( $payload[ 'md5_hash' ] );
+
+            } elseif ( isset( $payload[ 'key' ] ) && $payload[ 'key' ] ) {
+                $hash = sanitize_text_field( $payload[ 'key' ] );
+
+            } else {
+                return false;
+            }
+
+            // Validate SID
+            if ( ! $sid ) {
+                return false;
+            }
+
+            // Validate message type on INS
+            $message_type = isset( $payload[ 'message_type' ] ) ? sanitize_text_field( $payload[ 'message_type' ] ) : '';
+            if ( $message_type && 'INVOICE_STATUS_CHANGED' !== $message_type ) {
+                return false;
+            }
+
+            // Validate vendor_order_id if exists
+            $order = tickera_get_order_id_by_name( $vendor_order_id );
+            $order_id = $order ? $order->ID : null;
+            if ( ! $order_id ) {
+                return false;
+            }
+
+            // Get order total
+            $order = new \Tickera\TC_Order( $order_id );
+            $cart_info = $order->details->tc_cart_info;
+            $order_total = $cart_info && isset( $cart_info[ 'total' ] ) ? $cart_info[ 'total' ] : 0;
+
+            // Format total to match with 2checkout payload
+            $order_total = ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) ? round( $order_total, 2 ) : number_format( ( floor( $order_total * 100 ) / 100 ), 2 );
+
+            $source = (string) $sale_id
+                    . (string) $this->API_Username
+                    . (string) $invoice_id
+                    . (string) $this->INS_Password;
+
+            if ( isset( $payload[ 'hash' ] ) && is_scalar( $payload[ 'hash' ] ) ) {
+
+                if ( empty( $this->INS_Password ) ) {
+                    return false;
+                }
+
+                $hash_parts = explode( ':', (string) $payload[ 'hash' ], 2 );
+
+                if ( 2 !== count( $hash_parts ) ) {
+                    return false;
+                }
+
+                $algorithm = strtolower( trim( $hash_parts[ 0 ] ) );
+                $algorithm_aliases = array(
+                    'sha2' => 'sha256',
+                    'sha3' => 'sha3-256',
+                );
+
+                $algorithm = isset( $algorithm_aliases[ $algorithm ] ) ? $algorithm_aliases[ $algorithm ] : $algorithm;
+                $allowed_algorithms = array( 'md5', 'sha256', 'sha3-256' );
+                $available_algorithms = function_exists( 'hash_hmac_algos' ) ? hash_hmac_algos() : hash_algos();
+
+                if ( ! in_array( $algorithm, $allowed_algorithms, true ) || ! in_array( $algorithm, $available_algorithms, true ) ) {
+                    return false;
+                }
+
+                // Incorporate vendor_order_id (order_title) and paid amount on top of hash_hmac payload
+                $calculated_hash = strtoupper( hash_hmac( $algorithm, strtoupper( hash_hmac( $algorithm, $source, $this->API_Password ) ) . $vendor_order_id . $order_total, $this->API_Password ) );
+                $received_hash = strtoupper( hash_hmac( $algorithm, trim( $hash_parts[ 1 ] ) . $vendor_order_id . $payload[ 'invoice_list_amount' ], $this->API_Password ) );
+                return hash_equals( $calculated_hash, $received_hash );
+            
+            } elseif ( isset( $payload[ 'md5_hash' ] ) && is_scalar( $payload[ 'md5_hash' ] ) ) {
+
+                // Incorporate vendor_order_id (order_title) and paid amount on top of md5_hash payload
+                $calculated_hash = strtoupper( md5( strtoupper( md5( $source ) ) . $vendor_order_id . $order_total ) );
+                $received_hash = strtoupper( md5( trim( (string) $payload[ 'md5_hash' ] ) . $vendor_order_id . $payload[ 'invoice_list_amount' ] ) );
+                return hash_equals( $calculated_hash, $received_hash );
+
+            } else {
+
+                if ( $this->SandboxFlag == 'sandbox' ) {
+                    $StringToHash = strtoupper( md5( $this->INS_Password . $this->API_Username . 1 . $total ) );
+
+                } else {
+                    $StringToHash = strtoupper( md5( $this->INS_Password . $this->API_Username . $sale_id . $total ) );
+                }
+
+                if ( $StringToHash == $hash ) {
+                    return hash_equals( $StringToHash, $hash );
+                }
+            }
+
+            return false;
+        }
+
         function ipn() {
 
             global $tc;
 
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout IPN parameters are validated with the gateway hash before payment updates.
-            if ( isset( $_REQUEST[ 'message_type' ] ) && sanitize_text_field( wp_unslash( $_REQUEST[ 'message_type' ] ) ) == 'INVOICE_STATUS_CHANGED' && isset( $_REQUEST[ 'sale_id' ] ) && isset( $_REQUEST[ 'vendor_order_id' ] ) && isset( $_REQUEST[ 'invoice_list_amount' ] ) && isset( $_REQUEST[ 'invoice_id' ] ) && isset( $_REQUEST[ 'md5_hash' ] ) ) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This public callback is authenticated using the 2Checkout INS signature.
+            $request = isset( $_REQUEST ) && is_array( $_REQUEST ) ? wp_unslash( $_REQUEST ) : [];
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout vendor order ID is sanitized before resolving the order.
-                $tco_vendor_order_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'vendor_order_id' ] ) ); // Order "name"
+            if ( $this->validate_ins_hash( $request ) ) {
+
+                $tco_vendor_order_id = sanitize_text_field( $request[ 'vendor_order_id' ] ); // Order "name"
 
                 // Validate the source of the order
                 if ( $this->plugin_name != tickera_get_order_payment_plugin_name( $tco_vendor_order_id ) ) {
                     wp_die(
                         esc_html__( 'This order is not associated with the selected payment method.', 'tickera-event-ticketing-system' ),
                         '',
-                        [ 'response' => 400 ]
-                    );            
+                        array( 'response' => 400 )
+                    );
                 }
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout sale ID is sanitized before hash validation.
-                $sale_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'sale_id' ] ) ); // Just for calculating hash                
-                
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice amount is sanitized before payment validation.
-                $total = sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_list_amount' ] ) );
+                $total = sanitize_text_field( $request[ 'invoice_list_amount' ] );
+                $order_post = tickera_get_order_id_by_name( $tco_vendor_order_id ); // Get order id from order name
 
-                $order_id = tickera_get_order_id_by_name( $tco_vendor_order_id ); // Get order id from order name
-                $order_id = $order_id->ID;
-                $order = new \Tickera\TC_Order( $order_id );
-
-                if ( ! $order ) {
+                if ( ! $order_post || empty( $order_post->ID ) ) {
                     header( 'HTTP/1.0 404 Not Found' );
                     header( 'Content-type: text/plain; charset=UTF-8' );
                     esc_html_e( 'Invoice not found', 'tickera-event-ticketing-system' );
                     exit;
                 }
 
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice ID is sanitized before hash validation.
-                $invoice_id = sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_id' ] ) );
-                
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout MD5 hash is sanitized before hash validation.
-                $md5_hash = sanitize_text_field( wp_unslash( $_REQUEST[ 'md5_hash' ] ) );
-
-                if ( $this->API_Username && $this->API_Password ) {
-
-                    $hash = md5( $sale_id . $this->get_option( 'sid', '', '2checkout' ) . $invoice_id . $this->get_option( 'secret_word', '', '2checkout' ) );
-
-                    if ( $md5_hash != strtolower( $hash ) ) {
-                        header( 'HTTP/1.0 403 Forbidden' );
-                        header( 'Content-type: text/plain; charset=UTF-8' );
-                        esc_html_e( "2Checkout hash key doesn't match", 'tickera-event-ticketing-system' );
-                        exit;
-                    }
-                }
-
-                // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- 2Checkout invoice status is sanitized before payment handling.
-                $invoice_status = isset( $_REQUEST[ 'invoice_status' ] ) ? sanitize_text_field( wp_unslash( $_REQUEST[ 'invoice_status' ] ) ) : '';
+                $order_id = $order_post->ID;
+                $order = new \Tickera\TC_Order( $order_id );
+                $invoice_status = isset( $request[ 'invoice_status' ] ) ? sanitize_text_field( $request[ 'invoice_status' ] ) : '';
                 $invoice_status = strtolower( $invoice_status );
 
-                if ( $invoice_status != "deposited" ) {
+                if ( "deposited" != $invoice_status ) {
                     header( 'HTTP/1.0 200 OK' );
                     header( 'Content-type: text/plain; charset=UTF-8' );
                     esc_html_e( 'Waiting for deposited invoice status.', 'tickera-event-ticketing-system' );
                     exit;
                 }
 
-                if ( intval( round( $total, 2 ) ) >= round( $order->details->tc_payment_info[ 'total' ], 2 ) ) {
+                $cart_info_total = ( tickera_apply_filters( 'tickera_round_cart_total_value', true ) ) ? round( $order->details->tc_payment_info[ 'total' ], 2 ) : number_format( ( floor( $order->details->tc_payment_info[ 'total' ] * 100 ) / 100 ), 2 );
+
+                if ( $total >= $cart_info_total ) {
                     $tc->update_order_payment_status( $order_id, true );
                     header( 'HTTP/1.0 200 OK' );
                     header( 'Content-type: text/plain; charset=UTF-8' );
                     esc_html_e( 'Order completed and verified.', 'tickera-event-ticketing-system' );
                     exit;
+
                 } else {
                     $tc->update_order_status( $order_id, 'order_fraud' );
                     header( 'HTTP/1.0 200 OK' );
@@ -372,6 +462,13 @@ if ( ! class_exists( '\Tickera\Gateway\TC_Gateway_2Checkout' ) ) {
                     esc_html_e( 'Fraudulent order detected and changed status.', 'tickera-event-ticketing-system' );
                     exit;
                 }
+
+            } else {
+                wp_die(
+                    esc_html__( "Payment method hash does not match.", 'tickera-event-ticketing-system' ),
+                    '',
+                    array( 'response' => 403 )
+                );
             }
         }
 

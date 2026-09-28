@@ -8,6 +8,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.Security.NonceVerification.Recommended, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare, WordPress.DB.SlowDBQuery, WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude, Squiz.PHP.DiscouragedFunctions.Discouraged, WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Venuera custom-table data access:
@@ -118,7 +120,7 @@ class TC_Ticket_Designer {
 
 		// Initialize admin.
 		if ( is_admin() ) {
-			TC_Ticket_Designer_Admin::init();
+			\Tickera\TC_Ticket_Designer_Admin::init();
 		}
 
 		// Initialize frontend.
@@ -189,7 +191,7 @@ class TC_Ticket_Designer {
 	 *
 	 * @param array    $attachments Email attachments.
 	 * @param string   $email_id    Email ID.
-	 * @param WC_Order $order       Order object.
+	 * @param \WC_Order $order       Order object.
 	 * @param object   $email       Email object.
 	 * @return array Modified attachments.
 	 */
@@ -205,7 +207,7 @@ class TC_Ticket_Designer {
 		// and "code" modes deliver tickets in the email body instead. Read via the
 		// shared helper so this gate and the email body always agree on the mode.
 		$delivery = class_exists( 'Venuera_WC_Integration' )
-			? Venuera_WC_Integration::email_delivery_mode()
+			? \Venuera_WC_Integration::email_delivery_mode()
 			: get_option( 'venuera_email_ticket_delivery', 'link' );
 		if ( ! in_array( $delivery, array( 'attachment', 'attachment_code' ), true ) ) {
 			return $attachments;
@@ -222,7 +224,7 @@ class TC_Ticket_Designer {
 			return $attachments;
 		}
 
-		if ( ! $order instanceof WC_Order ) {
+		if ( ! $order instanceof \WC_Order ) {
 			return $attachments;
 		}
 
@@ -253,14 +255,14 @@ class TC_Ticket_Designer {
 				// Per-ticket generation (1-based index into the linked ticket rows).
 				$ticket_count = count( $ticket_ids );
 				for ( $index = 1; $index <= $ticket_count; $index++ ) {
-					$ticket_data = TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $item_id, $index );
+					$ticket_data = \Tickera\TC_Ticket_Designer_Frontend::get_ticket_data_from_order( $order, $item_id, $index );
 
 					if ( empty( $ticket_data ) ) {
 						continue;
 					}
 
 					if ( null === $template ) {
-						$template = TC_Ticket_Designer_Template::get_for_ticket(
+						$template = \Tickera\TC_Ticket_Designer_Template::get_for_ticket(
 							$ticket_data['event_id'] ?? 0,
 							$ticket_data['product_id'] ?? 0
 						);
@@ -282,7 +284,7 @@ class TC_Ticket_Designer {
 					continue;
 				}
 
-				$template = TC_Ticket_Designer_Template::get_for_ticket(
+				$template = \Tickera\TC_Ticket_Designer_Template::get_for_ticket(
 					$ticket_data['event_id'] ?? 0,
 					$ticket_data['product_id'] ?? 0
 				);
@@ -333,7 +335,7 @@ class TC_Ticket_Designer {
 	/**
 	 * Generate a single ticket PDF to a temp file and register it as an attachment.
 	 *
-	 * @param TC_Ticket_Designer_Template $template     Template object.
+	 * @param \Tickera\TC_Ticket_Designer_Template $template     Template object.
 	 * @param array                   $ticket_data  Ticket data for this single ticket.
 	 * @param array                   $attachments  Attachments array (by reference).
 	 * @param array                   $temp_files   Temp files array for cleanup (by reference).
@@ -358,7 +360,7 @@ class TC_Ticket_Designer {
 		$dir       = trailingslashit( get_temp_dir() );
 		$temp_file = $dir . wp_unique_filename( $dir, 'ticket-' . $safe_id . '.pdf' );
 
-		$pdf_content = TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, 'S' );
+		$pdf_content = \Tickera\TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, 'S' );
 		if ( ! $pdf_content ) {
 			return;
 		}
@@ -405,17 +407,17 @@ class TC_Ticket_Designer {
 		if ( ! $ticket_instance_id && (int) $ticket_type_id ) {
 			$preview_template_id = (int) get_post_meta( (int) $ticket_type_id, 'tc_designer_template_id', true );
 			if ( $preview_template_id
-				&& class_exists( 'TC_Ticket_Designer_Template' )
-				&& class_exists( 'TC_Ticket_Designer_PDF_Generator' )
-				&& class_exists( 'TC_Ticket_Designer_Fields' )
+				&& class_exists( '\Tickera\TC_Ticket_Designer_Template' )
+				&& class_exists( '\Tickera\TC_Ticket_Designer_PDF_Generator' )
+				&& class_exists( '\Tickera\TC_Ticket_Designer_Fields' )
 			) {
-				$preview_template = new TC_Ticket_Designer_Template( $preview_template_id );
+				$preview_template = new \Tickera\TC_Ticket_Designer_Template( $preview_template_id );
 				if ( $preview_template->get_id() ) {
 					if ( function_exists( 'tickera_ticket_designer_ensure_tcpdf' ) && ! tickera_ticket_designer_ensure_tcpdf() ) {
 						return null;
 					}
-					$sample = TC_Ticket_Designer_Fields::sample_data();
-					TC_Ticket_Designer_PDF_Generator::generate( $preview_template, $sample, ( $force_download ? 'D' : 'I' ), 'ticket-preview.pdf' );
+					$sample = \Tickera\TC_Ticket_Designer_Fields::sample_data();
+					\Tickera\TC_Ticket_Designer_PDF_Generator::generate( $preview_template, $sample, ( $force_download ? 'D' : 'I' ), 'ticket-preview.pdf' );
 					exit;
 				}
 			}
@@ -453,11 +455,11 @@ class TC_Ticket_Designer {
 			return null;
 		}
 
-		if ( ! class_exists( 'TC_Ticket_Designer_Template' ) || ! class_exists( 'TC_Ticket_Designer_PDF_Generator' ) || ! class_exists( 'TC_Ticket_Designer_Fields' ) ) {
+		if ( ! class_exists( '\Tickera\TC_Ticket_Designer_Template' ) || ! class_exists( '\Tickera\TC_Ticket_Designer_PDF_Generator' ) || ! class_exists( '\Tickera\TC_Ticket_Designer_Fields' ) ) {
 			return null;
 		}
 
-		$template = new TC_Ticket_Designer_Template( $designer_template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $designer_template_id );
 		if ( ! $template->get_id() ) {
 			// Assigned template was deleted — fall back to the classic engine.
 			return null;
@@ -468,7 +470,7 @@ class TC_Ticket_Designer {
 			return null;
 		}
 
-		$ticket_data = TC_Ticket_Designer_Fields::resolve_ticket_data( $ticket_instance_id );
+		$ticket_data = \Tickera\TC_Ticket_Designer_Fields::resolve_ticket_data( $ticket_instance_id );
 
 		// Mirror the classic generator's output contract (class.ticket_templates.php
 		// generate_preview) so non-download callers behave identically. Critically,
@@ -491,7 +493,7 @@ class TC_Ticket_Designer {
 			$output = $force_download ? 'D' : 'I';
 		}
 
-		$pdf = TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, $output, $filename );
+		$pdf = \Tickera\TC_Ticket_Designer_PDF_Generator::generate( $template, $ticket_data, $output, $filename );
 
 		if ( 'S' === $output ) {
 			// Email attachment path expects the raw PDF string; on failure fall
@@ -525,7 +527,7 @@ class TC_Ticket_Designer {
 		foreach ( $fields as &$field ) {
 			if ( isset( $field['field_name'] ) && 'ticket_template' === $field['field_name'] ) {
 				$field['field_type'] = 'function';
-				$field['function']   = 'tickera_ticket_designer_unified_template_field_select';
+				$field['function']   = '\Tickera\tickera_ticket_designer_unified_template_field_select';
 				$field['tooltip']    = sprintf(
 					/* translators: 1: Ticket Designer URL, 2: classic Ticket Templates URL. */
 					__( 'Layout of the ticket the customer downloads. Choose a modern <a href="%1$s" target="_blank">Ticket Designer</a> template or a classic <a href="%2$s" target="_blank">ticket template</a>.', 'tickera-event-ticketing-system' ),
@@ -543,7 +545,7 @@ class TC_Ticket_Designer {
 			'field_name'       => 'ticket_template',
 			'field_title'      => __( 'Ticket template', 'tickera-event-ticketing-system' ),
 			'field_type'       => 'function',
-			'function'         => 'tickera_ticket_designer_unified_template_field_select',
+			'function'         => '\Tickera\tickera_ticket_designer_unified_template_field_select',
 			'table_visibility' => false,
 			'post_field_type'  => 'post_meta',
 			'metabox_context'  => 'side',
@@ -812,7 +814,7 @@ class TC_Ticket_Designer {
 		$version = get_option( 'tc_ticket_designer_version' );
 
 		if ( ! $table_exists || ! $version || version_compare( $version, self::VERSION, '<' ) ) {
-			TC_Ticket_Designer_Install::install();
+			\Tickera\TC_Ticket_Designer_Install::install();
 			update_option( 'tc_ticket_designer_version', self::VERSION );
 		}
 
@@ -820,7 +822,7 @@ class TC_Ticket_Designer {
 		// deleted everything), re-seed the bundled "Default Template" so there's
 		// always at least one design to start from. Admin requests only.
 		if ( is_admin() ) {
-			TC_Ticket_Designer_Install::maybe_seed_when_empty();
+			\Tickera\TC_Ticket_Designer_Install::maybe_seed_when_empty();
 		}
 	}
 
@@ -867,7 +869,7 @@ class TC_Ticket_Designer {
 			wp_send_json_error( array( 'message' => __( 'Template name is required.', 'tickera-event-ticketing-system' ) ) );
 		}
 
-		$template = new TC_Ticket_Designer_Template( $template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 		$template->set( 'name', $name );
 		$template->set( 'template_data', $data );
 		$template->set( 'settings', $settings );
@@ -889,7 +891,7 @@ class TC_Ticket_Designer {
 				$this->rename_thumbnail( 'new', $saved_id );
 				$new_thumbnail_url = $this->get_thumbnail_url( $saved_id );
 				if ( $new_thumbnail_url ) {
-					$template = new TC_Ticket_Designer_Template( $saved_id );
+					$template = new \Tickera\TC_Ticket_Designer_Template( $saved_id );
 					$template->set( 'thumbnail_url', $new_thumbnail_url );
 					$template->save();
 				}
@@ -1017,7 +1019,7 @@ class TC_Ticket_Designer {
 			wp_send_json_error( array( 'message' => __( 'Invalid template ID.', 'tickera-event-ticketing-system' ) ) );
 		}
 
-		$template = new TC_Ticket_Designer_Template( $template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 
 		if ( ! $template->get_id() ) {
 			wp_send_json_error( array( 'message' => __( 'Template not found.', 'tickera-event-ticketing-system' ) ) );
@@ -1049,7 +1051,7 @@ class TC_Ticket_Designer {
 			wp_send_json_error( array( 'message' => __( 'Invalid template ID.', 'tickera-event-ticketing-system' ) ) );
 		}
 
-		$template = new TC_Ticket_Designer_Template( $template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 
 		if ( $template->delete() ) {
 			$this->delete_template_thumbnails( $template_id );
@@ -1078,7 +1080,7 @@ class TC_Ticket_Designer {
 			wp_send_json_error( array( 'message' => __( 'Invalid template ID.', 'tickera-event-ticketing-system' ) ) );
 		}
 
-		$source = new TC_Ticket_Designer_Template( $template_id );
+		$source = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 
 		if ( ! $source->get_id() ) {
 			wp_send_json_error( array( 'message' => __( 'Template not found.', 'tickera-event-ticketing-system' ) ) );
@@ -1169,7 +1171,7 @@ class TC_Ticket_Designer {
 		}
 		$event_id = isset( $_POST['event_id'] ) ? absint( $_POST['event_id'] ) : 0;
 
-		if ( ! class_exists( 'Venuera_Attendee_Fields' ) ) {
+		if ( ! class_exists( '\Venuera_Attendee_Fields' ) ) {
 			wp_send_json_success( array( 'fields' => array() ) );
 		}
 
@@ -1211,7 +1213,7 @@ class TC_Ticket_Designer {
 				continue;
 			}
 
-			$attendee_fields = Venuera_Attendee_Fields::get_product_attendee_fields( $product );
+			$attendee_fields = \Venuera_Attendee_Fields::get_product_attendee_fields( $product );
 
 			if ( ! is_array( $attendee_fields ) ) {
 				continue;
@@ -1257,7 +1259,7 @@ class TC_Ticket_Designer {
 
 		// Create sample data for preview (shared source so the preview matches
 		// the editor canvas and the PDF output exactly).
-		$sample_data = TC_Ticket_Designer_Element::get_sample_data();
+		$sample_data = \Tickera\TC_Ticket_Designer_Element::get_sample_data();
 
 		if ( ! empty( $preview_data ) ) {
 			$preview_data = json_decode( $preview_data, true );
@@ -1289,7 +1291,7 @@ class TC_Ticket_Designer {
 			wp_send_json_error( array( 'message' => __( 'Template ID required.', 'tickera-event-ticketing-system' ) ) );
 		}
 
-		$template = new TC_Ticket_Designer_Template( $template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 
 		if ( ! $template->get_id() ) {
 			wp_send_json_error( array( 'message' => __( 'Template not found.', 'tickera-event-ticketing-system' ) ) );
@@ -1297,10 +1299,10 @@ class TC_Ticket_Designer {
 
 		// Sample data for preview (shared source so the PDF matches the editor
 		// canvas and the HTML preview exactly).
-		$sample_data = TC_Ticket_Designer_Element::get_sample_data();
+		$sample_data = \Tickera\TC_Ticket_Designer_Element::get_sample_data();
 
 		// Generate PDF.
-		$pdf_content = TC_Ticket_Designer_PDF_Generator::generate( $template, $sample_data, 'S' );
+		$pdf_content = \Tickera\TC_Ticket_Designer_PDF_Generator::generate( $template, $sample_data, 'S' );
 
 		if ( $pdf_content ) {
 			// Return base64 encoded PDF.
@@ -1436,7 +1438,7 @@ class TC_Ticket_Designer {
 		// Re-tokenise image src URLs back to {{ASSETS}} so the saved file
 		// is portable across installs. We do this in the JSON string (not
 		// the array) so it covers nested src/background fields uniformly.
-		$assets_url = rtrim( TC_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
+		$assets_url = rtrim( TICKERA_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
 		$variants   = array_unique( array( $assets_url, esc_url_raw( $assets_url ) ) );
 		foreach ( $variants as $variant ) {
 			// Escape forward slashes the same way wp_json_encode did NOT
@@ -1491,7 +1493,7 @@ class TC_Ticket_Designer {
 		if ( ! $files ) {
 			return array();
 		}
-		$assets_url = rtrim( TC_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
+		$assets_url = rtrim( TICKERA_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
 		$out        = array();
 		foreach ( $files as $file ) {
 			$raw = @file_get_contents( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a local plugin-bundled JSON file; failure is handled on the next line.
@@ -1556,7 +1558,7 @@ class TC_Ticket_Designer {
 		// Rewrite the {{ASSETS}} token to the actual plugin URL before
 		// json_decode so any string field (image src, background image, …)
 		// ends up pointing at the bundled asset.
-		$assets_url = rtrim( TC_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
+		$assets_url = rtrim( TICKERA_TICKET_DESIGNER_PARENT_URL, '/' ) . '/includes/addons/ticket-designer/templates';
 		$raw        = str_replace( '{{ASSETS}}', esc_url_raw( $assets_url ), $raw );
 		$json       = json_decode( $raw, true );
 		if ( ! is_array( $json ) ) {
@@ -1568,7 +1570,7 @@ class TC_Ticket_Designer {
 	 * Absolute filesystem path to the ready-made templates folder.
 	 */
 	private static function ready_templates_dir() {
-		return TC_TICKET_DESIGNER_PARENT_DIR . 'includes/addons/ticket-designer/templates';
+		return TICKERA_TICKET_DESIGNER_PARENT_DIR . 'includes/addons/ticket-designer/templates';
 	}
 
 	/**
@@ -1639,9 +1641,9 @@ class TC_Ticket_Designer {
 	 */
 	private static function ready_template_thumbnail_url( $slug ) {
 		$thumb_rel = 'includes/addons/ticket-designer/templates/' . $slug . '.png';
-		$thumb_abs = TC_TICKET_DESIGNER_PARENT_DIR . $thumb_rel;
+		$thumb_abs = TICKERA_TICKET_DESIGNER_PARENT_DIR . $thumb_rel;
 		if ( file_exists( $thumb_abs ) ) {
-			return TC_TICKET_DESIGNER_PARENT_URL . $thumb_rel;
+			return TICKERA_TICKET_DESIGNER_PARENT_URL . $thumb_rel;
 		}
 		return '';
 	}
@@ -1652,7 +1654,7 @@ class TC_Ticket_Designer {
 	 * @return array
 	 */
 	public static function get_element_types() {
-		return TC_Ticket_Designer_Element::get_types();
+		return \Tickera\TC_Ticket_Designer_Element::get_types();
 	}
 
 	/**
@@ -1664,7 +1666,7 @@ class TC_Ticket_Designer {
 		// Core PDF fonts + the bundled Google font library (embedded in the PDF
 		// via TCPDF, loaded in the editor via @font-face — same files, so the PDF
 		// matches the editor 1:1).
-		return TC_Ticket_Designer_Fonts::get_choices();
+		return \Tickera\TC_Ticket_Designer_Fonts::get_choices();
 	}
 }
 

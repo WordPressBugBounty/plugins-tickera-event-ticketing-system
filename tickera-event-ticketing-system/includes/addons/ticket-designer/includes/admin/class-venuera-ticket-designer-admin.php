@@ -6,6 +6,8 @@
  * @subpackage Addons/TicketDesigner
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.DB.SlowDBQuery -- Venuera custom-table data access:
@@ -171,10 +173,10 @@ class TC_Ticket_Designer_Admin {
 		// Build a compact "type: option=default, …" reference from the element
 		// defaults, so the model knows the exact option keys it may set.
 		$types_text = '';
-		if ( class_exists( 'TC_Ticket_Designer_Element' ) ) {
-			$type_keys = array_keys( (array) TC_Ticket_Designer_Element::get_types() );
+		if ( class_exists( '\Tickera\TC_Ticket_Designer_Element' ) ) {
+			$type_keys = array_keys( (array) \Tickera\TC_Ticket_Designer_Element::get_types() );
 			foreach ( $type_keys as $type ) {
-				$defaults = (array) TC_Ticket_Designer_Element::get_defaults( $type );
+				$defaults = (array) \Tickera\TC_Ticket_Designer_Element::get_defaults( $type );
 				$pairs    = array();
 				foreach ( $defaults as $k => $v ) {
 					if ( is_bool( $v ) ) {
@@ -190,8 +192,8 @@ class TC_Ticket_Designer_Admin {
 
 		// Data fields available for dynamic_text bindings.
 		$fields_text = '';
-		if ( class_exists( 'TC_Ticket_Designer_Element' ) && method_exists( 'TC_Ticket_Designer_Element', 'get_data_fields' ) ) {
-			foreach ( (array) TC_Ticket_Designer_Element::get_data_fields() as $group ) {
+		if ( class_exists( '\Tickera\TC_Ticket_Designer_Element' ) && method_exists( '\Tickera\TC_Ticket_Designer_Element', 'get_data_fields' ) ) {
+			foreach ( (array) \Tickera\TC_Ticket_Designer_Element::get_data_fields() as $group ) {
 				if ( empty( $group['fields'] ) ) {
 					continue;
 				}
@@ -341,7 +343,7 @@ SYS;
 		// browser cache (a static version left stale code loaded after edits).
 		$asset_ver = function ( $rel ) use ( $addon_path ) {
 			$file = $addon_path . $rel;
-			return file_exists( $file ) ? filemtime( $file ) : TC_TICKET_DESIGNER_VERSION;
+			return file_exists( $file ) ? filemtime( $file ) : TICKERA_TICKET_DESIGNER_VERSION;
 		};
 
 		// Fabric.js for canvas manipulation.
@@ -388,16 +390,16 @@ SYS;
 			'venuera-td-fonts',
 			$addon_url . $td_fonts_rel,
 			array(),
-			file_exists( $td_fonts_file ) ? filemtime( $td_fonts_file ) : TC_TICKET_DESIGNER_VERSION
+			file_exists( $td_fonts_file ) ? filemtime( $td_fonts_file ) : TICKERA_TICKET_DESIGNER_VERSION
 		);
 
 		// Shared confirm dialog (used by the template list "Delete" button).
 		// Faza 0: served from the LOCAL module copies bundled under this addon.
-		$core_dir = defined( 'TC_TICKET_DESIGNER_DIR' ) ? TC_TICKET_DESIGNER_DIR : '';
-		$dlg_css  = ( $core_dir && file_exists( $core_dir . 'assets/css/admin-dialog.css' ) ) ? filemtime( $core_dir . 'assets/css/admin-dialog.css' ) : TC_TICKET_DESIGNER_VERSION;
-		$dlg_js   = ( $core_dir && file_exists( $core_dir . 'assets/js/admin-dialog.js' ) ) ? filemtime( $core_dir . 'assets/js/admin-dialog.js' ) : TC_TICKET_DESIGNER_VERSION;
-		wp_enqueue_style( 'venuera-admin-dialog', TC_TICKET_DESIGNER_URL . 'assets/css/admin-dialog.css', array(), $dlg_css );
-		wp_enqueue_script( 'venuera-admin-dialog', TC_TICKET_DESIGNER_URL . 'assets/js/admin-dialog.js', array(), $dlg_js, true );
+		$core_dir = defined( 'TICKERA_TICKET_DESIGNER_DIR' ) ? TICKERA_TICKET_DESIGNER_DIR : '';
+		$dlg_css  = ( $core_dir && file_exists( $core_dir . 'assets/css/admin-dialog.css' ) ) ? filemtime( $core_dir . 'assets/css/admin-dialog.css' ) : TICKERA_TICKET_DESIGNER_VERSION;
+		$dlg_js   = ( $core_dir && file_exists( $core_dir . 'assets/js/admin-dialog.js' ) ) ? filemtime( $core_dir . 'assets/js/admin-dialog.js' ) : TICKERA_TICKET_DESIGNER_VERSION;
+		wp_enqueue_style( 'venuera-admin-dialog', TICKERA_TICKET_DESIGNER_URL . 'assets/css/admin-dialog.css', array(), $dlg_css );
+		wp_enqueue_script( 'venuera-admin-dialog', TICKERA_TICKET_DESIGNER_URL . 'assets/js/admin-dialog.js', array(), $dlg_js, true );
 
 		// Ticket Designer - Main entry point.
 		wp_enqueue_script(
@@ -462,7 +464,7 @@ SYS;
 
 		// @font-face rules for the bundled font library so the editor canvas and
 		// preview render the exact fonts that the PDF embeds.
-		wp_add_inline_style( 'venuera-ticket-designer-admin', TC_Ticket_Designer_Fonts::get_font_face_css() );
+		wp_add_inline_style( 'venuera-ticket-designer-admin', \Tickera\TC_Ticket_Designer_Fonts::get_font_face_css() );
 
 		// Media library.
 		wp_enqueue_media();
@@ -585,23 +587,23 @@ SYS;
 					'preview'                      => __( 'Preview', 'tickera-event-ticketing-system' ),
 					'noElements'                   => __( 'Add elements to design your ticket', 'tickera-event-ticketing-system' ),
 				),
-				'elementTypes'            => TC_Ticket_Designer_Element::get_types(),
-				'dataFields'              => TC_Ticket_Designer_Element::get_data_fields(),
-				'fonts'                   => TC_Ticket_Designer::get_available_fonts(),
-				'barcodeFormats'          => TC_Ticket_Designer_Element::get_barcode_formats(),
-				'qrErrorLevels'           => TC_Ticket_Designer_Element::get_qr_error_levels(),
+				'elementTypes'            => \Tickera\TC_Ticket_Designer_Element::get_types(),
+				'dataFields'              => \Tickera\TC_Ticket_Designer_Element::get_data_fields(),
+				'fonts'                   => \Tickera\TC_Ticket_Designer::get_available_fonts(),
+				'barcodeFormats'          => \Tickera\TC_Ticket_Designer_Element::get_barcode_formats(),
+				'qrErrorLevels'           => \Tickera\TC_Ticket_Designer_Element::get_qr_error_levels(),
 				'elementDefaults'         => array(
-					'dynamic_text' => TC_Ticket_Designer_Element::get_defaults( 'dynamic_text' ),
-					'static_text'  => TC_Ticket_Designer_Element::get_defaults( 'static_text' ),
-					'qr_code'      => TC_Ticket_Designer_Element::get_defaults( 'qr_code' ),
-					'barcode'      => TC_Ticket_Designer_Element::get_defaults( 'barcode' ),
-					'image'        => TC_Ticket_Designer_Element::get_defaults( 'image' ),
-					'event_image'  => TC_Ticket_Designer_Element::get_defaults( 'event_image' ),
-					'rectangle'    => TC_Ticket_Designer_Element::get_defaults( 'rectangle' ),
-					'line'         => TC_Ticket_Designer_Element::get_defaults( 'line' ),
-					'custom_field' => TC_Ticket_Designer_Element::get_defaults( 'custom_field' ),
+					'dynamic_text' => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'dynamic_text' ),
+					'static_text'  => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'static_text' ),
+					'qr_code'      => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'qr_code' ),
+					'barcode'      => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'barcode' ),
+					'image'        => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'image' ),
+					'event_image'  => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'event_image' ),
+					'rectangle'    => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'rectangle' ),
+					'line'         => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'line' ),
+					'custom_field' => \Tickera\TC_Ticket_Designer_Element::get_defaults( 'custom_field' ),
 				),
-				'sampleData'              => TC_Ticket_Designer_Element::get_sample_data(),
+				'sampleData'              => \Tickera\TC_Ticket_Designer_Element::get_sample_data(),
 				'fieldContexts'           => self::get_field_contexts(),
 				// Pre-resolved labels for any `attendee_field_<id>` bindings that
 				// already live on the template currently being edited. Without
@@ -649,11 +651,11 @@ SYS;
 		$action      = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
 		$template_id = isset( $_GET['template_id'] ) ? absint( $_GET['template_id'] ) : 0;
 
-		if ( 'edit' !== $action || ! $template_id || ! class_exists( 'TC_Ticket_Designer_Template' ) ) {
+		if ( 'edit' !== $action || ! $template_id || ! class_exists( '\Tickera\TC_Ticket_Designer_Template' ) ) {
 			return '';
 		}
 
-		$template = new TC_Ticket_Designer_Template( $template_id );
+		$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 		$data     = $template->get( 'template_data' );
 
 		return is_string( $data ) ? $data : '';
@@ -728,7 +730,7 @@ SYS;
 			if ( ! $product ) {
 				continue;
 			}
-			$fields = Venuera_Attendee_Fields::get_product_attendee_fields( $product );
+			$fields = \Venuera_Attendee_Fields::get_product_attendee_fields( $product );
 			if ( ! is_array( $fields ) ) {
 				continue;
 			}
@@ -831,7 +833,7 @@ SYS;
 	 * Render templates list.
 	 */
 	private static function render_list() {
-		$templates = TC_Ticket_Designer_Template::get_all();
+		$templates = \Tickera\TC_Ticket_Designer_Template::get_all();
 		?>
 		<div class="wrap venuera-ticket-designer-wrap">
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Ticket Designer', 'tickera-event-ticketing-system' ); ?></h1>
@@ -1021,7 +1023,7 @@ SYS;
 	 * @param int $template_id Template ID (0 for new).
 	 */
 	private static function render_editor( $template_id = 0 ) {
-		$template      = $template_id ? new TC_Ticket_Designer_Template( $template_id ) : null;
+		$template      = $template_id ? new \Tickera\TC_Ticket_Designer_Template( $template_id ) : null;
 		$template_name = $template ? $template->get( 'name' ) : '';
 		$template_data = $template ? $template->get( 'template_data' ) : '';
 		$settings      = $template ? $template->get( 'settings' ) : '';
@@ -1381,7 +1383,7 @@ SYS;
 			<div class="venuera-prop-group">
 				<label><?php esc_html_e( 'Data Field', 'tickera-event-ticketing-system' ); ?></label>
 				<select name="dataField" class="venuera-prop-select">
-					<?php foreach ( TC_Ticket_Designer_Element::get_data_fields() as $group_key => $group ) : ?>
+					<?php foreach ( \Tickera\TC_Ticket_Designer_Element::get_data_fields() as $group_key => $group ) : ?>
 						<optgroup label="<?php echo esc_attr( $group['label'] ); ?>">
 							<?php foreach ( $group['fields'] as $field_key => $field_label ) : ?>
 								<option value="<?php echo esc_attr( $field_key ); ?>"><?php echo esc_html( $field_label ); ?></option>
@@ -1437,7 +1439,7 @@ SYS;
 			<div class="venuera-prop-group">
 				<label><?php esc_html_e( 'Error Correction', 'tickera-event-ticketing-system' ); ?></label>
 				<select name="errorCorrectionLevel" class="venuera-prop-select">
-					<?php foreach ( TC_Ticket_Designer_Element::get_qr_error_levels() as $level => $label ) : ?>
+					<?php foreach ( \Tickera\TC_Ticket_Designer_Element::get_qr_error_levels() as $level => $label ) : ?>
 						<option value="<?php echo esc_attr( $level ); ?>"><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
@@ -1464,7 +1466,7 @@ SYS;
 			<div class="venuera-prop-group">
 				<label><?php esc_html_e( 'Format', 'tickera-event-ticketing-system' ); ?></label>
 				<select name="format" class="venuera-prop-select">
-					<?php foreach ( TC_Ticket_Designer_Element::get_barcode_formats() as $format => $label ) : ?>
+					<?php foreach ( \Tickera\TC_Ticket_Designer_Element::get_barcode_formats() as $format => $label ) : ?>
 						<option value="<?php echo esc_attr( $format ); ?>"><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
@@ -1615,7 +1617,7 @@ SYS;
 		<div class="venuera-prop-group">
 			<label><?php esc_html_e( 'Font Family', 'tickera-event-ticketing-system' ); ?></label>
 			<select name="fontFamily" class="venuera-prop-select venuera-font-select">
-				<?php foreach ( TC_Ticket_Designer::get_available_fonts() as $font_key => $font_name ) : ?>
+				<?php foreach ( \Tickera\TC_Ticket_Designer::get_available_fonts() as $font_key => $font_name ) : ?>
 					<option value="<?php echo esc_attr( $font_key ); ?>" style="font-family: <?php echo esc_attr( $font_key ); ?>;"><?php echo esc_html( $font_name ); ?></option>
 				<?php endforeach; ?>
 			</select>
@@ -1667,7 +1669,7 @@ SYS;
 	 * panel. The panel is visible for both `event_ticket` and
 	 * `event_ticket_variable` types, so the same hook now serves both.
 	 *
-	 * @param WC_Product|false|null $product Current product (passed by the
+	 * @param \WC_Product|false|null $product Current product (passed by the
 	 *                                       venuera_event_ticket_panel_after
 	 *                                       action). Falls back to the global
 	 *                                       $post for safety.
@@ -1694,7 +1696,7 @@ SYS;
 
 		$product_id  = $product->get_id();
 		$template_id = get_post_meta( $product_id, '_ticket_template_id', true );
-		$templates   = TC_Ticket_Designer_Template::get_all();
+		$templates   = \Tickera\TC_Ticket_Designer_Template::get_all();
 
 		// Render inside its own options group so the bottom rule visually
 		// separates it from the rest of the Event Ticket fields.
@@ -1728,7 +1730,7 @@ SYS;
 	 *
 	 * @param int     $loop           Variation index in the loop.
 	 * @param array   $variation_data Variation data.
-	 * @param WP_Post $variation      Variation post.
+	 * @param \WP_Post $variation      Variation post.
 	 */
 	public static function add_variation_template_field( $loop, $variation_data, $variation ) {
 		$parent_id = wp_get_post_parent_id( $variation->ID );
@@ -1742,7 +1744,7 @@ SYS;
 		}
 
 		$template_id = get_post_meta( $variation->ID, '_ticket_template_id', true );
-		$templates   = TC_Ticket_Designer_Template::get_all();
+		$templates   = \Tickera\TC_Ticket_Designer_Template::get_all();
 
 		$options = array( '' => __( '-- Inherit from parent --', 'tickera-event-ticketing-system' ) );
 		foreach ( $templates as $template ) {
@@ -1790,7 +1792,7 @@ SYS;
 
 		if ( $template_id ) {
 			update_post_meta( $variation_id, '_ticket_template_id', $template_id );
-			$template = new TC_Ticket_Designer_Template( $template_id );
+			$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 			$template->assign( null, $variation_id, 30 ); // Priority higher than parent (20).
 		} else {
 			// "Inherit from parent" — drop the variation-level override.
@@ -1816,7 +1818,7 @@ SYS;
 		if ( $template_id ) {
 			update_post_meta( $post_id, '_ticket_template_id', $template_id );
 
-			$template = new TC_Ticket_Designer_Template( $template_id );
+			$template = new \Tickera\TC_Ticket_Designer_Template( $template_id );
 			$template->assign( null, $post_id, 20 );
 		} else {
 			delete_post_meta( $post_id, '_ticket_template_id' );

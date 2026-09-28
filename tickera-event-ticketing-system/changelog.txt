@@ -1,6 +1,10 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.6 28/09/2026 =
+* Security: Strengthened hash validation to ensure orders are processed only through the intended payment method.
+* Wordpress v7.1.2 compliance.
+
 = 3.6.0.5 22/09/2026 =
 * Removed Transaction ID exposure from the Order Details page.
 * Security: Fixed an unauthenticated payment bypass vulnerability across payment methods IPN handler.

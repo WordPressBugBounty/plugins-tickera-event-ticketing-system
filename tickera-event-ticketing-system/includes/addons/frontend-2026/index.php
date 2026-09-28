@@ -11,11 +11,13 @@
  * @package Tickera
  */
 
+namespace Tickera;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! class_exists( 'TC_Frontend_2026' ) ) {
+if ( ! class_exists( '\Tickera\TC_Frontend_2026' ) ) {
 
 	class TC_Frontend_2026 {
 
@@ -100,7 +102,7 @@ if ( ! class_exists( 'TC_Frontend_2026' ) ) {
 					}
 				}
 				$post = get_post();
-				if ( $post instanceof WP_Post ) {
+				if ( $post instanceof \WP_Post ) {
 					$shortcodes = array( 'tc_cart', 'tc_order_history', 'tc_payment', 'tc_process_payment', 'tc_order_confirmation' );
 					foreach ( $shortcodes as $sc ) {
 						if ( has_shortcode( $post->post_content, $sc ) ) {
