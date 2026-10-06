@@ -34,7 +34,10 @@ if ( ! class_exists( '\Tickera\TC_Orders_Search' ) ) {
             $this->page_num = (int) ( '' == $page_num ) ? 1 : (int) $page_num;
             $this->post_status = is_array( $post_status ) ? array_map( 'sanitize_text_field', $post_status ) : sanitize_text_field( $post_status );
             $this->period = ( '' == $period ) ? '' : sanitize_text_field( $period );
-            $this->period_compare = sanitize_text_field( $period_compare );
+
+            $allowed_period_compare = [ '=', '!=', '<>', '>', '<', '>=', '<=' ];
+            $period_compare = sanitize_text_field( $period_compare );
+            $this->period_compare = in_array( $period_compare, $allowed_period_compare, true ) ? $period_compare : '=';
 
             if ( $this->search_term ) {
                 $args[ 's' ] = $this->search_term;
@@ -59,6 +62,8 @@ if ( ! class_exists( '\Tickera\TC_Orders_Search' ) ) {
 
         function filter_where( $where = '' ) {
 
+            global $wpdb;
+
             if ( is_array( $this->post_status ) ) {
                 $post_status = '';
 
@@ -66,8 +71,8 @@ if ( ! class_exists( '\Tickera\TC_Orders_Search' ) ) {
                 $post_status = $this->post_status;
             }
 
-            $where = " AND post_date " . $this->period_compare . " '" . wp_date( 'Y-m-d', strtotime( $this->period . ' days' ) ) . "' AND post_status = '" . $post_status . "'";
-            return $where;
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            return $wpdb->prepare( " AND post_date {$this->period_compare} %s AND post_status = %s", wp_date( 'Y-m-d', strtotime( $this->period . ' days' ) ), $post_status );
         }
 
         function TC_Orders_Search( $search_term = '', $page_num = '', $per_page = '', $post_status = array( 'any' ), $period = '', $period_compare = '=' ) {

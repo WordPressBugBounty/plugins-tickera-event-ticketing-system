@@ -17,6 +17,10 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
         var $page_number = 1;
         var $results_per_page = 10;
         var $keyword = '';
+        var $period = '';
+        var $period_compare = '';
+        var $order_id = '';
+        var $event_id = '';
 
         function __construct( $api_key, $request, $return_method = 'echo', $execute_request = true ) {
             global $wp;
@@ -77,6 +81,15 @@ if ( ! class_exists( '\Tickera\TC_Sales_API' ) ) {
         }
 
         function get_api_key_id() {
+
+            // WP_Meta_Query treats an empty string 'value' as "no value filter" and matches
+            // any post that merely has the meta key set — so an empty/missing api_key would
+            // authenticate as whichever tc_api_keys post get_posts() returns first. Fail
+            // closed instead (matches the same guard already used in TC_Checkin_API).
+            if ( '' === trim( (string) $this->api_key ) ) {
+                return false;
+            }
+
             $args = array(
                 'post_type' => 'tc_api_keys',
                 'post_status' => 'any',

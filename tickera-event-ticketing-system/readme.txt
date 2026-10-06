@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 3.6.0.6
+Stable tag: 3.6.0.7
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -182,6 +182,11 @@ Removes the "Powered by Tickera" credit from tickets.
 Introduces the new drag & drop Ticket Designer, unlimited ticket designs and selectable front-end themes. If you sell tickets through WooCommerce, please also update Bridge for WooCommerce to 1.7.5 or higher.
 
 == Changelog ==
+
+= 3.6.0.7 05/10/2026 =
+* Security: Fixed an unauthenticated SQL injection vulnerability in the Sales API.
+* Security: Fixed an unauthenticated payment bypass vulnerability in the 2Checkout IPN handler.
+* Fixed: Unnecessary PHP session on pages with no cart activity, blocking full-page caching.
 
 = 3.6.0.6 28/09/2026 =
 * Security: Strengthened hash validation to ensure orders are processed only through the intended payment method.

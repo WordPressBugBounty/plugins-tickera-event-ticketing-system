@@ -1,6 +1,11 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.7 05/10/2026 =
+* Security: Fixed an unauthenticated SQL injection vulnerability in the Sales API.
+* Security: Fixed an unauthenticated payment bypass vulnerability in the 2Checkout IPN handler.
+* Fixed: Unnecessary PHP session on pages with no cart activity, blocking full-page caching.
+
 = 3.6.0.6 28/09/2026 =
 * Security: Strengthened hash validation to ensure orders are processed only through the intended payment method.
 * Wordpress v7.1.2 compliance.

@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.6
+ * Version: 3.6.0.7
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.6';
+        var $version = '3.6.0.7';
 
         var $title = 'Tickera';
 
@@ -3042,219 +3042,221 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
          */
         function update_cart() {
             global $tickera_cart_errors, $tickera_cart_error_number, $tickera_cart_tickets_error_codes;
-            ob_start();
-            $session = $this->session->get();
-            $tickera_cart_error_number = 0;
-            $required_fields_error_count = 0;
-            $cart_action = filter_input( INPUT_POST, 'cart_action', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-            $cart_action = ( $cart_action ? sanitize_key( $cart_action ) : '' );
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verification is performed only when an actual cart action is detected. Otherwise, the method exits without processing.
+            $cart_action = ( $_POST && isset( $_POST['cart_action'] ) ? sanitize_key( $_POST['cart_action'] ) : '' );
             $valid_cart_actions = [
                 'empty_cart',
                 'update_cart',
                 'apply_coupon',
                 'proceed_to_checkout'
             ];
-            if ( $cart_action && in_array( $cart_action, $valid_cart_actions ) ) {
-                $cart_nonce = ( isset( $_POST['_wpnonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ) : '' );
-                if ( !wp_verify_nonce( $cart_nonce, 'tickera_cart_page' ) ) {
-                    wp_die( esc_html__( 'Invalid cart request.', 'tickera-event-ticketing-system' ), 403 );
+            // Bail out before touching the Tickera session so ordinary requests (e.g. a cacheable homepage load with no cart action)
+            if ( !$cart_action || !in_array( $cart_action, $valid_cart_actions, true ) ) {
+                return;
+            }
+            ob_start();
+            $session = $this->session->get();
+            $tickera_cart_error_number = 0;
+            $required_fields_error_count = 0;
+            $cart_nonce = ( isset( $_POST['_wpnonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpnonce'] ) ) : '' );
+            if ( !wp_verify_nonce( $cart_nonce, 'tickera_cart_page' ) ) {
+                wp_die( esc_html__( 'Invalid cart request.', 'tickera-event-ticketing-system' ), 403 );
+            }
+            $cart = [];
+            $updated_cart_contents = [];
+            $tickera_cart_errors .= '<ul>';
+            if ( in_array( $cart_action, ['proceed_to_checkout', 'update_cart'] ) ) {
+                $qty_count_per_event = [];
+                $ticket_cart_ids = ( isset( $_POST['ticket_cart_id'] ) ? map_deep( wp_unslash( $_POST['ticket_cart_id'] ), 'absint' ) : [] );
+                $ticket_cart_quantities = ( isset( $_POST['ticket_quantity'] ) ? map_deep( wp_unslash( $_POST['ticket_quantity'] ), 'absint' ) : [] );
+                // Restructure POST data for tickets_cart_ids
+                foreach ( $ticket_cart_ids as $key => $ticket_type_id ) {
+                    $updated_cart_contents[(int) $ticket_type_id] = (int) $ticket_cart_quantities[$key];
                 }
-                $cart = [];
-                $updated_cart_contents = [];
-                $tickera_cart_errors .= '<ul>';
-                if ( in_array( $cart_action, ['proceed_to_checkout', 'update_cart'] ) ) {
-                    $qty_count_per_event = [];
-                    $ticket_cart_ids = ( isset( $_POST['ticket_cart_id'] ) ? map_deep( wp_unslash( $_POST['ticket_cart_id'] ), 'absint' ) : [] );
-                    $ticket_cart_quantities = ( isset( $_POST['ticket_quantity'] ) ? map_deep( wp_unslash( $_POST['ticket_quantity'] ), 'absint' ) : [] );
-                    // Restructure POST data for tickets_cart_ids
-                    foreach ( $ticket_cart_ids as $key => $ticket_type_id ) {
-                        $updated_cart_contents[(int) $ticket_type_id] = (int) $ticket_cart_quantities[$key];
-                    }
-                    foreach ( $updated_cart_contents as $ticket_type_id => $qty_count ) {
-                        $ticket = new TC_Ticket($ticket_type_id);
-                        if ( $qty_count <= 0 ) {
+                foreach ( $updated_cart_contents as $ticket_type_id => $qty_count ) {
+                    $ticket = new TC_Ticket($ticket_type_id);
+                    if ( $qty_count <= 0 ) {
+                        /**
+                         * Remove cart item if quantity is zero
+                         */
+                        unset($cart[$ticket_type_id]);
+                        $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 103;
+                    } elseif ( !TC_Ticket::is_sales_available( $ticket_type_id ) ) {
+                        /**
+                         * Mark the item as sold out if not saleable.
+                         *
+                         * Triggered by:
+                         * 1. Ticket Quantity
+                         * 2. Ticket Sales Availibality
+                         */
+                        $tickera_cart_errors .= '<li>';
+                        $tickera_cart_errors .= sprintf( 
+                            /* translators: %s: Ticket type name */
+                            __( '"%s" tickets are sold out', 'tickera-event-ticketing-system' ),
+                            $ticket->details->post_title
+                         );
+                        $tickera_cart_errors .= '</li>';
+                        $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 105;
+                        $tickera_cart_error_number++;
+                    } else {
+                        $event_id = get_post_meta( $ticket_type_id, 'event_name', true );
+                        $event_metas = get_post_meta( $event_id );
+                        $limit_on_event_level = ( isset( $event_metas['limit_level'] ) && $event_metas['limit_level'][0] ? true : false );
+                        if ( $limit_on_event_level ) {
                             /**
-                             * Remove cart item if quantity is zero
+                             * Ticket quantity limitation: Per event
+                             * Retrieve the remaining quantity of an event
                              */
-                            unset($cart[$ticket_type_id]);
-                            $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 103;
-                        } elseif ( !TC_Ticket::is_sales_available( $ticket_type_id ) ) {
-                            /**
-                             * Mark the item as sold out if not saleable.
-                             *
-                             * Triggered by:
-                             * 1. Ticket Quantity
-                             * 2. Ticket Sales Availibality
-                             */
-                            $tickera_cart_errors .= '<li>';
-                            $tickera_cart_errors .= sprintf( 
-                                /* translators: %s: Ticket type name */
-                                __( '"%s" tickets are sold out', 'tickera-event-ticketing-system' ),
-                                $ticket->details->post_title
-                             );
-                            $tickera_cart_errors .= '</li>';
-                            $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 105;
-                            $tickera_cart_error_number++;
-                        } else {
-                            $event_id = get_post_meta( $ticket_type_id, 'event_name', true );
-                            $event_metas = get_post_meta( $event_id );
-                            $limit_on_event_level = ( isset( $event_metas['limit_level'] ) && $event_metas['limit_level'][0] ? true : false );
-                            if ( $limit_on_event_level ) {
-                                /**
-                                 * Ticket quantity limitation: Per event
-                                 * Retrieve the remaining quantity of an event
-                                 */
-                                // Count all committed ticket quantity of an event
-                                $qty_count_per_event[$event_id] = @$qty_count_per_event[$event_id] + $qty_count;
-                                $limit_level_value = '';
-                                // Unlimited as default
-                                if ( isset( $event_metas['limit_level_value'] ) && '' != $event_metas['limit_level_value'][0] ) {
-                                    $limit_level_value = (int) $event_metas['limit_level_value'][0];
-                                }
-                                $event_ticket_sold_count = tickera_get_event_tickets_count_sold( $event_id );
-                                $quantity_left = ( '' === $limit_level_value ? 99999 : (int) $limit_level_value - (int) $event_ticket_sold_count );
-                                // Retrieve the remaining available quantity of an event
-                                if ( $qty_count_per_event[$event_id] >= $quantity_left ) {
-                                    $quantity_left = $qty_count - ($qty_count_per_event[$event_id] - $quantity_left);
-                                }
-                            } else {
-                                /**
-                                 * Ticket quantity limitation: Per ticket type (Default)
-                                 * Retrieve the remaining quantity of a ticket
-                                 */
-                                $quantity_left = $ticket->get_tickets_quantity_left();
+                            // Count all committed ticket quantity of an event
+                            $qty_count_per_event[$event_id] = @$qty_count_per_event[$event_id] + $qty_count;
+                            $limit_level_value = '';
+                            // Unlimited as default
+                            if ( isset( $event_metas['limit_level_value'] ) && '' != $event_metas['limit_level_value'][0] ) {
+                                $limit_level_value = (int) $event_metas['limit_level_value'][0];
                             }
-                            if ( $quantity_left >= $qty_count ) {
-                                $cart[$ticket_type_id] = (int) $qty_count;
-                                /**
-                                 * Cart item doesn't meet the minimum qty per order,
-                                 * assign minimum value as quantity
-                                 */
-                                if ( $ticket->details->min_tickets_per_order && $qty_count < $ticket->details->min_tickets_per_order ) {
-                                    $tickera_cart_errors .= '<li>';
-                                    $tickera_cart_errors .= sprintf( 
-                                        /* translators: 1: Ticket type name 2: A minimum number of tickets per order. */
-                                        __( 'Minimum order quantity for "%1$s" is %2$s', 'tickera-event-ticketing-system' ),
-                                        $ticket->details->post_title,
-                                        $ticket->details->min_tickets_per_order
-                                     );
-                                    $tickera_cart_errors .= '</li>';
-                                    $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 100;
-                                    $tickera_cart_error_number++;
-                                }
-                                /**
-                                 * Cart item doesn't meet the maximum qty per order,
-                                 * assign maximum value as quantity
-                                 */
-                                // Limit to 500 to avoid overload
-                                $default_qty_limit = tickera_apply_filters( 'tickera_cart_quantity_default_limit', 500 );
-                                if ( !$ticket->details->max_tickets_per_order && $qty_count > $default_qty_limit ) {
-                                    $max_tickets_per_order = $default_qty_limit;
-                                } elseif ( $ticket->details->max_tickets_per_order && $qty_count > $ticket->details->max_tickets_per_order ) {
-                                    $max_tickets_per_order = $ticket->details->max_tickets_per_order;
-                                } else {
-                                    $max_tickets_per_order = 0;
-                                }
-                                if ( $max_tickets_per_order ) {
-                                    $cart[$ticket_type_id] = (int) $max_tickets_per_order;
-                                    $tickera_cart_errors .= '<li>';
-                                    $tickera_cart_errors .= sprintf( 
-                                        /* translators: 1: Ticket type name 2: A maximum number of tickets per order */
-                                        __( 'Maximum order quantity for "%1$s" is %2$s', 'tickera-event-ticketing-system' ),
-                                        $ticket->details->post_title,
-                                        $max_tickets_per_order
-                                     );
-                                    $tickera_cart_errors .= '</li>';
-                                    $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 101;
-                                    $tickera_cart_error_number++;
-                                }
-                            } else {
-                                if ( $quantity_left > 0 ) {
-                                    $tickera_cart_errors .= '<li>';
-                                    $tickera_cart_errors .= sprintf(
-                                        /* translators: 1: A number of quantity left 2: Ticket type name 3: Singular or plural form of a string "ticket". */
-                                        __( 'Only %1$s "%2$s" %3$s left', 'tickera-event-ticketing-system' ),
-                                        $quantity_left,
-                                        $ticket->details->post_title,
-                                        ( $quantity_left > 1 ? __( 'tickets', 'tickera-event-ticketing-system' ) : __( 'ticket', 'tickera-event-ticketing-system' ) )
-                                    );
-                                    $tickera_cart_errors .= '</li>';
-                                } else {
-                                    $tickera_cart_errors .= '<li>';
-                                    $tickera_cart_errors .= sprintf( 
-                                        /* translators: %s: Ticket type name. */
-                                        __( '"%s" tickets are sold out', 'tickera-event-ticketing-system' ),
-                                        $ticket->details->post_title
-                                     );
-                                    $tickera_cart_errors .= '</li>';
-                                }
-                                $cart[$ticket_type_id] = (int) $quantity_left;
-                                $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 102;
+                            $event_ticket_sold_count = tickera_get_event_tickets_count_sold( $event_id );
+                            $quantity_left = ( '' === $limit_level_value ? 99999 : (int) $limit_level_value - (int) $event_ticket_sold_count );
+                            // Retrieve the remaining available quantity of an event
+                            if ( $qty_count_per_event[$event_id] >= $quantity_left ) {
+                                $quantity_left = $qty_count - ($qty_count_per_event[$event_id] - $quantity_left);
+                            }
+                        } else {
+                            /**
+                             * Ticket quantity limitation: Per ticket type (Default)
+                             * Retrieve the remaining quantity of a ticket
+                             */
+                            $quantity_left = $ticket->get_tickets_quantity_left();
+                        }
+                        if ( $quantity_left >= $qty_count ) {
+                            $cart[$ticket_type_id] = (int) $qty_count;
+                            /**
+                             * Cart item doesn't meet the minimum qty per order,
+                             * assign minimum value as quantity
+                             */
+                            if ( $ticket->details->min_tickets_per_order && $qty_count < $ticket->details->min_tickets_per_order ) {
+                                $tickera_cart_errors .= '<li>';
+                                $tickera_cart_errors .= sprintf( 
+                                    /* translators: 1: Ticket type name 2: A minimum number of tickets per order. */
+                                    __( 'Minimum order quantity for "%1$s" is %2$s', 'tickera-event-ticketing-system' ),
+                                    $ticket->details->post_title,
+                                    $ticket->details->min_tickets_per_order
+                                 );
+                                $tickera_cart_errors .= '</li>';
+                                $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 100;
                                 $tickera_cart_error_number++;
                             }
-                        }
-                        // Limit user purchases when Force Login is active
-                        $tickera_general_settings = get_option( 'tickera_general_setting', false );
-                        $force_login = ( isset( $tickera_general_settings['force_login'] ) ? $tickera_general_settings['force_login'] : 'no' );
-                        $user_purchased_count = tickera_get_tickets_user_purchased_count( get_current_user_id(), $ticket_type_id );
-                        if ( 'yes' == $force_login && isset( $ticket->details->max_tickets_per_user ) && $ticket->details->max_tickets_per_user && $user_purchased_count + $qty_count > $ticket->details->max_tickets_per_user ) {
-                            $tickera_cart_errors .= '<li>';
-                            $tickera_cart_errors .= sprintf( 
-                                /* translators: %s: Ticket type name. */
-                                __( '"%s" You have reached the maximum number of purchases of this ticket', 'tickera-event-ticketing-system' ),
-                                $ticket->details->post_title
-                             );
-                            $tickera_cart_errors .= '</li>';
-                            $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 104;
+                            /**
+                             * Cart item doesn't meet the maximum qty per order,
+                             * assign maximum value as quantity
+                             */
+                            // Limit to 500 to avoid overload
+                            $default_qty_limit = tickera_apply_filters( 'tickera_cart_quantity_default_limit', 500 );
+                            if ( !$ticket->details->max_tickets_per_order && $qty_count > $default_qty_limit ) {
+                                $max_tickets_per_order = $default_qty_limit;
+                            } elseif ( $ticket->details->max_tickets_per_order && $qty_count > $ticket->details->max_tickets_per_order ) {
+                                $max_tickets_per_order = $ticket->details->max_tickets_per_order;
+                            } else {
+                                $max_tickets_per_order = 0;
+                            }
+                            if ( $max_tickets_per_order ) {
+                                $cart[$ticket_type_id] = (int) $max_tickets_per_order;
+                                $tickera_cart_errors .= '<li>';
+                                $tickera_cart_errors .= sprintf( 
+                                    /* translators: 1: Ticket type name 2: A maximum number of tickets per order */
+                                    __( 'Maximum order quantity for "%1$s" is %2$s', 'tickera-event-ticketing-system' ),
+                                    $ticket->details->post_title,
+                                    $max_tickets_per_order
+                                 );
+                                $tickera_cart_errors .= '</li>';
+                                $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 101;
+                                $tickera_cart_error_number++;
+                            }
+                        } else {
+                            if ( $quantity_left > 0 ) {
+                                $tickera_cart_errors .= '<li>';
+                                $tickera_cart_errors .= sprintf(
+                                    /* translators: 1: A number of quantity left 2: Ticket type name 3: Singular or plural form of a string "ticket". */
+                                    __( 'Only %1$s "%2$s" %3$s left', 'tickera-event-ticketing-system' ),
+                                    $quantity_left,
+                                    $ticket->details->post_title,
+                                    ( $quantity_left > 1 ? __( 'tickets', 'tickera-event-ticketing-system' ) : __( 'ticket', 'tickera-event-ticketing-system' ) )
+                                );
+                                $tickera_cart_errors .= '</li>';
+                            } else {
+                                $tickera_cart_errors .= '<li>';
+                                $tickera_cart_errors .= sprintf( 
+                                    /* translators: %s: Ticket type name. */
+                                    __( '"%s" tickets are sold out', 'tickera-event-ticketing-system' ),
+                                    $ticket->details->post_title
+                                 );
+                                $tickera_cart_errors .= '</li>';
+                            }
+                            $cart[$ticket_type_id] = (int) $quantity_left;
+                            $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 102;
                             $tickera_cart_error_number++;
                         }
-                        $tickera_cart_errors = tickera_apply_filters( 'tickera_add_cart_errors', $tickera_cart_errors, $ticket );
                     }
-                    $tickera_cart_error_number = tickera_apply_filters( 'tickera_cart_error_number', $tickera_cart_error_number );
-                    $this->update_cart_cookie( $cart );
-                    $tickera_discount = new TC_Discounts();
-                    /**
-                     * @var float $total value is not necessary in the following discount process.
-                     * @var string $session_discount_code pass to param to calculate discounted_total correctly.
-                     */
-                    $session_discount_code = ( isset( $session['tc_discount_code'] ) ? sanitize_text_field( $session['tc_discount_code'] ) : '' );
-                    $tickera_discount->discounted_cart_total( false, $session_discount_code );
-                    if ( empty( $cart ) ) {
-                        $this->remove_order_session_data( false );
+                    // Limit user purchases when Force Login is active
+                    $tickera_general_settings = get_option( 'tickera_general_setting', false );
+                    $force_login = ( isset( $tickera_general_settings['force_login'] ) ? $tickera_general_settings['force_login'] : 'no' );
+                    $user_purchased_count = tickera_get_tickets_user_purchased_count( get_current_user_id(), $ticket_type_id );
+                    if ( 'yes' == $force_login && isset( $ticket->details->max_tickets_per_user ) && $ticket->details->max_tickets_per_user && $user_purchased_count + $qty_count > $ticket->details->max_tickets_per_user ) {
+                        $tickera_cart_errors .= '<li>';
+                        $tickera_cart_errors .= sprintf( 
+                            /* translators: %s: Ticket type name. */
+                            __( '"%s" You have reached the maximum number of purchases of this ticket', 'tickera-event-ticketing-system' ),
+                            $ticket->details->post_title
+                         );
+                        $tickera_cart_errors .= '</li>';
+                        $tickera_cart_tickets_error_codes[$ticket_type_id]['errors'][] = 104;
+                        $tickera_cart_error_number++;
                     }
-                } elseif ( 'empty_cart' == $cart_action ) {
-                    $this->remove_order_session_data( false );
-                } elseif ( 'apply_coupon' == $cart_action ) {
-                    ( new TC_Discounts() )->discounted_cart_total();
+                    $tickera_cart_errors = tickera_apply_filters( 'tickera_add_cart_errors', $tickera_cart_errors, $ticket );
                 }
-                /*
-                 * Additional validation when proceeding to checkout.
-                 * Make sure all default fields have been filled in.
+                $tickera_cart_error_number = tickera_apply_filters( 'tickera_cart_error_number', $tickera_cart_error_number );
+                $this->update_cart_cookie( $cart );
+                $tickera_discount = new TC_Discounts();
+                /**
+                 * @var float $total value is not necessary in the following discount process.
+                 * @var string $session_discount_code pass to param to calculate discounted_total correctly.
                  */
-                if ( 'proceed_to_checkout' == $cart_action && isset( $_POST['tc_cart_required'] ) ) {
-                    // Array of required field names
-                    $required_fields = array_map( 'sanitize_text_field', wp_unslash( $_POST['tc_cart_required'] ) );
-                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
-                    $post_data = tickera_sanitize_array( wp_unslash( $_POST ), false, true );
-                    $post_data = ( $post_data ? $post_data : [] );
-                    foreach ( $post_data as $key => $value ) {
-                        if ( $key !== 'tc_cart_required' ) {
-                            if ( in_array( $key, $required_fields ) ) {
-                                if ( !is_array( $value ) ) {
-                                    if ( trim( $value ) == '' ) {
-                                        $required_fields_error_count++;
-                                    }
-                                } else {
-                                    foreach ( $post_data[$key] as $val ) {
-                                        if ( !is_array( $val ) ) {
-                                            if ( trim( $val ) == '' ) {
+                $session_discount_code = ( isset( $session['tc_discount_code'] ) ? sanitize_text_field( $session['tc_discount_code'] ) : '' );
+                $tickera_discount->discounted_cart_total( false, $session_discount_code );
+                if ( empty( $cart ) ) {
+                    $this->remove_order_session_data( false );
+                }
+            } elseif ( 'empty_cart' == $cart_action ) {
+                $this->remove_order_session_data( false );
+            } elseif ( 'apply_coupon' == $cart_action ) {
+                ( new TC_Discounts() )->discounted_cart_total();
+            }
+            /*
+             * Additional validation when proceeding to checkout.
+             * Make sure all default fields have been filled in.
+             */
+            if ( 'proceed_to_checkout' == $cart_action && isset( $_POST['tc_cart_required'] ) ) {
+                // Array of required field names
+                $required_fields = array_map( 'sanitize_text_field', wp_unslash( $_POST['tc_cart_required'] ) );
+                // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Sanitized within tickera_sanitize_array().
+                $post_data = tickera_sanitize_array( wp_unslash( $_POST ), false, true );
+                $post_data = ( $post_data ? $post_data : [] );
+                foreach ( $post_data as $key => $value ) {
+                    if ( $key !== 'tc_cart_required' ) {
+                        if ( in_array( $key, $required_fields ) ) {
+                            if ( !is_array( $value ) ) {
+                                if ( trim( $value ) == '' ) {
+                                    $required_fields_error_count++;
+                                }
+                            } else {
+                                foreach ( $post_data[$key] as $val ) {
+                                    if ( !is_array( $val ) ) {
+                                        if ( trim( $val ) == '' ) {
+                                            $required_fields_error_count++;
+                                        }
+                                    } else {
+                                        foreach ( $val as $val_str ) {
+                                            if ( trim( $val_str ) == '' ) {
                                                 $required_fields_error_count++;
-                                            }
-                                        } else {
-                                            foreach ( $val as $val_str ) {
-                                                if ( trim( $val_str ) == '' ) {
-                                                    $required_fields_error_count++;
-                                                }
                                             }
                                         }
                                     }
@@ -3262,28 +3264,28 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                             }
                         }
                     }
-                    if ( $required_fields_error_count > 0 ) {
-                        $tickera_cart_errors .= '<li>' . esc_html__( 'All fields marked with * are required.', 'tickera-event-ticketing-system' ) . '</li>';
+                }
+                if ( $required_fields_error_count > 0 ) {
+                    $tickera_cart_errors .= '<li>' . esc_html__( 'All fields marked with * are required.', 'tickera-event-ticketing-system' ) . '</li>';
+                }
+                tickera_do_action( 'tickera_cart_before_error_pass_check', $tickera_cart_error_number, $tickera_cart_errors );
+                if ( $tickera_cart_error_number == 0 && $required_fields_error_count == 0 ) {
+                    $this->save_cart_post_data();
+                    tickera_do_action( 'tickera_cart_passed_successfully' );
+                    // Redirect to payment page
+                    if ( tickera_apply_filters( 'tickera_can_redirect_to_payment_page', true ) ) {
+                        tickera_redirect( $this->get_payment_slug( true ) );
                     }
-                    tickera_do_action( 'tickera_cart_before_error_pass_check', $tickera_cart_error_number, $tickera_cart_errors );
-                    if ( $tickera_cart_error_number == 0 && $required_fields_error_count == 0 ) {
-                        $this->save_cart_post_data();
-                        tickera_do_action( 'tickera_cart_passed_successfully' );
-                        // Redirect to payment page
-                        if ( tickera_apply_filters( 'tickera_can_redirect_to_payment_page', true ) ) {
-                            tickera_redirect( $this->get_payment_slug( true ) );
-                        }
-                    }
                 }
-                $cart_errors = ( isset( $session['tc_cart_errors'] ) ? $session['tc_cart_errors'] : '' );
-                $cart_errors .= $tickera_cart_errors;
-                if ( !in_array( $cart_errors, ['<ul>', '', null] ) ) {
-                    $this->session->set( 'tc_cart_errors', $cart_errors );
-                }
-                // Redirect to cart page
-                if ( in_array( $cart_action, ['empty_cart', 'apply_coupon', 'update_cart'] ) || $tickera_cart_error_number || $required_fields_error_count ) {
-                    tickera_redirect( $this->get_cart_slug( true ) );
-                }
+            }
+            $cart_errors = ( isset( $session['tc_cart_errors'] ) ? $session['tc_cart_errors'] : '' );
+            $cart_errors .= $tickera_cart_errors;
+            if ( !in_array( $cart_errors, ['<ul>', '', null] ) ) {
+                $this->session->set( 'tc_cart_errors', $cart_errors );
+            }
+            // Redirect to cart page
+            if ( in_array( $cart_action, ['empty_cart', 'apply_coupon', 'update_cart'] ) || $tickera_cart_error_number || $required_fields_error_count ) {
+                tickera_redirect( $this->get_cart_slug( true ) );
             }
         }
 
