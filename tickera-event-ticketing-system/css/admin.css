@@ -885,7 +885,7 @@ a.tc_link:hover {
 }
 
 .tc_wrap .metabox-holder#poststuff {
-    padding-top: 9px;
+    padding-top: 0px;
 }
 
 .tc_wrap form .postbox:nth-child(3),

@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 3.6.0.7
+Stable tag: 3.6.0.8
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -100,12 +100,6 @@ Need help? Browse full docs: **https://tickera.com/documentation-category/ticker
 
 ---
 
-### 🚀 Premium demo
-Want to try everything (including premium add-ons)?
-👉 **[Request a demo access](https://tickera.com/playground-request/ "Tickera Demo Request")**
-
----
-
 ### 🧰 Use cases
 - **Ticket sales** for concerts, conferences, festivals, theatres, meetups, comedy shows
 - **Sports events** (football matches, basketball, volleyball, tournaments, races)
@@ -182,6 +176,9 @@ Removes the "Powered by Tickera" credit from tickets.
 Introduces the new drag & drop Ticket Designer, unlimited ticket designs and selectable front-end themes. If you sell tickets through WooCommerce, please also update Bridge for WooCommerce to 1.7.5 or higher.
 
 == Changelog ==
+
+= 3.6.0.8 14/10/2026 =
+* Updated Freemius SDK to 2.13.5.
 
 = 3.6.0.7 05/10/2026 =
 * Security: Fixed an unauthenticated SQL injection vulnerability in the Sales API.

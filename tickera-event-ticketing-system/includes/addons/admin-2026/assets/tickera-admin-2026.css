@@ -214,6 +214,7 @@ body.tc-admin-2026 :is(.wrap, .tc_outside_wrap, .postbox, #poststuff, .edit-post
 	font-size: 14px;
 	line-height: 1.4;
 	transition: border-color 120ms var(--tc-ease), box-shadow 120ms var(--tc-ease);
+	background-image: none !important;
 }
 body.tc-admin-2026 :is(.wrap, .tc_outside_wrap, .postbox, #poststuff, .edit-post-meta-boxes-area) textarea {
 	min-height: 90px;
@@ -634,7 +635,7 @@ body.tc-admin-2026 .tc_outside_wrap .sticky-wrapper {
 	margin: 0;
 }
 body.tc-admin-2026 .tc_outside_wrap .tc_wrap {
-	margin-left: 262px;
+	margin-left: 245px;
 	width: auto;
 	float: none;
 	clear: none;

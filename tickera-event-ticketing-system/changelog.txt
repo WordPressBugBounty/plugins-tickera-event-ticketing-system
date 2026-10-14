@@ -1,6 +1,9 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.8 14/10/2026 =
+* Updated Freemius SDK to 2.13.5.
+
 = 3.6.0.7 05/10/2026 =
 * Security: Fixed an unauthenticated SQL injection vulnerability in the Sales API.
 * Security: Fixed an unauthenticated payment bypass vulnerability in the 2Checkout IPN handler.
