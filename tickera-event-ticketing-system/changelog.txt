@@ -1,6 +1,10 @@
 Plugin Name: Tickera
 Author: Tickera.com=====
 
+= 3.6.0.9 23/10/2026 =
+* Improved Ticket Designer to display same-day event date and time ranges (e.g September 18, 2026 1:03 PM - 2:03 PM)
+* Fixed: Checkout session errors related to Elementor plugin compatibility.
+
 = 3.6.0.8 14/10/2026 =
 * Updated Freemius SDK to 2.13.5.
 

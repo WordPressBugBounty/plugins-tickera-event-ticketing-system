@@ -503,6 +503,7 @@ if ( ! class_exists( '\Tickera\TC_Discounts' ) ) {
             $tc->session->set( 'tc_discount_code', $discount_code );
             $minimum_discounted_total = tickera_minimum_total( tickera_apply_filters( 'tickera_discounted_total', $tickera_new_total ) );
             $tc->session->set( 'discounted_total', $minimum_discounted_total );
+            $tc->session->set( 'tc_cart_total', $minimum_discounted_total );
 
             return [
                 'success' => ! $discount_error_message ? true : false,

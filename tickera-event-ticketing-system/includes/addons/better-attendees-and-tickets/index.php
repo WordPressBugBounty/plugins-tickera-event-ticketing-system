@@ -248,7 +248,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
 
             global $post_type, $pagenow;
 
-            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
+            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && isset( $query->query[ 'post_type' ] ) && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
 
                 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin list filter; the value is sanitized and checked against eligible statuses below.
                 if ( isset( $_REQUEST[ 'tc_order_status_filter' ] ) ) {
@@ -300,7 +300,7 @@ if ( ! class_exists( '\Tickera\Addons\TC_Better_Attendees_and_Tickets' ) ) {
          */
         function init_table_by_order_status( $query ) {
             global $post_type, $pagenow;
-            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
+            if ( 'edit.php' == $pagenow && 'tc_tickets_instances' == $post_type && isset( $query->query[ 'post_type' ] ) && 'tc_tickets_instances' == $query->query[ 'post_type' ] ) {
                 add_filter( 'posts_where', array( $this, 'init_table_by_order_status_where_clause' ), 10, 2 );
             }
         }

@@ -3,7 +3,7 @@ Contributors: tickera, freemius
 Tags: sell tickets, ticket sales, tickets, manage events, event registration
 Requires at least: 5.9
 Tested up to: 7.1
-Stable tag: 3.6.0.8
+Stable tag: 3.6.0.9
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -176,6 +176,10 @@ Removes the "Powered by Tickera" credit from tickets.
 Introduces the new drag & drop Ticket Designer, unlimited ticket designs and selectable front-end themes. If you sell tickets through WooCommerce, please also update Bridge for WooCommerce to 1.7.5 or higher.
 
 == Changelog ==
+
+= 3.6.0.9 23/10/2026 =
+* Improved Ticket Designer to display same-day event date and time ranges (e.g September 18, 2026 1:03 PM - 2:03 PM)
+* Fixed: Checkout session errors related to Elementor plugin compatibility.
 
 = 3.6.0.8 14/10/2026 =
 * Updated Freemius SDK to 2.13.5.

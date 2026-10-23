@@ -479,11 +479,20 @@ class TC_Ticket_Designer_Fields {
 			$data['event_date']     = $start ? date_i18n( get_option( 'date_format' ), strtotime( $start ) ) : '';
 			$data['event_time']     = $start ? date_i18n( get_option( 'time_format' ), strtotime( $start ) ) : '';
 			$data['event_datetime'] = $start ? date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $start ) ) : '';
-			// Only show a "start - end" range when the end actually differs from the
-			// start; otherwise the range is redundant (e.g. "Sep 9, 2026 7:00 PM to
-			// Sep 9, 2026 7:00 PM") and the date/time should be printed once.
-			if ( $end && strtotime( $end ) !== strtotime( $start ) ) {
-				$data['event_datetime'] .= ' - ' . date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $end ) );
+			// Match the classic ticket element's compact date-range formatting:
+			// omit a repeated date for same-day events and omit a repeated time when
+			// multi-day events start and end at the same time.
+			if ( $start && $end && strtotime( $end ) !== strtotime( $start ) ) {
+				$end_date = date_i18n( get_option( 'date_format' ), strtotime( $end ) );
+				$end_time = date_i18n( get_option( 'time_format' ), strtotime( $end ) );
+
+				if ( $data['event_date'] === $end_date ) {
+					$data['event_datetime'] .= ' - ' . $end_time;
+				} elseif ( $data['event_time'] === $end_time ) {
+					$data['event_datetime'] = $data['event_date'] . ' - ' . $end_date . ' ' . $data['event_time'];
+				} else {
+					$data['event_datetime'] .= ' - ' . $end_date . ' ' . $end_time;
+				}
 			}
 			$data['venue_name']    = (string) get_post_meta( $event_id, 'event_location', true );
 			$data['event_logo']    = (string) get_post_meta( $event_id, 'event_logo_file_url', true );

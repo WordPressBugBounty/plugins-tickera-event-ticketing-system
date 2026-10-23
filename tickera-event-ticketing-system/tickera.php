@@ -6,7 +6,7 @@
  * Description: Sell tickets and manage event registration on your site - PDF tickets, QR/Barcode check-in, and seamless ticket sales for WordPress.
  * Author: Tickera.com
  * Author URI: https://tickera.com/
- * Version: 3.6.0.8
+ * Version: 3.6.0.9
  * Text Domain: tickera-event-ticketing-system
  * Domain Path: /languages/
  * License: GPLv2 or later
@@ -20,7 +20,7 @@ if ( !defined( 'ABSPATH' ) ) {
 // Exit if accessed directly
 if ( !class_exists( '\\Tickera\\TC' ) ) {
     class TC {
-        var $version = '3.6.0.8';
+        var $version = '3.6.0.9';
 
         var $title = 'Tickera';
 
@@ -172,6 +172,7 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
             add_action( 'admin_init', array($this, 'generate_ticket_preview'), 11 );
             add_action( 'init', array($this, 'checkin_api'), 0 );
             add_action( 'init', array($this, 'sales_api'), 0 );
+            add_action( 'template_redirect', array($this, 'prepare_checkout_request'), 0 );
             add_action( 'template_redirect', array($this, 'load_cart_scripts') );
             add_action( 'template_redirect', array($this, 'non_visible_post_types_404') );
             add_action( 'template_redirect', array($this, 'maybe_cancel_order') );
@@ -5515,6 +5516,41 @@ if ( !class_exists( '\\Tickera\\TC' ) ) {
                     );
                 }
             }
+        }
+
+        /**
+         * Prepare session-backed checkout pages before the theme sends output.
+         *
+         * Tickera totals are calculated while the cart shortcode renders. Keep
+         * headers writable for that render so the PHP session can be reopened
+         * and persisted, including when a page builder renders the shortcode.
+         * These pages contain shopper-specific state and must not be cached.
+         *
+         * @return void
+         */
+        function prepare_checkout_request() {
+            $page_ids = array_filter( array_map( 'absint', [
+                $this->get_cart_page(),
+                $this->get_payment_page(),
+                $this->get_process_payment_page(),
+                $this->get_confirmation_page(),
+                $this->get_order_page()
+            ] ) );
+            $is_checkout_page = $page_ids && is_page( $page_ids );
+            $is_virtual_checkout_page = get_query_var( 'tickera_cart_page' ) || get_query_var( 'page_payment' ) || get_query_var( 'page_process_payment' ) || get_query_var( 'page_confirmation' ) || get_query_var( 'page_order' );
+            if ( !$is_checkout_page && !$is_virtual_checkout_page ) {
+                return;
+            }
+            if ( !defined( 'DONOTCACHEPAGE' ) ) {
+                define( 'DONOTCACHEPAGE', true );
+            }
+            nocache_headers();
+            if ( 0 === ob_get_level() ) {
+                ob_start();
+            }
+            // Initialize the session while headers are still writable. The
+            // session implementation intentionally closes it after reading.
+            $this->session->get();
         }
 
         /**
